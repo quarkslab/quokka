@@ -1,0 +1,10 @@
+build*/
+third_party/idasdk*/
+quokka.pb.h
+ci/ida*/
+.eggs/*
+site/
+.pytest_cache/
+dist/
+docs/reference/python/
+doxygen_current.cfg

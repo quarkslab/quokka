@@ -1,0 +1,51 @@
+site_name: Quokka
+site_description: A Fast and Accurate Binary Exporter
+repo_url: "https://github.com/quarkslab/quokka"
+repo_name: "quarkslab/quokka"
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+
+nav:
+  - Home: README.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Tutorial:
+      - First step: tutorial/00_intro.md
+      - Binary loading: tutorial/01_load.md
+      - Functions: tutorial/02_functions.md
+      - Blocks: tutorial/03_blocks.md
+      - Instructions: tutorial/04_instructions.md
+      - References: tutorial/05_references.md
+      - Other: tutorial/06_other.md
+  - C++ Reference: reference/cpp/
+  - Python Reference: reference/python/
+  - Examples: example.md
+  - Philosophy: philosophy.md
+  - Roadmap: roadmap.md
+  - Developers:
+      - Contributing: contributing.md
+      - Tips & Tricks: dev.md
+  - FAQ: FAQ.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - autorefs
+  - search
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings
+  - mkdocs-simple-hooks:
+      hooks:
+        on_post_build: "docs.doxygen:generate_cpp_documentation"
