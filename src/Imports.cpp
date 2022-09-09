@@ -51,11 +51,9 @@ ImportManager::ImportManager() {
 }
 
 bool ImportManager::InImport(const ea_t address) const {
-  auto it = std::find_if(
+  return std::any_of(
       ranges.begin(), ranges.end(),
       [&address](const Range& range) { return range.InRange(address); });
-  bool found = it != ranges.end() and (*it).InRange(address);
-  return found;
 }
 
 void ImportManager::AddImport(ea_t address, std::string name, uint64_t ord) {
