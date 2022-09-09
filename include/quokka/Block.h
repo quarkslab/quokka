@@ -114,9 +114,9 @@ class Block {
   /**
    * Retrieve the index of the instruction at `addr`
    * @param addr Address of the instruction
-   * @return Index if positive result, -1 otherwise
+   * @return Instruction index
    */
-  [[nodiscard]] int GetInstIndex(ea_t addr) const;
+  [[nodiscard]] std::optional<int> GetInstIndex(ea_t addr) const;
 
   /**
    * Reset the end address of the block to `endaddr`.

@@ -315,8 +315,8 @@ void WriteLocation(quokka::Quokka::Location* proto_location,
     quokka::Quokka::Location::InstructionIdentifier* proto_inst =
         proto_location->mutable_instruction_position();
 
-    proto_inst->set_block_idx(
-        inst_instance.chunk_->GetBlockIdx(inst_instance.block_));
+    auto block_idx = inst_instance.chunk_->GetBlockIdx(inst_instance.block_);
+    proto_inst->set_block_idx(block_idx.value_or(-1));
     proto_inst->set_instruction_idx(inst_instance.instruction_index);
     proto_inst->set_func_chunk_idx(inst_instance.chunk_->proto_index);
 

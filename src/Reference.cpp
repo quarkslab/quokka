@@ -84,8 +84,8 @@ Location ResolveAddr(ea_t addr, const FuncChunkCollection& chunks,
     return chunk;
   }
 
-  int instruction_index = block->GetInstIndex(addr);
-  if (instruction_index == -1) {
+  auto instruction_index = block->GetInstIndex(addr);
+  if (instruction_index == std::nullopt) {
     return BADADDR;
   }
 
@@ -94,7 +94,7 @@ Location ResolveAddr(ea_t addr, const FuncChunkCollection& chunks,
    * to this problem, the protobuf at the end attach "every" string to one
    * instruction. A temp fix here is to never attach the reference to the
    * instruction itself but always to an instance */
-  return InstructionInstance(chunk, block, instruction_index);
+  return InstructionInstance(chunk, block, instruction_index.value());
 }
 
 Location ResolveStructure(ea_t addr, const Structures& structures) {
@@ -207,31 +207,31 @@ void ResolveEdges(const FuncChunkCollection& chunks,
                   ReferenceHolder& reference_holder) {
   // TODO(dm) Sort chunk blocks by start address
 
-  int destination_block_index;
-  int source_block_index;
-
   for (const std::shared_ptr<FuncChunk>& chunk : chunks) {
     for (const PendingEdge& pending_edge : chunk->pending_edges) {
       std::shared_ptr<Block> source_block =
           chunk->GetBlockContainingAddress(pending_edge.source);
-      source_block_index = chunk->GetBlockIdx(source_block);
-      if (source_block_index == -1) {
+
+      auto source_block_index = chunk->GetBlockIdx(source_block);
+      if (source_block_index == std::nullopt) {
         QLOGE << "Unable to find source block";
         continue;
       }
 
-      destination_block_index =
+      auto destination_block_index =
           chunk->BlockIdxFromAddr(pending_edge.destination);
-      if (destination_block_index == -1) {
-        // Sometimes, IDA misses the points with references towards non head so
+
+      if (destination_block_index == std::nullopt) {
+        // Sometimes, IDA misses the points with references towards non-head so
         // double check
         flags_t f = get_flags(pending_edge.destination);
-        if (is_head(f) && is_code(f)) {
-          // Reference is correct but block does not exists : this is a call
+        auto instruction_index =
+            source_block->GetInstIndex(pending_edge.source);
+        if (is_head(f) && is_code(f) && instruction_index.has_value()) {
+          // Reference is correct but block does not exist : this is a call
           ReferenceHolder::GetInstance().emplace_back(
-              InstructionInstance(
-                  chunk, source_block,
-                  source_block->GetInstIndex(pending_edge.source)),
+              InstructionInstance(chunk, source_block,
+                                  instruction_index.value()),
               pending_edge.destination, REF_CALL);
         } else {
           QLOGD << "IDA reference is wrong, does not point towards an head.";
@@ -239,8 +239,9 @@ void ResolveEdges(const FuncChunkCollection& chunks,
         continue;
       }
 
-      chunk->edge_list.emplace_back(pending_edge.edge_type, source_block_index,
-                                    destination_block_index);
+      chunk->edge_list.emplace_back(pending_edge.edge_type,
+                                    source_block_index.value(),
+                                    destination_block_index.value());
     }
 
     chunk->pending_edges = {};
