@@ -58,8 +58,9 @@ FuncChunk::FuncChunk(ea_t start, func_t* func) {
 }
 
 void FuncChunk::AddEdge(ea_t source_addr, ea_t dest_addr, EdgeType edge_type) {
-  // If this is a fake chunk, we want to had the target in the list of potential
-  // heads. It may not be correct but we have no way of finding it right now.
+  // If this is a fake chunk, we want to keep the target in the list of
+  // potential heads. It may not be correct, but we have no way of finding it
+  // right now.
   if (this->fake_chunk) {
     auto result = this->block_heads.find(dest_addr);
     if (result == this->block_heads.end()) {
