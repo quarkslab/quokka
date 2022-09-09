@@ -371,8 +371,6 @@ int ExportLayout(quokka::Quokka* proto) {
 
             int instruction_index =
                 int(head_iterator.current_block->instructions.size()) - 1;
-            int block_index = head_iterator.current_chunk->GetBlockIdx(
-                head_iterator.current_block);
 
             GetComments(head_iterator.current_ea,
                         head_iterator.current_block->instructions.back());

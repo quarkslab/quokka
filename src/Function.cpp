@@ -89,7 +89,8 @@ std::shared_ptr<Block> FuncChunk::GetBlockContainingAddress(ea_t addr) {
   return nullptr;
 }
 
-int FuncChunk::GetBlockIdx(const std::shared_ptr<Block>& block) const {
+std::optional<int> FuncChunk::GetBlockIdx(
+    const std::shared_ptr<Block>& block) const {
   auto it = std::find_if(
       this->blocks.begin(), this->blocks.end(),
       [block](const std::shared_ptr<Block>& b) -> bool { return b == block; });
@@ -98,7 +99,7 @@ int FuncChunk::GetBlockIdx(const std::shared_ptr<Block>& block) const {
     return static_cast<int>(std::distance(this->blocks.begin(), it));
   }
 
-  return -1;
+  return std::nullopt;
 }
 
 bool FuncChunk::operator<(const FuncChunk& rhs) const {
@@ -305,16 +306,26 @@ void ExportFunctions(std::vector<Function>& func_list,
   // to {chunk_idx, block_idx}
   for (Function& function_ : func_list) {
     for (ChunkEdge& chunk_edge : function_.edges) {
-      chunk_edge.source.block_idx =
+      auto source_block_idx =
           chunk_edge.source.chunk->BlockIdxFromAddr(chunk_edge.source.addr);
-      chunk_edge.destination.block_idx =
+      auto destination_block_idx =
           chunk_edge.destination.chunk->BlockIdxFromAddr(
               chunk_edge.destination.addr);
+
+      if (source_block_idx != std::nullopt &&
+          destination_block_idx != std::nullopt) {
+        chunk_edge.source.block_idx = source_block_idx.value();
+        chunk_edge.destination.block_idx = destination_block_idx.value();
+      } else {
+        QLOGE << "Unable to resolve Chunk";
+      }
     }
 
     for (auto& [position, chunk_localisation] : function_.node_position) {
-      chunk_localisation.block_idx =
-          chunk_localisation.chunk->BlockIdxFromAddr(chunk_localisation.addr);
+      if (auto block_idx = chunk_localisation.chunk->BlockIdxFromAddr(
+              chunk_localisation.addr)) {
+        chunk_localisation.block_idx = block_idx.value();
+      }
     }
   }
 }

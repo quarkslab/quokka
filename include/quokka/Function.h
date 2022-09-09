@@ -322,9 +322,10 @@ class FuncChunk {
   /**
    * Retrieve the block index of `block`
    * @param block Block to search
-   * @return Positive integer if found, -1 otherwise
+   * @return Positive integer if found
    */
-  [[nodiscard]] int GetBlockIdx(const std::shared_ptr<Block>& block) const;
+  [[nodiscard]] std::optional<int> GetBlockIdx(
+      const std::shared_ptr<Block>& block) const;
 
   /**
    * Get the block where `addr` belong
@@ -338,14 +339,14 @@ class FuncChunk {
    * Retrieve the block index from the address
    * TODO(dm) improve perf
    * @param addr Address to search
-   * @return Positive index or -1 if not found
+   * @return Positive index
    */
-  int BlockIdxFromAddr(ea_t addr) {
+  std::optional<int> BlockIdxFromAddr(ea_t addr) {
     std::shared_ptr<Block> b = this->GetBlockContainingAddress(addr);
     if (b != nullptr) {
       return GetBlockIdx(b);
     }
-    return -1;
+    return std::nullopt;
   }
 
   /**

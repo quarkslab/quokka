@@ -40,13 +40,13 @@ BlockType RetrieveBlockType(fc_block_type_t block_type) {
   assert(false && "Invalid block type");
 }
 
-int Block::GetInstIndex(ea_t addr) const {
+std::optional<int> Block::GetInstIndex(ea_t addr) const {
   auto iterator = address_to_index.find(addr);
   if (iterator != address_to_index.end()) {
     return iterator->second;
   }
 
-  return -1;
+  return std::nullopt;
 }
 
 void Block::Resize(ea_t endaddr, bool force) {
