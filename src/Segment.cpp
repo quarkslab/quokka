@@ -93,8 +93,8 @@ int ExportSegments(quokka::Quokka* proto) {
   }
 
   WriteSegments(proto, segments);
-  QLOG_INFO << absl::StrFormat("Segments exported (took %f)",
-                               timer.ElapsedMilliSeconds(absl::Now()));
+  QLOG_INFO << absl::StrFormat("Segments exported (took %.2fs)",
+                               timer.ElapsedSeconds(absl::Now()));
 
   return eOk;
 }

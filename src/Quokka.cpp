@@ -63,8 +63,8 @@ int ExportBinary(const std::string& filename) {
   }
 
   QLOG_INFO << absl::StrFormat("File %s is written", outfile);
-  QLOG_INFO << absl::StrFormat("quokka finished (took %f)",
-                               timer.ElapsedMilliSeconds(absl::Now()));
+  QLOG_INFO << absl::StrFormat("quokka finished (took %.2fs)",
+                               timer.ElapsedSeconds(absl::Now()));
 
   // Clean everything
   google::protobuf::ShutdownProtobufLibrary();

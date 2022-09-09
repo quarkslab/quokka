@@ -345,8 +345,8 @@ int ExportLayout(quokka::Quokka* proto) {
     head_iterator.NextAddressAndState();
 
     if (head_iterator.state == FINISH) {
-      QLOGI << absl::StrFormat("End export layout in %f",
-                               timer.ElapsedMilliSeconds(absl::Now()));
+      QLOGI << absl::StrFormat("End export layout in %.2fs",
+                               timer.ElapsedSeconds(absl::Now()));
       break;
     } else if (head_iterator.state == CODE) {
       if (head_iterator.IsChunkHead()) {
@@ -475,26 +475,26 @@ int ExportLayout(quokka::Quokka* proto) {
   if (export_instructions) {
     QLOGI << "Start to write mnemonic.";
     WriteMnemonic(proto, head_iterator.mnemonic_bucket);
-    QLOGI << absl::StrFormat("Finished to write mnemonics (took : %f)",
-                             timer.ElapsedMilliSeconds(absl::Now()));
+    QLOGI << absl::StrFormat("Finished to write mnemonics (took: %.2fs)",
+                             timer.ElapsedSeconds(absl::Now()));
 
     timer.Reset();
     QLOGI << "Start to write operand strings.";
     WriteOperandStrings(proto, head_iterator.operand_string_bucket);
-    QLOGI << absl::StrFormat("Finished to write operand_strings (took : %f)",
-                             timer.ElapsedMilliSeconds(absl::Now()));
+    QLOGI << absl::StrFormat("Finished to write operand_strings (took: %.2fs)",
+                             timer.ElapsedSeconds(absl::Now()));
 
     timer.Reset();
     QLOGI << "Start to write operands";
     WriteOperands(proto, head_iterator.operand_bucket);
-    QLOGI << absl::StrFormat("Finished to write operands (took : %f)",
-                             timer.ElapsedMilliSeconds(absl::Now()));
+    QLOGI << absl::StrFormat("Finished to write operands (took: %.2fs)",
+                             timer.ElapsedSeconds(absl::Now()));
 
     timer.Reset();
     QLOGI << "Start to write instructions";
     WriteInstructions(proto, head_iterator.instruction_bucket);
-    QLOGI << absl::StrFormat("Finished to write instructions (took : %f)",
-                             timer.ElapsedMilliSeconds(absl::Now()));
+    QLOGI << absl::StrFormat("Finished to write instructions (took: %.2fs)",
+                             timer.ElapsedSeconds(absl::Now()));
 
     head_iterator.mnemonic_bucket.clear();
     head_iterator.operand_bucket.clear();
@@ -505,8 +505,8 @@ int ExportLayout(quokka::Quokka* proto) {
     ResolveEdges(head_iterator.func_chunks, ReferenceHolder::GetInstance());
     Timer sort_timer(absl::Now());
     head_iterator.func_chunks.Sort();
-    QLOGD << absl::StrFormat("Chunks sorted (took %f)",
-                             sort_timer.ElapsedMilliSeconds(absl::Now()));
+    QLOGD << absl::StrFormat("Chunks sorted (took %.2fs)",
+                             sort_timer.ElapsedSeconds(absl::Now()));
   }
 
   QLOGI << "Start to write func chunks";
@@ -514,8 +514,8 @@ int ExportLayout(quokka::Quokka* proto) {
   import_manager.AddMissingChunks(head_iterator.func_chunks);
   WriteFuncChunk(proto, head_iterator.func_chunks);
 
-  QLOGI << absl::StrFormat("Finished to write func_chunks (took : %f)",
-                           timer.ElapsedMilliSeconds(absl::Now()));
+  QLOGI << absl::StrFormat("Finished to write func_chunks (took: %.2fs)",
+                           timer.ElapsedSeconds(absl::Now()));
 
   {
     QLOGI << "Start to export and write functions";
@@ -525,8 +525,9 @@ int ExportLayout(quokka::Quokka* proto) {
     ExportFunctions(func_list, head_iterator.func_chunks, import_manager);
     WriteFunctions(proto, func_list, head_iterator.func_chunks);
 
-    QLOGI << absl::StrFormat("Finished to export/write functions (took : %f)",
-                             func_timer.ElapsedMilliSeconds(absl::Now()));
+    QLOGI << absl::StrFormat(
+        "Finished to export/write functions (took : %.2fs)",
+        func_timer.ElapsedSeconds(absl::Now()));
   }
 
   {
@@ -537,8 +538,8 @@ int ExportLayout(quokka::Quokka* proto) {
         head_iterator.func_chunks, head_iterator.instruction_bucket,
         head_iterator.data_list, Structures::GetInstance());
 
-    QLOGD << absl::StrFormat("Removing took %f",
-                             sort_timer.ElapsedMilliSeconds(absl::Now()));
+    QLOGD << absl::StrFormat("Removing took %.2fs",
+                             sort_timer.ElapsedSeconds(absl::Now()));
   }
 
   QLOGI << "Start to write data, comments and references";
@@ -551,8 +552,8 @@ int ExportLayout(quokka::Quokka* proto) {
   WriteReferences(proto, ReferenceHolder::GetInstance());
 
   QLOGI << absl::StrFormat(
-      "Finished to write data comments and references (took : %f)",
-      timer.ElapsedMilliSeconds(absl::Now()));
+      "Finished to write data comments and references (took : %.2fs)",
+      timer.ElapsedSeconds(absl::Now()));
 
   return eOk;
 }

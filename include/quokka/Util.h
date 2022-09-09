@@ -233,6 +233,15 @@ class Timer {
   double ElapsedMilliSeconds(absl::Time t) {
     return absl::ToDoubleMilliseconds(Elapsed(t));
   }
+
+  /**
+   * Compute the elapsed time in seconds between start and `t`
+   * @param t Ending time
+   * @return Measured time in seconds
+   */
+  double ElapsedSeconds(absl::Time t) {
+    return absl::ToDoubleSeconds(Elapsed(t));
+  }
 };
 
 /**
