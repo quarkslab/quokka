@@ -195,8 +195,8 @@ int ExportMeta(quokka::Quokka* proto) {
   metadata.SetIdaVersion();
 
   WriteMetadata(proto, metadata);
-  QLOG_INFO << absl::StrFormat("FileMetadata exported (took %f)",
-                               timer.ElapsedMilliSeconds(absl::Now()));
+  QLOG_INFO << absl::StrFormat("FileMetadata exported (took %.2fs)",
+                               timer.ElapsedSeconds(absl::Now()));
 
   return eOk;
 }

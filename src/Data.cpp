@@ -219,8 +219,8 @@ void ExportEnumAndStructures(quokka::Quokka* proto) {
   ExportEnums(structures);
   WriteStructures(proto, structures);
 
-  QLOGI << absl::StrFormat("Enum and structures written (took %f)",
-                           timer.ElapsedMilliSeconds(absl::Now()));
+  QLOGI << absl::StrFormat("Enum and structures written (took %.2fs)",
+                           timer.ElapsedSeconds(absl::Now()));
 }
 
 }  // namespace quokka
