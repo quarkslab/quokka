@@ -5,13 +5,26 @@ repo_name: "quarkslab/quokka"
 
 theme:
   name: material
+  logo: img/logo.png
   palette:
-    scheme: slate
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
 
 nav:
   - Home: README.md
   - Installation: installation.md
   - Usage: usage.md
+  - Features: features.md
   - Tutorial:
       - First step: tutorial/00_intro.md
       - Binary loading: tutorial/01_load.md
@@ -36,6 +49,11 @@ markdown_extensions:
   - pymdownx.highlight
   - pymdownx.tabbed:
       alternate_style: true
+  - tables
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
 
 plugins:
   - autorefs
