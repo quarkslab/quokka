@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macOS-11]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.10.0
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Build sdist
+        run: python setup.py sdist
+      - uses: actions/upload-artifact@v3
+        with:
+          path: dist/*.tar.gz
+
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          # unpacks default artifact into dist/
+          # if `name: artifact` is omitted, the action will create extra parent dir
+          name: artifact
+          path: dist
+
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.5.1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

@@ -1,0 +1,43 @@
+name: quokka-build
+
+on: [push]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+
+      - name: Install ninja-build tool
+        uses: seanmiddleditch/gha-setup-ninja@v3
+
+      - name: Prepare build environment
+        env:
+          IDA_SDK_VERSION: idasdk80
+          IDA_SDK_PASSWORD: ${{ secrets.IDA_SDK80_PASSWORD }}
+          CMAKE_BUILD_DIR: build80
+        run: |
+          [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
+          [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
+          cmake -B $CMAKE_BUILD_DIR -G Ninja -S $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION
+
+      - name: Build
+        env:
+          CMAKE_BUILD_DIR: build80
+        run: |
+          cmake --build $CMAKE_BUILD_DIR --config $BUILD_TYPE
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        env:
+          CMAKE_BUILD_DIR: build80
+        with:
+          name: idaplugin-artifacts
+          path: $CMAKE_BUILD_DIR/quokka-install/*
