@@ -1,0 +1,20 @@
+name: doc
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+      - name: Install Dependencies
+        run: |
+          pip install '.[doc]'
+          sudo apt-get update && sudo apt-get install --yes doxygen
+      - name: Deploy doc
+        run: mkdocs gh-deploy --force
