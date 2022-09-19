@@ -7,16 +7,16 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.12
-
-      - name: Install ninja-build tool
-        uses: seanmiddleditch/gha-setup-ninja@v3
 
       - name: Prepare build environment
         env:
@@ -26,7 +26,7 @@ jobs:
         run: |
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
-          cmake -B $CMAKE_BUILD_DIR -G Ninja -S $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION
+          cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE:STRING=${BUILD_TYPE} -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION
 
       - name: Build
         env:
