@@ -45,28 +45,28 @@ from quokka.analysis.utils import split_chunk
 
 __all__ = [
     # From arch.py
-    QuokkaArch,
-    ArchEnum,
-    ArchX86,
-    ArchX64,
-    ArchARM,
-    ArchARM64,
-    ArchARMThumb,
+    "QuokkaArch",
+    "ArchEnum",
+    "ArchX86",
+    "ArchX64",
+    "ArchARM",
+    "ArchARM64",
+    "ArchARMThumb",
     # From calling_convention.py
-    CallingConvention,
-    CCdecl,
-    Stdcall,
-    Fastcall,
-    MicrosoftAMD64,
-    SystemVAMD,
-    ARMCC,
-    ARM64CC,
+    "CallingConvention",
+    "CCdecl",
+    "Stdcall",
+    "Fastcall",
+    "MicrosoftAMD64",
+    "SystemVAMD",
+    "ARMCC",
+    "ARM64CC",
     # From env.py
-    get_calling_convention_for_arch_platform,
-    Environment,
-    Platform,
+    "get_calling_convention_for_arch_platform",
+    "Environment",
+    "Platform",
     # From utils.py
-    split_chunk,
+    "split_chunk",
     # From replacer.py
-    Replacer,
+    "Replacer",
 ]

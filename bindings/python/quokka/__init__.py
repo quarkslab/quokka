@@ -63,22 +63,6 @@ from quokka.segment import Segment
 
 from quokka.structure import Structure, StructureMember
 
-# from quokka.types import (
-#     AddressT,
-#     Index,
-#     T,
-#     LocationValueType,
-#     ReferenceTarget,
-#     AddressSize,
-#     Endianness,
-#     EdgeType,
-#     FunctionType,
-#     ReferenceType,
-#     DataType,
-#     SegmentType,
-#     StructureType,
-# )
-
 from quokka.utils import (
     md5_file,
     sha256_file,
@@ -90,62 +74,48 @@ from quokka.utils import (
 
 __all__ = [
     # From addresser.py
-    Addresser,
+    "Addresser",
     # From block.py
-    Block,
+    "Block",
     # From data.py
-    Data,
-    DataHolder,
+    "Data",
+    "DataHolder",
     # From exc.py
-    QuokkaError,
-    NotInFileError,
-    ChunkMissingError,
-    FunctionMissingError,
-    ThunkMissingError,
-    InstructionError,
-    CapstoneError,
-    PypcodeError,
+    "QuokkaError",
+    "NotInFileError",
+    "ChunkMissingError",
+    "FunctionMissingError",
+    "ThunkMissingError",
+    "InstructionError",
+    "CapstoneError",
+    "PypcodeError",
     # From executable.py
-    Executable,
+    "Executable",
     # From functions.py
-    dereference_thunk,
-    get_degrees,
-    Chunk,
-    SuperChunk,
-    Function,
+    "dereference_thunk",
+    "get_degrees",
+    "Chunk",
+    "SuperChunk",
+    "Function",
     # From instructions;py
-    Operand,
-    Instruction,
+    "Operand",
+    "Instruction",
     # From program.py
-    Program,
+    "Program",
     # From reference.py
-    Reference,
-    References,
-    ReferencesLocation,
+    "Reference",
+    "References",
+    "ReferencesLocation",
     # From segment.py
-    Segment,
+    "Segment",
     # From structure.py
-    Structure,
-    StructureMember,
-    # # From types.py
-    # AddressT,
-    # Index,
-    # T,
-    # LocationValueType,
-    # ReferenceTarget,
-    # AddressSize,
-    # Endianness,
-    # EdgeType,
-    # FunctionType,
-    # ReferenceType,
-    # DataType,
-    # SegmentType,
-    # StructureType,
+    "Structure",
+    "StructureMember",
     # From utils.py
-    md5_file,
-    sha256_file,
-    check_hash,
-    get_isa,
-    convert_address_size,
-    get_arch,
+    "md5_file",
+    "sha256_file",
+    "check_hash",
+    "get_isa",
+    "convert_address_size",
+    "get_arch",
 ]

@@ -24,10 +24,10 @@ from quokka.backends.pypcode import (
 
 __all__ = [
     # From capstone.py
-    get_capstone_context,
-    capstone_decode_instruction,
+    "get_capstone_context",
+    "capstone_decode_instruction",
     # From pypcode.py
-    get_pypcode_context,
-    pypcode_decode_instruction,
-    pypcode_decode_block,
+    "get_pypcode_context",
+    "pypcode_decode_instruction",
+    "pypcode_decode_block",
 ]

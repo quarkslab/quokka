@@ -57,7 +57,7 @@ setup(
             "mkdocs",
             "mkdocs-material",
             "mkdocstrings",
-            "mkdocstrings-python-legacy",
+            "mkdocstrings-python",
             "mkdocs-literate-nav",
             "mkdocs-gen-files",
             "mkdocs-simple-hooks",
