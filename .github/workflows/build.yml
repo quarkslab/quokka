@@ -40,9 +40,9 @@ jobs:
           IDA_SDK_PASSWORD: ${{ secrets.IDA_SDK80_PASSWORD }}
           CMAKE_BUILD_DIR: build80
         run: |
-          7z x -p${IDA_SDK_PASSWORD} -y -othird_party third_party\${IDA_SDK_VERSION}.zip
-          rm third_party\${IDA_SDK_VERSION}\regex.h
-          cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/${IDA_SDK_VERSION}
+          7z x -p${env:IDA_SDK_PASSWORD} -y -othird_party third_party\${env:IDA_SDK_VERSION}.zip
+          rm third_party\${env:IDA_SDK_VERSION}\include\regex.h
+          cmake -B ${env:CMAKE_BUILD_DIR} -S ${env:GITHUB_WORKSPACE} -DIdaSdk_ROOT_DIR=${env:GITHUB_WORKSPACE}/third_party/${env:IDA_SDK_VERSION}
 
       - name: Build
         env:
