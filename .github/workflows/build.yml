@@ -58,4 +58,5 @@ jobs:
           CMAKE_BUILD_DIR: build80
         with:
           name: idaplugin-artifacts
-          path: ./$CMAKE_BUILD_DIR/quokka-install/*
+          path: '${{ env.CMAKE_BUILD_DIR }}/quokka-install/*'
+          if-no-files-found: error
