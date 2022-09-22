@@ -58,4 +58,4 @@ jobs:
           CMAKE_BUILD_DIR: build80
         with:
           name: idaplugin-artifacts
-          path: $CMAKE_BUILD_DIR/quokka-install/*
+          path: ./$CMAKE_BUILD_DIR/quokka-install/*
