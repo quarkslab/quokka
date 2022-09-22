@@ -47,8 +47,10 @@ jobs:
       - name: Build
         env:
           CMAKE_BUILD_DIR: build80
+        shell: bash
         run: |
           cmake --build $CMAKE_BUILD_DIR --config $BUILD_TYPE
+          cmake --install $CMAKE_BUILD_DIR
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
