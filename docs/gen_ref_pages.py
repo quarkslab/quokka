@@ -10,8 +10,7 @@ import mkdocs_gen_files
 nav: mkdocs_gen_files.Nav = mkdocs_gen_files.Nav()
 
 python_root: Path = Path("bindings/python").absolute()
-full_doc: Path = Path("docs/reference/python").absolute()
-full_doc.mkdir(exist_ok=True)
+full_doc: Path = Path("reference/python")
 
 for path in python_root.rglob("*.py"):
     module_path = path.relative_to(python_root).with_suffix("")
