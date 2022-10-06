@@ -33,6 +33,7 @@ nav:
       - Instructions: tutorial/04_instructions.md
       - References: tutorial/05_references.md
       - Other: tutorial/06_other.md
+      - Going Further: tutorial/07_solving.md
   - C++ Reference: reference/cpp/
   - Python Reference: reference/python/
   - Examples: example.md
@@ -61,9 +62,10 @@ plugins:
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py
-  - literate-nav:
-      nav_file: SUMMARY.md
-  - mkdocstrings
+  - literate-nav
+  - mkdocstrings:
+      watch:
+        - bindings/python/quokka
   - mkdocs-simple-hooks:
       hooks:
         on_post_build: "docs.doxygen:generate_cpp_documentation"
