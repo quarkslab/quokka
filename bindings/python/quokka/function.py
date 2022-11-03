@@ -17,8 +17,8 @@
 from __future__ import annotations
 import logging
 import itertools
-import networkx
 from functools import cached_property
+import networkx
 
 import quokka
 from quokka.types import (
@@ -63,11 +63,12 @@ def dereference_thunk(item: Union[Function, Chunk], caller: bool = False) -> Fun
     else:
         function = item
 
-    # Do not try to (de)reference if we do not meet the prerequistes
+    # Do not try to (de)reference if we do not meet the prerequisites
     if caller is False and function.type != FunctionType.THUNK:
         # Only dereference THUNK function
         return function
-    elif caller is True and function.in_degree != 1:
+
+    if caller is True and function.in_degree != 1:
         # Only try to reference function with in_degree == 1
         return function
 
@@ -76,19 +77,20 @@ def dereference_thunk(item: Union[Function, Chunk], caller: bool = False) -> Fun
 
     try:
         candidate = function.program.get_first_function_by_chunk(reference[0])
-    except (IndexError, quokka.exc.FunctionMissingError):
+    except (IndexError, quokka.exc.FunctionMissingError) as exc:
         if caller is True and reference[0].in_degree == 0:
-            raise quokka.exc.ThunkMissingError("Error while finding thunk")
+            raise quokka.exc.ThunkMissingError("Error while finding thunk") from exc
 
-        # This will appears when the referenced target is a chunk coming from a
+        # This will appear when the referenced target is a chunk coming from a
         # fake chunk for instance
         # logger.debug("Unable to find the (de)reference of the thunk function")
-        raise quokka.exc.FunctionMissingError("Missing func referenced by thunk")
+        raise quokka.exc.FunctionMissingError("Missing func referenced by thunk") from exc
 
     if candidate.type == FunctionType.THUNK and caller is not True:
         # Recursive call for multi layered THUNK
         return dereference_thunk(candidate, caller)
-    elif caller and candidate.type != FunctionType.THUNK:
+
+    if caller and candidate.type != FunctionType.THUNK:
         return function
 
     return candidate
@@ -224,7 +226,7 @@ class Chunk(MutableMapping, Iterable):
     def graph(self) -> "networkx.DiGraph":
         """Return the CFG of the chunk as DiGraph object"""
         graph = networkx.DiGraph()
-        graph.add_nodes_from(n for n in self._raw_dict.keys())
+        graph.add_nodes_from(n for n in self._raw_dict)
 
         for edge in self.program.proto.function_chunks[self.proto_index].edges:
             if (
@@ -358,7 +360,7 @@ class Chunk(MutableMapping, Iterable):
         if not self.in_chunk(address):
             raise IndexError(f"Unable to find the instruction at 0x{address:x}")
 
-        for block_addr, block in self.items():
+        for block in self.values():
             if block.start <= address < block.end:
                 return block[address]
 
@@ -564,7 +566,7 @@ class Function(dict):
             if segment and segment.type == SegmentType.EXTERN:
                 self.type = FunctionType.EXTERN
 
-        self.index_to_address: Dict[int, int] = dict()
+        self.index_to_address: Dict[int, int] = {}
         for chunk_index in func.function_chunks_index:
             chunk = self.program.get_chunk(chunk_index)
 
@@ -572,10 +574,7 @@ class Function(dict):
                 logger.error("Found a super chunk in a function which is not possible")
                 continue
 
-            if (
-                chunk.chunk_type != FunctionType.NORMAL
-                and chunk.chunk_type != self.type
-            ):
+            if chunk.chunk_type not in {FunctionType.NORMAL, self.type}:
                 logger.error(
                     "All the chunks of the function are supposed to have the same "
                     "type. It is not the case here."
@@ -610,6 +609,7 @@ class Function(dict):
 
     @cached_property
     def strings(self) -> List[str]:
+        """Return the list of strings used in the function"""
         strings = set()
         for chunk in self.values():
             strings.update(chunk.strings)
@@ -636,7 +636,7 @@ class Function(dict):
 
     @cached_property
     def graph(self) -> "networkx.DiGraph":
-
+        """Compute the Control Flow Graph for the function"""
         graph = networkx.DiGraph()
         for chunk in self.values():
             graph = networkx.algorithms.operators.compose(graph, chunk.graph)
@@ -659,6 +659,7 @@ class Function(dict):
 
     @cached_property
     def end(self) -> int:
+        """Get the last address of the function"""
         max_chunk = max(self.keys())
         return self[max_chunk].end
 
