@@ -418,6 +418,17 @@ class Program(dict):
                 if chunk.chunk_type in chunk_types:
                     yield chunk
 
+    def get_data(self, address: AddressT) -> quokka.Data:
+        """Get data by address
+
+        Arguments:
+            address: Address to query
+        
+        Returns:
+            A data at the address
+        """
+        return self.data_holder.get_data(address)
+
     def __repr__(self) -> str:
         """Program representation"""
         return self.__str__()

@@ -21,13 +21,12 @@ from __future__ import annotations
 import logging
 
 import quokka
+
 from quokka.types import (
     AddressT,
     Any,
     DataType,
-    Dict,
     Index,
-    Iterator,
     List,
     Mapping,
     Optional,
@@ -43,22 +42,23 @@ class Data:
     They are referenced inside the program by and to other data and code.
 
     Parameters:
+        proto_index: Index in the protobuf
         data: Protobuf value of the data.
         program: Program backref
 
     Attributes:
+        proto_index: Index in the protobuf
         address: Data address
         type: Data type
         program: Reference to the Program
         is_initialized: Is the data initialized?
         size: Data size (depends on the type usually)
         name: Data name (if any)
-        data_references: Data references to this data
-        code_references: Code references to this data
     """
 
-    def __init__(self, data: "quokka.pb.Quokka.Data", program: quokka.Program):
+    def __init__(self, proto_index: Index, data: "quokka.pb.Quokka.Data", program: quokka.Program):
         """Constructor"""
+        self.proto_index: Index = proto_index
         self.address: AddressT = program.addresser.absolute(data.offset)
         self.type: "DataType" = DataType.from_proto(data.type)
         self.program: quokka.Program = program
@@ -79,9 +79,9 @@ class Data:
             else None
         )
 
-        # TODO(dm) check if needed/used
-        self.data_references: Dict[str, List["Data"]] = {"src": [], "dst": []}
-        self.code_references: List[quokka.Instruction] = []
+    def __eq__(self, other: Any) -> bool:
+        """Check equality between two Data instances"""
+        return type(other) is type(self) and other.proto_index == self.proto_index
 
     @property
     def value(self) -> Any:
@@ -113,6 +113,21 @@ class Data:
                 return ""
         else:
             return self.program.executable.read_data(address, self.type)
+
+    @property
+    def references(self) -> List[quokka.Reference]:
+        """References to/from this data"""
+        return self.program.references.resolve_data(self.proto_index)
+
+    @property
+    def code_references(self) -> List[quokka.Reference]:
+        """Returns code referencing this Data"""
+        return [ref for ref in self.references if isinstance(ref.destination, tuple)]
+    
+    @property
+    def data_references(self) -> List[quokka.Reference]:
+        """Returns data references to/from this Data"""
+        return [ref for ref in self.references if isinstance(ref.destination, Data)]
 
 
 class DataHolder(Mapping):
@@ -154,14 +169,35 @@ class DataHolder(Mapping):
     def __getitem__(self, k: Index) -> Data:
         """Get a data from the bucket.
 
-        If the data has not been created yet, it is done on the fly and cached for
-        further requests.
+        Arguments:
+            k: Data Index
+        
+        Returns:
+            A Data
         """
-        return Data(self.proto_data[k], self.program)
+        return Data(k, self.proto_data[k], self.program)
 
-    def find_by_string(self, lookup: str) -> Optional[Data]:
-        """Not yet implemented"""
-        raise NotImplementedError
+    def get_data(self, address: AddressT) -> Data:
+        """Find a data by address
+
+        Iterates over the data to find the one at a specified offset
+
+        Arguments:
+            address: Offset to query
+        
+        Returns:
+            A Data
+        
+        Raises:
+            ValueError if no data is found
+        """
+
+        # We have to iterate over every data because they are not sorted by offset
+        for index, data_proto in enumerate(self.proto_data):
+            if data_proto.offset + self.program.base_address == address:
+                return self[index]
+        else:
+            raise ValueError(f"No data at offset 0x{address:x}")
 
     def __len__(self) -> int:
         """Number of data in the program"""
