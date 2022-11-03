@@ -53,6 +53,7 @@ ReferenceTarget = Union[
     "quokka.data.Data",
     "quokka.Instruction",
     "quokka.Chunk",
+    Tuple["quokka.Chunk", "quokka.Block", Index],
 ]
 
 
