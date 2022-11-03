@@ -417,7 +417,7 @@ void WriteData(quokka::Quokka* proto, BucketNew<Data>& data_bucket) {
 
   absl::flat_hash_map<std::string, int> string_map;
 
-  // Set an empty string in the first offset to differenciate between values set
+  // Set an empty string in the first offset to differentiate between values set
   // and non set.
   proto->add_string_table("");
 
