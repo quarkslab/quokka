@@ -395,7 +395,6 @@ class References(Mapping):
 
         Returns:
             A list of reference matching the criteria
-
         """
         return_list = []
         target, _ = self.get_direction(towards)
@@ -463,3 +462,32 @@ class References(Mapping):
                                 return_list.append(location)
 
         return return_list
+
+    def resolve_data(
+        self,
+        data_index: Index,
+        reference_type: Union[ReferenceType, None] = None,
+    ) -> List[Reference]:
+        """Resolve data references
+
+        Returns a list of reference towards a data
+        If a reference_type is specified the references will be filtered by their type
+
+        Arguments:
+            data_index: Index of the data in the protobuf
+            reference_type: Type of reference
+        
+        Returns:
+            A list of reference matching the criteria
+        """
+
+        references: List[Reference] = []
+        for reference_idx in self.references_category[ReferencesLocation.DATA][data_index]:
+            reference = self[reference_idx]
+
+            if reference_type is not None and reference_type != reference.type:
+                continue
+            
+            references.append(reference)
+        
+        return references
