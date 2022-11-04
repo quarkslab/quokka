@@ -1,3 +1,8 @@
+"""Program
+
+This is the main class of Quokka.
+It deals with the most common abstraction, the Program.
+"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +18,18 @@
 #  limitations under the License.
 
 from __future__ import annotations
+
 import collections
-import logging
 from functools import cached_property
-
-import capstone
-import pypcode
-
-import networkx
+from itertools import product
+import logging
 import os
 import pathlib
 import subprocess
-from itertools import product
+
+import capstone
+import pypcode
+import networkx
 
 import quokka
 import quokka.analysis
@@ -78,6 +83,7 @@ class Program(dict):
         QuokkaError: If the loading is not successful.
 
     """
+
     logger: logging.Logger = logging.getLogger(__name__)
 
     def __init__(
@@ -88,8 +94,8 @@ class Program(dict):
 
         self.proto: quokka.pb.Quokka = quokka.pb.Quokka()
         self.export_file: pathlib.Path = pathlib.Path(export_file)
-        with open(self.export_file, "rb") as f:
-            self.proto.ParseFromString(f.read())
+        with open(self.export_file, "rb") as fd:
+            self.proto.ParseFromString(fd.read())
 
         # Export mode
         self.mode: ExporterMode = ExporterMode.from_proto(self.proto.exporter_meta.mode)
@@ -127,7 +133,7 @@ class Program(dict):
         self.data_holder = quokka.DataHolder(self.proto, self)
 
         # Chunks
-        for chunk_index, proto_chunk in enumerate(self.proto.function_chunks):
+        for chunk_index, _ in enumerate(self.proto.function_chunks):
             chunk = quokka.Chunk(chunk_index, program=self)
 
             if chunk.fake:
@@ -267,11 +273,10 @@ class Program(dict):
         if approximative is False:
             try:
                 return self.fun_names[name]
-            except KeyError:
-                raise ValueError
+            except KeyError as exc:
+                raise ValueError("Missing function") from exc
 
-        for function_name in self.fun_names:
-            function = self.fun_names[function_name]
+        for function_name, function in self.fun_names.items():
             # TODO(dm) Improve this
             if name in function.name and (
                 not normal or function.type == FunctionType.NORMAL
@@ -297,8 +302,8 @@ class Program(dict):
         for segment in self.segments:
             if segment.in_segment(address):
                 return segment
-        else:
-            raise KeyError(f"No segment has been found for address 0x{address}")
+
+        raise KeyError(f"No segment has been found for address 0x{address}")
 
     @cached_property
     def func_chunk_index(self) -> Dict[Index, List[quokka.Function]]:
@@ -333,8 +338,10 @@ class Program(dict):
         """
         functions = self.func_chunk_index[chunk.proto_index]
         if not functions:
-            raise IndexError("No function has been found for the chunk. "
-                             "This is probably a Quokka bug and should be reported.")
+            raise IndexError(
+                "No function has been found for the chunk. "
+                "This is probably a Quokka bug and should be reported."
+            )
 
         return functions
 
@@ -378,7 +385,8 @@ class Program(dict):
         chunk = self.chunks.get(chunk_index, None)
         if isinstance(chunk, quokka.Chunk):
             return chunk
-        elif isinstance(chunk, quokka.SuperChunk):
+
+        if isinstance(chunk, quokka.SuperChunk):
             if block_index is None:
                 raise quokka.ChunkMissingError(
                     "Unable to find the chunk requested because its a super chunk"
@@ -405,7 +413,7 @@ class Program(dict):
         """
 
         if chunk_types is None:
-            chunk_types = [chunk_type for chunk_type in FunctionType]
+            chunk_types = list(FunctionType)
 
         chunk: quokka.Chunk
         for chunk in self.chunks.values():
@@ -417,6 +425,17 @@ class Program(dict):
             else:
                 if chunk.chunk_type in chunk_types:
                     yield chunk
+
+    def get_data(self, address: AddressT) -> quokka.Data:
+        """Get data by address
+
+        Arguments:
+            address: Address to query
+
+        Returns:
+            A data at the address
+        """
+        return self.data_holder.get_data(address)
 
     def __repr__(self) -> str:
         """Program representation"""
@@ -501,6 +520,7 @@ class Program(dict):
                     "TERM": "xterm",  # problem with libcurses
                 },
                 timeout=timeout,
+                check=True,
             )
             if debug or result.returncode != 0:
                 Program.logger.debug(result.stderr)

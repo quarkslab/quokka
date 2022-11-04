@@ -63,8 +63,8 @@ class Addresser:
         """
         try:
             segment = self.program.get_segment(offset)
-        except KeyError:
-            raise quokka.NotInFileError("Unable to find the segment")
+        except KeyError as exc:
+            raise quokka.NotInFileError("Unable to find the segment") from exc
 
         if segment.file_offset != -1:
             return offset + segment.file_offset

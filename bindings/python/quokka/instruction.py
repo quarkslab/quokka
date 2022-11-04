@@ -1,3 +1,5 @@
+"""Methods to deal with instructions and operands within a binary"""
+
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +17,10 @@
 from __future__ import annotations
 import logging
 
-import capstone
-import pypcode
 from collections import defaultdict
 from functools import cached_property
+import capstone
+import pypcode
 
 import quokka
 from quokka.types import (
@@ -33,7 +35,6 @@ from quokka.types import (
     ReferenceTarget,
     ReferenceType,
     Sequence,
-    Type,
     Union,
 )
 
@@ -195,6 +196,8 @@ class Instruction:
         for data in self.data_references:
             if isinstance(data, quokka.data.Data) and data.type == DataType.ASCII:
                 return data.value
+
+        return None
 
     @property
     def references(self) -> Dict[ReferenceType, List[ReferenceTarget]]:

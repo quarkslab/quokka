@@ -1,3 +1,4 @@
+"""Structure management"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +42,7 @@ class StructureMember:
         value: Member value
         comments: Member comments
     """
+
     def __init__(
         self,
         member: "quokka.pb.Quokka.Structure.Member",
@@ -78,6 +80,7 @@ class Structure(dict):
         index_to_offset: Mapping from offsets to structure members
         comments: Structure comments
     """
+
     def __init__(
         self,
         structure: "quokka.pb.Quokka.Structure",

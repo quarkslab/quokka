@@ -1,3 +1,4 @@
+"""Architecture module"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +13,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import capstone
 import collections
 from enum import IntEnum, IntFlag
+
+import capstone
+
 from quokka.types import List, RegType
 
 
@@ -35,11 +38,11 @@ def make_enums(
         A list of IntEnum/IntFlag
     """
     data = collections.defaultdict(dict)
-    for k, v in getattr(capstone_module, "__dict__").items():
-        _, cat, name = k.split("_", maxsplit=2)
+    for key, val in getattr(capstone_module, "__dict__").items():
+        _, cat, name = key.split("_", maxsplit=2)
         if name not in blacklist:
             name = "_" + name if "0" <= name[0] <= "9" else name
-            data[cat][name] = v
+            data[cat][name] = val
 
     return [
         IntEnum(x, names=data[x], module=__name__)
@@ -73,6 +76,7 @@ class ArchEnum(IntEnum):
 
 class QuokkaArch:
     """Base class for a QuokkaArch"""
+
     address_size: int
     compared_mnemonics: List[str]
     stack_pointer: RegType
@@ -100,6 +104,7 @@ class ArchX86(QuokkaArch):  # type: ignore
 
 class ArchX64(ArchX86):  # type: ignore
     """Arch X64 definition"""
+
     address_size = 64
 
     frame_pointer = ArchX86.regs.RBP
@@ -109,6 +114,7 @@ class ArchX64(ArchX86):  # type: ignore
 
 class ArchARM(QuokkaArch):  # type: ignore
     """ArchARM definition"""
+
     (
         cc,
         cpsflag,
@@ -157,11 +163,13 @@ class ArchARM(QuokkaArch):  # type: ignore
 
 class ArchARMThumb(ArchARM):  # type: ignore
     """Arch Arm Thum definition"""
+
     thumb: bool = True
 
 
 class ArchARM64(QuokkaArch):  # type: ignore
     """Arch Arm64 definition"""
+
     (
         at,
         barrier,

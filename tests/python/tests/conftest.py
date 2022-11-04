@@ -1,4 +1,3 @@
-"""Backends integration"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,22 +12,20 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from quokka.backends.capstone import (
-    get_capstone_context,
-    capstone_decode_instruction,
-)
-from quokka.backends.pypcode import (
-    pypcode_decode_block,
-    pypcode_decode_instruction,
-    get_pypcode_context,
-)
+import pytest
+from pathlib import Path
 
-__all__ = [
-    # From capstone.py
-    "get_capstone_context",
-    "capstone_decode_instruction",
-    # From pypcode.py
-    "get_pypcode_context",
-    "pypcode_decode_instruction",
-    "pypcode_decode_block",
-]
+import quokka
+
+
+@pytest.fixture(scope="module")
+def root_directory(request) -> Path:
+    """Return the
+    """
+    return Path(request.fspath).parent.parent.parent.parent
+
+
+@pytest.fixture
+def prog(root_directory: Path):
+    return quokka.Program.from_binary(root_directory / "docs/samples/qb-crackme")
+
