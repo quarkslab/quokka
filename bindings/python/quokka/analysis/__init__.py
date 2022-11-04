@@ -1,3 +1,7 @@
+"""Analysis modules
+
+This module contain some utilities function to manipulate the binaries.
+"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");

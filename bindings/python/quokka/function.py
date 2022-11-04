@@ -84,7 +84,9 @@ def dereference_thunk(item: Union[Function, Chunk], caller: bool = False) -> Fun
         # This will appear when the referenced target is a chunk coming from a
         # fake chunk for instance
         # logger.debug("Unable to find the (de)reference of the thunk function")
-        raise quokka.exc.FunctionMissingError("Missing func referenced by thunk") from exc
+        raise quokka.exc.FunctionMissingError(
+            "Missing func referenced by thunk"
+        ) from exc
 
     if candidate.type == FunctionType.THUNK and caller is not True:
         # Recursive call for multi layered THUNK
