@@ -160,6 +160,11 @@ class Program(dict):
         return int(self.proto.meta.hash.hash_value, 16)
 
     @property
+    def name(self) -> str:
+        """Returns the underlying binary name"""
+        return self.proto.meta.executable_name
+
+    @property
     def hash(self) -> str:
         """Returns the hash value of the binary (either sha256 or MD5)."""
         return self.proto.meta.hash.hash_value
