@@ -1,3 +1,4 @@
+"""Types used in Quokka"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,6 +60,7 @@ ReferenceTarget = Union[
 
 class AddressSize(enum.Enum):
     """Address size"""
+
     ADDRESS_64 = enum.auto()
     ADDRESS_32 = enum.auto()
     ADDRESS_16 = enum.auto()
@@ -106,6 +108,7 @@ class Endianness(enum.Enum):
 
 class EdgeType(enum.Enum):
     """Edge Type"""
+
     UNCONDITIONAL = enum.auto()
     TRUE = enum.auto()
     FALSE = enum.auto()
@@ -132,6 +135,7 @@ class EdgeType(enum.Enum):
 
 class FunctionType(enum.Enum):
     """Function Type"""
+
     NORMAL = enum.auto()
     IMPORTED = enum.auto()
     LIBRARY = enum.auto()
@@ -156,6 +160,7 @@ class FunctionType(enum.Enum):
 
 class BlockType(enum.Enum):
     """Block Type"""
+
     NORMAL = enum.auto()
     INDJUMP = enum.auto()
     RET = enum.auto()
@@ -188,6 +193,7 @@ class BlockType(enum.Enum):
 
 class ReferenceType(enum.Enum):
     """Reference Type"""
+
     CALL = enum.auto()
     DATA = enum.auto()
     ENUM = enum.auto()
@@ -211,6 +217,7 @@ class ReferenceType(enum.Enum):
 
 class DataType(enum.Enum):
     """Data Type"""
+
     UNKNOWN = enum.auto()
     BYTE = enum.auto()
     WORD = enum.auto()
@@ -246,6 +253,7 @@ class DataType(enum.Enum):
 
 class SegmentType(enum.Enum):
     """Segment Type"""
+
     UNKNOWN = enum.auto()
     CODE = enum.auto()
     DATA = enum.auto()
@@ -275,6 +283,7 @@ class SegmentType(enum.Enum):
 
 class StructureType(enum.Enum):
     """Structure Type"""
+
     STRUCT = enum.auto()
     ENUM = enum.auto()
     UNION = enum.auto()
@@ -299,14 +308,13 @@ class ExporterMode(enum.IntEnum):
 
     The exporter mode controls the type of exported data.
     """
+
     LIGHT = enum.auto()
     FULL = enum.auto()
     NORMAL = enum.auto()
 
     @staticmethod
-    def from_proto(
-        mode: "quokka.pb.Quokka.ExporterMeta.ModeValue"
-    ) -> "ExporterMode":
+    def from_proto(mode: "quokka.pb.Quokka.ExporterMeta.ModeValue") -> "ExporterMode":
         mapping = {
             quokka.pb.Quokka.ExporterMeta.MODE_LIGHT: ExporterMode.LIGHT,
             quokka.pb.Quokka.ExporterMeta.MODE_FULL: ExporterMode.FULL,

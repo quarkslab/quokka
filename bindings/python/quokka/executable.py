@@ -22,36 +22,41 @@ from quokka.types import DataType, Endianness, Literal, Optional, Union
 
 class Executable:
     """The executable class is used to interact with the binary file.
-    
+
     It handles access to the binary file itself (not the exported) for reads.
-    
+
     Note: The binary is read only once and stored in memory. This is done for
     performance purposes but does not cope well with low RAM systems and/or huge
     binaries.
 
     Arguments:
-      path: Path towards the executable file
-      endianness: How are stored the data
+        path: Path towards the executable file
+        endianness: How are stored the data
+
+    Attributes:
+        exec_file: Path towards the executable file
+        endianness: Binary endianness
+        content: Bytes of the binary
 
     Raises:
-      ValueError: If the file is not found
-
+        ValueError: If the file is not found
     """
 
     def __init__(self, path: Union[str, pathlib.Path], endianness: Endianness):
         """Constructor"""
         try:
-            self.file = open(path, "rb")
+            with open(path, "rb") as file:
+                self.content: bytes = file.read()
+
         except FileNotFoundError:
             raise ValueError("File not found")
 
         self.exec_file: pathlib.Path = pathlib.Path(path)
-        self.content: bytes = self.file.read()
         self.endianness: Endianness = endianness
 
     def read(self, offset: int, size: int) -> bytes:
         """Read `size` at `offset` in the file.
-        
+
         This method should not be used directly and considered as part of a private API.
         The preferred method are read_byte / read_string .
 
@@ -67,8 +72,8 @@ class Executable:
         """
         try:
             return self.content[offset : offset + size]
-        except IndexError:
-            raise ValueError(f"Content not found at offset {offset}")
+        except IndexError as exc:
+            raise ValueError(f"Content not found at offset {offset}") from exc
 
     def read_string(self, offset: int, size: int) -> str:
         """Read a string in the file.
@@ -87,20 +92,20 @@ class Executable:
         """
         try:
             string = self.read(offset, size).decode("utf-8")
-        except Exception:  # TODO(dm) change this to be more precise
-            raise ValueError("Unable to read or decode the string.")
+        except UnicodeDecodeError as exc:
+            raise ValueError("Unable to read or decode the string.") from exc
 
         # FIX: When returning a single character string, it does not end with a '\0'
         if len(string) > 1 and string.endswith("\x00"):
             return string[:-1]
-        else:
-            return string
+
+        return string
 
     def read_data(
         self, offset: int, data_type: DataType, size: Optional[int] = None
     ) -> Union[int, float, str]:
         """Read the data value.
-        
+
         If the size is not specified, it is inferred from the data type.
 
         Arguments:
@@ -111,6 +116,10 @@ class Executable:
         Returns:
             The data value
         """
+        # Read an int of size `read_size`
+        def read_int(read_size: int) -> int:
+            """Read an integer from the binary"""
+            return int.from_bytes(self.read_byte(offset, read_size), endianness)
 
         endianness: Literal["big", "little"]
         if self.endianness == Endianness.BIG_ENDIAN:
@@ -119,9 +128,6 @@ class Executable:
         else:
             endianness = "little"
             endianness_sign = "<"
-
-        # Read an int of size `s`
-        read_int = lambda s: int.from_bytes(self.read_byte(offset, s), endianness)
 
         if data_type == DataType.ASCII:
             if size is None:

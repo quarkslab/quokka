@@ -1,3 +1,4 @@
+"""Utilities functions for the analysis"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +17,7 @@ from __future__ import annotations
 import networkx as nx
 
 import quokka
-from quokka.types import Union, List
+from quokka.types import Union
 
 
 def split_chunk(
@@ -36,5 +37,5 @@ def split_chunk(
     components = list(nx.connected_components(nx.Graph(chunk.graph)))
     if len(components) <= 1:
         return chunk
-    else:
-        return quokka.function.SuperChunk(chunk, components)
+
+    return quokka.function.SuperChunk(chunk, components)

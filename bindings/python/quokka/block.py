@@ -33,7 +33,6 @@ from quokka.types import (
     MutableMapping,
     ReferenceType,
     Set,
-    Union,
 )
 
 

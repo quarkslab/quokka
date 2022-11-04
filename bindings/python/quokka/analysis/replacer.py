@@ -20,9 +20,10 @@ from quokka.types import List, Dict, Any, RegType
 class Replacer:
     """Replacer class
 
-    Warning: This class has been used in some experiments but will should probably be
+    Warning: This class has been used in some experiments but will/should probably be
     removed because it does not belong to the project.
     """
+
     ignored_registers: List[str]
     ignored_mnemonics: List[str]
 

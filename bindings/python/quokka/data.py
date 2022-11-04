@@ -56,7 +56,9 @@ class Data:
         name: Data name (if any)
     """
 
-    def __init__(self, proto_index: Index, data: "quokka.pb.Quokka.Data", program: quokka.Program):
+    def __init__(
+        self, proto_index: Index, data: "quokka.pb.Quokka.Data", program: quokka.Program
+    ):
         """Constructor"""
         self.proto_index: Index = proto_index
         self.address: AddressT = program.addresser.absolute(data.offset)
@@ -103,7 +105,8 @@ class Data:
             DataType.UNKNOWN,
         ):
             return self._value
-        elif self.type == DataType.ASCII:
+
+        if self.type == DataType.ASCII:
             try:
                 return self.program.executable.read_data(
                     address, self.type, size=self.size
@@ -123,7 +126,7 @@ class Data:
     def code_references(self) -> List[quokka.Reference]:
         """Returns code referencing this Data"""
         return [ref for ref in self.references if isinstance(ref.destination, tuple)]
-    
+
     @property
     def data_references(self) -> List[quokka.Reference]:
         """Returns data references to/from this Data"""
@@ -158,24 +161,24 @@ class DataHolder(Mapping):
         self.proto_data = proto.data
         self.program: quokka.Program = program
 
-    def __setitem__(self, k: Index, v: Data) -> None:
+    def __setitem__(self, key: Index, value: Data) -> None:
         """Set a data"""
         raise ValueError("Should not be accessed")
 
-    def __delitem__(self, v: Index) -> None:
+    def __delitem__(self, value: Index) -> None:
         """Remove a data from the bucket"""
         raise ValueError("Should not be accessed")
 
-    def __getitem__(self, k: Index) -> Data:
+    def __getitem__(self, key: Index) -> Data:
         """Get a data from the bucket.
 
         Arguments:
-            k: Data Index
-        
+            key: Data Index
+
         Returns:
             A Data
         """
-        return Data(k, self.proto_data[k], self.program)
+        return Data(key, self.proto_data[key], self.program)
 
     def get_data(self, address: AddressT) -> Data:
         """Find a data by address
@@ -184,10 +187,10 @@ class DataHolder(Mapping):
 
         Arguments:
             address: Offset to query
-        
+
         Returns:
             A Data
-        
+
         Raises:
             ValueError if no data is found
         """
@@ -196,8 +199,8 @@ class DataHolder(Mapping):
         for index, data_proto in enumerate(self.proto_data):
             if data_proto.offset + self.program.base_address == address:
                 return self[index]
-        else:
-            raise ValueError(f"No data at offset 0x{address:x}")
+
+        raise ValueError(f"No data at offset 0x{address:x}")
 
     def __len__(self) -> int:
         """Number of data in the program"""

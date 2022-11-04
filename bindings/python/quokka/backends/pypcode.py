@@ -1,3 +1,4 @@
+"""PyPCode integration"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,8 +76,10 @@ def get_pypcode_context(
 
     try:
         target_id = names[arch]
-    except KeyError:
-        raise quokka.PypcodeError("Unable to find the appropriate arch: missing id")
+    except KeyError as exc:
+        raise quokka.PypcodeError(
+            "Unable to find the appropriate arch: missing id"
+        ) from exc
 
     pcode_arch = get_arch_from_string(target_id)
     return pypcode.Context(pcode_arch)
@@ -157,20 +160,20 @@ def combine_instructions(
         while remaining_size > 0:
             try:
                 pcode_inst: pypcode.Translation = next(translated_instructions)
-            except StopIteration:
+            except StopIteration as exc:
                 logger.error(
-                    f"Disassembly discrepancy between Pypcode / IDA: missing inst"
+                    "Disassembly discrepancy between Pypcode / IDA: missing inst"
                 )
                 raise quokka.PypcodeError(
                     f"Decoding error for block at 0x{block.start:x}"
-                )
+                ) from exc
 
             remaining_size -= pcode_inst.length
             instruction._pcode_insts.extend(pcode_inst.ops)
 
             if remaining_size < 0:
                 logger.error(
-                    f"Disassembly discrepancy between Pypcode / IDA: sizes mismatch"
+                    "Disassembly discrepancy between Pypcode / IDA: sizes mismatch"
                 )
                 raise quokka.PypcodeError(
                     f"Decoding error for block at 0x{block.start:x}"
@@ -287,6 +290,5 @@ def pypcode_decode_instruction(
         )
         return instructions
 
-    else:
-        logger.error(translation.error.explain)
-        raise quokka.PypcodeError("Unable to decode instruction")
+    logger.error(translation.error.explain)
+    raise quokka.PypcodeError("Unable to decode instruction")
