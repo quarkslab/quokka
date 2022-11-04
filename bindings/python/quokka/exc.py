@@ -21,46 +21,30 @@ All exceptions must derive from the QuokkaError.
 class QuokkaError(Exception):
     """Base exception in Quokka"""
 
-    pass
-
 
 class NotInFileError(QuokkaError):
     """Raised when trying to read a string outside the file"""
-
-    pass
 
 
 class ChunkMissingError(QuokkaError):
     """Raised when a chunk has not been found"""
 
-    pass
-
 
 class FunctionMissingError(QuokkaError):
     """Raised when a function has not been found"""
-
-    pass
 
 
 class ThunkMissingError(QuokkaError):
     """Raised when a thunk has not been found"""
 
-    pass
-
 
 class InstructionError(QuokkaError):
     """Raised when serious errors in Instructions handling"""
-
-    pass
 
 
 class CapstoneError(QuokkaError):
     """Exceptions used for Capstone integration"""
 
-    pass
-
 
 class PypcodeError(QuokkaError):
     """Main exception for pypcode integration"""
-
-    pass

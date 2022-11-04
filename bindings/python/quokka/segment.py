@@ -1,3 +1,4 @@
+"""Segment management"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +40,7 @@ class Segment:
         file_offset: Segment offset in the file (if appropriate)
 
     """
+
     def __init__(
         self,
         segment: "quokka.pb.Quokka.Segment",

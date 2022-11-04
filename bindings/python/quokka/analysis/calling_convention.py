@@ -1,3 +1,4 @@
+"""Calling conventions"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +22,7 @@ from quokka.types import List, RegType
 
 class CallingConvention:
     """Base class for a calling convention"""
+
     name: str
     argument_registers: List[RegType]
     floating_point_registers: List[RegType]
@@ -33,6 +35,7 @@ class CallingConvention:
 
 class CCdecl(CallingConvention):
     """Cdecl calling convention"""
+
     name = "cdecl"
     argument_registers: List[RegType] = []  # All arguments are on the stack
     floating_point_registers: List[RegType] = []  # Same
@@ -48,12 +51,14 @@ class CCdecl(CallingConvention):
 
 class Stdcall(CCdecl):
     """Stdcall calling convention"""
+
     name = "stdcall"
     callee_saved = True
 
 
 class Fastcall(CallingConvention):
     """Fastcall calling convention"""
+
     name = "fastcall"
     argument_registers = [ArchX86.regs.ECX, ArchX86.regs.EDX]
     floating_point_registers = [ArchX86.regs.ST0, ArchX86.regs.ST1]  # TODO(dm) check
@@ -70,6 +75,7 @@ class Fastcall(CallingConvention):
 
 class MicrosoftAMD64(CallingConvention):
     """Microsoft 64 calling convention"""
+
     name = "ms"
     argument_registers = [
         ArchX64.regs.RCX,
@@ -91,6 +97,7 @@ class MicrosoftAMD64(CallingConvention):
 
 class SystemVAMD(CallingConvention):
     """SysV calling convention"""
+
     name = "sysv"
     argument_registers = [
         ArchX64.regs.RDI,
@@ -124,6 +131,7 @@ class SystemVAMD(CallingConvention):
 
 class ARMCC(CallingConvention):
     """AAPCS calling convention for ARM"""
+
     name = "aapcs"
     argument_registers = [
         ArchARM.regs.R0,
@@ -138,6 +146,7 @@ class ARMCC(CallingConvention):
 
 class ARM64CC(CallingConvention):
     """AAPCS calling convention for Aarch64"""
+
     name = "aapcs"
     argument_registers = [
         ArchARM64.regs.X0,

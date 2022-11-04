@@ -1,3 +1,4 @@
+"""Capstone integration"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,8 +47,8 @@ def get_capstone_context(arch: Type[quokka.analysis.QuokkaArch]) -> capstone.Cs:
 
     try:
         capstone_arch, capstone_mode = mapping.get(arch)
-    except TypeError:
-        raise quokka.CapstoneError("Unable to find the Architecture")
+    except TypeError as exc:
+        raise quokka.CapstoneError("Unable to find the Architecture") from exc
 
     context = capstone.Cs(capstone_arch, capstone_mode)
     context.detail = True

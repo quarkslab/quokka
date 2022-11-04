@@ -38,8 +38,8 @@ logger = logging.getLogger()
 def md5_file(file_path: pathlib.Path) -> str:
     """Compute the MD5 of a file"""
     md5 = hashlib.md5()
-    with open(file_path.as_posix(), "rb") as f:
-        for byte in iter(lambda: f.read(65535), b""):
+    with open(file_path.as_posix(), "rb") as fd:
+        for byte in iter(lambda: fd.read(65535), b""):
             md5.update(byte)
 
     return md5.hexdigest()
@@ -48,8 +48,8 @@ def md5_file(file_path: pathlib.Path) -> str:
 def sha256_file(file_path: pathlib.Path) -> str:
     """Compute the SHA-256 of a file"""
     sha = hashlib.sha256()
-    with open(file_path.as_posix(), "rb") as f:
-        for byte in iter(lambda: f.read(65535), b""):
+    with open(file_path.as_posix(), "rb") as fd:
+        for byte in iter(lambda: fd.read(65535), b""):
             sha.update(byte)
 
     return sha.hexdigest()
@@ -112,7 +112,7 @@ def convert_address_size(
     """
     if proto_address_size == quokka.pb.Quokka.ADDR_32:
         return 32
-    elif proto_address_size == quokka.pb.Quokka.ADDR_64:
+    if proto_address_size == quokka.pb.Quokka.ADDR_64:
         return 64
 
     raise ValueError("Address size not known")

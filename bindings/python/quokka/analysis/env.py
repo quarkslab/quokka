@@ -1,3 +1,4 @@
+"""Environment module"""
 #  Copyright 2022 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,8 +56,8 @@ def get_calling_convention_for_arch_platform(
     for architecture, convention in platform_mapping.items():
         if issubclass(arch, architecture):
             return convention
-    else:
-        return cc.CallingConvention
+
+    return cc.CallingConvention
 
 
 class Environment:
@@ -72,6 +73,7 @@ class Environment:
         calling_convention: Calling convention
 
     """
+
     def __init__(
         self,
         platform: quokka.analysis.Platform,
@@ -87,6 +89,7 @@ class Environment:
 
 class Platform(enum.Enum):
     """Platform enumeration"""
+
     UNKNOWN = enum.auto()
     WINDOWS = enum.auto()
     LINUX = enum.auto()
