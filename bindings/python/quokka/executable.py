@@ -75,14 +75,17 @@ class Executable:
         except IndexError as exc:
             raise ValueError(f"Content not found at offset {offset}") from exc
 
-    def read_string(self, offset: int, size: int) -> str:
+    def read_string(self, offset: int, size: Optional[int] = None) -> str:
         """Read a string in the file.
+        
+        If the size is not given, Quokka will try to read the string until the
+        first null byte. That works only for null-terminated strings.
 
         If the string is null terminated, remove the trailing 0.
 
         Arguments:
-            offset: String file offset
-            size: String size
+            offset: String file offset 
+            size: String size if known.
 
         Returns:
             The decoded string
@@ -90,10 +93,20 @@ class Executable:
         Raises:
           ValueError: If the string is not found nor decoded.
         """
-        try:
-            string = self.read(offset, size).decode("utf-8")
-        except UnicodeDecodeError as exc:
-            raise ValueError("Unable to read or decode the string.") from exc
+
+        if size is not None:
+            try:
+                string = self.read(offset, size).decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise ValueError("Unable to read or decode the string.") from exc
+        
+        else:
+            try:
+                null_byte = self.content.index(b"\x00", offset)
+            except ValueError as exc:
+                raise ValueError("String is not null-terminated and size was not given") from exc
+
+            string = self.content[offset: null_byte].decode("utf-8")
 
         # FIX: When returning a single character string, it does not end with a '\0'
         if len(string) > 1 and string.endswith("\x00"):
