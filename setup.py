@@ -23,7 +23,7 @@ setup(
     name="quokka-project",
     author="Alexis <dm> Challande",
     author_email="achallande@quarkslab.com",
-    version="1.0.3",
+    version="1.0.4",
     description="Quokka : A Fast and Accurate Binary Exporter",
     long_description=readme,
     long_description_content_type="text/markdown",
