@@ -3,6 +3,9 @@ site_description: A Fast and Accurate Binary Exporter
 repo_url: "https://github.com/quarkslab/quokka"
 repo_name: "quarkslab/quokka"
 
+# Since the default branch is main, the default edit URL does not work
+edit_uri: edit/main/docs/
+
 theme:
   name: material
   logo: img/logo.png
