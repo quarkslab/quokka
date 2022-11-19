@@ -19,21 +19,17 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  features:
+    - content.code.annotate
 
 nav:
   - Home: README.md
   - Installation: installation.md
   - Usage: usage.md
   - Features: features.md
-  - Tutorial:
-      - First step: tutorial/00_intro.md
-      - Binary loading: tutorial/01_load.md
-      - Functions: tutorial/02_functions.md
-      - Blocks: tutorial/03_blocks.md
-      - Instructions: tutorial/04_instructions.md
-      - References: tutorial/05_references.md
-      - Other: tutorial/06_other.md
-      - Going Further: tutorial/07_solving.md
+  - Tutorials:
+      - First steps: tutorials/qb-crackme/
+      - Features extraction: tutorials/features/
   - C++ Reference: reference/cpp/
   - Python Reference: reference/python/
   - Examples: example.md
@@ -48,6 +44,7 @@ markdown_extensions:
   - admonition
   - pymdownx.superfences
   - pymdownx.highlight
+  - pymdownx.snippets
   - pymdownx.tabbed:
       alternate_style: true
   - tables
@@ -55,6 +52,7 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  - footnotes
 
 plugins:
   - autorefs
