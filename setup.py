@@ -44,7 +44,7 @@ setup(
         "capstone>=4.0.2,<5",
         "networkx>=2.4,<3",
         "protobuf>=3.12.2,<4",
-        "pypcode>=1.0.7,<2",
+        "pypcode>=1.0.7,<1.1.0",
     ],
     extras_require={
         "test": [
