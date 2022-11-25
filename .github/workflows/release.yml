@@ -50,3 +50,9 @@ jobs:
         uses: pypa/gh-action-pypi-publish@v1.5.1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Upload Python packages for release notes
+        uses: softprops/action-gh-release@v0.1.14
+        with:
+          files:
+            - dist/*
