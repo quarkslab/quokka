@@ -10,6 +10,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+        ida_sdk: [77, 80]
+        include:
+          - ida_sdk: 77
+            sdk_password: IDA_SDK77_PASSWORD
+          - ida_sdk: 80
+            sdk_password: IDA_SDK80_PASSWORD
+
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -25,9 +32,9 @@ jobs:
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
-          IDA_SDK_VERSION: idasdk80
-          IDA_SDK_PASSWORD: ${{ secrets.IDA_SDK80_PASSWORD }}
-          CMAKE_BUILD_DIR: build80
+          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
+          IDA_SDK_PASSWORD: ${{ secrets[matrix.sdk_password] }}
+          CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
@@ -36,9 +43,9 @@ jobs:
       - name: Prepare build environment (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         env:
-          IDA_SDK_VERSION: idasdk80
-          IDA_SDK_PASSWORD: ${{ secrets.IDA_SDK80_PASSWORD }}
-          CMAKE_BUILD_DIR: build80
+          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
+          IDA_SDK_PASSWORD: ${{ secrets[matrix.sdk_password] }}
+          CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
           7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
           rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
@@ -46,7 +53,7 @@ jobs:
 
       - name: Build
         env:
-          CMAKE_BUILD_DIR: build80
+          CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         shell: bash
         run: |
           cmake --build $CMAKE_BUILD_DIR --config $BUILD_TYPE
@@ -55,9 +62,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         env:
-          CMAKE_BUILD_DIR: build80
+          CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         with:
-          name: idaplugin-artifacts-${{ matrix.os }}
+          name: idaplugin-artifacts-${{ matrix.os }}--${{ matrix.ida_sdk }}
           path: '${{ env.CMAKE_BUILD_DIR }}/quokka-install/*'
           if-no-files-found: error
 
