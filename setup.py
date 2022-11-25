@@ -23,6 +23,11 @@ setup(
     name="quokka-project",
     author="Alexis <dm> Challande",
     author_email="achallande@quarkslab.com",
+    url="https://github.com/quarkslab/quokka",
+    project_urls={
+        "Documentation": "https://quarkslab.github.io/quokka/",
+        "Bug Tracker": "https://github.com/quarkslab/quokka/issues",
+    },
     version="1.0.4",
     description="Quokka : A Fast and Accurate Binary Exporter",
     long_description=readme,
