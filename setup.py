@@ -21,14 +21,15 @@ with open("README.md", "r") as fd:
 
 setup(
     name="quokka-project",
+    version="1.0.4",
     author="Alexis <dm> Challande",
     author_email="achallande@quarkslab.com",
     url="https://github.com/quarkslab/quokka",
     project_urls={
         "Documentation": "https://quarkslab.github.io/quokka/",
         "Bug Tracker": "https://github.com/quarkslab/quokka/issues",
+        "Source": "https://github.com/quarkslab/quokka/",
     },
-    version="1.0.4",
     description="Quokka : A Fast and Accurate Binary Exporter",
     long_description=readme,
     long_description_content_type="text/markdown",
