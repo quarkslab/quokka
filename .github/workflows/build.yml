@@ -16,6 +16,10 @@ jobs:
             sdk_password: IDA_SDK77_PASSWORD
           - ida_sdk: 80
             sdk_password: IDA_SDK80_PASSWORD
+          - os: ubuntu-latest
+            ext: so
+          - os: windows-latest
+            ext: dll
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -59,11 +63,16 @@ jobs:
           cmake --build $CMAKE_BUILD_DIR --config $BUILD_TYPE
           cmake --install $CMAKE_BUILD_DIR
 
+      - name: Rename Plugin
+        shell: bash
+        run:
+          mv build${{ matrix.ida_sdk }}/quokka-install/quokka_* ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: idaplugin-artifacts-${{ matrix.os }}-${{ matrix.ida_sdk }}
-          path: build${{ matrix.ida_sdk }}/quokka-install/quokka_*
+          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
+          path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
           if-no-files-found: error
 
   upload:
@@ -85,9 +94,10 @@ jobs:
       - name: Download Artefact
         uses: actions/download-artifact@v3
         with:
-          name: idaplugin-artifacts-${{ matrix.os }}-${{ matrix.ida_sdk }}/quokka_plugin0064.${{ matrix.ext }}
-          path: sdk${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
+          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
+
       - name: Release
         uses: softprops/action-gh-release@v0.1.14
         with:
-          files: sdk${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
+          files: ${{ matrix.ida_sdk }}-quokka_*
+          fail_on_unmatched_files: true
