@@ -192,7 +192,7 @@ class DataHolder(Mapping):
             A Data
 
         Raises:
-            ValueError if no data is found
+            ValueError: if no data is found
         """
 
         # We have to iterate over every data because they are not sorted by offset
