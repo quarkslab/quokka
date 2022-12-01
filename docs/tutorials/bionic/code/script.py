@@ -30,7 +30,7 @@ from quokka.types import AddressT, DataType
 
 
 def print_usertable(bionic: quokka.Program):
-    """Extract the suer table with a bionic libc"""
+    """Extract the user table with a bionic libc"""
 
     # Step1 : Find the function
     getpwuid = bionic.get_function("getpwuid", approximative=False)

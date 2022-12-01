@@ -15,14 +15,14 @@ Automatically extract the **user mapping** from the binary[^1].
 ## Requirements
 
 * A working Quokka Installation
-* The bionic library (`sha256sum: 5975c8366fce5e47ccdf80f5d01f3e4521fee3b1dcf719243f4e4236d9699443`)
-* An export of the bionic library
+* The [bionic library](https://raw.githubusercontent.com/quarkslab/quokka/main/docs/tutorials/bionic/samples/libc.so) (`sha256sum: 5975c8366fce5e47ccdf80f5d01f3e4521fee3b1dcf719243f4e4236d9699443`)
+* An [export](https://raw.githubusercontent.com/quarkslab/quokka/main/docs/tutorials/bionic/samples/libc.quokka) of the bionic library
 
 ## Check requirements
 
 ```python
 import quokka
-bionic = quokka.Program("libc.so.Quokka", "libc.so")
+bionic = quokka.Program("libc.quokka", "libc.so")
 assert bionic is not None
 ```
 
