@@ -1,0 +1,2554 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Fast and Accurate Binary Exporter">
+      
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>pypcode - Quokka</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quokka.backends.pypcode" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Quokka" class="md-header__button md-logo" aria-label="Quokka" data-md-component="logo">
+      
+  <img src="../../../../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Quokka
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pypcode
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/quarkslab/quokka" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/quokka
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Quokka" class="md-nav__button md-logo" aria-label="Quokka" data-md-component="logo">
+      
+  <img src="../../../../img/logo.png" alt="logo">
+
+    </a>
+    Quokka
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/quarkslab/quokka" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    quarkslab/quokka
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../usage/" class="md-nav__link">
+        Usage
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../features/" class="md-nav__link">
+        Features
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_1">
+          First steps
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="First steps" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_1">
+          <span class="md-nav__icon md-icon"></span>
+          First steps
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/00_intro/" class="md-nav__link">
+        0 - Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/01_load/" class="md-nav__link">
+        1 - Loading
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/02_functions/" class="md-nav__link">
+        2 - Functions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/03_blocks/" class="md-nav__link">
+        3 - Blocks
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/04_instructions/" class="md-nav__link">
+        4 - Instructions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/05_references/" class="md-nav__link">
+        5 - References
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/06_other/" class="md-nav__link">
+        6 - Others
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/qb-crackme/07_solving/" class="md-nav__link">
+        7 - Going further
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_2" type="checkbox" id="__nav_5_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_2">
+          Features extraction
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Features extraction" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_2">
+          <span class="md-nav__icon md-icon"></span>
+          Features extraction
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/features/00_intro/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/features/01_block/" class="md-nav__link">
+        Block features
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/features/02_functions/" class="md-nav__link">
+        Function features
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/features/03_final/" class="md-nav__link">
+        Wrapping up
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_3" type="checkbox" id="__nav_5_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5_3">
+          Bionic
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Bionic" data-md-level="2">
+        <label class="md-nav__title" for="__nav_5_3">
+          <span class="md-nav__icon md-icon"></span>
+          Bionic
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/bionic/introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/bionic/strategy/" class="md-nav__link">
+        Strategy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/bionic/final/" class="md-nav__link">
+        Final
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cpp" class="md-nav__link">
+        C++ Reference
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Python Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Python Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../structure/" class="md-nav__link">
+        structure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../data/" class="md-nav__link">
+        data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../addresser/" class="md-nav__link">
+        addresser
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../instruction/" class="md-nav__link">
+        instruction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../types/" class="md-nav__link">
+        types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../exc/" class="md-nav__link">
+        exc
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../program/" class="md-nav__link">
+        program
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../segment/" class="md-nav__link">
+        segment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../block/" class="md-nav__link">
+        block
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../executable/" class="md-nav__link">
+        executable
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../function/" class="md-nav__link">
+        function
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_14" type="checkbox" id="__nav_7_14" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7_14">
+          backends
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="backends" data-md-level="2">
+        <label class="md-nav__title" for="__nav_7_14">
+          <span class="md-nav__icon md-icon"></span>
+          backends
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../capstone/" class="md-nav__link">
+        capstone
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          pypcode
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        pypcode
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode" class="md-nav__link">
+    quokka.backends.pypcode
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.combine_instructions" class="md-nav__link">
+    combine_instructions()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.equality" class="md-nav__link">
+    equality()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.get_arch_from_string" class="md-nav__link">
+    get_arch_from_string()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.get_pypcode_context" class="md-nav__link">
+    get_pypcode_context()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.object_hash" class="md-nav__link">
+    object_hash()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.pypcode_decode_block" class="md-nav__link">
+    pypcode_decode_block()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.pypcode_decode_instruction" class="md-nav__link">
+    pypcode_decode_instruction()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.update_pypcode_context" class="md-nav__link">
+    update_pypcode_context()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7_15" type="checkbox" id="__nav_7_15" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7_15">
+          analysis
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="analysis" data-md-level="2">
+        <label class="md-nav__title" for="__nav_7_15">
+          <span class="md-nav__icon md-icon"></span>
+          analysis
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/calling_convention/" class="md-nav__link">
+        calling_convention
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/utils/" class="md-nav__link">
+        utils
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/env/" class="md-nav__link">
+        env
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/replacer/" class="md-nav__link">
+        replacer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../analysis/arch/" class="md-nav__link">
+        arch
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../example/" class="md-nav__link">
+        Examples
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../philosophy/" class="md-nav__link">
+        Philosophy
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../roadmap/" class="md-nav__link">
+        Roadmap
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_11" type="checkbox" id="__nav_11" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_11">
+          Developers
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Developers" data-md-level="1">
+        <label class="md-nav__title" for="__nav_11">
+          <span class="md-nav__icon md-icon"></span>
+          Developers
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../dev/" class="md-nav__link">
+        Tips & Tricks
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../FAQ/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode" class="md-nav__link">
+    quokka.backends.pypcode
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.combine_instructions" class="md-nav__link">
+    combine_instructions()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.equality" class="md-nav__link">
+    equality()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.get_arch_from_string" class="md-nav__link">
+    get_arch_from_string()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.get_pypcode_context" class="md-nav__link">
+    get_pypcode_context()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.object_hash" class="md-nav__link">
+    object_hash()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.pypcode_decode_block" class="md-nav__link">
+    pypcode_decode_block()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.pypcode_decode_instruction" class="md-nav__link">
+    pypcode_decode_instruction()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.backends.pypcode.update_pypcode_context" class="md-nav__link">
+    update_pypcode_context()
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/home/runner/work/quokka/quokka/bindings/python/quokka/backends/pypcode.py" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+  <h1>pypcode</h1>
+
+<div class="doc doc-object doc-module">
+
+
+<a id="quokka.backends.pypcode"></a>
+  <div class="doc doc-contents first">
+  
+      <p>PyPCode integration</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.combine_instructions" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">combine_instructions</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">translated_instructions</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Combine instructions between the Quokka and PyPcode</p>
+<p>Some instruction are split between IDA and Ghidra, so we have to account for it.
+A problem for example is the support of prefixes (such LOCK) which are decoded as 2
+instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>block</code></td>
+          <td>
+                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Block">Block</span></code>
+          </td>
+          <td><p>Quokka block</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>translated_instructions</code></td>
+          <td>
+                <code><span title="quokka.types.Sequence">Sequence</span>[pypcode.<span title="pypcode.Translation">Translation</span>]</code>
+          </td>
+          <td><p>Translated instructions by Pypcode</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      <p>Raises
+    PypcodeError: if the combination doesn't work</p>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="quokka.types.List">List</span>[pypcode.<span title="pypcode.PcodeOp">PcodeOp</span>]</code>
+          </td>
+          <td><p>A list of Pypcode statements</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">combine_instructions</span><span class="p">(</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span> <span class="n">translated_instructions</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">Translation</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">PcodeOp</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Combine instructions between the Quokka and PyPcode</span>
+
+<span class="sd">    Some instruction are split between IDA and Ghidra, so we have to account for it.</span>
+<span class="sd">    A problem for example is the support of prefixes (such LOCK) which are decoded as 2</span>
+<span class="sd">    instructions by Ghidra (wrong) but only 1 by IDA (correct).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        block: Quokka block</span>
+<span class="sd">        translated_instructions: Translated instructions by Pypcode</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">        PypcodeError: if the combination doesn&#39;t work</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of Pypcode statements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pcode_instructions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">PcodeOp</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">translated_instructions</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">translated_instructions</span><span class="p">)</span>
+
+    <span class="n">instruction</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span>
+    <span class="k">for</span> <span class="n">instruction</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">instructions</span><span class="p">:</span>
+        <span class="n">instruction</span><span class="o">.</span><span class="n">_pcode_insts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">remaining_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">instruction</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">while</span> <span class="n">remaining_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pcode_inst</span><span class="p">:</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Translation</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">translated_instructions</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Disassembly discrepancy between Pypcode / IDA: missing inst&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Decoding error for block at 0x</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">start</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+
+            <span class="n">remaining_size</span> <span class="o">-=</span> <span class="n">pcode_inst</span><span class="o">.</span><span class="n">length</span>
+            <span class="n">instruction</span><span class="o">.</span><span class="n">_pcode_insts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pcode_inst</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">remaining_size</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Disassembly discrepancy between Pypcode / IDA: sizes mismatch&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Decoding error for block at 0x</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">start</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">pcode_instructions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pcode_inst</span><span class="o">.</span><span class="n">ops</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">pcode_instructions</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.equality" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">equality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Check if two pypcode objets are the same</p>
+<p>We use monkey patching to attach the equality method to other classes and rely on
+<strong>slots</strong> to check which fields to check.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>self</code></td>
+          <td>
+                <code>pypcode.<span title="pypcode.ContextObj">ContextObj</span></code>
+          </td>
+          <td><p>First object</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>other</code></td>
+          <td>
+                <code><span title="quokka.types.Any">Any</span></code>
+          </td>
+          <td><p>Other variable</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>bool</code>
+          </td>
+          <td><p>Boolean for equality</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">equality</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">ContextObj</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Check if two pypcode objets are the same</span>
+
+<span class="sd">    We use monkey patching to attach the equality method to other classes and rely on</span>
+<span class="sd">    __slots__ to check which fields to check.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        self: First object</span>
+<span class="sd">        other: Other variable</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Boolean for equality</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__slots__</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s2">&quot;cobj&quot;</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.get_arch_from_string" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_arch_from_string</span><span class="p">(</span><span class="n">target_id</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Find the architecture for an arch based on the target identification</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>target_id</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td><p>Identifier of the architecture</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="quokka.exc.PypcodeError" href="../../exc/#quokka.exc.PypcodeError">PypcodeError</a></code>
+          </td>
+          <td><p>if the architecture is not found</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>pypcode.<span title="pypcode.ArchLanguage">ArchLanguage</span></code>
+          </td>
+          <td><p>The appropriate ArchLang</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_arch_from_string</span><span class="p">(</span><span class="n">target_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">ArchLanguage</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Find the architecture for an arch based on the target identification</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        target_id: Identifier of the architecture</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        PypcodeError: if the architecture is not found</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The appropriate ArchLang</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pcode_arch</span><span class="p">:</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Arch</span>
+    <span class="k">for</span> <span class="n">pcode_arch</span> <span class="ow">in</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Arch</span><span class="o">.</span><span class="n">enumerate</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">lang</span> <span class="ow">in</span> <span class="n">pcode_arch</span><span class="o">.</span><span class="n">languages</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lang</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">target_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lang</span>
+
+    <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span><span class="s2">&quot;Unable to find the appropriate arch: missing lang&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.get_pypcode_context" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_pypcode_context</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Convert an arch from Quokka to Pypcode</p>
+<p>For the moment, only the arch described in quokka.analysis are supported.
+This method is a bit slow because enum are generated by pypcode on the fly but should
+be executed only once.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>arch</code></td>
+          <td>
+                <code><span title="quokka.types.Type">Type</span>[<span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.analysis">analysis</span>.<a class="autorefs autorefs-internal" title="quokka.analysis.QuokkaArch" href="../../analysis/arch/#quokka.analysis.arch.QuokkaArch">QuokkaArch</a>]</code>
+          </td>
+          <td><p>Quokka program architecture</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="quokka.exc.PypcodeError" href="../../exc/#quokka.exc.PypcodeError">PypcodeError</a></code>
+          </td>
+          <td><p>if the conversion for arch is not found</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>pypcode.<span title="pypcode.Context">Context</span></code>
+          </td>
+          <td><p>A pypcode.Context instance</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_pypcode_context</span><span class="p">(</span>
+    <span class="n">arch</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">QuokkaArch</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Convert an arch from Quokka to Pypcode</span>
+
+<span class="sd">    For the moment, only the arch described in quokka.analysis are supported.</span>
+<span class="sd">    This method is a bit slow because enum are generated by pypcode on the fly but should</span>
+<span class="sd">    be executed only once.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        arch: Quokka program architecture</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        PypcodeError: if the conversion for arch is not found</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A pypcode.Context instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">QuokkaArch</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchX64</span><span class="p">:</span> <span class="s2">&quot;x86:LE:64:default&quot;</span><span class="p">,</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchX86</span><span class="p">:</span> <span class="s2">&quot;x86:LE:32:default&quot;</span><span class="p">,</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARM</span><span class="p">:</span> <span class="s2">&quot;ARM:LE:32:v8&quot;</span><span class="p">,</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARM64</span><span class="p">:</span> <span class="s2">&quot;AARCH64:LE:64:v8A&quot;</span><span class="p">,</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARMThumb</span><span class="p">:</span> <span class="s2">&quot;ARM:LE:32:v8T&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">target_id</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">arch</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span>
+            <span class="s2">&quot;Unable to find the appropriate arch: missing id&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+
+    <span class="n">pcode_arch</span> <span class="o">=</span> <span class="n">get_arch_from_string</span><span class="p">(</span><span class="n">target_id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="n">pcode_arch</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.object_hash" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">object_hash</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Create a hash value for a pypcode object</p>
+<p>This allows to create set of values.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>obj</code></td>
+          <td>
+                <code>pypcode.<span title="pypcode.ContextObj">ContextObj</span></code>
+          </td>
+          <td><p>Object to hash</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>int</code>
+          </td>
+          <td><p>An integer for the hash</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">object_hash</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">ContextObj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create a hash value for a pypcode object</span>
+
+<span class="sd">    This allows to create set of values.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        obj: Object to hash</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An integer for the hash</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">ContextObj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__slots__</span> <span class="k">if</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s2">&quot;cobj&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.pypcode_decode_block" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pypcode_decode_block</span><span class="p">(</span><span class="n">block</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Decode a block at once.</p>
+<p>This method decode a block of instructions using Pypcode context all at once.
+This is faster than multiple calls to the decode at the instruction level.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>block</code></td>
+          <td>
+                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Block">Block</span></code>
+          </td>
+          <td><p>Block to decode</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="quokka.types.List">List</span>[pypcode.<span title="pypcode.PcodeOp">PcodeOp</span>]</code>
+          </td>
+          <td><p>A list of pcode operations</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">pypcode_decode_block</span><span class="p">(</span><span class="n">block</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">PcodeOp</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Decode a block at once.</span>
+
+<span class="sd">    This method decode a block of instructions using Pypcode context all at once.</span>
+<span class="sd">    This is faster than multiple calls to the decode at the instruction level.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        block: Block to decode</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of pcode operations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Fast guard, empty blocks do not have any Pcode operations</span>
+    <span class="n">first_instruction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">instructions</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">first_instruction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># Retrieve the context from the instruction</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span> <span class="o">=</span> <span class="n">update_pypcode_context</span><span class="p">(</span>
+        <span class="n">block</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">first_instruction</span><span class="o">.</span><span class="n">thumb</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Translate</span>
+    <span class="n">translation</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+        <span class="n">code</span><span class="o">=</span><span class="n">block</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span>
+        <span class="n">base</span><span class="o">=</span><span class="n">block</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+        <span class="n">max_inst</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">translation</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">translation</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">explain</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Decoding error for block at 0x</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">start</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">pcode_instructions</span> <span class="o">=</span> <span class="n">combine_instructions</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">translation</span><span class="o">.</span><span class="n">instructions</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pcode_instructions</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.pypcode_decode_instruction" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">pypcode_decode_instruction</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Decode an instruction using Pypcode</p>
+<p>This will return the list of Pcode operations done for the instruction.
+Note that a (binary) instruction is expected to have several pcode instructions
+associated.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>inst</code></td>
+          <td>
+                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Instruction">Instruction</span></code>
+          </td>
+          <td><p>Instruction to translate</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="quokka.exc.PypcodeError" href="../../exc/#quokka.exc.PypcodeError">PypcodeError</a></code>
+          </td>
+          <td><p>if the decoding fails</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code><span title="quokka.types.Sequence">Sequence</span>[pypcode.<span title="pypcode.PcodeOp">PcodeOp</span>]</code>
+          </td>
+          <td><p>A sequence of PcodeOp</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">pypcode_decode_instruction</span><span class="p">(</span>
+    <span class="n">inst</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">PcodeOp</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Decode an instruction using Pypcode</span>
+
+<span class="sd">    This will return the list of Pcode operations done for the instruction.</span>
+<span class="sd">    Note that a (binary) instruction is expected to have several pcode instructions</span>
+<span class="sd">    associated.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        inst: Instruction to translate</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        PypcodeError: if the decoding fails</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A sequence of PcodeOp</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">context</span><span class="p">:</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span> <span class="o">=</span> <span class="n">update_pypcode_context</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">inst</span><span class="o">.</span><span class="n">thumb</span><span class="p">)</span>
+    <span class="n">translation</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+        <span class="n">code</span><span class="o">=</span><span class="n">inst</span><span class="o">.</span><span class="n">bytes</span><span class="p">,</span>
+        <span class="n">base</span><span class="o">=</span><span class="n">inst</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+        <span class="n">max_inst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">translation</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+
+        <span class="n">instructions</span> <span class="o">=</span> <span class="n">translation</span><span class="o">.</span><span class="n">instructions</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Mismatch of instruction size IDA/Pypcode&quot;</span><span class="p">)</span>
+
+        <span class="n">instructions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">ops</span> <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">instructions</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">instructions</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">translation</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">explain</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span><span class="s2">&quot;Unable to decode instruction&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.backends.pypcode.update_pypcode_context" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">update_pypcode_context</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">is_thumb</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Return an appropriate pypcode context for the decoding</p>
+<p>For ARM architecture, if the block starts with a Thumb instruction, we must use
+a different pypcode Context.</p>
+<p>We use the boolean <code>is_thumb</code> directly to allow caching of the call here because it
+is costly to generate the context.</p>
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>program</code></td>
+          <td>
+                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Program">Program</span></code>
+          </td>
+          <td><p>Program to consider</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>is_thumb</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td><p>Is the instruction a thumb one?</p></td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>pypcode.<span title="pypcode.Context">Context</span></code>
+          </td>
+          <td><p>The correct pypcode context</p></td>
+        </tr>
+    </tbody>
+  </table>
+
+      <details class="quote">
+        <summary>Source code in <code>quokka/backends/pypcode.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_pypcode_context</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">,</span> <span class="n">is_thumb</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return an appropriate pypcode context for the decoding</span>
+
+<span class="sd">    For ARM architecture, if the block starts with a Thumb instruction, we must use</span>
+<span class="sd">    a different pypcode Context.</span>
+
+<span class="sd">    We use the boolean `is_thumb` directly to allow caching of the call here because it</span>
+<span class="sd">    is costly to generate the context.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        program: Program to consider</span>
+<span class="sd">        is_thumb: Is the instruction a thumb one?</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The correct pypcode context</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">program</span><span class="o">.</span><span class="n">arch</span>
+        <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARM</span><span class="p">,</span>
+            <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARM64</span><span class="p">,</span>
+            <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARMThumb</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="ow">and</span> <span class="n">is_thumb</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">get_pypcode_context</span><span class="p">(</span><span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARMThumb</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">program</span><span class="o">.</span><span class="n">pypcode</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../capstone/" class="md-footer__link md-footer__link--prev" aria-label="Previous: capstone" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              capstone
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../analysis/calling_convention/" class="md-footer__link md-footer__link--next" aria-label="Next: calling_convention" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              calling_convention
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["content.code.annotate"], "search": "../../../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+    
+    
+  </body>
+</html>

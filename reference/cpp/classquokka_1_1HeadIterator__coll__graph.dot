@@ -1,0 +1,24 @@
+digraph "quokka::HeadIterator"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="quokka::HeadIterator",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" instruction_bucket" ,fontname="Helvetica"];
+  Node2 [label="quokka::BucketNew\<\l quokka::Instruction \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classquokka_1_1BucketNew.html",tooltip=" "];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" data_list" ,fontname="Helvetica"];
+  Node3 [label="quokka::BucketNew\<\l quokka::Data \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classquokka_1_1BucketNew.html",tooltip=" "];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" operand_string_bucket" ,fontname="Helvetica"];
+  Node4 [label="quokka::BucketNew\<\l quokka::OperandString \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classquokka_1_1BucketNew.html",tooltip=" "];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" comments" ,fontname="Helvetica"];
+  Node5 [label="quokka::Comments",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classquokka_1_1Comments.html",tooltip=" "];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" operand_bucket" ,fontname="Helvetica"];
+  Node6 [label="quokka::BucketNew\<\l quokka::Operand \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classquokka_1_1BucketNew.html",tooltip=" "];
+  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" func_chunks" ,fontname="Helvetica"];
+  Node7 [label="quokka::FuncChunkCollection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classquokka_1_1FuncChunkCollection.html",tooltip=" "];
+  Node8 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" mnemonic_bucket" ,fontname="Helvetica"];
+  Node8 [label="quokka::BucketNew\<\l quokka::Mnemonic \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classquokka_1_1BucketNew.html",tooltip=" "];
+  Node9 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" current_layout" ,fontname="Helvetica"];
+  Node9 [label="quokka::Layout",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structquokka_1_1Layout.html",tooltip=" "];
+}
