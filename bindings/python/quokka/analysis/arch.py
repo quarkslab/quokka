@@ -19,10 +19,11 @@ from enum import IntEnum, IntFlag
 import capstone
 
 from quokka.types import List, RegType
+from types import ModuleType
 
 
 def make_enums(
-    capstone_module, items: List[str], blacklist: List[str], flags_enums: List[str]
+    capstone_module: ModuleType, items: List[str], blacklist: List[str], flags_enums: List[str]
 ) -> List:
     """Make enums from capstone module
 

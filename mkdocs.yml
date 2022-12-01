@@ -33,6 +33,7 @@ nav:
   - Tutorials:
       - First steps: tutorials/qb-crackme/
       - Features extraction: tutorials/features/
+      - Bionic: tutorials/bionic/
   - C++ Reference: reference/cpp/
   - Python Reference: reference/python/
   - Examples: example.md
@@ -45,6 +46,8 @@ nav:
 
 markdown_extensions:
   - admonition
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.superfences
   - pymdownx.highlight
   - pymdownx.snippets
