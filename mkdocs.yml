@@ -46,6 +46,8 @@ nav:
 
 markdown_extensions:
   - admonition
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.superfences
   - pymdownx.highlight
   - pymdownx.snippets
