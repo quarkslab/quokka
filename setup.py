@@ -65,6 +65,7 @@ setup(
             "mkdocstrings",
             "mkdocstrings-python",
             "mkdocs-literate-nav",
+            "mkdocs-git-revision-date-localized-plugin",
             "mkdocs-gen-files",
             "mkdocs-simple-hooks",
         ],
