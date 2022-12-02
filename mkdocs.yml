@@ -67,6 +67,10 @@ plugins:
       scripts:
         - docs/gen_ref_pages.py
   - literate-nav
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: date
+      fallback_to_build_date: true
   - mkdocstrings:
       watch:
         - bindings/python/quokka
