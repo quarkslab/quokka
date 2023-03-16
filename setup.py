@@ -21,7 +21,7 @@ with open("README.md", "r") as fd:
 
 setup(
     name="quokka-project",
-    version="1.0.5",
+    version="0.5.1",
     author="Alexis <dm> Challande",
     author_email="achallande@quarkslab.com",
     url="https://github.com/quarkslab/quokka",
