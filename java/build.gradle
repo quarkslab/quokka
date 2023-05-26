@@ -1,0 +1,96 @@
+// Builds quokka plugin for a given Ghidra installation. An absolute path
+// to the Ghidra installation directory must be supplied either by setting
+// the GHIDRA_INSTALL_DIR environment variable or Gradle project property.
+
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://maven-central.storage-download.googleapis.com/maven2/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.3'
+    }
+}
+
+configurations {
+    // Configuration that holds jars to include in the jar.
+    extraLibs
+}
+
+dependencies {
+    extraLibs 'com.google.protobuf:protobuf-java:3.11.4'
+    configurations.implementation.extendsFrom(configurations.extraLibs)
+}
+
+protobuf {
+    // Configure the protoc executable
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.11.4'
+    }
+    // Make generator tasks visible in Eclipse.
+    generateProtoTasks {
+        all().each {
+            it.group = 'generate proto'
+        }
+    }
+}
+
+// Required for IDEs to find the generated sources.
+sourceSets {
+    generated {
+        java.srcDirs 'build/generated/source/proto/main/java'
+    }
+}
+eclipse {
+    classpath {
+        file {
+            whenMerged {
+                def source = entries.find {
+                    it.path == 'build/generated/source/proto/main/java'
+                }
+                source.entryAttributes['ignore_optional_problems'] = 'true'
+            }
+        }
+    }
+}
+
+// Extend jar task to collect extra dependencies.
+jar {
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+// Standard Ghidra extension Gradle code follows.
+//----------------------START "DO NOT MODIFY" SECTION------------------------------
+def ghidraInstallDir
+
+if (System.env.GHIDRA_INSTALL_DIR) {
+    ghidraInstallDir = System.env.GHIDRA_INSTALL_DIR
+}
+else if (project.hasProperty("GHIDRA_INSTALL_DIR")) {
+    ghidraInstallDir = project.getProperty("GHIDRA_INSTALL_DIR")
+}
+
+if (ghidraInstallDir) {
+    apply from: new File(ghidraInstallDir).getCanonicalPath() + "/support/buildExtension.gradle"
+}
+else {
+    throw new GradleException("GHIDRA_INSTALL_DIR is not defined!")
+}
+//----------------------END "DO NOT MODIFY" SECTION-------------------------------
+
+// Fix for newer Gradle versions that do not allow undeclared dependencies
+tasks.named("extractIncludeProto").configure { dependsOn("copyDependencies") }
+
