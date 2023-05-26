@@ -1,0 +1,389 @@
+syntax = "proto3";
+package quokka;
+
+message Quokka {
+  message ExporterMeta {
+    enum Mode {
+      MODE_LIGHT = 0;
+      MODE_FULL = 1;
+      MODE_NORMAL = 2;
+    }
+
+    Mode mode = 1;
+    string version = 2; // Quokka version
+  }
+
+  enum AddressSize {
+    ADDR_UNK = 0;
+    ADDR_32 = 1;
+    ADDR_64 = 2;
+  }
+
+  message Meta {
+    enum ISA {
+      PROC_INTEL = 0;
+      PROC_ARM = 1;
+      PROC_DALVIK = 2;
+      PROC_PPC = 3;
+      PROC_MIPS = 4;
+      PROC_UNK = 5;
+    }
+
+    enum Endianess {
+      END_LE = 0;
+      END_BE = 1;
+      END_UNK = 2;
+    }
+
+    enum Compiler {
+      COMP_GCC = 0;
+      COMP_MS = 1;
+      COMP_BC = 2;
+      COMP_WATCOM = 3;
+      COMP_VISAGE = 4;
+      COMP_BP = 5;
+      COMP_UNK = 6;
+    }
+
+    enum CallingConvention {
+      CC_UNK = 0;
+      CC_CDECL = 1;
+      CC_ELLIPSIS = 2;
+      CC_STDCALL = 3;
+      CC_PASCAL = 4;
+      CC_FASTCALL = 5;
+      CC_THISCALL = 6;
+    }
+
+    message Hash {
+      enum HashType {
+        HASH_NONE = 0;
+        HASH_SHA256 = 1;
+        HASH_MD5 = 2;
+
+      }
+
+      HashType hash_type = 1;
+      string hash_value = 2;
+    }
+
+    // Executable name : only the basename
+    string executable_name = 1;
+
+    // The following fields are set using IDA detection rules
+    ISA isa = 2;
+    Compiler compiler = 3;
+    CallingConvention calling_convention = 4;
+    Hash hash = 5;
+    Endianess endianess = 6;
+    AddressSize address_size = 9;
+
+    // Base addr: Most of the time will be at 0x400000. It is used to never a store a full
+    // address but something smaller as an offset.
+    uint64 base_addr = 7;
+
+    // IDA Version, as reported by the IDA_SDK_VERSION constant. It is used because operands are
+    // exported as constants, and the mapping may change between IDA SDK versions
+    uint32 ida_version = 8;
+  }
+
+  message Operand {
+    uint32 type = 1;
+    uint32 flags = 2;
+    uint32 value_type = 3;
+
+    uint32 register_id = 4;
+    uint32 phrase_id = 5;
+    uint64 value = 6;
+
+    // This is a relative offset <!>
+    int64 address = 7; //Address pointed by the operand
+
+    uint64 specval = 8;
+    repeated uint32 specflags = 9;
+  }
+
+  message Instruction {
+    uint32 size = 1;
+    uint32 mnemonic_index = 2;
+    repeated uint32 operand_index = 3;
+    bool is_thumb = 4;
+    repeated uint64 operand_strings = 5;
+  }
+
+  message FunctionChunk {
+    message Block {
+
+      enum BlockType {
+        BLOCK_TYPE_NORMAL = 0;
+        BLOCK_TYPE_INDJUMP = 1;
+        BLOCK_TYPE_RET = 2;
+        BLOCK_TYPE_NORET = 3;
+        BLOCK_TYPE_CNDRET = 4;
+        BLOCK_TYPE_ENORET = 5;
+        BLOCK_TYPE_EXTERN = 6;
+        BLOCK_TYPE_ERROR = 7;
+        BLOCK_TYPE_FAKE = 8;
+      }
+
+      uint64 offset_start = 1;
+      bool is_fake = 2;
+      repeated uint32 instructions_index = 3;
+      BlockType block_type = 4;
+
+    }
+
+    uint64 offset_start = 1;
+    repeated Block blocks = 2;
+    repeated Edge edges = 3;
+    bool is_fake = 4;
+
+    // Some functions have real file offset
+    bool is_infile = 5;
+  }
+
+  message BlockIdentifier {
+    uint32 block_id = 1;
+
+    oneof ChunkId {
+      bool no_chunk = 2;
+      uint32 real_chunk_id = 3;
+    }
+  }
+
+  message Edge {
+    enum EdgeType {
+      TYPE_UNCONDITIONAL = 0;
+      TYPE_TRUE = 1;
+      TYPE_FALSE = 2;
+      TYPE_SWITCH = 3;
+    }
+
+    EdgeType edge_type = 1;
+    BlockIdentifier source = 2;
+    BlockIdentifier destination = 3;
+
+  }
+
+  message Function {
+
+    enum FunctionType {
+      TYPE_NORMAL = 0;
+      TYPE_IMPORTED = 1;
+      TYPE_LIBRARY = 2;
+      TYPE_THUNK = 3;
+      TYPE_INVALID = 4;
+    }
+
+    message Position {
+
+      enum PositionType {
+        CENTER = 0;
+        TOP_LEFT = 1;
+      }
+
+      int32 x = 1;
+      int32 y = 2;
+      PositionType position_type = 3;
+    }
+
+    message BlockPosition {
+
+      BlockIdentifier block_id = 1;
+      Position position = 2;
+    }
+
+    uint32 offset = 1;
+    repeated uint32 function_chunks_index = 2;
+
+    FunctionType function_type = 3;
+    string name = 4;
+
+    // Used for link between chunks
+    repeated Edge chunk_edges = 5;
+
+    repeated BlockPosition block_positions = 6;
+
+  }
+
+  message Layout {
+    message AddressRange {
+      uint64 start_address = 1;
+      uint64 size = 2;
+    }
+
+    enum LayoutType {
+      LAYOUT_UNK = 0;
+      LAYOUT_CODE = 1;
+      LAYOUT_DATA = 2;
+      LAYOUT_GAP = 3;
+    }
+
+    AddressRange address_range = 1;
+    LayoutType layout_type = 2;
+  }
+
+  enum DataType {
+    TYPE_UNK = 0;
+    TYPE_B = 1;
+    TYPE_W = 2;
+    TYPE_DW = 3;
+    TYPE_QW = 4;
+    TYPE_OW = 5;
+    TYPE_FLOAT = 6;
+    TYPE_DOUBLE = 7;
+    TYPE_ASCII = 8;
+    TYPE_STRUCT = 9;
+    TYPE_ALIGN = 10;
+    TYPE_POINTER = 11;
+  }
+
+  message Data {
+    uint64 offset = 1;
+    DataType type = 2;
+
+    oneof DataSize {
+      uint32 size = 3;
+      bool no_size = 4;
+    }
+
+    uint32 value_index = 5; //Store the value
+    uint32 name_index = 6; //Store the name of the data if any
+    bool not_initialized = 7;
+  }
+
+  message Structure {
+
+    message Member {
+      uint32 offset = 1;
+      string name = 2;
+      DataType type = 3;
+      uint32 size = 4;
+      int64 value = 5;
+    }
+
+    enum StructureType {
+      TYPE_STRUCT = 0;
+      TYPE_ENUM = 1;
+      TYPE_UNION = 2;
+      TYPE_UNK = 3;
+    }
+
+    string name = 1;
+    StructureType type = 2;
+    uint32 size = 3;
+    bool variable_size = 4;
+    repeated Member members = 5;
+  }
+
+  message Comment {
+
+    enum CommentType {
+      COMMENT_INSTRUCTION = 0;
+      COMMENT_FUNCTION = 1;
+      COMMENT_STRUCTURE = 2;
+      COMMENT_INVALID = 3;
+    }
+
+    CommentType type = 1;
+    uint32 string_idx = 2;
+    Location location = 3;
+  }
+
+  message Location {
+    message StructurePosition {
+      uint32 structure_idx = 1;
+      oneof MemberId {
+        uint32 member_idx = 2;
+        bool no_member = 3;
+      }
+    }
+
+    message InstructionIdentifier {
+      uint32 func_chunk_idx = 1;
+      uint32 block_idx = 2;
+      uint32 instruction_idx = 3;
+    }
+
+    oneof LocationType {
+      uint64 inst_idx = 1;
+      uint32 data_idx = 2;
+      StructurePosition struct_position = 3;
+      InstructionIdentifier instruction_position = 4;
+      uint32 function_idx = 5;
+      uint32 chunk_idx = 6;
+    }
+  }
+
+  message Reference {
+
+    enum ReferenceType {
+      REF_CALL = 0;
+      REF_DATA = 1;
+      REF_ENUM = 2;
+      REF_STRUC = 3;
+      REF_UNK = 4;
+    }
+
+    Location source = 1;
+    Location destination = 2;
+    ReferenceType reference_type = 3;
+  }
+
+  message Segment {
+
+    enum Type {
+      SEGMENT_UNK = 0;
+      SEGMENT_CODE = 1;
+      SEGMENT_DATA = 2;
+      SEGMENT_BSS = 3;
+      SEGMENT_NULL = 4;
+      SEGMENT_EXTERN = 5;
+      SEGMENT_NORMAL = 6;
+      SEGMENT_ABSOLUTE_SYMBOLS = 7;
+    }
+
+    enum Bitness {
+      BITNESS_64 = 0;
+      BITNESS_32 = 1;
+      BITNESS_16 = 2;
+      BITNESS_UNKNOWN = 3;
+    }
+
+    string name = 1;
+    uint64 start_addr = 2;
+    uint64 size = 3;
+    uint32 permissions = 4;
+    Type type = 5;
+    AddressSize address_size = 6;
+
+    // File offset of the start address of the segment
+    oneof offset_type {
+      uint64 file_offset = 7;
+      bool no_offset = 8;
+    }
+  }
+
+  Meta meta = 1;
+  ExporterMeta exporter_meta = 2;
+
+  repeated Layout layout = 3;
+  repeated Data data = 4;
+  repeated Structure structs = 5;
+
+  repeated FunctionChunk function_chunks = 6;
+  repeated Instruction instructions = 7;
+  repeated string mnemonics = 8;
+
+  repeated Function functions = 9;
+  repeated Reference references = 10;
+
+  repeated string string_table = 11;
+  repeated string operand_table = 16;
+  repeated Operand operands = 12;
+
+  repeated string comment_table = 13;
+  repeated Comment comments = 14;
+
+  repeated Segment segments = 15;
+}
