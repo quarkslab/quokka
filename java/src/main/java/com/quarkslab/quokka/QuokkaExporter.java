@@ -54,7 +54,7 @@ public class QuokkaExporter extends Exporter {
     // Enable cancellability
     monitor.setCancelEnabled(true);
     try {
-      // here do magic
+      final var builder = QuokkaBuilder(program, this.exporterMode);
     } catch (final CancelledException e) {
       return false;
     }
