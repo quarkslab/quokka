@@ -20,67 +20,67 @@ import com.quarkslab.quokka.utils.EnumOption;
  */
 public class QuokkaExporter extends Exporter {
 
-  // Stringized version number allowing for scriptable update.
-  private static final String QUOKKA_VERSION = "0.5.1";
+    // Stringized version number allowing for scriptable update.
+    private static final String QUOKKA_VERSION = "0.5.1";
 
-  private static final String QUOKKA_COPYRIGHT =
-      "Quokka " + QUOKKA_VERSION + " (c)2022-2023 Quarkslab";
+    private static final String QUOKKA_COPYRIGHT =
+            "Quokka " + QUOKKA_VERSION + " (c)2022-2023 Quarkslab";
 
-  // Display name that appears in the export dialog.
-  private static final String QUOKKA_FORMAT_DISPLAY_NAME = "Quokka";
+    // Display name that appears in the export dialog.
+    private static final String QUOKKA_FORMAT_DISPLAY_NAME = "Quokka";
 
-  private static final String QUOKKA_FILE_EXTENSION = "quokka";
+    private static final String QUOKKA_FILE_EXTENSION = "quokka";
 
-  // Option names
-  private static final String EXPORTER_MODE_OPT = "Exporter mode";
+    // Option names
+    private static final String EXPORTER_MODE_OPT = "Exporter mode";
 
-  // The exporter mode (light, normal, full)
-  private ExporterMode exporterMode;
+    // The exporter mode (light, normal, full)
+    private ExporterMode exporterMode;
 
-  public QuokkaExporter() {
-    super(QUOKKA_FORMAT_DISPLAY_NAME, QUOKKA_FILE_EXTENSION, null);
-    this.log.appendMsg(QUOKKA_COPYRIGHT);
-  }
-
-  @Override
-  public boolean export(File file, DomainObject domainObj, AddressSetView addrSet,
-      TaskMonitor monitor) throws ExporterException, IOException {
-    if (!(domainObj instanceof Program)) {
-      log.appendMsg("Unsupported type: " + domainObj.getClass().getName());
-      return false;
-    }
-    final var program = (Program) domainObj;
-
-    // Enable cancellability
-    monitor.setCancelEnabled(true);
-    try {
-      final var builder = QuokkaBuilder(program, this.exporterMode);
-    } catch (final CancelledException e) {
-      return false;
+    public QuokkaExporter() {
+        super(QUOKKA_FORMAT_DISPLAY_NAME, QUOKKA_FILE_EXTENSION, null);
+        this.log.appendMsg(QUOKKA_COPYRIGHT);
     }
 
-    return true;
-  }
+    @Override
+    public boolean export(File file, DomainObject domainObj, AddressSetView addrSet,
+            TaskMonitor monitor) throws ExporterException, IOException {
+        if (!(domainObj instanceof Program)) {
+            this.log.appendMsg("Unsupported type: " + domainObj.getClass().getName());
+            return false;
+        }
+        final var program = (Program) domainObj;
 
-  @Override
-  @SuppressWarnings("JdkImmutableCollections")
-  public List<Option> getOptions(DomainObjectService domainObjectService) {
-    return List
-        .of(new EnumOption(EXPORTER_MODE_OPT, ExporterMode.MODE_NORMAL, ExporterMode.class, null));
-  }
+        // Enable cancellability
+        monitor.setCancelEnabled(true);
+        try {
+            final var builder = QuokkaBuilder(program, this.exporterMode);
+        } catch (final CancelledException e) {
+            return false;
+        }
 
-  @Override
-  public void setOptions(List<Option> options) throws OptionException {
-    for (final var option : options) {
-      switch (option.getName()) {
-        case EXPORTER_MODE_OPT:
-          this.exporterMode = (ExporterMode) option.getValue();
-          break;
-        default:
-          this.log.appendMsg("Warning, ignoring unknown option");
-          break;
-      }
-      break;
+        return true;
     }
-  }
+
+    @Override
+    @SuppressWarnings("JdkImmutableCollections")
+    public List<Option> getOptions(DomainObjectService domainObjectService) {
+        return List.of(new EnumOption(EXPORTER_MODE_OPT, ExporterMode.MODE_NORMAL,
+                ExporterMode.class, null));
+    }
+
+    @Override
+    public void setOptions(List<Option> options) throws OptionException {
+        for (final var option : options) {
+            switch (option.getName()) {
+                case EXPORTER_MODE_OPT:
+                    this.exporterMode = (ExporterMode) option.getValue();
+                    break;
+                default:
+                    this.log.appendMsg("Warning, ignoring unknown option");
+                    break;
+            }
+            break;
+        }
+    }
 }
