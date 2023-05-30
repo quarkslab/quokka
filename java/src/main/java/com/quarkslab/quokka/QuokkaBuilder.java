@@ -1,5 +1,6 @@
 package com.quarkslab.quokka;
 
+import com.quarkslab.quokka.parsers.FileMetadataParser;
 import quokka.QuokkaOuterClass.Quokka;
 import quokka.QuokkaOuterClass.Quokka.Builder;
 import ghidra.program.model.listing.Program;
@@ -35,7 +36,7 @@ public class QuokkaBuilder {
                 .setMode(this.exporterMode.toProto());
 
         // File metadata
-        var metaParser = new FileMetadataParser(self.program);
+        var metaParser = new FileMetadataParser(this.program);
         metaParser.analyze();
 
         var meta = this.builder.getMetaBuilder();
