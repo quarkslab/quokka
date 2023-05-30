@@ -7,6 +7,7 @@ import quokka.QuokkaOuterClass.Quokka.Meta.Hash.HashType;
 import quokka.QuokkaOuterClass.Quokka.Meta.Endianess;
 import quokka.QuokkaOuterClass.Quokka.AddressSize;
 import ghidra.program.model.listing.Program;
+import java.io.File;
 import javax.lang.model.util.ElementScanner14;
 import ghidra.program.model.lang.CompilerSpec;
 
@@ -102,7 +103,7 @@ public class FileMetadataParser {
         return this.execName;
     }
 
-    public String getArch() {
+    public ISA getArch() {
         return this.arch;
     }
 
