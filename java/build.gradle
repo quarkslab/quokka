@@ -2,25 +2,14 @@
 // to the Ghidra installation directory must be supplied either by setting
 // the GHIDRA_INSTALL_DIR environment variable or Gradle project property.
 
-apply plugin: 'java'
-apply plugin: 'com.google.protobuf'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'com.google.protobuf' version '0.9.3'
+}
 
 repositories {
     mavenCentral()
-}
-
-buildscript {
-    repositories {
-        maven {
-            url "https://maven-central.storage-download.googleapis.com/maven2/"
-        }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.3'
-    }
 }
 
 configurations {
@@ -52,6 +41,7 @@ sourceSets {
         java.srcDirs 'build/generated/source/proto/main/java'
     }
 }
+
 eclipse {
     classpath {
         file {
