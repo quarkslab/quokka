@@ -6,9 +6,9 @@ import quokka.QuokkaOuterClass.Quokka.Meta.CallingConvention;
 import quokka.QuokkaOuterClass.Quokka.Meta.Hash.HashType;
 import quokka.QuokkaOuterClass.Quokka.Meta.Endianess;
 import quokka.QuokkaOuterClass.Quokka.AddressSize;
-import ghidra.program.model.listing.Program;
 import java.io.File;
 import javax.lang.model.util.ElementScanner14;
+import ghidra.program.model.listing.Program;
 import ghidra.program.model.lang.CompilerSpec;
 
 

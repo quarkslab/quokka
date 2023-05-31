@@ -1,6 +1,8 @@
 package com.quarkslab.quokka;
 
+import com.quarkslab.quokka.models.Layout;
 import com.quarkslab.quokka.parsers.FileMetadataParser;
+import com.quarkslab.quokka.parsers.LayoutParser;
 import quokka.QuokkaOuterClass.Quokka;
 import quokka.QuokkaOuterClass.Quokka.Builder;
 import ghidra.program.model.listing.Program;
@@ -51,10 +53,27 @@ public class QuokkaBuilder {
         meta.setBaseAddr(metaParser.getBaseAddr());
     }
 
+    private void exportLayout() {
+        monitor.setIndeterminate(true);
+        monitor.setMessage("Exporting layout");
+
+        var layoutParser = new LayoutParser(this.program);
+        layoutParser.analyze();
+
+        for (var layout : layoutParser.getAll()) {
+            var layoutBuilder = this.builder.addLayoutBuilder();
+
+            // Set protobuf fields
+            layoutBuilder.getAddressRangeBuilder().setStartAddress(layout.getStartAddrAsLong())
+                    .setSize(layout.getSizeAsLong());
+            layoutBuilder.setLayoutType(layout.getType());
+        }
+    }
+
     public Quokka build() throws CancelledException {
         this.exportMeta();
 
-        // ExportMeta(&quokka_protobuf);
+        this.exportLayout();
 
         // ExportSegments(&quokka_protobuf);
         // ExportEnumAndStructures(&quokka_protobuf);
