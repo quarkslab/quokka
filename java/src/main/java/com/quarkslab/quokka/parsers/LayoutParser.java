@@ -19,19 +19,14 @@ import com.quarkslab.quokka.models.Layout;
  * 
  * There shouldn't be overlapping layouts but this is not guaranteed.
  */
-public class LayoutParser {
-    private Program program;
-
+public class LayoutParser extends GhidraParser {
     // Parsed fields
     private TreeMap<BigInteger, Layout> layouts = new TreeMap<>();
 
     public LayoutParser(Program program) {
-        this.program = program;
+        super(program);
     }
 
-    /**
-     * Run the analysis, extract all the informations needed from Ghidra
-     */
     public void analyze() {
         BigInteger imgBase = this.program.getImageBase().getOffsetAsBigInteger();
 

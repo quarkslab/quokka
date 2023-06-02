@@ -15,9 +15,7 @@ import ghidra.program.model.lang.CompilerSpec;
 /**
  * Retrieves from the ghidra analysis all the metadata needed by the Quokka protobuf
  */
-public class FileMetadataParser {
-    private Program program;
-
+public class FileMetadataParser extends GhidraParser {
     // Metadata fields
     private String execName;
     private ISA arch;
@@ -30,12 +28,9 @@ public class FileMetadataParser {
     private long baseAddr;
 
     public FileMetadataParser(Program program) {
-        this.program = program;
+        super(program);
     }
 
-    /**
-     * Run the analysis, extract all the informations needed from Ghidra
-     */
     public void analyze() {
         this.execName = new File(this.program.getExecutablePath()).getName();
 
