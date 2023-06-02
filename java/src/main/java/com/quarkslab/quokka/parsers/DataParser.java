@@ -12,24 +12,20 @@ import ghidra.program.model.data.ByteDataType;
 import ghidra.program.util.DefinedDataIterator;
 import quokka.QuokkaOuterClass.Quokka.DataType;
 import com.quarkslab.quokka.models.Data;
+import com.quarkslab.quokka.utils.Utils;
 
 
 /**
  * Retrieves from ghidra all the data objects identified
  */
-public class DataParser {
-    private Program program;
-
+public class DataParser extends GhidraParser {
     // Fields
     private Set<Data> dataSet = new HashSet<>();
 
     public DataParser(Program program) {
-        this.program = program;
+        super(program);
     }
 
-    /**
-     * Run the analysis, extract all the informations needed from Ghidra
-     */
     public void analyze() {
         BigInteger imgBase = this.program.getImageBase().getOffsetAsBigInteger();
 
@@ -44,18 +40,7 @@ public class DataParser {
             BigInteger address = data.getAddress().getOffsetAsBigInteger().subtract(imgBase);
 
             // Get the data type
-            // TODO replace with pattern matching for switch.
-            // The feature shouldn't be considered anymore as preview starting from java 21
-            // https://openjdk.org/jeps/441
-            // TODO implement all the possible data types
-            // https://ghidra.re/ghidra_docs/api/ghidra/program/model/data/DataType.html
-            DataType type;
-            var ghidraDataType = data.getDataType();
-            if (ghidraDataType instanceof ByteDataType) {
-                type = DataType.TYPE_B;
-            } else {
-                type = DataType.TYPE_UNK;
-            }
+            DataType type = Utils.getDataTypeFromGhidra(data.getDataType());
 
             // Check data size. It cannot be undefined (-1)
             int size = data.getLength();

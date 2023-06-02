@@ -4,6 +4,7 @@ import com.quarkslab.quokka.models.Layout;
 import com.quarkslab.quokka.parsers.FileMetadataParser;
 import com.quarkslab.quokka.parsers.LayoutParser;
 import com.quarkslab.quokka.parsers.DataParser;
+import com.quarkslab.quokka.parsers.CompositeDataParser;
 import quokka.QuokkaOuterClass.Quokka;
 import quokka.QuokkaOuterClass.Quokka.Builder;
 import ghidra.program.model.listing.Program;
@@ -108,6 +109,35 @@ public class QuokkaBuilder {
     }
 
     /**
+     * Load in the protobuf builder the description of all the composite data types (struct, union,
+     * enums, ...). This is saved in the structs protobuf field
+     */
+    private void exportCompositeData() {
+        monitor.setIndeterminate(true);
+        monitor.setMessage("Exporting composite data");
+
+        var compositeParser = new CompositeDataParser(this.program);
+        compositeParser.analyze();
+
+        for (var data : compositeParser.getAll()) {
+            var structsBuilder = this.builder.addStructsBuilder();
+
+            // Set protobuf fields
+            structsBuilder.setName(data.getName()).setSize(data.getSize()).setType(data.getType())
+                    .setVariableSize(!data.isFixedSize());
+
+            // Set all the members
+            for (var component : data.getComponents()) {
+                var membersBuilder = structsBuilder.addMembersBuilder();
+                membersBuilder.setOffset(component.getOffset()).setName(component.getName())
+                        .setSize(component.getSize()).setType(component.getType());
+
+                // TODO set members.value
+            }
+        }
+    }
+
+    /**
      * Build and return the protobuf message.
      * 
      * @return Quokka The protobuf message
@@ -119,6 +149,8 @@ public class QuokkaBuilder {
         this.exportLayout();
 
         this.exportData();
+
+        this.exportCompositeData();
 
         this.builder.addAllStringTable(StringTableManager.getInstance().getAll());
 
