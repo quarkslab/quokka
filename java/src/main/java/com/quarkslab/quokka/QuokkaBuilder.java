@@ -30,6 +30,9 @@ public class QuokkaBuilder {
         this.monitor.setMessage(String.format("Exporter set in %s", this.exporterMode.toString()));
     }
 
+    /**
+     * Load in the protobuf builder all the metadata
+     */
     private void exportMeta() {
         monitor.setIndeterminate(true);
         monitor.setMessage("Exporting meta data");
@@ -54,6 +57,11 @@ public class QuokkaBuilder {
         meta.setBaseAddr(metaParser.getBaseAddr());
     }
 
+    /**
+     * Load in the protobuf builder the layouts.
+     * 
+     * @see Layout
+     */
     private void exportLayout() {
         monitor.setIndeterminate(true);
         monitor.setMessage("Exporting layout");
