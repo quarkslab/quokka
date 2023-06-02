@@ -1,9 +1,8 @@
 package com.quarkslab.quokka.models;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import quokka.QuokkaOuterClass.Quokka.Structure.StructureType;
 
 
@@ -11,7 +10,7 @@ public class CompositeData {
     private String name;
     private int size;
     private StructureType type;
-    private Set<DataComponent> components = new HashSet<>();
+    private List<DataComponent> components = new ArrayList<>();
 
     public CompositeData(String name, int size, StructureType type) {
         this.name = name;
@@ -34,8 +33,8 @@ public class CompositeData {
         return this.type;
     }
 
-    public Collection<DataComponent> getComponents() {
-        return Collections.unmodifiableCollection(this.components);
+    public List<DataComponent> getComponents() {
+        return Collections.unmodifiableList(this.components);
     }
 
     public boolean isFixedSize() {
