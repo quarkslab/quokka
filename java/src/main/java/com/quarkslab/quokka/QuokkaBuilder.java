@@ -3,6 +3,7 @@ package com.quarkslab.quokka;
 import com.quarkslab.quokka.models.Layout;
 import com.quarkslab.quokka.parsers.FileMetadataParser;
 import com.quarkslab.quokka.parsers.LayoutParser;
+import com.quarkslab.quokka.parsers.DataParser;
 import quokka.QuokkaOuterClass.Quokka;
 import quokka.QuokkaOuterClass.Quokka.Builder;
 import ghidra.program.model.listing.Program;
@@ -70,10 +71,41 @@ public class QuokkaBuilder {
         }
     }
 
+    /**
+     * Load in the protobuf builder all the data objects defined by ghidra
+     */
+    private void exportData() {
+        monitor.setIndeterminate(true);
+        monitor.setMessage("Exporting data");
+
+        var dataParser = new DataParser(this.program);
+        dataParser.analyze();
+
+        for (var data : dataParser.getAll()) {
+            var dataBuilder = this.builder.addDataBuilder();
+
+            // Set protobuf fields
+            dataBuilder.setOffset(data.getAddrAsLong()).setNotInitialized(!data.isInitialized())
+                    .setType(data.getType());
+            if (data.isFixedSize())
+                dataBuilder.setNoSize(true);
+            else
+                dataBuilder.setSize(data.getSize());
+        }
+    }
+
+    /**
+     * Build and return the protobuf message.
+     * 
+     * @return Quokka The protobuf message
+     * @throws CancelledException
+     */
     public Quokka build() throws CancelledException {
         this.exportMeta();
 
         this.exportLayout();
+
+        this.exportData();
 
         // ExportSegments(&quokka_protobuf);
         // ExportEnumAndStructures(&quokka_protobuf);
