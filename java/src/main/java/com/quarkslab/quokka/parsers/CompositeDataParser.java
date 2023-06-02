@@ -17,6 +17,12 @@ import com.quarkslab.quokka.models.DataComponent;
 import com.quarkslab.quokka.utils.Utils;
 
 
+/**
+ * Retrieves from ghidra all the composite data objects. The composite data formats are usually
+ * structs and union.
+ * 
+ * In this case quokka considers enum to be composite data types.
+ */
 public class CompositeDataParser extends GhidraParser {
     private Set<CompositeData> compositeData = new HashSet<>();
 
