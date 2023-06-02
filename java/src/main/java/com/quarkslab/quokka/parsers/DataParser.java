@@ -62,9 +62,8 @@ public class DataParser {
             assert size != -1;
 
             // Add the data object
-            this.dataSet.add(new Data(address, size, type, data.isInitializedMemory()));
-
-            // TODO add data.value_index and data.name_index
+            this.dataSet.add(
+                    new Data(address, size, type, data.isInitializedMemory(), data.getLabel()));
         }
     }
 
