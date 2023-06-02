@@ -99,6 +99,11 @@ public class QuokkaBuilder {
                 dataBuilder.setNoSize(true);
             else
                 dataBuilder.setSize(data.getSize());
+
+            // Add the name in the string_table and set the corresponding name_index
+            dataBuilder.setNameIndex(StringTableManager.getInstance().add(data.getName()));
+
+            // TODO add data.value_index
         }
     }
 
@@ -114,6 +119,8 @@ public class QuokkaBuilder {
         this.exportLayout();
 
         this.exportData();
+
+        this.builder.addAllStringTable(StringTableManager.getInstance().getAll());
 
         // ExportSegments(&quokka_protobuf);
         // ExportEnumAndStructures(&quokka_protobuf);

@@ -9,12 +9,14 @@ public class Data {
     private int size;
     private boolean isInitialized;
     private DataType type;
+    private String name;
 
-    public Data(BigInteger address, int size, DataType type, boolean isInitialized) {
+    public Data(BigInteger address, int size, DataType type, boolean isInitialized, String name) {
         this.address = address;
         this.size = size;
         this.isInitialized = isInitialized;
         this.type = type;
+        this.name = name;
     }
 
     public BigInteger getAddr() {
@@ -35,6 +37,10 @@ public class Data {
 
     public DataType getType() {
         return this.type;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public boolean isFixedSize() {
