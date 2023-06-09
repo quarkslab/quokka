@@ -11,13 +11,13 @@
       
       
       
-        <link rel="prev" href="../structure/">
+        <link rel="prev" href="../exc/">
       
       
-        <link rel="next" href="../backends/capstone/">
+        <link rel="next" href="../function/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.3">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
@@ -25,10 +25,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.c4a75a56.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.26e3688c.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -116,25 +116,31 @@
       </div>
     </div>
     
-      <form class="md-header__option" data-md-component="palette">
-        
+      
+        <form class="md-header__option" data-md-component="palette">
           
-          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
           
-            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
-            </label>
+            
+            
+            
+            <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+              </label>
+            
           
-        
-          
-          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
-          
-            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
-            </label>
-          
-        
-      </form>
+        </form>
+      
     
     
     
@@ -176,7 +182,7 @@
         <a href="https://github.com/quarkslab/quokka" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     quarkslab/quokka
@@ -220,7 +226,7 @@
       <a href="https://github.com/quarkslab/quokka" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     quarkslab/quokka
@@ -689,90 +695,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../addresser/" class="md-nav__link">
-        addresser
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../block/" class="md-nav__link">
-        block
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../utils/" class="md-nav__link">
-        utils
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../types/" class="md-nav__link">
-        types
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../data/" class="md-nav__link">
-        data
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../segment/" class="md-nav__link">
-        segment
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../executable/" class="md-nav__link">
         executable
       </a>
@@ -787,8 +709,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../exc/" class="md-nav__link">
-        exc
+      <a href="../addresser/" class="md-nav__link">
+        addresser
       </a>
     </li>
   
@@ -815,8 +737,36 @@
   
   
     <li class="md-nav__item">
-      <a href="../function/" class="md-nav__link">
-        function
+      <a href="../structure/" class="md-nav__link">
+        structure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../types/" class="md-nav__link">
+        types
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
+        utils
       </a>
     </li>
   
@@ -843,8 +793,36 @@
   
   
     <li class="md-nav__item">
-      <a href="../structure/" class="md-nav__link">
-        structure
+      <a href="../segment/" class="md-nav__link">
+        segment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../block/" class="md-nav__link">
+        block
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exc/" class="md-nav__link">
+        exc
       </a>
     </li>
   
@@ -1079,6 +1057,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../function/" class="md-nav__link">
+        function
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
@@ -1090,14 +1096,14 @@
       
       
         <label class="md-nav__link" for="__nav_7_14" id="__nav_7_14_label" tabindex="0">
-          backends
+          analysis
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_14_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_7_14">
           <span class="md-nav__icon md-icon"></span>
-          backends
+          analysis
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1107,61 +1113,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../backends/capstone/" class="md-nav__link">
-        capstone
+      <a href="../analysis/arch/" class="md-nav__link">
+        arch
       </a>
     </li>
   
 
             
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../backends/pypcode/" class="md-nav__link">
-        pypcode
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-      
-      
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_15" >
-      
-      
-      
-        <label class="md-nav__link" for="__nav_7_15" id="__nav_7_15_label" tabindex="0">
-          analysis
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_15_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_7_15">
-          <span class="md-nav__icon md-icon"></span>
-          analysis
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
           
             
               
@@ -1211,8 +1169,56 @@
   
   
     <li class="md-nav__item">
-      <a href="../analysis/arch/" class="md-nav__link">
-        arch
+      <a href="../analysis/calling_convention/" class="md-nav__link">
+        calling_convention
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_15" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7_15" id="__nav_7_15_label" tabindex="0">
+          backends
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_15_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7_15">
+          <span class="md-nav__icon md-icon"></span>
+          backends
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/capstone/" class="md-nav__link">
+        capstone
       </a>
     </li>
   
@@ -1225,8 +1231,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../analysis/calling_convention/" class="md-nav__link">
-        calling_convention
+      <a href="../backends/pypcode/" class="md-nav__link">
+        pypcode
       </a>
     </li>
   
@@ -1601,7 +1607,7 @@
       <p>References Management</p>
 <p>This module deals with all references between different objects in the code.</p>
 
-<details class="a-reference-is-an-object-with-the-following-attributes">
+<details class="a-reference-is-an-object-with-the-following-attributes" open>
   <summary>A reference is an object with the following attributes</summary>
   <ul>
 <li>A Source</li>
@@ -1655,7 +1661,11 @@ i.e. how to resolve the pointed object.</p>
           <td>
                 <code><span title="quokka.types.ReferenceTarget">ReferenceTarget</span></code>
           </td>
-          <td><p>Source of the reference</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Source of the reference</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1665,7 +1675,11 @@ i.e. how to resolve the pointed object.</p>
           <td>
                 <code><span title="quokka.types.ReferenceTarget">ReferenceTarget</span></code>
           </td>
-          <td><p>Destination (target) of the reference</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Destination (target) of the reference</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1675,7 +1689,11 @@ i.e. how to resolve the pointed object.</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="quokka.types.ReferenceType" href="../types/#quokka.types.ReferenceType">ReferenceType</a></code>
           </td>
-          <td><p>Type of the reference</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Type of the reference</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1698,28 +1716,40 @@ i.e. how to resolve the pointed object.</p>
           <td>
                 <code><span title="quokka.types.ReferenceTarget">ReferenceTarget</span></code>
           </td>
-          <td><p>Source of the reference</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Source of the reference</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>destination</code></td>
           <td>
                 <code><span title="quokka.types.ReferenceTarget">ReferenceTarget</span></code>
           </td>
-          <td><p>Destination (target) of the reference</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Destination (target) of the reference</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>type</code></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="quokka.types.ReferenceType" href="../types/#quokka.types.ReferenceType">ReferenceType</a></code>
           </td>
-          <td><p>Type of the reference</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Type of the reference</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
 
         <details class="quote">
-          <summary>Source code in <code>quokka/reference.py</code></summary>
+          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
           <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
@@ -1797,7 +1827,7 @@ i.e. how to resolve the pointed object.</p>
       <p>Constructor</p>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
@@ -1869,7 +1899,11 @@ However, since it's somehow working, let's try to not break it yet.</p>
           <td>
                 <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Program" href="../program/#quokka.program.Program">Program</a></code>
           </td>
-          <td><p>Reference to the program</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Reference to the program</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -1892,29 +1926,41 @@ However, since it's somehow working, let's try to not break it yet.</p>
           <td>
                 <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Program" href="../program/#quokka.program.Program">Program</a></code>
           </td>
-          <td><p>Reference to the program</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Reference to the program</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>proto_ref</code></td>
           <td>
           </td>
-          <td><p>Protobuf data</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Protobuf data</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td><code>references_category</code></td>
           <td>
                 <code><span title="quokka.types.Dict">Dict</span>[<a class="autorefs autorefs-internal" title="quokka.reference.ReferencesLocation" href="#quokka.reference.ReferencesLocation">ReferencesLocation</a>, <span title="quokka.types.DefaultDict">DefaultDict</span>]</code>
           </td>
-          <td><p>A mapping that contains every reference for each direction.
+          <td>
+            <div class="doc-md-description">
+              <p>A mapping that contains every reference for each direction.
 For instance, a ref X from inst a to struct b will be stored in both the
-structure key and the instruction key</p></td>
+structure key and the instruction key</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
 
         <details class="quote">
-          <summary>Source code in <code>quokka/reference.py</code></summary>
+          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
           <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
@@ -2795,7 +2841,7 @@ structure key and the instruction key</p></td>
       <p>Lazy loading for references</p>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reference</span><span class="p">:</span>
@@ -2837,7 +2883,11 @@ structure key and the instruction key</p></td>
           <td>
                 <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Program" href="../program/#quokka.program.Program">Program</a></code>
           </td>
-          <td><p>A backref to program</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A backref to program</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -2846,7 +2896,7 @@ structure key and the instruction key</p></td>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
@@ -2973,7 +3023,7 @@ structure key and the instruction key</p></td>
       <p>Iterator over references</p>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">AddressT</span><span class="p">,</span> <span class="n">Reference</span><span class="p">]]:</span>
@@ -3000,7 +3050,7 @@ structure key and the instruction key</p></td>
       <p>References count</p>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -3043,7 +3093,11 @@ structure key and the instruction key</p></td>
           <td>
                 <code>quokka.<span title="quokka.pb">pb</span>.<span title="quokka.pb.Quokka">Quokka</span>.<span title="quokka.pb.Quokka.Reference">Reference</span></code>
           </td>
-          <td><p>A protobuf reference object</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A protobuf reference object</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3062,15 +3116,19 @@ structure key and the instruction key</p></td>
     <tbody>
         <tr>
           <td>
-                <code><a class="autorefs autorefs-internal" title="quokka.reference.Reference" href="#quokka.reference.Reference">Reference</a></code>
+                <code>&#39;Reference&#39;</code>
           </td>
-          <td><p>A python reference with both source and destination resolved</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A python reference with both source and destination resolved</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">270</span>
 <span class="normal">271</span>
 <span class="normal">272</span>
@@ -3140,9 +3198,13 @@ block.</p>
         <tr>
           <td><code>instruction_identifier</code></td>
           <td>
-                <code><span title="quokka.pb.Quokka.Location.InstructionIdentifier">InstructionIdentifier</span></code>
+                <code>&#39;quokka.pb.Quokka.Location.InstructionIdentifier&#39;</code>
           </td>
-          <td><p>Protobuf instruction identifier</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Protobuf instruction identifier</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3163,13 +3225,17 @@ block.</p>
           <td>
                 <code><span title="quokka.types.Tuple">Tuple</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a>, quokka.<a class="autorefs autorefs-internal" title="quokka.Block" href="../block/#quokka.block.Block">Block</a>, <span title="quokka.types.Index">Index</span>]</code>
           </td>
-          <td><p>A instruction tuple (Chunk, Block, Instruction Index)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A instruction tuple (Chunk, Block, Instruction Index)</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
@@ -3234,7 +3300,7 @@ block.</p>
       <p>Helper method to analyze if we take the reference or unwind it</p>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">348</span>
 <span class="normal">349</span>
 <span class="normal">350</span>
@@ -3285,7 +3351,11 @@ block.</p>
           <td>
                 <code>quokka.<span title="quokka.pb">pb</span>.<span title="quokka.pb.Quokka">Quokka</span>.<span title="quokka.pb.Quokka.Location">Location</span></code>
           </td>
-          <td><p>Reference location</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Reference location</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3306,13 +3376,17 @@ block.</p>
           <td>
                 <code><span title="quokka.types.LocationValueType">LocationValueType</span></code>
           </td>
-          <td><p>A LocationTypeValue</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A LocationTypeValue</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
@@ -3417,7 +3491,7 @@ block.</p>
       <p>Convert the proto location type</p>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
@@ -3465,7 +3539,11 @@ block.</p>
           <td>
                 <code><span title="quokka.types.Index">Index</span></code>
           </td>
-          <td><p>Index of the chunk</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Index of the chunk</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3475,7 +3553,11 @@ block.</p>
           <td>
                 <code><span title="quokka.types.Index">Index</span></code>
           </td>
-          <td><p>Index of the block</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Index of the block</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3485,7 +3567,11 @@ block.</p>
           <td>
                 <code><a class="autorefs autorefs-internal" title="quokka.types.ReferenceType" href="../types/#quokka.types.ReferenceType">ReferenceType</a></code>
           </td>
-          <td><p>TYpe of reference wanted (e.g. Data)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>TYpe of reference wanted (e.g. Data)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3495,8 +3581,12 @@ block.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>True if we want the reference <em>to</em> this block.
-False if we want the references <em>from</em> the block.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>True if we want the reference <em>to</em> this block.
+False if we want the references <em>from</em> the block.</p>
+            </div>
+          </td>
           <td>
                 <code>True</code>
           </td>
@@ -3517,13 +3607,17 @@ False if we want the references <em>from</em> the block.</p></td>
           <td>
                 <code><span title="quokka.types.List">List</span>[<a class="autorefs autorefs-internal" title="quokka.reference.Reference" href="#quokka.reference.Reference">Reference</a>]</code>
           </td>
-          <td><p>A List of references matching the criteria</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A List of references matching the criteria</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
 <span class="normal">357</span>
 <span class="normal">358</span>
@@ -3637,7 +3731,11 @@ chunk. Of note, a call must be from an Instruction Tuple to another.</p>
           <td>
                 <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a></code>
           </td>
-          <td><p>Target chunk</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Target chunk</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3647,8 +3745,12 @@ chunk. Of note, a call must be from an Instruction Tuple to another.</p>
           <td>
                 <code>bool</code>
           </td>
-          <td><p>Do we look at calls towards this chunk {X,Y,Z} -&gt; Chunk or at calls
-from this chunk Chunk -&gt; {X,Y,Z} ?</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Do we look at calls towards this chunk {X,Y,Z} -&gt; Chunk or at calls
+from this chunk Chunk -&gt; {X,Y,Z} ?</p>
+            </div>
+          </td>
           <td>
                 <code>True</code>
           </td>
@@ -3669,19 +3771,27 @@ from this chunk Chunk -&gt; {X,Y,Z} ?</p></td>
           <td>
                 <code><span title="quokka.types.List">List</span>[<span title="quokka.types.Union">Union</span>[<span title="quokka.types.Tuple">Tuple</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a>, quokka.<a class="autorefs autorefs-internal" title="quokka.Block" href="../block/#quokka.block.Block">Block</a>, int], quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a>]]</code>
           </td>
-          <td><p>A list of objects that are either tuple (Chunk, Block, Instruction Index) or</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of objects that are either tuple (Chunk, Block, Instruction Index) or</p>
+            </div>
+          </td>
         </tr>
         <tr>
           <td>
                 <code><span title="quokka.types.List">List</span>[<span title="quokka.types.Union">Union</span>[<span title="quokka.types.Tuple">Tuple</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a>, quokka.<a class="autorefs autorefs-internal" title="quokka.Block" href="../block/#quokka.block.Block">Block</a>, int], quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a>]]</code>
           </td>
-          <td><p>Chunk (only for fake chunks that are created from an imported function)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Chunk (only for fake chunks that are created from an imported function)</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">434</span>
 <span class="normal">435</span>
 <span class="normal">436</span>
@@ -3811,7 +3921,11 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code><span title="quokka.types.Index">Index</span></code>
           </td>
-          <td><p>Index of the data in the protobuf</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Index of the data in the protobuf</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3821,7 +3935,11 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code><span title="quokka.types.Union">Union</span>[<a class="autorefs autorefs-internal" title="quokka.types.ReferenceType" href="../types/#quokka.types.ReferenceType">ReferenceType</a>, None]</code>
           </td>
-          <td><p>Type of reference</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Type of reference</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -3842,13 +3960,17 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code><span title="quokka.types.List">List</span>[<a class="autorefs autorefs-internal" title="quokka.reference.Reference" href="#quokka.reference.Reference">Reference</a>]</code>
           </td>
-          <td><p>A list of reference matching the criteria</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of reference matching the criteria</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">481</span>
 <span class="normal">482</span>
 <span class="normal">483</span>
@@ -3946,7 +4068,11 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code><span title="quokka.types.Tuple">Tuple</span>[int, int, int]</code>
           </td>
-          <td><p>A tuple (Chunk Index, Block Index, Instruction Index)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A tuple (Chunk Index, Block Index, Instruction Index)</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -3956,7 +4082,11 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code><span title="quokka.types.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="quokka.types.ReferenceType" href="../types/#quokka.types.ReferenceType">ReferenceType</a>]</code>
           </td>
-          <td><p>Reference type to consider (filter result)</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>Reference type to consider (filter result)</p>
+            </div>
+          </td>
           <td>
                 <code>None</code>
           </td>
@@ -3966,7 +4096,11 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code>bool</code>
           </td>
-          <td><p>In which sense to search the reference?</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>In which sense to search the reference?</p>
+            </div>
+          </td>
           <td>
                 <code>True</code>
           </td>
@@ -3987,13 +4121,17 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code><span title="quokka.types.List">List</span>[<a class="autorefs autorefs-internal" title="quokka.reference.Reference" href="#quokka.reference.Reference">Reference</a>]</code>
           </td>
-          <td><p>A list of reference matching the criteria</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A list of reference matching the criteria</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">395</span>
 <span class="normal">396</span>
 <span class="normal">397</span>
@@ -4106,7 +4244,11 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code>quokka.<span title="quokka.pb">pb</span>.<span title="quokka.pb.Quokka">Quokka</span>.<span title="quokka.pb.Quokka.Location">Location</span></code>
           </td>
-          <td><p>A protobuf Location (sigh) object</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A protobuf Location (sigh) object</p>
+            </div>
+          </td>
           <td>
               <em>required</em>
           </td>
@@ -4127,7 +4269,11 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code><span title="quokka.types.ReferenceTarget">ReferenceTarget</span></code>
           </td>
-          <td><p>A ReferenceTarget</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>A ReferenceTarget</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
@@ -4145,13 +4291,17 @@ If a reference_type is specified the references will be filtered by their type</
           <td>
                 <code>ValueError</code>
           </td>
-          <td><p>When no appropriate location has been found.</p></td>
+          <td>
+            <div class="doc-md-description">
+              <p>When no appropriate location has been found.</p>
+            </div>
+          </td>
         </tr>
     </tbody>
   </table>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">309</span>
 <span class="normal">310</span>
 <span class="normal">311</span>
@@ -4259,7 +4409,7 @@ If a reference_type is specified the references will be filtered by their type</
   
       <p>Reference location</p>
 
-<details class="a-reference-may-be-attached-to-one-of-the-following-">
+<details class="a-reference-may-be-attached-to-one-of-the-following-" open>
   <summary>A reference may be attached to one of the following</summary>
   <ul>
 <li>an instruction index (that means every instance of the instruction)</li>
@@ -4273,7 +4423,7 @@ If a reference_type is specified the references will be filtered by their type</
 </details>
 
         <details class="quote">
-          <summary>Source code in <code>quokka/reference.py</code></summary>
+          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
           <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
 <span class="normal"> 79</span>
 <span class="normal"> 80</span>
@@ -4381,7 +4531,7 @@ If a reference_type is specified the references will be filtered by their type</
       <p>Convert reference location from proto</p>
 
       <details class="quote">
-        <summary>Source code in <code>quokka/reference.py</code></summary>
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.11/x64/lib/python3.10/site-packages/quokka/reference.py</code></summary>
         <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
@@ -4443,11 +4593,11 @@ If a reference_type is specified the references will be filtered by their type</
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 16, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 9, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 16, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 9, 2023</span>
       
     
   </small>
@@ -4492,7 +4642,7 @@ If a reference_type is specified the references will be filtered by their type</
     <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate"], "search": "../../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.efa0ade1.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.b4d07000.min.js"></script>
       
     
   </body>
