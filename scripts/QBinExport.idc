@@ -1,6 +1,6 @@
 #include <idc.idc>
 static main() {
     auto_wait();
-	Quokka();
+	quokka();
 	qexit(0);
 }

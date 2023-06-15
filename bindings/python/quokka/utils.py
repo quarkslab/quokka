@@ -28,6 +28,10 @@ from quokka.analysis import (
     ArchARM,
     ArchARM64,
     ArchARMThumb,
+    ArchMIPS,
+    ArchMIPS64,
+    ArchPPC,
+    ArchPPC64,
 )
 
 from quokka.types import Type
@@ -140,6 +144,14 @@ def get_arch(
         ArchEnum.X86: {
             32: ArchX86,
             64: ArchX64,
+        },
+        ArchEnum.MIPS: {
+            32: ArchMIPS,
+            64: ArchMIPS64,
+        },
+        ArchEnum.PPC: {
+            32: ArchPPC,
+            64: ArchPPC64,
         },
     }
 
