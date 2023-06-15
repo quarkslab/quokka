@@ -3,6 +3,7 @@ package com.quarkslab.quokka.utils;
 import java.math.BigInteger;
 import ghidra.program.model.data.ByteDataType;
 import quokka.QuokkaOuterClass.Quokka.DataType;
+import com.quarkslab.quokka.LogManager;
 
 
 /**
@@ -29,5 +30,17 @@ public class Utils {
         }
 
         return DataType.TYPE_UNK;
+    }
+
+    /**
+     * Soft version of the assert. Checks that the condition is true, otherwise write the message in
+     * the logs.
+     * 
+     * @param condition The condition to check
+     * @param message The message to log if the condition is false
+     */
+    public static void assertLog(boolean condition, String message) {
+        if (!condition)
+            LogManager.log(message);
     }
 }

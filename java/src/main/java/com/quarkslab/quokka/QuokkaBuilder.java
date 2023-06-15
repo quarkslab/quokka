@@ -5,12 +5,12 @@ import com.quarkslab.quokka.parsers.FileMetadataParser;
 import com.quarkslab.quokka.parsers.LayoutParser;
 import com.quarkslab.quokka.parsers.DataParser;
 import com.quarkslab.quokka.parsers.CompositeDataParser;
+import com.quarkslab.quokka.parsers.AnalysisParser;
 import quokka.QuokkaOuterClass.Quokka;
 import quokka.QuokkaOuterClass.Quokka.Builder;
 import ghidra.program.model.listing.Program;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
-
 
 /**
  * Java implementation of the Quokka writer class for Ghidra using a builder pattern.
@@ -34,7 +34,7 @@ public class QuokkaBuilder {
     /**
      * Load in the protobuf builder all the metadata
      */
-    private void exportMeta() {
+    private void exportMeta() throws CancelledException {
         monitor.setIndeterminate(true);
         monitor.setMessage("Exporting meta data");
 
@@ -43,7 +43,7 @@ public class QuokkaBuilder {
                 .setMode(this.exporterMode.toProto());
 
         // File metadata
-        var metaParser = new FileMetadataParser(this.program);
+        var metaParser = new FileMetadataParser(this.program, this.monitor);
         metaParser.analyze();
 
         var meta = this.builder.getMetaBuilder();
@@ -63,11 +63,11 @@ public class QuokkaBuilder {
      * 
      * @see Layout
      */
-    private void exportLayout() {
+    private void exportLayout() throws CancelledException {
         monitor.setIndeterminate(true);
         monitor.setMessage("Exporting layout");
 
-        var layoutParser = new LayoutParser(this.program);
+        var layoutParser = new LayoutParser(this.program, this.monitor);
         layoutParser.analyze();
 
         for (var layout : layoutParser.getAll()) {
@@ -83,11 +83,11 @@ public class QuokkaBuilder {
     /**
      * Load in the protobuf builder all the data objects defined by ghidra
      */
-    private void exportData() {
+    private void exportData() throws CancelledException {
         monitor.setIndeterminate(true);
         monitor.setMessage("Exporting data");
 
-        var dataParser = new DataParser(this.program);
+        var dataParser = new DataParser(this.program, this.monitor);
         dataParser.analyze();
 
         for (var data : dataParser.getAll()) {
@@ -112,11 +112,11 @@ public class QuokkaBuilder {
      * Load in the protobuf builder the description of all the composite data types (struct, union,
      * enums, ...). This is saved in the structs protobuf field
      */
-    private void exportCompositeData() {
+    private void exportCompositeData() throws CancelledException {
         monitor.setIndeterminate(true);
         monitor.setMessage("Exporting composite data");
 
-        var compositeParser = new CompositeDataParser(this.program);
+        var compositeParser = new CompositeDataParser(this.program, this.monitor);
         compositeParser.analyze();
 
         for (var data : compositeParser.getAll()) {
@@ -138,6 +138,34 @@ public class QuokkaBuilder {
     }
 
     /**
+     * Load in the protobuf builder the entire description of the program (functions, blocks,
+     * instructions, ...)
+     */
+    private void exportAnalysis() throws CancelledException {
+        monitor.setIndeterminate(true);
+        monitor.setMessage("Exporting the functions");
+
+        var analysisParser = new AnalysisParser(this.program, this.monitor);
+        analysisParser.analyze();
+
+        // In ghidra there is no concept of "chunks".
+        // We artificially recreate them, one chunk per function
+        for (var function : analysisParser.getFunctions()) {
+            var chunkBuilder = this.builder.addFunctionChunksBuilder();
+
+            chunkBuilder.setOffsetStart(function.getAddrAsLong()).setIsFake(function.isFake())
+                    .setIsInfile(function.isInFile());
+
+            // Add all the blocks
+            for (var block : function.getBlocks()) {
+                var blockBuilder = chunkBuilder.addBlocksBuilder();
+                blockBuilder.setOffsetStart(block.getOffsetAsLong()).setIsFake(block.isFake())
+                        .setBlockType(block.getType());
+            }
+        }
+    }
+
+    /**
      * Build and return the protobuf message.
      * 
      * @return Quokka The protobuf message
@@ -152,13 +180,9 @@ public class QuokkaBuilder {
 
         this.exportCompositeData();
 
+        this.exportAnalysis();
+
         this.builder.addAllStringTable(StringTableManager.getInstance().getAll());
-
-        // ExportSegments(&quokka_protobuf);
-        // ExportEnumAndStructures(&quokka_protobuf);
-
-        // replace_wait_box("quokka: exporting layout");
-        // ExportLayout(&quokka_protobuf);
 
         return this.builder.build();
     }

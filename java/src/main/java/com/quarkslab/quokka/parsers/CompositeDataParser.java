@@ -12,13 +12,15 @@ import ghidra.program.model.data.Enum;
 import ghidra.program.model.data.Composite;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.DataTypeComponent;
+import ghidra.util.task.TaskMonitor;
+import ghidra.util.exception.CancelledException;
 import com.quarkslab.quokka.models.CompositeData;
 import com.quarkslab.quokka.models.DataComponent;
 import com.quarkslab.quokka.utils.Utils;
 
-
 /**
- * Retrieves from ghidra all the composite data objects. The composite data formats are usually
+ * Retrieves from ghidra all the composite data objects. The composite data
+ * formats are usually
  * structs and union.
  * 
  * In this case quokka considers enum to be composite data types.
@@ -26,11 +28,11 @@ import com.quarkslab.quokka.utils.Utils;
 public class CompositeDataParser extends GhidraParser {
     private Set<CompositeData> compositeData = new HashSet<>();
 
-    public CompositeDataParser(Program program) {
-        super(program);
+    public CompositeDataParser(Program program, TaskMonitor monitor) {
+        super(program, monitor);
     }
 
-    public void analyze() {
+    public void analyze() throws CancelledException {
         for (var it = this.program.getDataTypeManager().getAllDataTypes(); it.hasNext();) {
             DataType dataType = it.next();
             StructureType type;
