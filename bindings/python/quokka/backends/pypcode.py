@@ -87,7 +87,7 @@ def get_pypcode_context(
         ) from exc
 
     if endian == Endianness.BIG_ENDIAN:
-        target_id = target_id.replace(":LE:", ":BE")
+        target_id = target_id.replace(":LE:", ":BE:")
 
     pcode_arch = get_arch_from_string(target_id)
     return pypcode.Context(pcode_arch)
