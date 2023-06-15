@@ -24,6 +24,10 @@ from quokka.analysis.arch import (
     ArchARM,
     ArchARM64,
     ArchARMThumb,
+    ArchMIPS,
+    ArchMIPS64,
+    ArchPPC,
+    ArchPPC64,
 )
 
 from quokka.analysis.calling_convention import (
@@ -56,6 +60,10 @@ __all__ = [
     "ArchARM",
     "ArchARM64",
     "ArchARMThumb",
+    "ArchMIPS",
+    "ArchMIPS64",
+    "ArchPPC",
+    "ArchPPC64",
     # From calling_convention.py
     "CallingConvention",
     "CCdecl",

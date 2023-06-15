@@ -22,7 +22,7 @@ import pypcode
 
 import quokka
 import quokka.analysis
-from quokka.types import Any, Dict, List, Sequence, Type, Optional
+from quokka.types import Any, Dict, Endianness, List, Sequence, Type, Optional
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -49,7 +49,8 @@ def get_arch_from_string(target_id: str) -> pypcode.ArchLanguage:
 
 
 def get_pypcode_context(
-    arch: Type[quokka.analysis.QuokkaArch],
+        arch: Type[quokka.analysis.QuokkaArch],
+        endian: Type[Endianness] = Endianness.LITTLE_ENDIAN
 ) -> pypcode.Context:
     """Convert an arch from Quokka to Pypcode
 
@@ -72,6 +73,10 @@ def get_pypcode_context(
         quokka.analysis.ArchARM: "ARM:LE:32:v8",
         quokka.analysis.ArchARM64: "AARCH64:LE:64:v8A",
         quokka.analysis.ArchARMThumb: "ARM:LE:32:v8T",
+        quokka.analysis.ArchMIPS: "MIPS:LE:32:default",
+        quokka.analysis.ArchMIPS: "MIPS:LE:64:default",
+        quokka.analysis.ArchPPC: "PowerPC:LE:32:default",
+        quokka.analysis.ArchPPC64: "PowerPC:LE:64:default",
     }
 
     try:
@@ -80,6 +85,9 @@ def get_pypcode_context(
         raise quokka.PypcodeError(
             "Unable to find the appropriate arch: missing id"
         ) from exc
+
+    if endian == Endianness.BIG_ENDIAN:
+        target_id = target_id.replace(":LE:", ":BE")
 
     pcode_arch = get_arch_from_string(target_id)
     return pypcode.Context(pcode_arch)

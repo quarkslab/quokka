@@ -19,10 +19,12 @@ import capstone
 import quokka
 import quokka.analysis
 
-from quokka.types import AddressT, Type, Optional
+from quokka.types import AddressT, Endianness, Type, Optional
 
 
-def get_capstone_context(arch: Type[quokka.analysis.QuokkaArch]) -> capstone.Cs:
+def get_capstone_context(
+        arch: Type[quokka.analysis.QuokkaArch],
+        endian: Type[Endianness] = Endianness.LITTLE_ENDIAN) -> capstone.Cs:
     """Compute the capstone context for the program
 
     The Capstone context is used to decode instructions afterwards. Since we are
@@ -34,6 +36,12 @@ def get_capstone_context(arch: Type[quokka.analysis.QuokkaArch]) -> capstone.Cs:
     Returns:
         A capstone Cs instance
     """
+    endian_mapping = {
+        Endianness.BIG_ENDIAN: capstone.CS_MODE_BIG_ENDIAN,
+        Endianness.LITTLE_ENDIAN: capstone.CS_MODE_LITTLE_ENDIAN,
+    }
+    capstone_endian = endian_mapping[endian]
+
     mapping = {
         quokka.analysis.ArchARM: (capstone.CS_ARCH_ARM, capstone.CS_MODE_ARM),
         quokka.analysis.ArchARM64: (capstone.CS_ARCH_ARM64, capstone.CS_MODE_ARM),
@@ -43,6 +51,18 @@ def get_capstone_context(arch: Type[quokka.analysis.QuokkaArch]) -> capstone.Cs:
             capstone.CS_ARCH_ARM,
             capstone.CS_MODE_THUMB,
         ),
+        quokka.analysis.ArchMIPS: (
+            capstone.CS_ARCH_MIPS,
+            capstone.CS_MODE_32 + capstone_endian),
+        quokka.analysis.ArchMIPS64: (
+            capstone.CS_ARCH_MIPS,
+            capstone.CS_MODE_64 + capstone_endian),
+        quokka.analysis.ArchPPC: (
+            capstone.CS_ARCH_PPC,
+            capstone.CS_MODE_32 + capstone_endian),
+        quokka.analysis.ArchPPC64: (
+            capstone.CS_ARCH_PPC,
+            capstone.CS_MODE_64 + capstone_endian),
     }
 
     try:

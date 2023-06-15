@@ -163,7 +163,7 @@ class ArchARM(QuokkaArch):  # type: ignore
 
 
 class ArchARMThumb(ArchARM):  # type: ignore
-    """Arch Arm Thum definition"""
+    """Arch Arm Thumb definition"""
 
     thumb: bool = True
 
@@ -229,3 +229,91 @@ class ArchARM64(QuokkaArch):  # type: ignore
     frame_pointer = regs.FP
     stack_pointer = regs.SP  # TODO(dm)!
     inst_pointer = regs.X28
+
+
+class ArchMIPS(QuokkaArch):  # type: ignore
+    """Arch MIPS definition"""
+
+    (
+        grps,
+        insts,
+        op,
+        regs,
+    ) = make_enums(
+        capstone_module=capstone.mips_const,
+        items=[
+            "GRP",
+            "INS",
+            "OP",
+            "REG",
+        ],
+        blacklist=["ENDING", "INVALID"],
+        flags_enums=[],
+    )
+
+    compared_mnemonics = [
+        insts.CMP,
+        insts.CMPI,
+        insts.CMPU,
+        insts.CMPGU,
+        insts.CMPGDU,
+    ]
+
+    address_size = 32
+
+    frame_pointer = regs.FP  # R30
+    stack_pointer = regs.SP  # R29
+    inst_pointer = regs.PC   # REG_PC
+
+
+class ArchMIPS64(ArchMIPS):  # type: ignore
+    """Arch MIPS64 definition"""
+
+    address_size = 64
+
+
+class ArchPPC(QuokkaArch):  # type: ignore
+    """Arch PPC definition"""
+
+    (
+        bc,
+        bh,
+        grps,
+        insts,
+        op,
+        regs,
+    ) = make_enums(
+        capstone_module=capstone.ppc_const,
+        items=[
+            "BC",
+            "BH",
+            "GRP",
+            "INS",
+            "OP",
+            "REG",
+        ],
+        blacklist=["ENDING", "INVALID"],
+        flags_enums=[],
+    )
+
+    compared_mnemonics = [
+        insts.CMPB,
+        insts.CMPD,
+        insts.CMPDI,
+        insts.CMPLD,
+        insts.CMPLW,
+        insts.CMPW,
+        insts.CMPWI,
+    ]
+
+    address_size = 32
+
+    frame_pointer = regs.R1  #
+    stack_pointer = regs.R1  # GPR1
+    inst_pointer = regs.CTR
+
+
+class ArchPPC64(ArchPPC):  # type: ignore
+    """Arch PPC64 definition"""
+
+    address_size = 64
