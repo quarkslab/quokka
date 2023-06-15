@@ -10,6 +10,8 @@ import javax.lang.model.util.ElementScanner14;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.program.model.address.Address;
+import ghidra.util.task.TaskMonitor;
+import ghidra.util.exception.CancelledException;
 import quokka.QuokkaOuterClass.Quokka.Layout.LayoutType;
 import com.quarkslab.quokka.models.Layout;
 
@@ -23,11 +25,11 @@ public class LayoutParser extends GhidraParser {
     // Parsed fields
     private TreeMap<BigInteger, Layout> layouts = new TreeMap<>();
 
-    public LayoutParser(Program program) {
-        super(program);
+    public LayoutParser(Program program, TaskMonitor monitor) {
+        super(program, monitor);
     }
 
-    public void analyze() {
+    public void analyze() throws CancelledException {
         BigInteger imgBase = this.program.getImageBase().getOffsetAsBigInteger();
 
         // Add all the memory blocks

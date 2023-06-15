@@ -42,14 +42,18 @@ public class QuokkaExporter extends Exporter {
 
     public QuokkaExporter() {
         super(QUOKKA_FORMAT_DISPLAY_NAME, QUOKKA_FILE_EXTENSION, null);
-        this.log.appendMsg(QUOKKA_COPYRIGHT);
+
+        // Initialize the log manager
+        LogManager.with(this.log);
+
+        LogManager.log(QUOKKA_COPYRIGHT);
     }
 
     @Override
     public boolean export(File file, DomainObject domainObj, AddressSetView addrSet,
             TaskMonitor monitor) throws ExporterException, IOException {
         if (!(domainObj instanceof Program)) {
-            this.log.appendMsg("Unsupported type: " + domainObj.getClass().getName());
+            LogManager.log("Unsupported type: " + domainObj.getClass().getName());
             return false;
         }
         final var program = (Program) domainObj;
@@ -64,7 +68,8 @@ public class QuokkaExporter extends Exporter {
             try (final var outputStream = new FileOutputStream(file)) {
                 proto.writeTo(outputStream);
             } catch (IOException e) {
-                this.log.appendMsg(String.format("[!] IO error while writing to the output file %s", file.getAbsolutePath()));
+                LogManager.log(String.format("[!] IO error while writing to the output file %s",
+                        file.getAbsolutePath()));
                 return false;
             }
         } catch (final CancelledException e) {
@@ -89,7 +94,7 @@ public class QuokkaExporter extends Exporter {
                     this.exporterMode = (ExporterMode) option.getValue();
                     break;
                 default:
-                    this.log.appendMsg("Warning, ignoring unknown option");
+                    LogManager.log("Warning, ignoring unknown option");
                     break;
             }
             break;

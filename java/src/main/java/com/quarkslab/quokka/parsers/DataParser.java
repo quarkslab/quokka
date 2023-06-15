@@ -8,8 +8,9 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.data.ByteDataType;
 import ghidra.program.util.DefinedDataIterator;
+import ghidra.util.task.TaskMonitor;
+import ghidra.util.exception.CancelledException;
 import quokka.QuokkaOuterClass.Quokka.DataType;
 import com.quarkslab.quokka.models.Data;
 import com.quarkslab.quokka.utils.Utils;
@@ -22,11 +23,11 @@ public class DataParser extends GhidraParser {
     // Fields
     private Set<Data> dataSet = new HashSet<>();
 
-    public DataParser(Program program) {
-        super(program);
+    public DataParser(Program program, TaskMonitor monitor) {
+        super(program, monitor);
     }
 
-    public void analyze() {
+    public void analyze() throws CancelledException {
         BigInteger imgBase = this.program.getImageBase().getOffsetAsBigInteger();
 
         // Since java doesn't support class name aliases it's better to use type inference
@@ -44,7 +45,7 @@ public class DataParser extends GhidraParser {
 
             // Check data size. It cannot be undefined (-1)
             int size = data.getLength();
-            assert size != -1;
+            Utils.assertLog(size != -1, "Found some data with unknown size");
 
             // Add the data object
             this.dataSet.add(

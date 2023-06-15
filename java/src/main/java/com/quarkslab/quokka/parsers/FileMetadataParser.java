@@ -10,6 +10,9 @@ import java.io.File;
 import javax.lang.model.util.ElementScanner14;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.lang.CompilerSpec;
+import ghidra.util.task.TaskMonitor;
+import ghidra.util.exception.CancelledException;
+import com.quarkslab.quokka.utils.Utils;
 
 
 /**
@@ -27,16 +30,17 @@ public class FileMetadataParser extends GhidraParser {
     private AddressSize address_size;
     private long baseAddr;
 
-    public FileMetadataParser(Program program) {
-        super(program);
+    public FileMetadataParser(Program program, TaskMonitor monitor) {
+        super(program, monitor);
     }
 
-    public void analyze() {
+    public void analyze() throws CancelledException {
         this.execName = new File(this.program.getExecutablePath()).getName();
 
         // Ghidra uses a quad format like x86:LE:32:default
         String[] quad = this.program.getLanguageID().toString().split(":");
-        assert quad.length == 4;
+        Utils.assertLog(quad.length == 4, String.format("Weird arch format found '%s'",
+                this.program.getLanguageID().toString()));
         this.arch = switch (quad[0].toLowerCase()) {
             case "x86" -> ISA.PROC_INTEL;
             case "arm" -> ISA.PROC_ARM;
