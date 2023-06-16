@@ -921,6 +921,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quokka.utils.parse_version" class="md-nav__link">
+    parse_version()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quokka.utils.sha256_file" class="md-nav__link">
     sha256_file()
   </a>
@@ -955,23 +962,37 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../version/" class="md-nav__link">
+        version
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_14" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_15" >
       
       
       
-        <label class="md-nav__link" for="__nav_7_14" id="__nav_7_14_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_7_15" id="__nav_7_15_label" tabindex="0">
           backends
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_14_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_7_14">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_15_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7_15">
           <span class="md-nav__icon md-icon"></span>
           backends
         </label>
@@ -1023,17 +1044,17 @@
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_15" >
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
       
       
       
-        <label class="md-nav__link" for="__nav_7_15" id="__nav_7_15_label" tabindex="0">
+        <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
           analysis
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_15_label" aria-expanded="false">
-        <label class="md-nav__title" for="__nav_7_15">
+      <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_16_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_7_16">
           <span class="md-nav__icon md-icon"></span>
           analysis
         </label>
@@ -1307,6 +1328,13 @@
         <li class="md-nav__item">
   <a href="#quokka.utils.md5_file" class="md-nav__link">
     md5_file()
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quokka.utils.parse_version" class="md-nav__link">
+    parse_version()
   </a>
   
 </li>
@@ -1877,6 +1905,47 @@ file and compare them.</p>
             <span class="n">md5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">byte</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">md5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+      </details>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="quokka.utils.parse_version" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">parse_version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Parse the version returning a tuple with the major, minor and patch</p>
+
+      <details class="quote">
+        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/utils.py</code></summary>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parse_version</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the version returning a tuple with the major, minor and patch&quot;&quot;&quot;</span>
+
+    <span class="n">parsed</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parsed</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> doesn&#39;t respect the format MAJOR.MINOR.PATCH&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parsed</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
