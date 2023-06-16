@@ -10,6 +10,7 @@ public class Function {
     private boolean isFake;
     private boolean isInFile;
     private List<Block> blocks = new ArrayList<>();
+    private List<Edge> edges = new ArrayList<>();
 
     public Function(BigInteger addr, boolean isInFile, boolean isFake) {
         this.addr = addr;
@@ -21,8 +22,19 @@ public class Function {
         this(addr, isInFile, false);
     }
 
-    public void addBlock(Block block) {
+    /**
+     * Add a Block to the function and returns its index
+     * 
+     * @param Block The block to add
+     * @return The index of the block just added
+     */
+    public int addBlock(Block block) {
         this.blocks.add(block);
+        return this.blocks.size() - 1;
+    }
+
+    public void addEdge(Edge edge) {
+        this.edges.add(edge);
     }
 
     public BigInteger getAddr() {
@@ -43,5 +55,9 @@ public class Function {
 
     public List<Block> getBlocks() {
         return Collections.unmodifiableList(this.blocks);
+    }
+
+    public List<Edge> getEdges() {
+        return Collections.unmodifiableList(this.edges);
     }
 }

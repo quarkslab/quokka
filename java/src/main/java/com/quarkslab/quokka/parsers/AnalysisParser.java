@@ -4,11 +4,14 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import ghidra.program.model.block.BasicBlockModel;
 import ghidra.program.model.block.CodeBlock;
+import ghidra.program.model.block.CodeBlockReference;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.mem.Memory;
@@ -19,8 +22,10 @@ import ghidra.program.model.symbol.FlowType;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import quokka.QuokkaOuterClass.Quokka.FunctionChunk.Block.BlockType;
+import quokka.QuokkaOuterClass.Quokka.Edge.EdgeType;
 import com.quarkslab.quokka.models.Function;
 import com.quarkslab.quokka.models.Block;
+import com.quarkslab.quokka.models.Edge;
 import com.quarkslab.quokka.LogManager;
 import com.quarkslab.quokka.utils.Utils;
 
@@ -95,6 +100,12 @@ public class AnalysisParser extends GhidraParser {
         // Create our Function model
         Function function = new Function(funcOffset, this.isAddrInFile(funcAddr), isExternal);
 
+        // Indexes used for building the CFG
+        Map<CodeBlock, Integer> bbIndexes = new HashMap<>();
+        // Flag to know whether the CodeBlock has a conditional jump. It is used to identify false
+        // the false branch of a conditional jump
+        Map<CodeBlock, Boolean> bbFlowIsConditional = new HashMap<>();
+
         // Extract the basic blocks.
         for (var it = this.bbModel.getCodeBlocksContaining(ghidraFunc.getBody(), this.monitor); it
                 .hasNext();) {
@@ -108,15 +119,54 @@ public class AnalysisParser extends GhidraParser {
             BlockType blockType = this.getProtoBlockType(basicBlock.getFlowType());
 
             // Add the block to the function
-            function.addBlock(new Block(blockOffset, blockType));
+            int index = function.addBlock(new Block(blockOffset, blockType));
+
+            bbIndexes.put(basicBlock, index);
 
             // TODO add missing fields
-            // bool is_fake = 2;
             // repeated uint32 instructions_index = 3;
+
+            // Check if the basic block contains a conditional jump
+            boolean isConditional = false;
+            for (var rit = basicBlock.getDestinations(this.monitor); rit.hasNext()
+                    && !isConditional;) {
+                FlowType flowType = rit.next().getFlowType();
+                isConditional |= flowType.isConditional();
+            }
+            bbFlowIsConditional.put(basicBlock, isConditional);
         }
 
-        // TODO Add CFG (edges)
-        // repeated Edge edges = 3;
+        // Extract the CFG
+        for (var item : bbIndexes.entrySet()) {
+            CodeBlock srcBlock = item.getKey();
+            Integer srcBlockIndex = item.getValue();
+
+            for (var it = srcBlock.getDestinations(this.monitor); it.hasNext();) {
+                CodeBlockReference ref = it.next();
+                Integer dstBlockIndex = bbIndexes.get(ref.getDestinationBlock());
+
+                // Add an edge only if it's internal to the function
+                if (dstBlockIndex == null)
+                    continue;
+
+                FlowType flowType = ref.getFlowType();
+                EdgeType edgeType;
+                if (flowType.isConditional())
+                    edgeType = EdgeType.TYPE_TRUE;
+                else if (flowType.isUnConditional() && !flowType.isComputed()
+                        && flowType.isFallthrough() && bbFlowIsConditional.get(srcBlock))
+                    edgeType = EdgeType.TYPE_FALSE;
+                else if (flowType.isUnConditional() && !flowType.isComputed())
+                    edgeType = EdgeType.TYPE_UNCONDITIONAL;
+                else if (flowType.isUnConditional() && flowType.isComputed())
+                    edgeType = EdgeType.TYPE_SWITCH;
+                else {
+                    LogManager.log(String.format("Unknown flow type %s", flowType.getName()));
+                    continue;
+                }
+                function.addEdge(new Edge(srcBlockIndex, dstBlockIndex, edgeType));
+            }
+        }
 
         return function;
     }
