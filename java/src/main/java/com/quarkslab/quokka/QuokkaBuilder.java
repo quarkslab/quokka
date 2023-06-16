@@ -162,6 +162,16 @@ public class QuokkaBuilder {
                 blockBuilder.setOffsetStart(block.getOffsetAsLong()).setIsFake(block.isFake())
                         .setBlockType(block.getType());
             }
+
+            // Add all the edges
+            for (var edge : function.getEdges()) {
+                var edgeBuilder = chunkBuilder.addEdgesBuilder();
+                edgeBuilder.setEdgeType(edge.getType());
+
+                // CFG edges never have a chunk reference, they only have a block reference
+                edgeBuilder.getSourceBuilder().setBlockId(edge.getSrcBlockIndex()).setNoChunk(true);
+                edgeBuilder.getDestinationBuilder().setBlockId(edge.getDstBlockIndex()).setNoChunk(true);
+            }
         }
     }
 
