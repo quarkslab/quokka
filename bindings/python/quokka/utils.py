@@ -153,3 +153,15 @@ def get_arch(
         arch = ArchARMThumb
 
     return arch
+
+
+def parse_version(version: str) -> tuple[int, int, int]:
+    """Parse the version returning a tuple with the major, minor and patch"""
+
+    parsed = tuple(map(int, version.split(".")))
+    if len(parsed) != 3:
+        raise ValueError(
+            f"Version {version} doesn't respect the format MAJOR.MINOR.PATCH"
+        )
+
+    return parsed

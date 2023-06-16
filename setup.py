@@ -15,13 +15,19 @@
 #  limitations under the License.
 
 from setuptools import setup
+from os.path import normpath
 
 with open("README.md", "r") as fd:
     readme = fd.read()
 
+main_ns = {}
+ver_path = normpath('bindings/python/quokka/version.py')
+with open(ver_path) as ver_file:
+    exec(ver_file.read(), main_ns)
+
 setup(
     name="quokka-project",
-    version="0.5.1",
+    version=main_ns['__version__'],
     author="Alexis <dm> Challande",
     author_email="achallande@quarkslab.com",
     url="https://github.com/quarkslab/quokka",
