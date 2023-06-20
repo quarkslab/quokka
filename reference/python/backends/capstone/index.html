@@ -1400,33 +1400,33 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
 
       <details class="quote">
         <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
-<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">capstone_decode_instruction</span><span class="p">(</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">capstone_decode_instruction</span><span class="p">(</span>
     <span class="n">inst</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decode an instruction with capstone</span>
@@ -1464,7 +1464,7 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
 
 
 <h2 id="quokka.backends.capstone.get_capstone_context" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_capstone_context</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="n">get_capstone_context</span><span class="p">(</span><span class="n">arch</span><span class="p">,</span> <span class="n">endian</span><span class="o">=</span><span class="n">Endianness</span><span class="o">.</span><span class="n">LITTLE_ENDIAN</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1558,7 +1558,29 @@ interested in most of the details, we already set the details to True.</p>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_capstone_context</span><span class="p">(</span><span class="n">arch</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">QuokkaArch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">:</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_capstone_context</span><span class="p">(</span>
+        <span class="n">arch</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">QuokkaArch</span><span class="p">],</span>
+        <span class="n">endian</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Endianness</span><span class="p">]</span> <span class="o">=</span> <span class="n">Endianness</span><span class="o">.</span><span class="n">LITTLE_ENDIAN</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the capstone context for the program</span>
 
 <span class="sd">    The Capstone context is used to decode instructions afterwards. Since we are</span>
@@ -1570,6 +1592,12 @@ interested in most of the details, we already set the details to True.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        A capstone Cs instance</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">endian_mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">Endianness</span><span class="o">.</span><span class="n">BIG_ENDIAN</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_BIG_ENDIAN</span><span class="p">,</span>
+        <span class="n">Endianness</span><span class="o">.</span><span class="n">LITTLE_ENDIAN</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_LITTLE_ENDIAN</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">capstone_endian</span> <span class="o">=</span> <span class="n">endian_mapping</span><span class="p">[</span><span class="n">endian</span><span class="p">]</span>
+
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARM</span><span class="p">:</span> <span class="p">(</span><span class="n">capstone</span><span class="o">.</span><span class="n">CS_ARCH_ARM</span><span class="p">,</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_ARM</span><span class="p">),</span>
         <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchARM64</span><span class="p">:</span> <span class="p">(</span><span class="n">capstone</span><span class="o">.</span><span class="n">CS_ARCH_ARM64</span><span class="p">,</span> <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_ARM</span><span class="p">),</span>
@@ -1579,6 +1607,18 @@ interested in most of the details, we already set the details to True.</p>
             <span class="n">capstone</span><span class="o">.</span><span class="n">CS_ARCH_ARM</span><span class="p">,</span>
             <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_THUMB</span><span class="p">,</span>
         <span class="p">),</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchMIPS</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_ARCH_MIPS</span><span class="p">,</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_32</span> <span class="o">+</span> <span class="n">capstone_endian</span><span class="p">),</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchMIPS64</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_ARCH_MIPS</span><span class="p">,</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_64</span> <span class="o">+</span> <span class="n">capstone_endian</span><span class="p">),</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchPPC</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_ARCH_PPC</span><span class="p">,</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_32</span> <span class="o">+</span> <span class="n">capstone_endian</span><span class="p">),</span>
+        <span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ArchPPC64</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_ARCH_PPC</span><span class="p">,</span>
+            <span class="n">capstone</span><span class="o">.</span><span class="n">CS_MODE_64</span> <span class="o">+</span> <span class="n">capstone_endian</span><span class="p">),</span>
     <span class="p">}</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -1677,30 +1717,30 @@ interested in most of the details, we already set the details to True.</p>
 
       <details class="quote">
         <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_capstone_context</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">,</span> <span class="n">is_thumb</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">:</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_capstone_context</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">,</span> <span class="n">is_thumb</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an appropriate context for Capstone instructions</span>
 
 <span class="sd">    For ARM architecture, if the instruction is Thumb, we must use a different context.</span>
