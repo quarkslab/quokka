@@ -181,7 +181,7 @@ class Program(dict):
     @cached_property
     def capstone(self) -> capstone.Cs:
         """Compute a capstone context"""
-        return quokka.backends.get_capstone_context(self.arch)
+        return quokka.backends.get_capstone_context(self.arch, self.endianness)
 
     @cached_property
     def call_graph(self) -> networkx.DiGraph:
@@ -209,7 +209,7 @@ class Program(dict):
     @cached_property
     def pypcode(self) -> pypcode.Context:
         """Generate the Pypcode context."""
-        return quokka.backends.get_pypcode_context(self.arch)
+        return quokka.backends.get_pypcode_context(self.arch, self.endianness)
 
     @cached_property
     def structures(self) -> List[quokka.Structure]:
