@@ -28,7 +28,7 @@ def make_enums(
     """Make enums from capstone module
 
     Dynamically generate enums from capstone constants
-    0
+
     Arguments:
         capstone_module: Capstone module
         items: Name of enums
