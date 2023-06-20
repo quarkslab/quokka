@@ -69,6 +69,7 @@ from quokka.utils import (
     get_isa,
     convert_address_size,
     get_arch,
+    parse_version,
 )
 
 __all__ = [
