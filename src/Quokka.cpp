@@ -158,6 +158,7 @@ ssize_t idaapi UIHook(void* /* not used */, int event_id,
 
   // set_database_flag(DBFL_KILL);
   qexit(0);
+  return 0;
 }
 
 void SetLogLevel() {
@@ -277,14 +278,34 @@ void idaapi PluginTerminate() {
 
 }  // namespace quokka
 
+#if IDA_SDK_VERSION > 740
 static plugmod_t* idaapi init() { return new quokka::plugin_ctx_t; }
+#else
+int idaapi init(void) {
+	quokka::PluginInit();
+	return PLUGIN_KEEP;
+}
+
+void idaapi term(void)
+{
+  quokka::PluginTerminate();
+}
+
+bool idaapi run(size_t args) {
+	return quokka::PluginRun(args);
+};
+#endif
 
 plugin_t PLUGIN{
     IDP_INTERFACE_VERSION,
+#if IDA_SDK_VERSION > 740
     PLUGIN_UNL | PLUGIN_MULTI,
+#else
+    PLUGIN_UNL,
+#endif
     init,
-    nullptr,
-    nullptr,
+    term,
+    run,
     "This module exports binary",
     "Quokka help",
     "Quokka",
