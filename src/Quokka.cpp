@@ -300,12 +300,15 @@ plugin_t PLUGIN{
     IDP_INTERFACE_VERSION,
 #if IDA_SDK_VERSION > 740
     PLUGIN_UNL | PLUGIN_MULTI,
+    init,
+    nullptr,
+    nullptr,
 #else
     PLUGIN_UNL,
-#endif
     init,
     term,
     run,
+#endif
     "This module exports binary",
     "Quokka help",
     "Quokka",
