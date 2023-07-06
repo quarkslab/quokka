@@ -277,14 +277,37 @@ void idaapi PluginTerminate() {
 
 }  // namespace quokka
 
+#if IDA_SDK_VERSION > 740
 static plugmod_t* idaapi init() { return new quokka::plugin_ctx_t; }
+#else
+int idaapi init(void) {
+	quokka::PluginInit();
+	return PLUGIN_KEEP;
+}
+
+void idaapi term(void)
+{
+  quokka::PluginTerminate();
+}
+
+bool idaapi run(size_t args) {
+	return quokka::PluginRun(args);
+};
+#endif
 
 plugin_t PLUGIN{
     IDP_INTERFACE_VERSION,
+#if IDA_SDK_VERSION > 740
     PLUGIN_UNL | PLUGIN_MULTI,
     init,
     nullptr,
     nullptr,
+#else
+    PLUGIN_UNL,
+    init,
+    term,
+    run,
+#endif
     "This module exports binary",
     "Quokka help",
     "Quokka",
