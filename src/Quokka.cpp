@@ -158,7 +158,6 @@ ssize_t idaapi UIHook(void* /* not used */, int event_id,
 
   // set_database_flag(DBFL_KILL);
   qexit(0);
-  return 0;
 }
 
 void SetLogLevel() {
