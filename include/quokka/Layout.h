@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <unordered_set>
 
+#include "Compatibility.h"
 #include <pro.h>
 #include <bytes.hpp>
 #include <funcs.hpp>
@@ -45,10 +46,9 @@
 #include "absl/time/clock.h"
 
 #include "Logger.h"
+#include "ProtoWrapper.h"
 #include "Util.h"
 #include "Windows.h"
-
-#include "ProtoWrapper.h"
 
 namespace quokka {
 

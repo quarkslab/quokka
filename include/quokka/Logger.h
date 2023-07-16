@@ -23,8 +23,8 @@
 #include <ctime>
 #include <utility>
 
+#include "Compatibility.h"
 #include <pro.h>
-
 #include <kernwin.hpp>
 
 #include "absl/strings/str_cat.h"

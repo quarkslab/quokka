@@ -14,12 +14,12 @@
 
 #include "quokka/Quokka.h"
 
-#include "quokka/Compatibility.h"
 #include "quokka/Data.h"
 #include "quokka/FileMetadata.h"
 #include "quokka/Layout.h"
 #include "quokka/Segment.h"
 #include "quokka/Settings.h"
+#include "quokka/Util.h"
 #include "quokka/Version.h"
 #include "quokka/Writer.h"
 

@@ -26,6 +26,7 @@
 #include <variant>
 #include <vector>
 
+#include "Compatibility.h"
 #include <pro.h>
 #include <bytes.hpp>
 #include <funcs.hpp>

@@ -21,11 +21,15 @@
 #define QUOKKA_UTIL_H
 
 #include <cstdint>
+#include <string>
+#include <unordered_map>
 
+#include "Compatibility.h"
 #include <pro.h>
 #include <bytes.hpp>
+#include <idp.hpp>
 #include <name.hpp>
-#include <unordered_map>
+#include <ua.hpp>
 
 #include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_map.h"
@@ -295,6 +299,25 @@ std::string ReplaceFileExtension(absl::string_view path,
  * @return True if option is not empty
  */
 bool StrToBoolean(const std::string& option);
+
+/**
+ * Get the processor "ph" variable
+ *
+ * New for IDA SDK 7.5
+ *
+ * @return A pointer to the processor object
+ */
+processor_t* GetProcessor();
+
+/**
+ * Retrieve the mnemonic name
+ *
+ * New in IDA 7.5
+ *
+ * @param instruction IDA instruction structure
+ * @return A string containing the mnemonic
+ */
+std::string GetMnemonic(const insn_t& instruction);
 
 }  // namespace quokka
 

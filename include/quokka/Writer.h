@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <stdexcept>
 
+#include "Compatibility.h"
 #include <pro.h>
 
 #include "absl/container/btree_set.h"
@@ -32,10 +33,9 @@
 
 #include "Localization.h"
 #include "Logger.h"
+#include "ProtoWrapper.h"
 #include "Util.h"
 #include "Windows.h"
-
-#include "ProtoWrapper.h"
 
 namespace quokka {
 

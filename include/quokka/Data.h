@@ -24,6 +24,7 @@
 #include <cassert>
 #include <cstdint>
 
+#include "Compatibility.h"
 #include <bytes.hpp>
 #include <enum.hpp>
 #include <kernwin.hpp>
@@ -36,10 +37,9 @@
 
 #include "Logger.h"       // Kept for logger
 #include "ProtoHelper.h"  // Kept for ProtoHelper
+#include "ProtoWrapper.h"
 #include "Util.h"
 #include "Windows.h"
-
-#include "ProtoWrapper.h"
 
 namespace quokka {
 
