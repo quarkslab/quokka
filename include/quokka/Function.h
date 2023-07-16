@@ -24,8 +24,8 @@
 #include <utility>
 #include <vector>
 
+#include "Compatibility.h"
 #include <pro.h>
-
 #include <funcs.hpp>
 #include <gdl.hpp>
 #include <graph.hpp>

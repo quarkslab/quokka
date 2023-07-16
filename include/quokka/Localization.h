@@ -26,6 +26,9 @@
 #include <memory>
 #include <variant>
 
+#include "Compatibility.h"
+#include <pro.h>
+
 #include "Windows.h"
 
 namespace quokka {

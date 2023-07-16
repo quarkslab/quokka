@@ -37,4 +37,21 @@ std::string GetName(ea_t address, bool mangled) {
 
 bool StrToBoolean(const std::string& option) { return !option.empty(); }
 
+processor_t* GetProcessor() {
+#if IDA_SDK_VERSION >= 750
+  return get_ph();
+#else
+  return &ph;
+#endif
+}
+
+std::string GetMnemonic(const insn_t& instruction) {
+#if IDA_SDK_VERSION >= 750
+  processor_t* processor = get_ph();
+  return {instruction.get_canon_mnem(*processor)};
+#else
+  return {instruction.get_canon_mnem()};
+#endif
+}
+
 }  // namespace quokka

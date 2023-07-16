@@ -20,6 +20,8 @@
 #ifndef QUOKKA_SETTINGS_H
 #define QUOKKA_SETTINGS_H
 
+#include <cassert>
+
 #include "Version.h"
 #include "Windows.h"
 

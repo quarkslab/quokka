@@ -24,17 +24,19 @@
 #include <utility>
 #include <vector>
 
+#include "Compatibility.h"
 #include <bytes.hpp>
 #include <enum.hpp>
 #include <funcs.hpp>
 #include <ida.hpp>
 #include <struct.hpp>
 
+#include "absl/container/flat_hash_map.h"
+
 #include "Localization.h"  //Kept for Location
 #include "Util.h"
 #include "Windows.h"
 
-#include "absl/container/flat_hash_map.h"
 
 namespace quokka {
 

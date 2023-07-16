@@ -26,6 +26,7 @@
 #include <fstream>
 #include <string>
 
+#include "Compatibility.h"
 #include <auto.hpp>
 #include <entry.hpp>
 #include <expr.hpp>
@@ -41,9 +42,8 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 
-#include "Windows.h"
-
 #include "ProtoWrapper.h"
+#include "Windows.h"
 
 namespace quokka {
 

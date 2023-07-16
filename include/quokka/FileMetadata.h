@@ -20,6 +20,7 @@
 #ifndef FILEMETADATA_H
 #define FILEMETADATA_H
 
+#include "Compatibility.h"
 #include <pro.h>
 #include <ida.hpp>
 #include <kernwin.hpp>
@@ -31,9 +32,8 @@
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_format.h"
 
-#include "Windows.h"
-
 #include "ProtoWrapper.h"
+#include "Windows.h"
 
 namespace quokka {
 
