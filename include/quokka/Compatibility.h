@@ -26,7 +26,7 @@
 
 // Workaround for fixing IDA SDK missing header
 #if IDA_SDK_VERSION == 810 || IDA_SDK_VERSION == 820
-include <cstdint>
+#include <cstdint>
 #endif
 
 #if IDA_SDK_VERSION < 730
