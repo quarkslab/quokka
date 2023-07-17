@@ -74,8 +74,8 @@ To download the plugin, get the file named `quokka_plugin**.so`.
 
 - CMake (at least 3.13)
 - A reasonable modern compiler supporting at least Cxx17
-- IDA Sdk (version 7.7) 64 bits
-- IDA (7.7 and higher)
+- IDA Sdk (version 7.3 or higher) 64 bits
+- IDA (7.3 or higher)
 
 #### Standard build
 
