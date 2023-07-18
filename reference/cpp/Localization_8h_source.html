@@ -89,65 +89,69 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;variant&gt;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span>quokka {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">class </span>Structure;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">struct </span>StructureMember;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">class </span>FuncChunk;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">class </span>Block;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">class </span>Instruction;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">class </span>Data;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">class </span>Function;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html">   52</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structquokka_1_1InstructionInstance.html">InstructionInstance</a> {</div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">   53</a></span>&#160;  std::shared_ptr&lt;FuncChunk&gt; <a class="code" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">chunk_</a>;  </div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">   54</a></span>&#160;  std::shared_ptr&lt;Block&gt; <a class="code" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">block_</a>;      </div>
-<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">   55</a></span>&#160;  <span class="keywordtype">int</span> <a class="code" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">instruction_index</a>;              </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a00d5da0804668994d560db1b039a0036">   64</a></span>&#160;  <a class="code" href="structquokka_1_1InstructionInstance.html#a00d5da0804668994d560db1b039a0036">InstructionInstance</a>(std::shared_ptr&lt;FuncChunk&gt; chunk,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                      std::shared_ptr&lt;Block&gt; block, <span class="keywordtype">int</span> index)</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      : <a class="code" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">chunk_</a>(std::move(chunk)),</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <a class="code" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">block_</a>(std::move(block)),</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <a class="code" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">instruction_index</a>(index) {}</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> H&gt;</div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#aeddf615f2a8758b2024570581ee4efa6">   78</a></span>&#160;  <span class="keyword">friend</span> H <a class="code" href="structquokka_1_1InstructionInstance.html#aeddf615f2a8758b2024570581ee4efa6">AbslHashValue</a>(H h, <span class="keyword">const</span> <a class="code" href="structquokka_1_1InstructionInstance.html">InstructionInstance</a>&amp; m) {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordflow">return</span> H::combine(std::move(h), m.<a class="code" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">chunk_</a>, m.<a class="code" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">block_</a>, m.<a class="code" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">instruction_index</a>);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;};</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment"> * Location possibility</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment"> * The two last (Instruction, InstructionInstance) are used for :</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"> * - Instruction : used if the reference is bound to the instruction itself</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"> * (e.g. lea rsi, _string_)</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"> * - InstructionInstance: used if the reference is bound to the instance of the</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> * instruction (e.g. call eax)</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment"> * */</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">using</span> Location =</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    std::variant&lt;ea_t,                              </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                 std::shared_ptr&lt;Data&gt;,             </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                 std::shared_ptr&lt;Structure&gt;,        </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                 std::shared_ptr&lt;StructureMember&gt;,  </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                 std::shared_ptr&lt;Instruction&gt;,      </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                 InstructionInstance,        </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                 std::shared_ptr&lt;Function&gt;,  </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                 std::shared_ptr&lt;FuncChunk&gt;  <span class="comment">//&lt; Chunks</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                 &gt;;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;}  <span class="comment">// namespace quokka</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_LOCALIZATION_H</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;pro.h&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">class </span>Structure;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">struct </span>StructureMember;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">class </span>FuncChunk;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">class </span>Block;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">class </span>Instruction;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">class </span>Data;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">class </span>Function;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html">   55</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structquokka_1_1InstructionInstance.html">InstructionInstance</a> {</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">   56</a></span>&#160;  std::shared_ptr&lt;FuncChunk&gt; <a class="code" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">chunk_</a>;  </div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">   57</a></span>&#160;  std::shared_ptr&lt;Block&gt; <a class="code" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">block_</a>;      </div>
+<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">   58</a></span>&#160;  <span class="keywordtype">int</span> <a class="code" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">instruction_index</a>;              </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#a00d5da0804668994d560db1b039a0036">   67</a></span>&#160;  <a class="code" href="structquokka_1_1InstructionInstance.html#a00d5da0804668994d560db1b039a0036">InstructionInstance</a>(std::shared_ptr&lt;FuncChunk&gt; chunk,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                      std::shared_ptr&lt;Block&gt; block, <span class="keywordtype">int</span> index)</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      : <a class="code" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">chunk_</a>(std::move(chunk)),</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <a class="code" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">block_</a>(std::move(block)),</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <a class="code" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">instruction_index</a>(index) {}</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> H&gt;</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="structquokka_1_1InstructionInstance.html#aeddf615f2a8758b2024570581ee4efa6">   81</a></span>&#160;  <span class="keyword">friend</span> H <a class="code" href="structquokka_1_1InstructionInstance.html#aeddf615f2a8758b2024570581ee4efa6">AbslHashValue</a>(H h, <span class="keyword">const</span> <a class="code" href="structquokka_1_1InstructionInstance.html">InstructionInstance</a>&amp; m) {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> H::combine(std::move(h), m.<a class="code" href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">chunk_</a>, m.<a class="code" href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">block_</a>, m.<a class="code" href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">instruction_index</a>);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"> * Location possibility</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"> * The two last (Instruction, InstructionInstance) are used for :</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="comment"> * - Instruction : used if the reference is bound to the instruction itself</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment"> * (e.g. lea rsi, _string_)</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="comment"> * - InstructionInstance: used if the reference is bound to the instance of the</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="comment"> * instruction (e.g. call eax)</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="comment"> * */</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">using</span> Location =</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    std::variant&lt;ea_t,                              </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                 std::shared_ptr&lt;Data&gt;,             </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                 std::shared_ptr&lt;Structure&gt;,        </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                 std::shared_ptr&lt;StructureMember&gt;,  </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                 std::shared_ptr&lt;Instruction&gt;,      </div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                 InstructionInstance,        </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                 std::shared_ptr&lt;Function&gt;,  </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                 std::shared_ptr&lt;FuncChunk&gt;  <span class="comment">//&lt; Chunks</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                 &gt;;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_LOCALIZATION_H</span></div>
+<div class="ttc" id="aCompatibility_8h_html"><div class="ttname"><a href="Compatibility_8h.html">Compatibility.h</a></div></div>
 <div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
-<div class="ttc" id="astructquokka_1_1InstructionInstance_html"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html">quokka::InstructionInstance</a></div><div class="ttdef"><b>Definition:</b> Localization.h:52</div></div>
-<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a00d5da0804668994d560db1b039a0036"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a00d5da0804668994d560db1b039a0036">quokka::InstructionInstance::InstructionInstance</a></div><div class="ttdeci">InstructionInstance(std::shared_ptr&lt; FuncChunk &gt; chunk, std::shared_ptr&lt; Block &gt; block, int index)</div><div class="ttdef"><b>Definition:</b> Localization.h:64</div></div>
-<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a703aa869c1f578ffd6dc6b1c8b037aa0"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">quokka::InstructionInstance::block_</a></div><div class="ttdeci">std::shared_ptr&lt; Block &gt; block_</div><div class="ttdoc">Block.</div><div class="ttdef"><b>Definition:</b> Localization.h:54</div></div>
-<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a9a99e41b206cf05e4ea62dcd1fceb544"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">quokka::InstructionInstance::chunk_</a></div><div class="ttdeci">std::shared_ptr&lt; FuncChunk &gt; chunk_</div><div class="ttdoc">Chunk.</div><div class="ttdef"><b>Definition:</b> Localization.h:53</div></div>
-<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a9d2bc8b080edfc2a9a30c935cd5df448"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">quokka::InstructionInstance::instruction_index</a></div><div class="ttdeci">int instruction_index</div><div class="ttdoc">Index inside the block.</div><div class="ttdef"><b>Definition:</b> Localization.h:55</div></div>
-<div class="ttc" id="astructquokka_1_1InstructionInstance_html_aeddf615f2a8758b2024570581ee4efa6"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#aeddf615f2a8758b2024570581ee4efa6">quokka::InstructionInstance::AbslHashValue</a></div><div class="ttdeci">friend H AbslHashValue(H h, const InstructionInstance &amp;m)</div><div class="ttdef"><b>Definition:</b> Localization.h:78</div></div>
+<div class="ttc" id="astructquokka_1_1InstructionInstance_html"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html">quokka::InstructionInstance</a></div><div class="ttdef"><b>Definition:</b> Localization.h:55</div></div>
+<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a00d5da0804668994d560db1b039a0036"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a00d5da0804668994d560db1b039a0036">quokka::InstructionInstance::InstructionInstance</a></div><div class="ttdeci">InstructionInstance(std::shared_ptr&lt; FuncChunk &gt; chunk, std::shared_ptr&lt; Block &gt; block, int index)</div><div class="ttdef"><b>Definition:</b> Localization.h:67</div></div>
+<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a703aa869c1f578ffd6dc6b1c8b037aa0"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a703aa869c1f578ffd6dc6b1c8b037aa0">quokka::InstructionInstance::block_</a></div><div class="ttdeci">std::shared_ptr&lt; Block &gt; block_</div><div class="ttdoc">Block.</div><div class="ttdef"><b>Definition:</b> Localization.h:57</div></div>
+<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a9a99e41b206cf05e4ea62dcd1fceb544"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a9a99e41b206cf05e4ea62dcd1fceb544">quokka::InstructionInstance::chunk_</a></div><div class="ttdeci">std::shared_ptr&lt; FuncChunk &gt; chunk_</div><div class="ttdoc">Chunk.</div><div class="ttdef"><b>Definition:</b> Localization.h:56</div></div>
+<div class="ttc" id="astructquokka_1_1InstructionInstance_html_a9d2bc8b080edfc2a9a30c935cd5df448"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#a9d2bc8b080edfc2a9a30c935cd5df448">quokka::InstructionInstance::instruction_index</a></div><div class="ttdeci">int instruction_index</div><div class="ttdoc">Index inside the block.</div><div class="ttdef"><b>Definition:</b> Localization.h:58</div></div>
+<div class="ttc" id="astructquokka_1_1InstructionInstance_html_aeddf615f2a8758b2024570581ee4efa6"><div class="ttname"><a href="structquokka_1_1InstructionInstance.html#aeddf615f2a8758b2024570581ee4efa6">quokka::InstructionInstance::AbslHashValue</a></div><div class="ttdeci">friend H AbslHashValue(H h, const InstructionInstance &amp;m)</div><div class="ttdef"><b>Definition:</b> Localization.h:81</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

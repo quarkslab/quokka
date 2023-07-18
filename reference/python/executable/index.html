@@ -1388,7 +1388,7 @@
 
 
 <h2 id="quokka.executable.Executable" class="doc doc-heading">
-        <code>Executable</code>
+          <code>Executable</code>
 
 
 </h2>
@@ -1402,6 +1402,8 @@
 <p>Note: The binary is read only once and stored in memory. This is done for
 performance purposes but does not cope well with low RAM systems and/or huge
 binaries.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1444,6 +1446,8 @@ binaries.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -1491,6 +1495,8 @@ binaries.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Raises:</strong></p>
   <table>
     <thead>
@@ -1513,10 +1519,9 @@ binaries.</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
+            <details class="quote">
+              <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
 <span class="normal"> 24</span>
 <span class="normal"> 25</span>
 <span class="normal"> 26</span>
@@ -1836,11 +1841,12 @@ binaries.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1864,9 +1870,9 @@ binaries.</p>
   
       <p>Constructor</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
@@ -1888,10 +1894,11 @@ binaries.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">exec_file</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">endianness</span><span class="p">:</span> <span class="n">Endianness</span> <span class="o">=</span> <span class="n">endianness</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1908,6 +1915,8 @@ binaries.</p>
       <p>Read <code>size</code> at <code>offset</code> in the file.</p>
 <p>This method should not be used directly and considered as part of a private API.
 The preferred method are read_byte / read_string .</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1951,6 +1960,8 @@ The preferred method are read_byte / read_string .</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1972,6 +1983,8 @@ The preferred method are read_byte / read_string .</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -1995,9 +2008,9 @@ The preferred method are read_byte / read_string .</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
 <span class="normal">60</span>
@@ -2037,10 +2050,11 @@ The preferred method are read_byte / read_string .</p>
     <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content not found at offset </span><span class="si">{</span><span class="n">offset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2056,6 +2070,8 @@ The preferred method are read_byte / read_string .</p>
   
       <p>Read one (or more) byte(s) in the file at <code>offset</code>.</p>
 <p>This is mostly used to read instructions.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2099,6 +2115,8 @@ The preferred method are read_byte / read_string .</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2121,9 +2139,9 @@ The preferred method are read_byte / read_string .</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
@@ -2149,10 +2167,11 @@ The preferred method are read_byte / read_string .</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2168,6 +2187,8 @@ The preferred method are read_byte / read_string .</p>
   
       <p>Read the data value.</p>
 <p>If the size is not specified, it is inferred from the data type.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2225,6 +2246,8 @@ The preferred method are read_byte / read_string .</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2247,9 +2270,9 @@ The preferred method are read_byte / read_string .</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
@@ -2353,10 +2376,11 @@ The preferred method are read_byte / read_string .</p>
             <span class="sa">f</span><span class="s2">&quot;Cannot read </span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s2">. DataType not implemented.&quot;</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2374,6 +2398,8 @@ The preferred method are read_byte / read_string .</p>
 <p>If the size is not given, Quokka will try to read the string until the
 first null byte. That works only for null-terminated strings.</p>
 <p>If the string is null terminated, remove the trailing 0.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2417,6 +2443,8 @@ first null byte. That works only for null-terminated strings.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2438,6 +2466,8 @@ first null byte. That works only for null-terminated strings.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -2461,9 +2491,9 @@ first null byte. That works only for null-terminated strings.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/executable.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
 <span class="normal"> 79</span>
 <span class="normal"> 80</span>
 <span class="normal"> 81</span>
@@ -2539,7 +2569,7 @@ first null byte. That works only for null-terminated strings.</p>
 
     <span class="k">return</span> <span class="n">string</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -2566,11 +2596,11 @@ first null byte. That works only for null-terminated strings.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
     
   </small>

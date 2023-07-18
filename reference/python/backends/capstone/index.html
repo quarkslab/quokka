@@ -1332,6 +1332,7 @@
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1348,6 +1349,8 @@
 <p>Decode an instruction and retry for ARM to check if the Thumb mode was activated
 The decoding logic is done by the inner method <code>_decode</code>.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -1362,7 +1365,7 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
         <tr>
           <td><code>inst</code></td>
           <td>
-                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Instruction">Instruction</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Instruction" href="../../instruction/#quokka.instruction.Instruction">Instruction</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1375,6 +1378,8 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1398,9 +1403,9 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
@@ -1454,10 +1459,11 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
 
     <span class="k">return</span> <span class="n">capstone_inst</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1475,6 +1481,8 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
 <p>The Capstone context is used to decode instructions afterwards. Since we are
 interested in most of the details, we already set the details to True.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -1489,7 +1497,7 @@ interested in most of the details, we already set the details to True.</p>
         <tr>
           <td><code>arch</code></td>
           <td>
-                <code><span title="quokka.types.Type">Type</span>[<span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.analysis">analysis</span>.<span title="quokka.analysis.analysis.QuokkaArch">QuokkaArch</span>]</code>
+                <code><span title="quokka.types.Type">Type</span>[quokka.<span title="quokka.analysis">analysis</span>.<a class="autorefs autorefs-internal" title="quokka.analysis.QuokkaArch" href="../../analysis/arch/#quokka.analysis.arch.QuokkaArch">QuokkaArch</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1502,6 +1510,8 @@ interested in most of the details, we already set the details to True.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1525,9 +1535,9 @@ interested in most of the details, we already set the details to True.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
@@ -1631,10 +1641,11 @@ interested in most of the details, we already set the details to True.</p>
 
     <span class="k">return</span> <span class="n">context</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1651,6 +1662,8 @@ interested in most of the details, we already set the details to True.</p>
       <p>Returns an appropriate context for Capstone instructions</p>
 <p>For ARM architecture, if the instruction is Thumb, we must use a different context.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -1665,7 +1678,7 @@ interested in most of the details, we already set the details to True.</p>
         <tr>
           <td><code>program</code></td>
           <td>
-                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Program">Program</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Program" href="../../program/#quokka.program.Program">Program</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1693,6 +1706,8 @@ interested in most of the details, we already set the details to True.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1715,9 +1730,9 @@ interested in most of the details, we already set the details to True.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/capstone.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
@@ -1765,7 +1780,7 @@ interested in most of the details, we already set the details to True.</p>
 
     <span class="k">return</span> <span class="n">program</span><span class="o">.</span><span class="n">capstone</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -1783,11 +1798,11 @@ interested in most of the details, we already set the details to True.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
     
   </small>

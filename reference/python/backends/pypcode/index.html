@@ -1402,6 +1402,7 @@
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1419,6 +1420,8 @@
 A problem for example is the support of prefixes (such LOCK) which are decoded as 2
 instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -1433,7 +1436,7 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
         <tr>
           <td><code>block</code></td>
           <td>
-                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Block">Block</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Block" href="../../block/#quokka.block.Block">Block</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1463,6 +1466,8 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
       <p>Raises
     PypcodeError: if the combination doesn't work</p>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1485,9 +1490,9 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
 <span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span>
@@ -1589,10 +1594,11 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
 
     <span class="k">return</span> <span class="n">pcode_instructions</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1609,6 +1615,8 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
       <p>Check if two pypcode objets are the same</p>
 <p>We use monkey patching to attach the equality method to other classes and rely on
 <strong>slots</strong> to check which fields to check.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1652,6 +1660,8 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1674,9 +1684,9 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
@@ -1712,10 +1722,11 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s2">&quot;cobj&quot;</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1730,6 +1741,8 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
   <div class="doc doc-contents ">
   
       <p>Find the architecture for an arch based on the target identification</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1759,6 +1772,8 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Raises:</strong></p>
   <table>
     <thead>
@@ -1780,6 +1795,8 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -1803,9 +1820,9 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
 <span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
@@ -1843,10 +1860,11 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
 
     <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span><span class="s2">&quot;Unable to find the appropriate arch: missing lang&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -1865,6 +1883,8 @@ instructions by Ghidra (wrong) but only 1 by IDA (correct).</p>
 This method is a bit slow because enum are generated by pypcode on the fly but should
 be executed only once.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -1879,7 +1899,7 @@ be executed only once.</p>
         <tr>
           <td><code>arch</code></td>
           <td>
-                <code><span title="quokka.types.Type">Type</span>[<span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.analysis">analysis</span>.<span title="quokka.analysis.analysis.QuokkaArch">QuokkaArch</span>]</code>
+                <code><span title="quokka.types.Type">Type</span>[quokka.<span title="quokka.analysis">analysis</span>.<a class="autorefs autorefs-internal" title="quokka.analysis.QuokkaArch" href="../../analysis/arch/#quokka.analysis.arch.QuokkaArch">QuokkaArch</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1892,6 +1912,8 @@ be executed only once.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -1915,6 +1937,8 @@ be executed only once.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1937,9 +1961,9 @@ be executed only once.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
@@ -2025,10 +2049,11 @@ be executed only once.</p>
     <span class="n">pcode_arch</span> <span class="o">=</span> <span class="n">get_arch_from_string</span><span class="p">(</span><span class="n">target_id</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span><span class="p">(</span><span class="n">pcode_arch</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2044,6 +2069,8 @@ be executed only once.</p>
   
       <p>Create a hash value for a pypcode object</p>
 <p>This allows to create set of values.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2073,6 +2100,8 @@ be executed only once.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2095,9 +2124,9 @@ be executed only once.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
@@ -2125,10 +2154,11 @@ be executed only once.</p>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">ContextObj</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">))</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__slots__</span> <span class="k">if</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s2">&quot;cobj&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2146,6 +2176,8 @@ be executed only once.</p>
 <p>This method decode a block of instructions using Pypcode context all at once.
 This is faster than multiple calls to the decode at the instruction level.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -2160,7 +2192,7 @@ This is faster than multiple calls to the decode at the instruction level.</p>
         <tr>
           <td><code>block</code></td>
           <td>
-                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Block">Block</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Block" href="../../block/#quokka.block.Block">Block</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2173,6 +2205,8 @@ This is faster than multiple calls to the decode at the instruction level.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2196,9 +2230,9 @@ This is faster than multiple calls to the decode at the instruction level.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
@@ -2270,10 +2304,11 @@ This is faster than multiple calls to the decode at the instruction level.</p>
     <span class="n">pcode_instructions</span> <span class="o">=</span> <span class="n">combine_instructions</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">translation</span><span class="o">.</span><span class="n">instructions</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pcode_instructions</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2292,6 +2327,8 @@ This is faster than multiple calls to the decode at the instruction level.</p>
 Note that a (binary) instruction is expected to have several pcode instructions
 associated.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -2306,7 +2343,7 @@ associated.</p>
         <tr>
           <td><code>inst</code></td>
           <td>
-                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Instruction">Instruction</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Instruction" href="../../instruction/#quokka.instruction.Instruction">Instruction</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2319,6 +2356,8 @@ associated.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -2342,6 +2381,8 @@ associated.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2364,9 +2405,9 @@ associated.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
 <span class="normal">267</span>
@@ -2444,10 +2485,11 @@ associated.</p>
     <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">translation</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">explain</span><span class="p">)</span>
     <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">(</span><span class="s2">&quot;Unable to decode instruction&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -2467,6 +2509,8 @@ a different pypcode Context.</p>
 <p>We use the boolean <code>is_thumb</code> directly to allow caching of the call here because it
 is costly to generate the context.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -2481,7 +2525,7 @@ is costly to generate the context.</p>
         <tr>
           <td><code>program</code></td>
           <td>
-                <code><span title="quokka.analysis">quokka</span>.<span title="quokka.analysis.Program">Program</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Program" href="../../program/#quokka.program.Program">Program</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -2509,6 +2553,8 @@ is costly to generate the context.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2531,9 +2577,9 @@ is costly to generate the context.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/backends/pypcode.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
@@ -2591,7 +2637,7 @@ is costly to generate the context.</p>
 
     <span class="k">return</span> <span class="n">program</span><span class="o">.</span><span class="n">pypcode</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -2609,11 +2655,11 @@ is costly to generate the context.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
     
   </small>
