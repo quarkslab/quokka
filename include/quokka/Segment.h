@@ -20,6 +20,7 @@
 #ifndef QUOKKA_SEGMENT_H
 #define QUOKKA_SEGMENT_H
 
+#include "Compatibility.h"
 #include <loader.hpp>
 #include <name.hpp>
 #include <segment.hpp>
@@ -27,10 +28,9 @@
 #include "absl/strings/str_format.h"
 
 #include "Logger.h"
+#include "ProtoWrapper.h"
 #include "Util.h"
 #include "Windows.h"
-
-#include "ProtoWrapper.h"
 
 namespace quokka {
 

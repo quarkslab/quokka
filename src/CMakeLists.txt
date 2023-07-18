@@ -17,7 +17,6 @@ endif ()
 add_library(quokka_shared STATIC
         "Block.cpp"
         "Comment.cpp"
-        "Compatibility.cpp"
         "Data.cpp"
         "FileMetadata.cpp"
         "Function.cpp"

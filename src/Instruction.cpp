@@ -14,8 +14,8 @@
 
 #include "quokka/Instruction.h"
 
-#include "quokka/Compatibility.h"
 #include "quokka/Settings.h"
+#include "quokka/Util.h"
 
 namespace quokka {
 

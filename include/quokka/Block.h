@@ -27,8 +27,8 @@
 #include <cassert>
 #include <vector>
 
+#include "Compatibility.h"
 #include <pro.h>
-
 #include <gdl.hpp>
 #include <ida.hpp>
 
