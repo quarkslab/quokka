@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include "Compatibility.h"
 #include <ida.hpp>
 #include <idp.hpp>
 #include <lines.hpp>

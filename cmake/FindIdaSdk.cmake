@@ -31,7 +31,10 @@
 #   IdaSdk_INCLUDE_DIRS - Include directories for the IDA Pro SDK.
 #   IdaSdk_PLATFORM     - IDA SDK platform, one of __LINUX__, __NT__ or
 #                         __MAC__.
-#   IDA_ROOT_DIR         - IDA Binary
+#   IDA_ROOT_DIR        - IDA Binary
+#   IdaSdk_LIB          - Windows: path to ida.lib for 64-bit address sizes
+#   IdaSdk_LIB32        - Windows: full path to a suitable ida.lib for 32-bit
+#                                  address aware IDA.
 #
 # This module reads hints about search locations from variables:
 #
@@ -76,7 +79,28 @@ if (UNIX)
     endif ()
 elseif (WIN32)
     set(IdaSdk_PLATFORM __NT__)
-    set(IdaLib ${IdaSdk_DIR}/lib/x64_win_vc_64/ida.lib)
+    find_library(IdaSdk_LIB ida
+      PATHS ${IdaSdk_DIR}/lib
+      PATH_SUFFIXES x64_win_vc_64
+                    # IDA SDK 8.2 and later
+                    x64_win_vc_64_teams
+                    x64_win_vc_64_pro
+                    x64_win_vc_64_home
+      NO_DEFAULT_PATH
+    )
+    find_library(IdaSdk_LIB32 ida
+      PATHS ${IdaSdk_DIR}/lib
+      PATH_SUFFIXES x64_win_vc_32
+                    # IDA SDK 8.2 and later
+                    x64_win_vc_32_teams
+                    x64_win_vc_32_pro
+                    x64_win_vc_32_home
+      NO_DEFAULT_PATH
+    )
+    if(NOT IdaSdk_LIB OR NOT IdaSdk_LIB32)
+      message(FATAL_ERROR "Missing ida.lib from SDK lib dir")
+    endif()
+    set(IdaLib ${IdaSdk_LIB})
 else ()
     message(FATAL_ERROR "Unsupported system type: ${CMAKE_SYSTEM_NAME}")
 endif ()
@@ -117,7 +141,7 @@ function(_ida_plugin name link_script)  # ARGN contains sources
         # TODO(cblichmann): This belongs in an interface library instead.
         target_compile_options(${name} PUBLIC -Wno-non-virtual-dtor)
     elseif (WIN32)
-        target_link_libraries(${name} ${IdaSdk_DIR}/lib/x64_win_vc_64/ida.lib)
+        target_link_libraries(${name} ${IdaSdk_LIB})
     endif ()
 endfunction()
 

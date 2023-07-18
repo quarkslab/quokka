@@ -10,12 +10,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        ida_sdk: [77, 80]
+        ida_sdk: [74, 77, 80, 81, 82, 83]
         include:
+          - ida_sdk: 74
+            sdk_password: IDA_SDK74_PASSWORD
           - ida_sdk: 77
             sdk_password: IDA_SDK77_PASSWORD
           - ida_sdk: 80
             sdk_password: IDA_SDK80_PASSWORD
+          - ida_sdk: 81
+            sdk_password: IDA_SDK81_PASSWORD
+          - ida_sdk: 82
+            sdk_password: IDA_SDK82_PASSWORD
+          - ida_sdk: 83
+            sdk_password: IDA_SDK83_PASSWORD
           - os: ubuntu-latest
             ext: so
           - os: windows-latest
@@ -84,7 +92,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        ida_sdk: [77, 80]
+        ida_sdk: [74, 77, 80, 81, 82, 83]
         include:
           - os: windows-latest
             ext: dll

@@ -49,6 +49,8 @@ $ pip install quokka-project
 Note: The IDA plugin is not needed to read a `Quokka` generated file. It is
 only used to generate them.
 
+Quokka is currently compatible with IDA 7.3+
+
 The plugin is built on the CI and available in the
 [Release](https://github.com/quarkslab/quokka/releases/new) tab.
 

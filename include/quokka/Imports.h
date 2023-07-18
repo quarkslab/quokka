@@ -15,12 +15,13 @@
 #ifndef QUOKKA_IMPORTS_H
 #define QUOKKA_IMPORTS_H
 
-#include <absl/container/flat_hash_map.h>
-
+#include "Compatibility.h"
 #include <pro.h>
 #include <nalt.hpp>
 #include <utility>
 #include <vector>
+
+#include <absl/container/flat_hash_map.h>
 
 #include "Windows.h"
 

@@ -16,34 +16,21 @@
  * @file Compatibility.h
  * Compatibility file
  *
- * Proxy methods for IDA when some functions in the SDK changes.
+ * Keeps compatibility between different version of IDA.
  */
 
 #ifndef QUOKKA_COMPATIBILITY_H
 #define QUOKKA_COMPATIBILITY_H
 
-#include <idp.hpp>
-#include <ua.hpp>
+#include <pro.h>
 
-#include "Windows.h"
+// Workaround for fixing IDA SDK missing header
+#if IDA_SDK_VERSION == 810 || IDA_SDK_VERSION == 820
+#include <cstdint>
+#endif
 
-/**
- * Get the processor "ph" variable
- *
- * New for IDA SDK 7.5
- *
- * @return A pointer to the processor object
- */
-processor_t* GetProcessor();
-
-/**
- * Retrieve the mnemonic name
- *
- * New in IDA 7.5
- *
- * @param instruction IDA instruction structure
- * @return A string containing the mnemonic
- */
-std::string GetMnemonic(const insn_t& instruction);
+#if IDA_SDK_VERSION < 730
+#define BADADDR64 uint64(-1)
+#endif
 
 #endif  // QUOKKA_COMPATIBILITY_H
