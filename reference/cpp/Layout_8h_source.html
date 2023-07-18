@@ -90,27 +90,27 @@ $(function() {
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;pro.h&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;bytes.hpp&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;funcs.hpp&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;gdl.hpp&gt;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;graph.hpp&gt;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;ida.hpp&gt;</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &lt;kernwin.hpp&gt;</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#include &lt;nalt.hpp&gt;</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#include &lt;segment.hpp&gt;</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &lt;ua.hpp&gt;</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &lt;xref.hpp&gt;</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#include &quot;absl/container/btree_set.h&quot;</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#include &quot;absl/hash/hash.h&quot;</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#include &quot;absl/time/clock.h&quot;</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Logger_8h.html">Logger.h</a>&quot;</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Util_8h.html">Util.h</a>&quot;</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ProtoWrapper_8h.html">ProtoWrapper.h</a>&quot;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;pro.h&gt;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;bytes.hpp&gt;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;funcs.hpp&gt;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;gdl.hpp&gt;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;graph.hpp&gt;</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &lt;ida.hpp&gt;</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#include &lt;kernwin.hpp&gt;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#include &lt;nalt.hpp&gt;</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &lt;segment.hpp&gt;</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &lt;ua.hpp&gt;</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#include &lt;xref.hpp&gt;</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#include &quot;absl/container/btree_set.h&quot;</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#include &quot;absl/hash/hash.h&quot;</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#include &quot;absl/time/clock.h&quot;</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Logger_8h.html">Logger.h</a>&quot;</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="ProtoWrapper_8h.html">ProtoWrapper.h</a>&quot;</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Util_8h.html">Util.h</a>&quot;</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">namespace </span>quokka {</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
@@ -233,6 +233,7 @@ $(function() {
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160; </div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;}  <span class="comment">// namespace quokka</span></div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_LAYOUT_H</span></div>
+<div class="ttc" id="aCompatibility_8h_html"><div class="ttname"><a href="Compatibility_8h.html">Compatibility.h</a></div></div>
 <div class="ttc" id="aLayout_8h_html_a628a016044fed1eac52c7522479585eb"><div class="ttname"><a href="Layout_8h.html#a628a016044fed1eac52c7522479585eb">quokka::State</a></div><div class="ttdeci">State</div><div class="ttdef"><b>Definition:</b> Layout.h:69</div></div>
 <div class="ttc" id="aLayout_8h_html_a628a016044fed1eac52c7522479585eba3282e084d9bfccbf8ed356ecccbeae93"><div class="ttname"><a href="Layout_8h.html#a628a016044fed1eac52c7522479585eba3282e084d9bfccbf8ed356ecccbeae93">quokka::START</a></div><div class="ttdeci">@ START</div><div class="ttdoc">Not used for layout type.</div><div class="ttdef"><b>Definition:</b> Layout.h:70</div></div>
 <div class="ttc" id="aLayout_8h_html_a628a016044fed1eac52c7522479585eba9930b3fdaa2403d241a48b3e897e1d4f"><div class="ttname"><a href="Layout_8h.html#a628a016044fed1eac52c7522479585eba9930b3fdaa2403d241a48b3e897e1d4f">quokka::FINISH</a></div><div class="ttdeci">@ FINISH</div><div class="ttdoc">Not used for layout type.</div><div class="ttdef"><b>Definition:</b> Layout.h:76</div></div>
@@ -241,8 +242,8 @@ $(function() {
 <div class="ttc" id="aProtoWrapper_8h_html"><div class="ttname"><a href="ProtoWrapper_8h.html">ProtoWrapper.h</a></div></div>
 <div class="ttc" id="aUtil_8h_html"><div class="ttname"><a href="Util_8h.html">Util.h</a></div></div>
 <div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
-<div class="ttc" id="aclassquokka_1_1BucketNew_html"><div class="ttname"><a href="classquokka_1_1BucketNew.html">quokka::BucketNew</a></div><div class="ttdef"><b>Definition:</b> Util.h:90</div></div>
-<div class="ttc" id="aclassquokka_1_1Comments_html"><div class="ttname"><a href="classquokka_1_1Comments.html">quokka::Comments</a></div><div class="ttdef"><b>Definition:</b> Comment.h:86</div></div>
+<div class="ttc" id="aclassquokka_1_1BucketNew_html"><div class="ttname"><a href="classquokka_1_1BucketNew.html">quokka::BucketNew</a></div><div class="ttdef"><b>Definition:</b> Util.h:94</div></div>
+<div class="ttc" id="aclassquokka_1_1Comments_html"><div class="ttname"><a href="classquokka_1_1Comments.html">quokka::Comments</a></div><div class="ttdef"><b>Definition:</b> Comment.h:88</div></div>
 <div class="ttc" id="aclassquokka_1_1FuncChunkCollection_html"><div class="ttname"><a href="classquokka_1_1FuncChunkCollection.html">quokka::FuncChunkCollection</a></div><div class="ttdef"><b>Definition:</b> Function.h:378</div></div>
 <div class="ttc" id="aclassquokka_1_1HeadIterator_html"><div class="ttname"><a href="classquokka_1_1HeadIterator.html">quokka::HeadIterator</a></div><div class="ttdef"><b>Definition:</b> Layout.h:117</div></div>
 <div class="ttc" id="aclassquokka_1_1HeadIterator_html_a04d38dd468b13593d7873a25c6146b58"><div class="ttname"><a href="classquokka_1_1HeadIterator.html#a04d38dd468b13593d7873a25c6146b58">quokka::HeadIterator::NextAddressAndState</a></div><div class="ttdeci">void NextAddressAndState()</div><div class="ttdef"><b>Definition:</b> Layout.cpp:83</div></div>

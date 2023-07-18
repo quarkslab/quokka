@@ -73,10 +73,14 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &quot;<a class="el" href="Compatibility_8h_source.html">Compatibility.h</a>&quot;</code><br />
 <code>#include &lt;pro.h&gt;</code><br />
 <code>#include &lt;bytes.hpp&gt;</code><br />
+<code>#include &lt;idp.hpp&gt;</code><br />
 <code>#include &lt;name.hpp&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;ua.hpp&gt;</code><br />
 <code>#include &quot;absl/container/btree_map.h&quot;</code><br />
 <code>#include &quot;absl/container/flat_hash_map.h&quot;</code><br />
 <code>#include &quot;absl/container/flat_hash_set.h&quot;</code><br />
@@ -122,6 +126,10 @@ Functions</h2></td></tr>
 <tr class="separator:a50fe002c98dc07d78cb191042669b9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb82fbd093c165c61a9cff31254bb70b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::StrToBoolean</b> (const std::string &amp;option)</td></tr>
 <tr class="separator:aeb82fbd093c165c61a9cff31254bb70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a692289bf48b27192246a574da6661d10"><td class="memItemLeft" align="right" valign="top">processor_t *&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetProcessor</b> ()</td></tr>
+<tr class="separator:a692289bf48b27192246a574da6661d10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5407a750d7601c91caadba29afc3f8aa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetMnemonic</b> (const insn_t &amp;instruction)</td></tr>
+<tr class="separator:a5407a750d7601c91caadba29afc3f8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utilities function for quokka </p>
@@ -149,6 +157,33 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>String object </dd></dl>
+
+</div>
+</div>
+<a id="a5407a750d7601c91caadba29afc3f8aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5407a750d7601c91caadba29afc3f8aa">&#9670;&nbsp;</a></span>GetMnemonic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string quokka::GetMnemonic </td>
+          <td>(</td>
+          <td class="paramtype">const insn_t &amp;&#160;</td>
+          <td class="paramname"><em>instruction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Retrieve the mnemonic name</p>
+<p>New in IDA 7.5</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">instruction</td><td>IDA instruction structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A string containing the mnemonic </dd></dl>
 
 </div>
 </div>
@@ -186,6 +221,26 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Name found (or empty) </dd></dl>
+
+</div>
+</div>
+<a id="a692289bf48b27192246a574da6661d10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a692289bf48b27192246a574da6661d10">&#9670;&nbsp;</a></span>GetProcessor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">processor_t * quokka::GetProcessor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the processor "ph" variable</p>
+<p>New for IDA SDK 7.5</p>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the processor object </dd></dl>
 
 </div>
 </div>

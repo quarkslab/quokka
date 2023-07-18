@@ -86,68 +86,70 @@ $(function() {
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#ifndef QUOKKA_SETTINGS_H</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#define QUOKKA_SETTINGS_H</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Version_8h.html">Version.h</a>&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Version_8h.html">Version.h</a>&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">   34</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  MODE_LIGHT = 0,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  MODE_NORMAL,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  MODE_FULL,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;};</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html">   46</a></span>&#160;<span class="keyword">class </span><a class="code" href="classquokka_1_1Settings.html">Settings</a> {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classquokka_1_1Settings.html">Settings</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> mode = MODE_NORMAL;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#a6857c0169de83a664efaff0b240a3454">   63</a></span>&#160;  <span class="keyword">static</span> <a class="code" href="classquokka_1_1Settings.html">Settings</a>&amp; <a class="code" href="classquokka_1_1Settings.html#a6857c0169de83a664efaff0b240a3454">GetInstance</a>() {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">static</span> <a class="code" href="classquokka_1_1Settings.html">Settings</a> instance;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">return</span> instance;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#ad6843a10456516f8ea8aef9f6d062ea2">   72</a></span>&#160;  [[nodiscard]] <a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> <a class="code" href="classquokka_1_1Settings.html#ad6843a10456516f8ea8aef9f6d062ea2">GetMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode; }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028">   78</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028">SetMode</a>(<a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> mode_) { this-&gt;mode = mode_; }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd">   84</a></span>&#160;  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd">ExportInstructions</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> this-&gt;mode &gt;= MODE_NORMAL;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb">   92</a></span>&#160;  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb">ExportInstructionStrings</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">return</span> this-&gt;mode &gt;= MODE_FULL;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  }</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#af8bca0ccba35a7965d53354b100e6b7a">  100</a></span>&#160;  [[nodiscard]] std::string <a class="code" href="classquokka_1_1Settings.html#af8bca0ccba35a7965d53354b100e6b7a">GetModeString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">switch</span> (this-&gt;mode) {</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keywordflow">case</span> ExporterMode::MODE_LIGHT:</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;LIGHT&quot;</span>;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keywordflow">case</span> ExporterMode::MODE_NORMAL:</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;NORMAL&quot;</span>;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <span class="keywordflow">case</span> ExporterMode::MODE_FULL:</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;FULL&quot;</span>;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    }</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    assert(<span class="keyword">false</span> &amp;&amp; <span class="stringliteral">&quot;Should not reach the end of the function&quot;</span>);</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  }</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;};</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">   36</a></span>&#160;<span class="keyword">enum</span> <a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  MODE_LIGHT = 0,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  MODE_NORMAL,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  MODE_FULL,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;};</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html">   48</a></span>&#160;<span class="keyword">class </span><a class="code" href="classquokka_1_1Settings.html">Settings</a> {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classquokka_1_1Settings.html">Settings</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> mode = MODE_NORMAL;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#a6857c0169de83a664efaff0b240a3454">   65</a></span>&#160;  <span class="keyword">static</span> <a class="code" href="classquokka_1_1Settings.html">Settings</a>&amp; <a class="code" href="classquokka_1_1Settings.html#a6857c0169de83a664efaff0b240a3454">GetInstance</a>() {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">static</span> <a class="code" href="classquokka_1_1Settings.html">Settings</a> instance;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#ad6843a10456516f8ea8aef9f6d062ea2">   74</a></span>&#160;  [[nodiscard]] <a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> <a class="code" href="classquokka_1_1Settings.html#ad6843a10456516f8ea8aef9f6d062ea2">GetMode</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mode; }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028">   80</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028">SetMode</a>(<a class="code" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a> mode_) { this-&gt;mode = mode_; }</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd">   86</a></span>&#160;  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd">ExportInstructions</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">return</span> this-&gt;mode &gt;= MODE_NORMAL;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb">   94</a></span>&#160;  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code" href="classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb">ExportInstructionStrings</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordflow">return</span> this-&gt;mode &gt;= MODE_FULL;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  }</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
+<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="classquokka_1_1Settings.html#af8bca0ccba35a7965d53354b100e6b7a">  102</a></span>&#160;  [[nodiscard]] std::string <a class="code" href="classquokka_1_1Settings.html#af8bca0ccba35a7965d53354b100e6b7a">GetModeString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordflow">switch</span> (this-&gt;mode) {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keywordflow">case</span> ExporterMode::MODE_LIGHT:</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;LIGHT&quot;</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <span class="keywordflow">case</span> ExporterMode::MODE_NORMAL:</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;NORMAL&quot;</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      <span class="keywordflow">case</span> ExporterMode::MODE_FULL:</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <span class="keywordflow">return</span> <span class="stringliteral">&quot;FULL&quot;</span>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    assert(<span class="keyword">false</span> &amp;&amp; <span class="stringliteral">&quot;Should not reach the end of the function&quot;</span>);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  }</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;};</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_SETTINGS_H</span></div>
-<div class="ttc" id="aSettings_8h_html_ae83d3a308844adbddd5116bf6ff5e753"><div class="ttname"><a href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">quokka::ExporterMode</a></div><div class="ttdeci">ExporterMode</div><div class="ttdef"><b>Definition:</b> Settings.h:34</div></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_SETTINGS_H</span></div>
+<div class="ttc" id="aSettings_8h_html_ae83d3a308844adbddd5116bf6ff5e753"><div class="ttname"><a href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">quokka::ExporterMode</a></div><div class="ttdeci">ExporterMode</div><div class="ttdef"><b>Definition:</b> Settings.h:36</div></div>
 <div class="ttc" id="aVersion_8h_html"><div class="ttname"><a href="Version_8h.html">Version.h</a></div></div>
 <div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
-<div class="ttc" id="aclassquokka_1_1Settings_html"><div class="ttname"><a href="classquokka_1_1Settings.html">quokka::Settings</a></div><div class="ttdef"><b>Definition:</b> Settings.h:46</div></div>
-<div class="ttc" id="aclassquokka_1_1Settings_html_a6857c0169de83a664efaff0b240a3454"><div class="ttname"><a href="classquokka_1_1Settings.html#a6857c0169de83a664efaff0b240a3454">quokka::Settings::GetInstance</a></div><div class="ttdeci">static Settings &amp; GetInstance()</div><div class="ttdef"><b>Definition:</b> Settings.h:63</div></div>
-<div class="ttc" id="aclassquokka_1_1Settings_html_a9328243fe142aad21acb033a8420e028"><div class="ttname"><a href="classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028">quokka::Settings::SetMode</a></div><div class="ttdeci">void SetMode(ExporterMode mode_)</div><div class="ttdef"><b>Definition:</b> Settings.h:78</div></div>
-<div class="ttc" id="aclassquokka_1_1Settings_html_ad6843a10456516f8ea8aef9f6d062ea2"><div class="ttname"><a href="classquokka_1_1Settings.html#ad6843a10456516f8ea8aef9f6d062ea2">quokka::Settings::GetMode</a></div><div class="ttdeci">ExporterMode GetMode() const</div><div class="ttdef"><b>Definition:</b> Settings.h:72</div></div>
-<div class="ttc" id="aclassquokka_1_1Settings_html_ad7c6a904d5252f03c30157d3eb6d37cd"><div class="ttname"><a href="classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd">quokka::Settings::ExportInstructions</a></div><div class="ttdeci">bool ExportInstructions() const</div><div class="ttdef"><b>Definition:</b> Settings.h:84</div></div>
-<div class="ttc" id="aclassquokka_1_1Settings_html_addff8878a738046a29dda30c14521ecb"><div class="ttname"><a href="classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb">quokka::Settings::ExportInstructionStrings</a></div><div class="ttdeci">bool ExportInstructionStrings() const</div><div class="ttdef"><b>Definition:</b> Settings.h:92</div></div>
-<div class="ttc" id="aclassquokka_1_1Settings_html_af8bca0ccba35a7965d53354b100e6b7a"><div class="ttname"><a href="classquokka_1_1Settings.html#af8bca0ccba35a7965d53354b100e6b7a">quokka::Settings::GetModeString</a></div><div class="ttdeci">std::string GetModeString() const</div><div class="ttdef"><b>Definition:</b> Settings.h:100</div></div>
+<div class="ttc" id="aclassquokka_1_1Settings_html"><div class="ttname"><a href="classquokka_1_1Settings.html">quokka::Settings</a></div><div class="ttdef"><b>Definition:</b> Settings.h:48</div></div>
+<div class="ttc" id="aclassquokka_1_1Settings_html_a6857c0169de83a664efaff0b240a3454"><div class="ttname"><a href="classquokka_1_1Settings.html#a6857c0169de83a664efaff0b240a3454">quokka::Settings::GetInstance</a></div><div class="ttdeci">static Settings &amp; GetInstance()</div><div class="ttdef"><b>Definition:</b> Settings.h:65</div></div>
+<div class="ttc" id="aclassquokka_1_1Settings_html_a9328243fe142aad21acb033a8420e028"><div class="ttname"><a href="classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028">quokka::Settings::SetMode</a></div><div class="ttdeci">void SetMode(ExporterMode mode_)</div><div class="ttdef"><b>Definition:</b> Settings.h:80</div></div>
+<div class="ttc" id="aclassquokka_1_1Settings_html_ad6843a10456516f8ea8aef9f6d062ea2"><div class="ttname"><a href="classquokka_1_1Settings.html#ad6843a10456516f8ea8aef9f6d062ea2">quokka::Settings::GetMode</a></div><div class="ttdeci">ExporterMode GetMode() const</div><div class="ttdef"><b>Definition:</b> Settings.h:74</div></div>
+<div class="ttc" id="aclassquokka_1_1Settings_html_ad7c6a904d5252f03c30157d3eb6d37cd"><div class="ttname"><a href="classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd">quokka::Settings::ExportInstructions</a></div><div class="ttdeci">bool ExportInstructions() const</div><div class="ttdef"><b>Definition:</b> Settings.h:86</div></div>
+<div class="ttc" id="aclassquokka_1_1Settings_html_addff8878a738046a29dda30c14521ecb"><div class="ttname"><a href="classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb">quokka::Settings::ExportInstructionStrings</a></div><div class="ttdeci">bool ExportInstructionStrings() const</div><div class="ttdef"><b>Definition:</b> Settings.h:94</div></div>
+<div class="ttc" id="aclassquokka_1_1Settings_html_af8bca0ccba35a7965d53354b100e6b7a"><div class="ttname"><a href="classquokka_1_1Settings.html#af8bca0ccba35a7965d53354b100e6b7a">quokka::Settings::GetModeString</a></div><div class="ttdeci">std::string GetModeString() const</div><div class="ttdef"><b>Definition:</b> Settings.h:102</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

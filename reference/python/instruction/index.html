@@ -1596,7 +1596,7 @@
 
 
 <h2 id="quokka.instruction.Instruction" class="doc doc-heading">
-        <code>Instruction</code>
+          <code>Instruction</code>
 
 
 </h2>
@@ -1608,6 +1608,8 @@
       <p>Instruction class</p>
 <p>An instruction is the binary bread-and-butter.
 This class abstract some elements and offer various backends integration if needed.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1678,6 +1680,8 @@ This class abstract some elements and offer various backends integration if need
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -1757,10 +1761,9 @@ uniquely identify an instruction within the program.</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
+            <details class="quote">
+              <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -2274,7 +2277,7 @@ uniquely identify an instruction within the program.</p>
             <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -2294,8 +2297,8 @@ uniquely identify an instruction within the program.</p>
 <code class="highlight language-python"><span class="nb">bytes</span><span class="p">:</span> <span class="nb">bytes</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2305,6 +2308,8 @@ uniquely identify an instruction within the program.</p>
   
       <p>Read the program binary to find the bytes associated to the instruction.</p>
 <p>This is not cached as it is already in memory.</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2360,8 +2365,8 @@ uniquely identify an instruction within the program.</p>
 <code class="highlight language-python"><span class="n">call_target</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2382,8 +2387,8 @@ uniquely identify an instruction within the program.</p>
 <code class="highlight language-python"><span class="n">constants</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2404,8 +2409,8 @@ uniquely identify an instruction within the program.</p>
 <code class="highlight language-python"><span class="n">cs_inst</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2416,6 +2421,8 @@ uniquely identify an instruction within the program.</p>
       <p>Load an instruction from Capstone backend</p>
 <p>If the decoding fails, the result won't be cached, and it will be attempted
 again.</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2513,8 +2520,8 @@ again.</p>
 <code class="highlight language-python"><span class="n">mnemonic</span><span class="p">:</span> <span class="nb">str</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2525,6 +2532,8 @@ again.</p>
       <p>Return the mnemonic for the instruction.</p>
 <p>First, try to use capstone because it's prettier
 Otherwise, fallback to the IDA mnemonic which is better than nothing.</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2580,8 +2589,8 @@ Otherwise, fallback to the IDA mnemonic which is better than nothing.</p>
 <code class="highlight language-python"><span class="n">pcode_insts</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">PcodeOp</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2590,6 +2599,8 @@ Otherwise, fallback to the IDA mnemonic which is better than nothing.</p>
   <div class="doc doc-contents ">
   
       <p>Retrieve the PcodeOps associated to the instruction</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2645,8 +2656,8 @@ Otherwise, fallback to the IDA mnemonic which is better than nothing.</p>
 <code class="highlight language-python"><span class="n">string</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2682,6 +2693,7 @@ Otherwise, fallback to the IDA mnemonic which is better than nothing.</p>
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2697,6 +2709,8 @@ Otherwise, fallback to the IDA mnemonic which is better than nothing.</p>
       <p>String representation of the instruction</p>
 <p>First, try by capstone because it's prettier
 Otherwise, fallback to the mnemonic which is better than nothing.</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -2720,9 +2734,9 @@ Otherwise, fallback to the mnemonic which is better than nothing.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
@@ -2770,7 +2784,7 @@ Otherwise, fallback to the mnemonic which is better than nothing.</p>
     <span class="c1"># Finally, just use the mnemonic</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Inst </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mnemonic</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -2788,7 +2802,7 @@ Otherwise, fallback to the mnemonic which is better than nothing.</p>
 
 
 <h2 id="quokka.instruction.Operand" class="doc doc-heading">
-        <code>Operand</code>
+          <code>Operand</code>
 
 
 </h2>
@@ -2800,6 +2814,8 @@ Otherwise, fallback to the mnemonic which is better than nothing.</p>
       <p>Operand object</p>
 <p>An operand is an "argument" for an instruction.
 This class represent them but is rather lackluster at the moment.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -2855,6 +2871,8 @@ This class represent them but is rather lackluster at the moment.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Attributes:</strong></p>
   <table>
@@ -2943,10 +2961,9 @@ This class represent them but is rather lackluster at the moment.</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
+            <details class="quote">
+              <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
 <span class="normal"> 47</span>
@@ -3072,7 +3089,7 @@ This class represent them but is rather lackluster at the moment.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the operand is a constant&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="mi">5</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -3103,6 +3120,8 @@ This class represent them but is rather lackluster at the moment.</p>
       <p>Returns the operand value
 Warning: this is only implemented for constant operand (in IDA).</p>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -3130,6 +3149,7 @@ Warning: this is only implemented for constant operand (in IDA).</p>
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3144,9 +3164,9 @@ Warning: this is only implemented for constant operand (in IDA).</p>
   
       <p>Constructor</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
 <span class="normal">70</span>
@@ -3190,10 +3210,11 @@ Warning: this is only implemented for constant operand (in IDA).</p>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">details</span> <span class="o">=</span> <span class="n">capstone_operand</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3209,15 +3230,15 @@ Warning: this is only implemented for constant operand (in IDA).</p>
   
       <p>Check if the operand is a constant</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/instruction.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">is_constant</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the operand is a constant&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="mi">5</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -3244,11 +3265,11 @@ Warning: this is only implemented for constant operand (in IDA).</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
     
   </small>

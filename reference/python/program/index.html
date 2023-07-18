@@ -1628,20 +1628,22 @@ It deals with the most common abstraction, the Program.</p>
 
 
 <h2 id="quokka.program.Program" class="doc doc-heading">
-        <code>Program</code>
+          <code>Program</code>
 
 
 </h2>
 
 
   <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code>dict</code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code>dict</code></p>
 
   
       <p>Program</p>
 <p>The program is <code>quokka</code> main abstraction.
 It represents the full binary and is in itself a mapping of functions.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1685,6 +1687,8 @@ It represents the full binary and is in itself a mapping of functions.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Attributes:</strong></p>
   <table>
     <thead>
@@ -1698,7 +1702,7 @@ It represents the full binary and is in itself a mapping of functions.</p>
         <tr>
           <td><code>proto</code></td>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.pb">pb</span>.<span title="quokka.backends.pb.Quokka">Quokka</span></code>
+                <code>quokka.<span title="quokka.pb">pb</span>.<span title="quokka.pb.Quokka">Quokka</span></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1754,7 +1758,7 @@ open an issue.</p>
         <tr>
           <td><code>isa</code></td>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.analysis">analysis</span>.<span title="quokka.backends.analysis.ArchEnum">ArchEnum</span></code>
+                <code>quokka.<span title="quokka.analysis">analysis</span>.<a class="autorefs autorefs-internal" title="quokka.analysis.ArchEnum" href="../analysis/arch/#quokka.analysis.arch.ArchEnum">ArchEnum</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1776,7 +1780,7 @@ open an issue.</p>
         <tr>
           <td><code>arch</code></td>
           <td>
-                <code><span title="quokka.types.Type">Type</span>[<span title="quokka.backends">quokka</span>.<span title="quokka.backends.analysis">analysis</span>.<span title="quokka.backends.analysis.QuokkaArch">QuokkaArch</span>]</code>
+                <code><span title="quokka.types.Type">Type</span>[quokka.<span title="quokka.analysis">analysis</span>.<a class="autorefs autorefs-internal" title="quokka.analysis.QuokkaArch" href="../analysis/arch/#quokka.analysis.arch.QuokkaArch">QuokkaArch</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1798,7 +1802,7 @@ open an issue.</p>
         <tr>
           <td><code>chunks</code></td>
           <td>
-                <code><span title="quokka.types.Dict">Dict</span>[int, <span title="quokka.types.Union">Union</span>[<span title="quokka.backends">quokka</span>.<span title="quokka.backends.Chunk">Chunk</span>, <span title="quokka.backends">quokka</span>.<span title="quokka.backends.SuperChunk">SuperChunk</span>]]</code>
+                <code><span title="quokka.types.Dict">Dict</span>[int, <span title="quokka.types.Union">Union</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a>, quokka.<a class="autorefs autorefs-internal" title="quokka.SuperChunk" href="../function/#quokka.function.SuperChunk">SuperChunk</a>]]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1839,7 +1843,7 @@ open an issue.</p>
         <tr>
           <td><code>fun_names</code></td>
           <td>
-                <code><span title="quokka.types.Dict">Dict</span>[str, <span title="quokka.backends">quokka</span>.<span title="quokka.backends.Function">Function</span>]</code>
+                <code><span title="quokka.types.Dict">Dict</span>[str, quokka.<a class="autorefs autorefs-internal" title="quokka.Function" href="../function/#quokka.function.Function">Function</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1849,6 +1853,8 @@ open an issue.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -1872,10 +1878,9 @@ open an issue.</p>
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 54</span>
+            <details class="quote">
+              <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 54</span>
 <span class="normal"> 55</span>
 <span class="normal"> 56</span>
 <span class="normal"> 57</span>
@@ -2865,7 +2870,7 @@ open an issue.</p>
 
         <span class="k">return</span> <span class="n">Program</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">exec_path</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -2885,8 +2890,8 @@ open an issue.</p>
 <code class="highlight language-python"><span class="n">call_graph</span><span class="p">:</span> <span class="n">networkx</span><span class="o">.</span><span class="n">DiGraph</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2909,8 +2914,8 @@ open an issue.</p>
 <code class="highlight language-python"><span class="n">capstone</span><span class="p">:</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2931,8 +2936,8 @@ open an issue.</p>
 <code class="highlight language-python"><span class="n">func_chunk_index</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Index</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Function</span><span class="p">]]</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -2945,6 +2950,8 @@ open an issue.</p>
 However, it is mostly an internal method and should not be directly used by a
 user. Instead, use <code>get_function_by_chunk</code>.</p>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -2956,7 +2963,7 @@ user. Instead, use <code>get_function_by_chunk</code>.</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.types.Dict">Dict</span>[<span title="quokka.types.Index">Index</span>, <span title="quokka.types.List">List</span>[<span title="quokka.backends">quokka</span>.<span title="quokka.backends.Function">Function</span>]]</code>
+                <code><span title="quokka.types.Dict">Dict</span>[<span title="quokka.types.Index">Index</span>, <span title="quokka.types.List">List</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Function" href="../function/#quokka.function.Function">Function</a>]]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -3020,8 +3027,8 @@ user. Instead, use <code>get_function_by_chunk</code>.</p>
 <code class="highlight language-python"><span class="n">pypcode</span><span class="p">:</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -3042,8 +3049,8 @@ user. Instead, use <code>get_function_by_chunk</code>.</p>
 <code class="highlight language-python"><span class="n">segments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Segment</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -3074,6 +3081,8 @@ user. Instead, use <code>get_function_by_chunk</code>.</p>
   
       <p>Program strings</p>
 <p>Retrieves all the strings used in the program.</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -3108,8 +3117,8 @@ user. Instead, use <code>get_function_by_chunk</code>.</p>
 <code class="highlight language-python"><span class="n">structures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Structure</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h3>
@@ -3120,6 +3129,8 @@ user. Instead, use <code>get_function_by_chunk</code>.</p>
       <p>Structures accessor</p>
 <p>Allows to retrieve the different structures of a program (as defined by the
 disassembler).</p>
+
+
 
   <p><strong>Returns:</strong></p>
   <table>
@@ -3132,7 +3143,7 @@ disassembler).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.types.List">List</span>[<span title="quokka.backends">quokka</span>.<span title="quokka.backends.Structure">Structure</span>]</code>
+                <code><span title="quokka.types.List">List</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Structure" href="../structure/#quokka.structure.Structure">Structure</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -3145,6 +3156,7 @@ disassembler).</p>
   </div>
 
 </div>
+
 
 
 
@@ -3162,18 +3174,19 @@ disassembler).</p>
   
       <p>Hash of the Program (use the hash from the exported file)</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hash of the Program (use the hash from the exported file)&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">hash</span><span class="o">.</span><span class="n">hash_value</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3189,9 +3202,9 @@ disassembler).</p>
   
       <p>Constructor</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
 <span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
@@ -3345,10 +3358,11 @@ disassembler).</p>
                 <span class="k">if</span> <span class="n">function</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">fun_names</span><span class="p">[</span><span class="n">function</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3364,18 +3378,19 @@ disassembler).</p>
   
       <p>Program representation</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">454</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">454</span>
 <span class="normal">455</span>
 <span class="normal">456</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program representation&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3391,18 +3406,19 @@ disassembler).</p>
   
       <p>Program representation</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
 <span class="normal">459</span>
 <span class="normal">460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program representation&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Program </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">executable</span><span class="o">.</span><span class="n">exec_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">)&gt;&quot;</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3423,6 +3439,8 @@ disassembler).</p>
       <p>Generate an export file directly from the binary.</p>
 <p>This methods will export <code>exec_path</code> directly using Quokka IDA's plugin if
 installed.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -3508,6 +3526,8 @@ installed.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -3529,6 +3549,8 @@ installed.</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -3552,9 +3574,9 @@ installed.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
 <span class="normal">463</span>
 <span class="normal">464</span>
 <span class="normal">465</span>
@@ -3728,10 +3750,11 @@ installed.</p>
 
     <span class="k">return</span> <span class="n">Program</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">exec_path</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3748,6 +3771,8 @@ installed.</p>
       <p>Get a <code>Chunk</code></p>
 <p>If the candidate Chunk is a SuperChunk, this method will resolve it to find the
 appropriate chunk (given a block index).</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -3791,6 +3816,8 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -3802,7 +3829,7 @@ appropriate chunk (given a block index).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Chunk">Chunk</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -3812,6 +3839,8 @@ appropriate chunk (given a block index).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -3835,9 +3864,9 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">381</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">381</span>
 <span class="normal">382</span>
 <span class="normal">383</span>
 <span class="normal">384</span>
@@ -3899,10 +3928,11 @@ appropriate chunk (given a block index).</p>
 
     <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">ChunkMissingError</span><span class="p">(</span><span class="s2">&quot;Unable to find the chunk, index unknown&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -3917,6 +3947,8 @@ appropriate chunk (given a block index).</p>
   <div class="doc doc-contents ">
   
       <p>Get data by address</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -3946,6 +3978,8 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -3957,7 +3991,7 @@ appropriate chunk (given a block index).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Data">Data</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Data" href="../data/#quokka.data.Data">Data</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -3968,9 +4002,9 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">443</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
 <span class="normal">446</span>
@@ -3990,10 +4024,11 @@ appropriate chunk (given a block index).</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_holder</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4009,6 +4044,8 @@ appropriate chunk (given a block index).</p>
   
       <p>Return the first function found when searching for a chunk.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -4023,7 +4060,7 @@ appropriate chunk (given a block index).</p>
         <tr>
           <td><code>chunk</code></td>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Chunk">Chunk</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4037,6 +4074,8 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -4048,7 +4087,7 @@ appropriate chunk (given a block index).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.types.Optional">Optional</span>[<span title="quokka.backends">quokka</span>.<span title="quokka.backends.Function">Function</span>]</code>
+                <code><span title="quokka.types.Optional">Optional</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Function" href="../function/#quokka.function.Function">Function</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4058,6 +4097,8 @@ appropriate chunk (given a block index).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -4081,9 +4122,9 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span>
@@ -4119,10 +4160,11 @@ appropriate chunk (given a block index).</p>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">FunctionMissingError</span><span class="p">(</span><span class="s2">&quot;Missing function from chunk&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4137,6 +4179,8 @@ appropriate chunk (given a block index).</p>
   <div class="doc doc-contents ">
   
       <p>Find a function in a program by its name</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -4194,6 +4238,8 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -4205,7 +4251,7 @@ appropriate chunk (given a block index).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Function">Function</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Function" href="../function/#quokka.function.Function">Function</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4215,6 +4261,8 @@ appropriate chunk (given a block index).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -4238,9 +4286,9 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">271</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">271</span>
 <span class="normal">272</span>
 <span class="normal">273</span>
 <span class="normal">274</span>
@@ -4300,10 +4348,11 @@ appropriate chunk (given a block index).</p>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to find an appropriate function&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4319,6 +4368,8 @@ appropriate chunk (given a block index).</p>
   
       <p>Retrieves all the functions where <code>chunk</code> belongs.</p>
 
+
+
   <p><strong>Parameters:</strong></p>
   <table>
     <thead>
@@ -4333,7 +4384,7 @@ appropriate chunk (given a block index).</p>
         <tr>
           <td><code>chunk</code></td>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Chunk">Chunk</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4347,6 +4398,8 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -4358,7 +4411,7 @@ appropriate chunk (given a block index).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.types.List">List</span>[<span title="quokka.backends">quokka</span>.<span title="quokka.backends.Function">Function</span>]</code>
+                <code><span title="quokka.types.List">List</span>[quokka.<a class="autorefs autorefs-internal" title="quokka.Function" href="../function/#quokka.function.Function">Function</a>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4368,6 +4421,8 @@ appropriate chunk (given a block index).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -4391,9 +4446,9 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
@@ -4435,10 +4490,11 @@ appropriate chunk (given a block index).</p>
 
     <span class="k">return</span> <span class="n">functions</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4455,6 +4511,8 @@ appropriate chunk (given a block index).</p>
       <p>Get an instruction by its address</p>
 <p>Note: the address must be the head of the instruction.</p>
 <p>TODO(dm): Improve the algorithm because the chunks are sorted (use bisect)</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -4484,6 +4542,8 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -4495,7 +4555,7 @@ appropriate chunk (given a block index).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Instruction">Instruction</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Instruction" href="../instruction/#quokka.instruction.Instruction">Instruction</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4505,6 +4565,8 @@ appropriate chunk (given a block index).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -4528,9 +4590,9 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">246</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
@@ -4578,10 +4640,11 @@ appropriate chunk (given a block index).</p>
 
     <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No instruction at address 0x</span><span class="si">{</span><span class="n">address</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4597,6 +4660,8 @@ appropriate chunk (given a block index).</p>
   
       <p>Get a <code>Segment</code> by an address</p>
 <p>The address must be in [segment.start, segment.end) to be found.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -4626,6 +4691,8 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -4637,7 +4704,7 @@ appropriate chunk (given a block index).</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Segment">Segment</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Segment" href="../segment/#quokka.segment.Segment">Segment</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4647,6 +4714,8 @@ appropriate chunk (given a block index).</p>
         </tr>
     </tbody>
   </table>
+
+
 
   <p><strong>Raises:</strong></p>
   <table>
@@ -4670,9 +4739,9 @@ appropriate chunk (given a block index).</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">302</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
 <span class="normal">305</span>
@@ -4710,10 +4779,11 @@ appropriate chunk (given a block index).</p>
 
     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No segment has been found for address 0x</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
+
 
 <div class="doc doc-object doc-function">
 
@@ -4730,6 +4800,8 @@ appropriate chunk (given a block index).</p>
       <p>Iterate over all the chunks in the program.</p>
 <p>If a <code>SuperChunk</code> is found, it will split it and return individual chunks.
 By default, it iterates over all the chunks, even extern functions.</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -4760,6 +4832,8 @@ chunk.</p>
     </tbody>
   </table>
 
+
+
   <p><strong>Yields:</strong></p>
   <table>
     <thead>
@@ -4771,7 +4845,7 @@ chunk.</p>
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.backends">quokka</span>.<span title="quokka.backends.Chunk">Chunk</span></code>
+                <code>quokka.<a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a></code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -4782,9 +4856,9 @@ chunk.</p>
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">413</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">413</span>
 <span class="normal">414</span>
 <span class="normal">415</span>
 <span class="normal">416</span>
@@ -4842,7 +4916,7 @@ chunk.</p>
             <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">chunk_type</span> <span class="ow">in</span> <span class="n">chunk_types</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">chunk</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -4869,11 +4943,11 @@ chunk.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
     
   </small>

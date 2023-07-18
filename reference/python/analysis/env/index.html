@@ -1362,7 +1362,7 @@
 
 
 <h2 id="quokka.analysis.env.Environment" class="doc doc-heading">
-        <code>Environment</code>
+          <code>Environment</code>
 
 
 </h2>
@@ -1372,6 +1372,8 @@
 
   
       <p>Environment base class</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1415,6 +1417,8 @@
     </tbody>
   </table>
 
+
+
   <p><strong>Attributes:</strong></p>
   <table>
     <thead>
@@ -1450,7 +1454,7 @@
         <tr>
           <td><code>calling_convention</code></td>
           <td>
-                <code><span title="quokka.types.Type">Type</span>[<a class="autorefs autorefs-internal" title="quokka.analysis.calling_convention" href="../calling_convention/#quokka.analysis.calling_convention">cc</a>.<a class="autorefs autorefs-internal" title="quokka.analysis.calling_convention.CallingConvention" href="../calling_convention/#quokka.analysis.calling_convention.CallingConvention">CallingConvention</a>]</code>
+                <code><span title="quokka.types.Type">Type</span>[<span title="quokka">cc</span>.<span title="quokka.CallingConvention">CallingConvention</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1461,10 +1465,9 @@
     </tbody>
   </table>
 
-
-        <details class="quote">
-          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
+            <details class="quote">
+              <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
 <span class="normal">66</span>
@@ -1514,11 +1517,12 @@
             <span class="n">cc</span><span class="o">.</span><span class="n">CallingConvention</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">get_calling_convention_for_arch_platform</span><span class="p">(</span><span class="n">platform</span><span class="p">,</span> <span class="n">arch</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -1542,9 +1546,9 @@
   
       <p>Constructor</p>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span>
@@ -1566,7 +1570,7 @@
         <span class="n">cc</span><span class="o">.</span><span class="n">CallingConvention</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">get_calling_convention_for_arch_platform</span><span class="p">(</span><span class="n">platform</span><span class="p">,</span> <span class="n">arch</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -1584,23 +1588,22 @@
 
 
 <h2 id="quokka.analysis.env.Platform" class="doc doc-heading">
-        <code>Platform</code>
+          <code>Platform</code>
 
 
 </h2>
 
 
   <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code>enum.<span title="enum.Enum">Enum</span></code></p>
+          <p class="doc doc-class-bases">
+            Bases: <code>enum.<span title="enum.Enum">Enum</span></code></p>
 
   
       <p>Platform enumeration</p>
 
-
-        <details class="quote">
-          <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">90</span>
+            <details class="quote">
+              <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">90</span>
 <span class="normal">91</span>
 <span class="normal">92</span>
 <span class="normal">93</span>
@@ -1614,7 +1617,7 @@
     <span class="n">LINUX</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
     <span class="n">APPLE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
-        </details>
+            </details>
 
   
 
@@ -1637,6 +1640,7 @@
 </div>
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1650,6 +1654,8 @@
   <div class="doc doc-contents ">
   
       <p>Retrieve the calling convention used for this couple platform/arch</p>
+
+
 
   <p><strong>Parameters:</strong></p>
   <table>
@@ -1693,6 +1699,8 @@
     </tbody>
   </table>
 
+
+
   <p><strong>Returns:</strong></p>
   <table>
     <thead>
@@ -1704,7 +1712,7 @@
     <tbody>
         <tr>
           <td>
-                <code><span title="quokka.types.Type">Type</span>[<a class="autorefs autorefs-internal" title="quokka.analysis.calling_convention" href="../calling_convention/#quokka.analysis.calling_convention">cc</a>.<a class="autorefs autorefs-internal" title="quokka.analysis.calling_convention.CallingConvention" href="../calling_convention/#quokka.analysis.calling_convention.CallingConvention">CallingConvention</a>]</code>
+                <code><span title="quokka.types.Type">Type</span>[<span title="quokka">cc</span>.<span title="quokka.CallingConvention">CallingConvention</span>]</code>
           </td>
           <td>
             <div class="doc-md-description">
@@ -1715,9 +1723,9 @@
     </tbody>
   </table>
 
-      <details class="quote">
-        <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
+          <details class="quote">
+            <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.12/x64/lib/python3.10/site-packages/quokka/analysis/env.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -1787,7 +1795,7 @@
 
     <span class="k">return</span> <span class="n">cc</span><span class="o">.</span><span class="n">CallingConvention</span>
 </code></pre></div></td></tr></table></div>
-      </details>
+          </details>
   </div>
 
 </div>
@@ -1805,11 +1813,11 @@
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 6, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 18, 2023</span>
       
     
   </small>
