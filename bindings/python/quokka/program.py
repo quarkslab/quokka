@@ -440,6 +440,21 @@ class Program(dict):
                 if chunk.chunk_type in chunk_types:
                     yield chunk
 
+    def read_byte(self, v_addr: AddressT, size: int) -> bytes:
+        """Read raw bytes from a virtual address
+
+        Arguments:
+            v_addr: Virtual address of the data to read
+            size: Size of the data to read
+
+        Returns:
+            The raw data at the specified address
+        """
+
+        if (offset := v_addr - self.base_address) < 0:
+            raise ValueError("Address outside virtual address space.")
+        return self.executable.read_byte(offset, size)
+
     def get_data(self, address: AddressT) -> quokka.Data:
         """Get data by address
 
