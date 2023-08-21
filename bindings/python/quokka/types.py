@@ -48,6 +48,13 @@ LocationValueType = Union[
 
 RegType = enum.IntEnum
 
+class RegAccessMode(enum.Enum):
+    """Register access mode"""
+
+    READ = enum.auto()
+    WRITE = enum.auto()
+    ANY = enum.auto()
+
 ReferenceTarget = Union[
     "quokka.structure.Structure",
     "quokka.structure.StructureMember",
