@@ -186,13 +186,15 @@ def parse_version(version: str) -> tuple[int, int, int]:
 
 
 def find_register_access(
-    reg_id: int, access_mode: RegAccessMode, instructions: Iterable[Instruction]
+    register: int | str, access_mode: RegAccessMode, instructions: Iterable[Instruction]
 ) -> Instruction | None:
     """Traverse the list of instructions searching for the first one that access
     the specified register with the required access mode.
 
     Arguments:
-        reg: The capstone register ID that we are targeting (ex: capstone.x86_const.X86_REG_EAX)
+        reg: The identifier of the register we are targeting, that can either be
+            the capstone register ID (ex: capstone.x86_const.X86_REG_EAX) or the
+            register name (ex: "eax")
         access_mode: The access mode to the register (read or write)
         instructions: An iterable of instructions to analyze
 
@@ -205,12 +207,18 @@ def find_register_access(
         # Retrieve the list of all registers read or modified by the instruction using capstone
         regs_read, regs_write = instr.cs_inst.regs_access()
 
+        # Remap registers to the correct type
+        if isinstance(register, str):
+            register = register.lower()
+            regs_read = [instr.cs_inst.reg_name(r) for r in regs_read]
+            regs_write = [instr.cs_inst.reg_name(r) for r in regs_write]
+
         # Check if it is accessing the target register in the correct mode
         if (
-            reg_id in regs_write
+            register in regs_write
             and (access_mode == RegAccessMode.WRITE or access_mode == RegAccessMode.ANY)
         ) or (
-            reg_id in regs_read
+            register in regs_read
             and (access_mode == RegAccessMode.READ or access_mode == RegAccessMode.ANY)
         ):
             return instr
