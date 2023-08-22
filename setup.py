@@ -39,6 +39,7 @@ setup(
     description="Quokka : A Fast and Accurate Binary Exporter",
     long_description=readme,
     long_description_content_type="text/markdown",
+    python_requires=">=3.8",
     packages=["quokka", "quokka.analysis", "quokka.backends"],
     package_dir={"": "bindings/python/"},
     package_data={"quokka": ["*.pyi", "*.typed"]},
