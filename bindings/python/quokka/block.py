@@ -235,7 +235,7 @@ class Block(MutableMapping):
             return b""
 
         # Read all block at once
-        block_bytes = self.program.executable.read_byte(
+        block_bytes = self.program.executable.read_bytes(
             offset=file_offset,
             size=self.size,
         )

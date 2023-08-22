@@ -359,7 +359,7 @@ class Instruction:
         except quokka.exc.NotInFileError:
             return b""
 
-        return self.program.executable.read_byte(
+        return self.program.executable.read_bytes(
             offset=file_offset,
             size=self.size,
         )
