@@ -185,7 +185,7 @@ def parse_version(version: str) -> tuple[int, int, int]:
     return parsed
 
 
-def find_reg_access(
+def find_register_access(
     reg_id: int, access_mode: RegAccessMode, instructions: Iterable[Instruction]
 ) -> Instruction | None:
     """Traverse the list of instructions searching for the first one that access
