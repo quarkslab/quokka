@@ -16,6 +16,7 @@
 
 import pathlib
 import struct
+import warnings
 
 from quokka.types import DataType, Endianness, Literal, Optional, Union
 
@@ -185,6 +186,8 @@ class Executable:
         return self.read(offset, size)
 
     def read_byte(self, offset: int, size: int) -> bytes:
-        """Deprecated"""
-        DeprecationWarning("read_byte has been deprecated. Please use read_bytes")
+        """Deprecated. Use read_bytes"""
+        warnings.warn(
+            "read_byte has been deprecated. Please use read_bytes", DeprecationWarning
+        )
         return self.read_bytes(offset, size)
