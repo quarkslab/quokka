@@ -58,7 +58,7 @@ class Executable:
         """Read `size` at `offset` in the file.
 
         This method should not be used directly and considered as part of a private API.
-        The preferred method are read_byte / read_string .
+        The preferred method are read_bytes / read_string .
 
         Arguments:
             offset: File offset
@@ -77,14 +77,14 @@ class Executable:
 
     def read_string(self, offset: int, size: Optional[int] = None) -> str:
         """Read a string in the file.
-        
+
         If the size is not given, Quokka will try to read the string until the
         first null byte. That works only for null-terminated strings.
 
         If the string is null terminated, remove the trailing 0.
 
         Arguments:
-            offset: String file offset 
+            offset: String file offset
             size: String size if known.
 
         Returns:
@@ -99,14 +99,16 @@ class Executable:
                 string = self.read(offset, size).decode("utf-8")
             except UnicodeDecodeError as exc:
                 raise ValueError("Unable to read or decode the string.") from exc
-        
+
         else:
             try:
                 null_byte = self.content.index(b"\x00", offset)
             except ValueError as exc:
-                raise ValueError("String is not null-terminated and size was not given") from exc
+                raise ValueError(
+                    "String is not null-terminated and size was not given"
+                ) from exc
 
-            string = self.content[offset: null_byte].decode("utf-8")
+            string = self.content[offset:null_byte].decode("utf-8")
 
         # FIX: When returning a single character string, it does not end with a '\0'
         if len(string) > 1 and string.endswith("\x00"):
@@ -129,10 +131,11 @@ class Executable:
         Returns:
             The data value
         """
+
         # Read an int of size `read_size`
         def read_int(read_size: int) -> int:
             """Read an integer from the binary"""
-            return int.from_bytes(self.read_byte(offset, read_size), endianness)
+            return int.from_bytes(self.read_bytes(offset, read_size), endianness)
 
         endianness: Literal["big", "little"]
         if self.endianness == Endianness.BIG_ENDIAN:
@@ -158,16 +161,16 @@ class Executable:
             return read_int(16 if size is None else size)
         elif data_type == DataType.FLOAT:
             s = 4 if size is None else size
-            return struct.unpack(f"{endianness_sign}f", self.read_byte(offset, s))
+            return struct.unpack(f"{endianness_sign}f", self.read_bytes(offset, s))
         elif data_type == DataType.DOUBLE:
             s = 8 if size is None else size
-            return struct.unpack(f"{endianness_sign}d", self.read_byte(offset, s))
+            return struct.unpack(f"{endianness_sign}d", self.read_bytes(offset, s))
         else:
             raise NotImplementedError(
                 f"Cannot read {data_type}. DataType not implemented."
             )
 
-    def read_byte(self, offset: int, size: int) -> bytes:
+    def read_bytes(self, offset: int, size: int) -> bytes:
         """Read one (or more) byte(s) in the file at `offset`.
 
         This is mostly used to read instructions.
@@ -180,3 +183,8 @@ class Executable:
             The bytes values
         """
         return self.read(offset, size)
+
+    def read_byte(self, offset: int, size: int) -> bytes:
+        """Deprecated"""
+        DeprecationWarning("read_byte has been deprecated. Please use read_bytes")
+        return self.read_bytes(offset, size)
