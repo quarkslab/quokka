@@ -708,6 +708,14 @@ class Function(dict):
         """Function in degree"""
         return self[self.start].in_degree
 
+    @property
+    def blocks(self) -> dict[AddressT, quokka.Block]:
+        """Returns a dictionary which is used to reference all basic blocks
+        by their address.
+        Calling this function will also load the CFG.
+        """
+        return {addr: self.get_block(addr) for addr in self.graph.nodes}
+
     def __hash__(self) -> int:  # type: ignore
         """Hash value"""
         return self.start
