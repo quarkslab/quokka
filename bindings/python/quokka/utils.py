@@ -14,10 +14,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from __future__ import annotations
 import functools
 import hashlib
 import pathlib
 import logging
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import quokka
 from quokka.analysis import (
@@ -34,7 +37,10 @@ from quokka.analysis import (
     ArchPPC64,
 )
 
-from quokka.types import Type
+from quokka.types import Type, RegAccessMode
+
+if TYPE_CHECKING:
+    from quokka.instruction import Instruction
 
 logger = logging.getLogger()
 
@@ -177,3 +183,44 @@ def parse_version(version: str) -> tuple[int, int, int]:
         )
 
     return parsed
+
+
+def find_register_access(
+    register: int | str, access_mode: RegAccessMode, instructions: Iterable[Instruction]
+) -> Instruction | None:
+    """Traverse the list of instructions searching for the first one that access
+    the specified register with the required access mode.
+
+    Arguments:
+        reg: The identifier of the register we are targeting, that can either be
+            the capstone register ID (ex: capstone.x86_const.X86_REG_EAX) or the
+            register name (ex: "eax")
+        access_mode: The access mode to the register (read or write)
+        instructions: An iterable of instructions to analyze
+
+    Returns:
+        The first instruction that access the register in the specified mode.
+        Return None if no such instruction is found.
+    """
+
+    for instr in instructions:
+        # Retrieve the list of all registers read or modified by the instruction using capstone
+        regs_read, regs_write = instr.cs_inst.regs_access()
+
+        # Remap registers to the correct type
+        if isinstance(register, str):
+            register = register.lower()
+            regs_read = [instr.cs_inst.reg_name(r) for r in regs_read]
+            regs_write = [instr.cs_inst.reg_name(r) for r in regs_write]
+
+        # Check if it is accessing the target register in the correct mode
+        if (
+            register in regs_write
+            and (access_mode == RegAccessMode.WRITE or access_mode == RegAccessMode.ANY)
+        ) or (
+            register in regs_read
+            and (access_mode == RegAccessMode.READ or access_mode == RegAccessMode.ANY)
+        ):
+            return instr
+
+    return None
