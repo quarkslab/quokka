@@ -345,6 +345,8 @@ int ExportLayout(quokka::Quokka* proto) {
     head_iterator.NextAddressAndState();
 
     if (head_iterator.state == FINISH) {
+      if (head_iterator.current_chunk != nullptr)
+        head_iterator.current_chunk->Resize(BADADDR);
       QLOGI << absl::StrFormat("End export layout in %.2fs",
                                timer.ElapsedSeconds(absl::Now()));
       break;
