@@ -162,11 +162,12 @@ class Instruction:
         Returns:
             A string representation of the mnemonic
         """
-        if self.cs_inst is not None:
-            return self.cs_inst.mnemonic
-
-        instruction = self.program.proto.instructions[self.proto_index]
-        return self.program.proto.mnemonics[instruction.mnemonic_index]
+        try:
+            if self.cs_inst is not None:
+                return self.cs_inst.mnemonic
+        except quokka.CapstoneError:
+            instruction = self.program.proto.instructions[self.proto_index]
+            return self.program.proto.mnemonics[instruction.mnemonic_index]
 
     @cached_property
     def cs_inst(self) -> Optional[capstone.CsInsn]:
