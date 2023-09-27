@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools", "protobuf_distutils"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quokka-project"
+description = "Quokka: A Fast and Accurate Binary Exporter"
+authors = [{ name = "Quarkslab", email = "diffing@quarkslab.com" }]
+license = { text = "Apache Software License (Apache License, Version 2)" }
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.8"
+dependencies = ["capstone>=4.0.2", "networkx>=2.4", "protobuf>=3.12.2"]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/quarkslab/quokka/"
+Repository = "https://github.com/quarkslab/quokka/"
+Documentation = "https://quarkslab.github.io/quokka/"
+"Bug Tracker" = "https://github.com/quarkslab/quokka/issues"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-mock",
+    "pytest-cov",
+    "coverage[toml]",
+    "pypcode>=1.1.1",
+]
+pypcode = ["pypcode>=1.1.1"]
+doc = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings",
+    "mkdocstrings-python",
+    "mkdocs-literate-nav",
+    "mkdocs-git-revision-date-localized-plugin",
+    "mkdocs-gen-files",
+    "mkdocs-simple-hooks",
+]
+dev = [
+    "black",
+    "ipython",
+    "flake8",
+    "flake8-black",
+    "mypy",
+    "mypy-protobuf",
+    "nox",
+    "pypcode>=1.1.1",
+]
+
+[tool.setuptools]
+packages = ["quokka", "quokka.analysis", "quokka.backends"]
+package-dir = { "" = "bindings/python/" }
+package-data = { "quokka" = ["*.pyi", "*.typed"] }

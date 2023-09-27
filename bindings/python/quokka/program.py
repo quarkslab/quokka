@@ -26,9 +26,9 @@ import logging
 import os
 import pathlib
 import subprocess
+from typing import TYPE_CHECKING
 
 import capstone
-import pypcode
 import networkx
 
 import quokka
@@ -49,6 +49,9 @@ from quokka.types import (
     Type,
     Union,
 )
+
+if TYPE_CHECKING:
+    import pypcode
 
 
 class Program(dict):
@@ -209,7 +212,9 @@ class Program(dict):
     @cached_property
     def pypcode(self) -> pypcode.Context:
         """Generate the Pypcode context."""
-        return quokka.backends.get_pypcode_context(self.arch, self.endianness)
+        from quokka.backends.pypcode import get_pypcode_context
+
+        return get_pypcode_context(self.arch, self.endianness)
 
     @cached_property
     def structures(self) -> List[quokka.Structure]:

@@ -2,25 +2,25 @@ import pypcode
 import pytest
 
 import quokka
-import quokka.backends
+import quokka.backends.pypcode as pypcode_backend
 
 
 def test_pypcode_context():
 
-    context = quokka.backends.get_pypcode_context(quokka.analysis.ArchX86)
+    context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchX86)
     assert context.lang.id == "x86:LE:32:default"
 
-    context = quokka.backends.get_pypcode_context(quokka.analysis.ArchX64)
+    context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchX64)
     assert context.lang.id == "x86:LE:64:default"
 
-    context = quokka.backends.get_pypcode_context(quokka.analysis.ArchARM64)
+    context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchARM64)
     assert context.lang.id == "AARCH64:LE:64:v8A"
 
-    context = quokka.backends.get_pypcode_context(quokka.analysis.ArchARM)
+    context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchARM)
     assert context.lang.id == "ARM:LE:32:v8"
 
     with pytest.raises(quokka.PypcodeError):
-        quokka.backends.get_pypcode_context(quokka.analysis.QuokkaArch)
+        pypcode_backend.get_pypcode_context(quokka.analysis.QuokkaArch)
 
 
 def test_pypcode_decode_instruction(mocker):
@@ -28,11 +28,11 @@ def test_pypcode_decode_instruction(mocker):
     inst = mocker.MagicMock()
     inst.bytes = b"\x55"  # push rbp
     inst.address = 0x1000
-    inst.program.pypcode = quokka.backends.get_pypcode_context(
+    inst.program.pypcode = pypcode_backend.get_pypcode_context(
         quokka.analysis.ArchX64
     )
 
-    inst_decoded = quokka.backends.pypcode_decode_instruction(inst)
+    inst_decoded = pypcode_backend.pypcode_decode_instruction(inst)
     assert len(inst_decoded) == 3
     assert isinstance(inst_decoded[0], pypcode.PcodeOp)
 
@@ -49,9 +49,9 @@ def test_pypcode_decode_block(mocker):
 
     instructions = [mocker.MagicMock(size=len(inst_bytes)) for inst_bytes in block_bytes]
     block.instructions = instructions
-    block.program.pypcode = quokka.backends.get_pypcode_context(
+    block.program.pypcode = pypcode_backend.get_pypcode_context(
         quokka.analysis.ArchX64
     )
 
-    decoded_block = quokka.backends.pypcode_decode_block(block)
+    decoded_block = pypcode_backend.pypcode_decode_block(block)
     assert len(decoded_block) > 0
