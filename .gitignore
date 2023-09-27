@@ -8,3 +8,12 @@ site/
 dist/
 docs/reference/python/
 doxygen_current.cfg
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
