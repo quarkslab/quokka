@@ -17,73 +17,17 @@
 from setuptools import setup
 from os.path import normpath
 
-with open("README.md", "r") as fd:
-    readme = fd.read()
-
 main_ns = {}
-ver_path = normpath('bindings/python/quokka/version.py')
+ver_path = normpath("bindings/python/quokka/version.py")
 with open(ver_path) as ver_file:
     exec(ver_file.read(), main_ns)
 
 setup(
-    name="quokka-project",
-    version=main_ns['__version__'],
-    author="Alexis <dm> Challande",
-    author_email="achallande@quarkslab.com",
-    url="https://github.com/quarkslab/quokka",
-    project_urls={
-        "Documentation": "https://quarkslab.github.io/quokka/",
-        "Bug Tracker": "https://github.com/quarkslab/quokka/issues",
-        "Source": "https://github.com/quarkslab/quokka/",
-    },
-    description="Quokka : A Fast and Accurate Binary Exporter",
-    long_description=readme,
-    long_description_content_type="text/markdown",
-    python_requires=">=3.8",
-    packages=["quokka", "quokka.analysis", "quokka.backends"],
-    package_dir={"": "bindings/python/"},
-    package_data={"quokka": ["*.pyi", "*.typed"]},
-    setup_requires=[
-        "protobuf_distutils",
-    ],
-    license="Apache-2",
+    version=main_ns["__version__"],
     options={
         "generate_py_protobufs": {
             "source_dir": "proto",
             "output_dir": "bindings/python/quokka",
         },
-    },
-    install_requires=[
-        "capstone>=4.0.2,<5",
-        "networkx>=2.4,<3",
-        "protobuf>=3.12.2,<4",
-        "pypcode>=1.1.1,<2",
-    ],
-    extras_require={
-        "test": [
-            "pytest",
-            "pytest-mock",
-            "pytest-cov",
-            "coverage[toml]",
-        ],
-        "doc": [
-            "mkdocs",
-            "mkdocs-material",
-            "mkdocstrings",
-            "mkdocstrings-python",
-            "mkdocs-literate-nav",
-            "mkdocs-git-revision-date-localized-plugin",
-            "mkdocs-gen-files",
-            "mkdocs-simple-hooks",
-        ],
-        "dev": [
-            "black",
-            "ipython",
-            "flake8",
-            "flake8-black",
-            "mypy",
-            "mypy-protobuf",
-            "nox",
-        ],
     },
 )
