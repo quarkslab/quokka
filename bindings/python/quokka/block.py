@@ -18,8 +18,7 @@ from __future__ import annotations
 import logging
 import collections
 from functools import cached_property
-
-import pypcode
+from typing import TYPE_CHECKING
 
 import quokka
 from quokka.types import (
@@ -35,6 +34,8 @@ from quokka.types import (
     Set,
 )
 
+if TYPE_CHECKING:
+    import pypcode
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -257,4 +258,6 @@ class Block(MutableMapping):
             A list of PCode instructions
 
         """
-        return quokka.backends.pypcode_decode_block(self)
+        from quokka.backend.pypcode import pypcode_decode_block
+
+        return pypcode_decode_block(self)

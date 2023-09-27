@@ -17,18 +17,9 @@ from quokka.backends.capstone import (
     get_capstone_context,
     capstone_decode_instruction,
 )
-from quokka.backends.pypcode import (
-    pypcode_decode_block,
-    pypcode_decode_instruction,
-    get_pypcode_context,
-)
 
 __all__ = [
     # From capstone.py
     "get_capstone_context",
     "capstone_decode_instruction",
-    # From pypcode.py
-    "get_pypcode_context",
-    "pypcode_decode_instruction",
-    "pypcode_decode_block",
 ]
