@@ -20,7 +20,7 @@ import logging
 from collections import defaultdict
 from functools import cached_property
 import capstone
-import pypcode
+from typing import TYPE_CHECKING
 
 import quokka
 from quokka.types import (
@@ -37,6 +37,9 @@ from quokka.types import (
     Sequence,
     Union,
 )
+
+if TYPE_CHECKING:
+    import pypcode
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -188,7 +191,9 @@ class Instruction:
         Returns:
             A sequence of PCode instructions
         """
-        return quokka.backends.pypcode_decode_instruction(self)
+        from quokka.backends.pypcode import pypcode_decode_instruction
+
+        return pypcode_decode_instruction(self)
 
     @cached_property
     def string(self) -> Optional[str]:
@@ -309,7 +314,6 @@ class Instruction:
         for op_index in self.program.proto.instructions[self.proto_index].operand_index:
             operand: quokka.pb.Quokka.Operand = self.program.proto.operands[op_index]
             if operand.type == 5:
-
                 # FIX: This bug is due to IDA mislabelling operands for some
                 #   operations like ADRP on ARM where the operand points to a
                 #   memory area (2) but the type is CONSTANT (5).
