@@ -9,6 +9,11 @@ dist/
 docs/reference/python/
 doxygen_current.cfg
 
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Environments
 .env
 .venv
