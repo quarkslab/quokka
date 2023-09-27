@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.2">
     
     
       
@@ -26,10 +26,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.046329b4.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.d451bc0e.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.a5377069.min.css">
       
       
 
@@ -330,14 +330,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
+          
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
@@ -364,14 +366,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
         
+          
           <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
             
   
@@ -566,14 +570,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
         
+          
           <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
             
   
@@ -688,14 +694,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
         
+          
           <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
             
   
@@ -818,14 +826,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
+          
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
@@ -1321,14 +1331,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_15" >
         
+          
           <label class="md-nav__link" for="__nav_7_15" id="__nav_7_15_label" tabindex="0">
             
   
@@ -1463,14 +1475,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
         
+          
           <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
             
   
@@ -1609,14 +1623,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
         
+          
           <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
             
   
@@ -2126,8 +2142,7 @@ created for each block in the program (so they all have an unique address).</p>
 
             <details class="quote">
               <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 42</span>
-<span class="normal"> 43</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
 <span class="normal"> 46</span>
@@ -2344,7 +2359,10 @@ created for each block in the program (so they all have an unique address).</p>
 <span class="normal">257</span>
 <span class="normal">258</span>
 <span class="normal">259</span>
-<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Block</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">):</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Block</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic Block class</span>
 
 <span class="sd">    A basic block is a sequence of instructions without any (basic) incoming flows</span>
@@ -2562,7 +2580,9 @@ created for each block in the program (so they all have an unique address).</p>
 <span class="sd">            A list of PCode instructions</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">quokka</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">pypcode_decode_block</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">quokka.backend.pypcode</span> <span class="kn">import</span> <span class="n">pypcode_decode_block</span>
+
+        <span class="k">return</span> <span class="n">pypcode_decode_block</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -2808,9 +2828,9 @@ architecture with fixed length instructions (e.g. ARM).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove an instruction from the mapping&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_raw_dict</span><span class="o">.</span><span class="fm">__delitem__</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2837,15 +2857,15 @@ architecture with fixed length instructions (e.g. ARM).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
-<span class="normal">144</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
 <span class="normal">150</span>
-<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">:</span>
+<span class="normal">151</span>
+<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve an instruction at `address`.&quot;&quot;&quot;</span>
     <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_dict</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">(</span>
@@ -2882,8 +2902,7 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
-<span class="normal">200</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
@@ -2891,7 +2910,8 @@ forget about un-hashable types.</p>
 <span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
-<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">208</span>
+<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hash of the block.</span>
 
 <span class="sd">    The proto index is guaranteed to be unique so we can use it as an hash and</span>
@@ -2925,8 +2945,7 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 69</span>
-<span class="normal"> 70</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 70</span>
 <span class="normal"> 71</span>
 <span class="normal"> 72</span>
 <span class="normal"> 73</span>
@@ -2959,7 +2978,8 @@ forget about un-hashable types.</p>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">block_idx</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
     <span class="n">start_address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">,</span>
@@ -3018,9 +3038,9 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return an iterator over the instruction list&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_dict</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3047,9 +3067,9 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of instruction in the block&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_dict</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3076,11 +3096,11 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Block Representation&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;&lt;Block at 0x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">) with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> instructions&gt;&quot;</span>
@@ -3109,9 +3129,9 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update the instructions mapping&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_raw_dict</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3182,14 +3202,14 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
-<span class="normal">114</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">120</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the comment at `addr`.</span>
 
 <span class="sd">    Arguments:</span>
@@ -3221,9 +3241,9 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AddressT</span><span class="p">]:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AddressT</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;(Addresses of) Predecessors of the current block&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3250,9 +3270,9 @@ forget about un-hashable types.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/block.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">successors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AddressT</span><span class="p">]:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">successors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AddressT</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;(Addresses of the) Successors of the current block.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3283,11 +3303,11 @@ forget about un-hashable types.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 27, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 27, 2023</span>
       
     
   </small>
@@ -3329,10 +3349,10 @@ forget about un-hashable types.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate"], "search": "../../../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.726fbb30.min.js"></script>
       
     
   </body>

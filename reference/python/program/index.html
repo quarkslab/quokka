@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.3.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.2">
     
     
       
@@ -26,10 +26,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.046329b4.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.d451bc0e.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.a5377069.min.css">
       
       
 
@@ -330,14 +330,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
+          
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
@@ -364,14 +366,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
         
+          
           <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
             
   
@@ -566,14 +570,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
         
+          
           <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
             
   
@@ -688,14 +694,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
         
+          
           <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
             
   
@@ -818,14 +826,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
+          
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
@@ -1349,14 +1359,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_15" >
         
+          
           <label class="md-nav__link" for="__nav_7_15" id="__nav_7_15_label" tabindex="0">
             
   
@@ -1491,14 +1503,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
         
+          
           <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
             
   
@@ -1637,14 +1651,16 @@
     
     
     
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
         
         
         
-        
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
         
+          
           <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
             
   
@@ -2234,10 +2250,7 @@ open an issue.</p>
 
             <details class="quote">
               <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 57</span>
 <span class="normal"> 58</span>
 <span class="normal"> 59</span>
 <span class="normal"> 60</span>
@@ -2743,7 +2756,12 @@ open an issue.</p>
 <span class="normal">560</span>
 <span class="normal">561</span>
 <span class="normal">562</span>
-<span class="normal">563</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Program</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Program</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program</span>
 
 <span class="sd">    The program is `quokka` main abstraction.</span>
@@ -2901,7 +2919,9 @@ open an issue.</p>
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">pypcode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pypcode</span><span class="o">.</span><span class="n">Context</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the Pypcode context.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">quokka</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">get_pypcode_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endianness</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">quokka.backends.pypcode</span> <span class="kn">import</span> <span class="n">get_pypcode_context</span>
+
+        <span class="k">return</span> <span class="n">get_pypcode_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">endianness</span><span class="p">)</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">structures</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Structure</span><span class="p">]:</span>
@@ -3570,9 +3590,9 @@ disassembler).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Hash of the Program (use the hash from the exported file)&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">hash</span><span class="o">.</span><span class="n">hash_value</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3599,10 +3619,7 @@ disassembler).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
 <span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
@@ -3675,7 +3692,10 @@ disassembler).</p>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">export_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">exec_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Constructor&quot;&quot;&quot;</span>
@@ -3776,9 +3796,9 @@ disassembler).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">469</span>
-<span class="normal">470</span>
-<span class="normal">471</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program representation&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -3805,9 +3825,9 @@ disassembler).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">473</span>
-<span class="normal">474</span>
-<span class="normal">475</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Program representation&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Program </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">executable</span><span class="o">.</span><span class="n">exec_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">)&gt;&quot;</span>
 </code></pre></div></td></tr></table></div>
@@ -3974,12 +3994,7 @@ installed.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">477</span>
-<span class="normal">478</span>
-<span class="normal">479</span>
-<span class="normal">480</span>
-<span class="normal">481</span>
-<span class="normal">482</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">482</span>
 <span class="normal">483</span>
 <span class="normal">484</span>
 <span class="normal">485</span>
@@ -4060,7 +4075,12 @@ installed.</p>
 <span class="normal">560</span>
 <span class="normal">561</span>
 <span class="normal">562</span>
-<span class="normal">563</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">563</span>
+<span class="normal">564</span>
+<span class="normal">565</span>
+<span class="normal">566</span>
+<span class="normal">567</span>
+<span class="normal">568</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span> <span class="nf">from_binary</span><span class="p">(</span>
     <span class="n">exec_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">output_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4265,12 +4285,7 @@ appropriate chunk (given a block index).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span>
-<span class="normal">385</span>
-<span class="normal">386</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
 <span class="normal">389</span>
@@ -4295,7 +4310,12 @@ appropriate chunk (given a block index).</p>
 <span class="normal">408</span>
 <span class="normal">409</span>
 <span class="normal">410</span>
-<span class="normal">411</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_chunk</span><span class="p">(</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_chunk</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">chunk_index</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span> <span class="n">block_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a `Chunk`</span>
@@ -4404,16 +4424,16 @@ appropriate chunk (given a block index).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">463</span>
 <span class="normal">464</span>
 <span class="normal">465</span>
 <span class="normal">466</span>
-<span class="normal">467</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Data</span><span class="p">:</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Data</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get data by address</span>
 
 <span class="sd">    Arguments:</span>
@@ -4525,12 +4545,7 @@ appropriate chunk (given a block index).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">367</span>
 <span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
@@ -4542,7 +4557,12 @@ appropriate chunk (given a block index).</p>
 <span class="normal">376</span>
 <span class="normal">377</span>
 <span class="normal">378</span>
-<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_first_function_by_chunk</span><span class="p">(</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_first_function_by_chunk</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Function</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the first function found when searching for a chunk.</span>
@@ -4690,12 +4710,7 @@ appropriate chunk (given a block index).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">276</span>
 <span class="normal">277</span>
 <span class="normal">278</span>
 <span class="normal">279</span>
@@ -4719,7 +4734,12 @@ appropriate chunk (given a block index).</p>
 <span class="normal">297</span>
 <span class="normal">298</span>
 <span class="normal">299</span>
-<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_function</span><span class="p">(</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_function</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">approximative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">normal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find a function in a program by its name</span>
@@ -4851,12 +4871,7 @@ appropriate chunk (given a block index).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
 <span class="normal">348</span>
@@ -4871,7 +4886,12 @@ appropriate chunk (given a block index).</p>
 <span class="normal">357</span>
 <span class="normal">358</span>
 <span class="normal">359</span>
-<span class="normal">360</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_function_by_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Function</span><span class="p">]:</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_function_by_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Function</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieves all the functions where `chunk` belongs.</span>
 
 <span class="sd">    Arguments:</span>
@@ -4996,12 +5016,7 @@ appropriate chunk (given a block index).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
@@ -5019,7 +5034,12 @@ appropriate chunk (given a block index).</p>
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span>
-<span class="normal">269</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_instruction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">:</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_instruction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get an instruction by its address</span>
 
 <span class="sd">    Note: the address must be the head of the instruction.</span>
@@ -5146,12 +5166,7 @@ appropriate chunk (given a block index).</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
 <span class="normal">308</span>
 <span class="normal">309</span>
 <span class="normal">310</span>
@@ -5164,7 +5179,12 @@ appropriate chunk (given a block index).</p>
 <span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
-<span class="normal">320</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Segment</span><span class="p">:</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_segment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Segment</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a `Segment` by an address</span>
 
 <span class="sd">    The address must be in [segment.start, segment.end) to be found.</span>
@@ -5264,12 +5284,7 @@ chunk.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
-<span class="normal">417</span>
-<span class="normal">418</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">418</span>
 <span class="normal">419</span>
 <span class="normal">420</span>
 <span class="normal">421</span>
@@ -5292,7 +5307,12 @@ chunk.</p>
 <span class="normal">438</span>
 <span class="normal">439</span>
 <span class="normal">440</span>
-<span class="normal">441</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter_chunk</span><span class="p">(</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">iter_chunk</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">chunk_types</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FunctionType</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate over all the chunks in the program.</span>
@@ -5413,12 +5433,7 @@ chunk.</p>
 
           <details class="quote">
             <summary>Source code in <code>/opt/hostedtoolcache/Python/3.10.13/x64/lib/python3.10/site-packages/quokka/program.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">443</span>
-<span class="normal">444</span>
-<span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span>
-<span class="normal">448</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">448</span>
 <span class="normal">449</span>
 <span class="normal">450</span>
 <span class="normal">451</span>
@@ -5426,7 +5441,12 @@ chunk.</p>
 <span class="normal">453</span>
 <span class="normal">454</span>
 <span class="normal">455</span>
-<span class="normal">456</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_addr</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">read_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_addr</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read raw bytes from a virtual address</span>
 
 <span class="sd">    Arguments:</span>
@@ -5468,11 +5488,11 @@ chunk.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 27, 2023</span>
       
         <br>
         Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 27, 2023</span>
       
     
   </small>
@@ -5514,10 +5534,10 @@ chunk.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate"], "search": "../../../assets/javascripts/workers/search.a264c092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.dff1b7c8.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.726fbb30.min.js"></script>
       
     
   </body>
