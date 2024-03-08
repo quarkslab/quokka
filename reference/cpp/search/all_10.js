@@ -16,7 +16,7 @@ var searchData=
   ['setlevel_231',['SetLevel',['../classquokka_1_1Logger.html#aa3eb814a8bebd8fdc4c284d505b94da7',1,'quokka::Logger']]],
   ['setmode_232',['SetMode',['../classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028',1,'quokka::Settings']]],
   ['setname_233',['SetName',['../classquokka_1_1Data.html#af32c93f17395057dcec6ea0625338815',1,'quokka::Data']]],
-  ['setnextchunk_234',['SetNextChunk',['../classquokka_1_1HeadIterator.html#ad358898e78d5179292ea17bf13a247bb',1,'quokka::HeadIterator']]],
+  ['setnextchunk_234',['SetNextChunk',['../classquokka_1_1HeadIterator.html#a572c3bf564fb09817861f77fe3f4069e',1,'quokka::HeadIterator']]],
   ['setstop_235',['SetStop',['../classquokka_1_1Timer.html#a0034b7fda1ecca430537fb7cb182b71b',1,'quokka::Timer']]],
   ['settings_236',['Settings',['../classquokka_1_1Settings.html',1,'quokka']]],
   ['settings_2eh_237',['Settings.h',['../Settings_8h.html',1,'']]],

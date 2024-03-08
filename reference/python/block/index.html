@@ -11,14 +11,14 @@
       
       
       
-        <link rel="prev" href="../exc/">
+        <link rel="prev" href="../program/">
       
       
-        <link rel="next" href="../segment/">
+        <link rel="next" href="../analysis/utils/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.5">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.13">
     
     
       
@@ -26,10 +26,10 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.6a10b989.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.356b1318.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -69,9 +69,6 @@
     
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -127,9 +124,9 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
@@ -137,15 +134,18 @@
     
     
     
-    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
       </label>
     
   
 </form>
       
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -191,7 +191,7 @@
         <a href="https://github.com/quarkslab/quokka" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     quarkslab/quokka
@@ -236,7 +236,7 @@
       <a href="https://github.com/quarkslab/quokka" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     quarkslab/quokka
@@ -248,6 +248,7 @@
     
       
       
+  
   
   
   
@@ -270,6 +271,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../installation/" class="md-nav__link">
         
@@ -286,6 +288,7 @@
     
       
       
+  
   
   
   
@@ -308,6 +311,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../features/" class="md-nav__link">
         
@@ -327,14 +331,13 @@
   
   
   
-    
+  
     
     
     
     
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
@@ -363,14 +366,13 @@
   
   
   
-    
+  
     
     
     
     
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
@@ -399,6 +401,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/qb-crackme/00_intro/" class="md-nav__link">
         
@@ -416,6 +419,7 @@
             
               
                 
+  
   
   
   
@@ -439,6 +443,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/qb-crackme/02_functions/" class="md-nav__link">
         
@@ -456,6 +461,7 @@
             
               
                 
+  
   
   
   
@@ -479,6 +485,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/qb-crackme/04_instructions/" class="md-nav__link">
         
@@ -496,6 +503,7 @@
             
               
                 
+  
   
   
   
@@ -519,6 +527,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/qb-crackme/06_other/" class="md-nav__link">
         
@@ -536,6 +545,7 @@
             
               
                 
+  
   
   
   
@@ -567,14 +577,13 @@
   
   
   
-    
+  
     
     
     
     
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
@@ -603,6 +612,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/features/00_intro/" class="md-nav__link">
         
@@ -620,6 +630,7 @@
             
               
                 
+  
   
   
   
@@ -643,6 +654,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/features/02_functions/" class="md-nav__link">
         
@@ -660,6 +672,7 @@
             
               
                 
+  
   
   
   
@@ -691,14 +704,13 @@
   
   
   
-    
+  
     
     
     
     
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
@@ -727,6 +739,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/bionic/introduction/" class="md-nav__link">
         
@@ -747,6 +760,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../tutorials/bionic/strategy/" class="md-nav__link">
         
@@ -764,6 +778,7 @@
             
               
                 
+  
   
   
   
@@ -802,6 +817,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../cpp" class="md-nav__link">
         
@@ -823,14 +839,13 @@
     
   
   
-    
+  
     
     
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
@@ -859,45 +874,6 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../addresser/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    addresser
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../instruction/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    instruction
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
     <li class="md-nav__item">
       <a href="../reference/" class="md-nav__link">
@@ -917,45 +893,6 @@
               
                 
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../types/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    types
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../version/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    version
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
   
   
   
@@ -979,6 +916,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../data/" class="md-nav__link">
         
@@ -996,6 +934,133 @@
             
               
                 
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../function/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    function
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instruction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    instruction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    segment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    version
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../addresser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    addresser
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../executable/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    executable
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
   
   
   
@@ -1018,7 +1083,71 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../structure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    structure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../program/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    program
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
+  
   
   
     <li class="md-nav__item md-nav__item--active">
@@ -1063,14 +1192,18 @@
       
         <li class="md-nav__item">
   <a href="#quokka.block" class="md-nav__link">
-    block
+    <span class="md-ellipsis">
+      block
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#quokka.block.Block" class="md-nav__link">
-    Block
+    <span class="md-ellipsis">
+      Block
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Block">
@@ -1078,133 +1211,171 @@
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.bytes" class="md-nav__link">
-    bytes
+    <span class="md-ellipsis">
+      bytes
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.constants" class="md-nav__link">
-    constants
+    <span class="md-ellipsis">
+      constants
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.data_references" class="md-nav__link">
-    data_references
+    <span class="md-ellipsis">
+      data_references
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.instructions" class="md-nav__link">
-    instructions
+    <span class="md-ellipsis">
+      instructions
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.last_instruction" class="md-nav__link">
-    last_instruction
+    <span class="md-ellipsis">
+      last_instruction
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.pcode_insts" class="md-nav__link">
-    pcode_insts
+    <span class="md-ellipsis">
+      pcode_insts
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.size" class="md-nav__link">
-    size
+    <span class="md-ellipsis">
+      size
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.strings" class="md-nav__link">
-    strings
+    <span class="md-ellipsis">
+      strings
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__delitem__" class="md-nav__link">
-    __delitem__()
+    <span class="md-ellipsis">
+      __delitem__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__getitem__" class="md-nav__link">
-    __getitem__()
+    <span class="md-ellipsis">
+      __getitem__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__hash__" class="md-nav__link">
-    __hash__()
+    <span class="md-ellipsis">
+      __hash__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__init__" class="md-nav__link">
-    __init__()
+    <span class="md-ellipsis">
+      __init__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__iter__" class="md-nav__link">
-    __iter__()
+    <span class="md-ellipsis">
+      __iter__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__len__" class="md-nav__link">
-    __len__()
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__repr__" class="md-nav__link">
-    __repr__()
+    <span class="md-ellipsis">
+      __repr__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__setitem__" class="md-nav__link">
-    __setitem__()
+    <span class="md-ellipsis">
+      __setitem__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.add_comment" class="md-nav__link">
-    add_comment()
+    <span class="md-ellipsis">
+      add_comment
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.predecessors" class="md-nav__link">
-    predecessors()
+    <span class="md-ellipsis">
+      predecessors
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.successors" class="md-nav__link">
-    successors()
+    <span class="md-ellipsis">
+      successors
+    </span>
   </a>
   
 </li>
@@ -1228,204 +1399,19 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../segment/" class="md-nav__link">
-        
   
-  <span class="md-ellipsis">
-    segment
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../program/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    program
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../executable/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    executable
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../function/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    function
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../structure/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    structure
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    
     
     
     
     
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_15" >
         
           
           <label class="md-nav__link" for="__nav_7_15" id="__nav_7_15_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    backends
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_15_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_15">
-            <span class="md-nav__icon md-icon"></span>
-            backends
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../backends/pypcode/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    pypcode
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../backends/capstone/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    capstone
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    
-    
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
-        
-          
-          <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1436,8 +1422,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_16_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_16">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_15">
             <span class="md-nav__icon md-icon"></span>
             analysis
           </label>
@@ -1446,25 +1432,6 @@
               
                 
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../analysis/arch/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    arch
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
   
   
   
@@ -1488,6 +1455,28 @@
   
   
   
+  
+    <li class="md-nav__item">
+      <a href="../analysis/env/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    env
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../analysis/calling_convention/" class="md-nav__link">
         
@@ -1508,12 +1497,13 @@
   
   
   
+  
     <li class="md-nav__item">
-      <a href="../analysis/env/" class="md-nav__link">
+      <a href="../analysis/arch/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    env
+    arch
   </span>
   
 
@@ -1525,6 +1515,7 @@
             
               
                 
+  
   
   
   
@@ -1551,6 +1542,91 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_16" id="__nav_7_16_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    backends
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_16">
+            <span class="md-nav__icon md-icon"></span>
+            backends
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/pypcode/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    pypcode
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backends/capstone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    capstone
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1560,6 +1636,7 @@
     
       
       
+  
   
   
   
@@ -1582,6 +1659,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../philosophy/" class="md-nav__link">
         
@@ -1598,6 +1676,7 @@
     
       
       
+  
   
   
   
@@ -1620,14 +1699,13 @@
   
   
   
-    
+  
     
     
     
     
     <li class="md-nav__item md-nav__item--nested">
       
-        
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
@@ -1656,6 +1734,7 @@
   
   
   
+  
     <li class="md-nav__item">
       <a href="../../../contributing/" class="md-nav__link">
         
@@ -1673,6 +1752,7 @@
             
               
                 
+  
   
   
   
@@ -1700,6 +1780,7 @@
     
       
       
+  
   
   
   
@@ -1743,14 +1824,18 @@
       
         <li class="md-nav__item">
   <a href="#quokka.block" class="md-nav__link">
-    block
+    <span class="md-ellipsis">
+      block
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#quokka.block.Block" class="md-nav__link">
-    Block
+    <span class="md-ellipsis">
+      Block
+    </span>
   </a>
   
     <nav class="md-nav" aria-label="Block">
@@ -1758,133 +1843,171 @@
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.bytes" class="md-nav__link">
-    bytes
+    <span class="md-ellipsis">
+      bytes
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.constants" class="md-nav__link">
-    constants
+    <span class="md-ellipsis">
+      constants
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.data_references" class="md-nav__link">
-    data_references
+    <span class="md-ellipsis">
+      data_references
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.instructions" class="md-nav__link">
-    instructions
+    <span class="md-ellipsis">
+      instructions
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.last_instruction" class="md-nav__link">
-    last_instruction
+    <span class="md-ellipsis">
+      last_instruction
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.pcode_insts" class="md-nav__link">
-    pcode_insts
+    <span class="md-ellipsis">
+      pcode_insts
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.size" class="md-nav__link">
-    size
+    <span class="md-ellipsis">
+      size
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.strings" class="md-nav__link">
-    strings
+    <span class="md-ellipsis">
+      strings
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__delitem__" class="md-nav__link">
-    __delitem__()
+    <span class="md-ellipsis">
+      __delitem__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__getitem__" class="md-nav__link">
-    __getitem__()
+    <span class="md-ellipsis">
+      __getitem__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__hash__" class="md-nav__link">
-    __hash__()
+    <span class="md-ellipsis">
+      __hash__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__init__" class="md-nav__link">
-    __init__()
+    <span class="md-ellipsis">
+      __init__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__iter__" class="md-nav__link">
-    __iter__()
+    <span class="md-ellipsis">
+      __iter__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__len__" class="md-nav__link">
-    __len__()
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__repr__" class="md-nav__link">
-    __repr__()
+    <span class="md-ellipsis">
+      __repr__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.__setitem__" class="md-nav__link">
-    __setitem__()
+    <span class="md-ellipsis">
+      __setitem__
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.add_comment" class="md-nav__link">
-    add_comment()
+    <span class="md-ellipsis">
+      add_comment
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.predecessors" class="md-nav__link">
-    predecessors()
+    <span class="md-ellipsis">
+      predecessors
+    </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#quokka.block.Block.successors" class="md-nav__link">
-    successors()
+    <span class="md-ellipsis">
+      successors
+    </span>
   </a>
   
 </li>
@@ -1935,7 +2058,6 @@
 
 
 <div class="doc doc-object doc-class">
-
 
 
 
@@ -2028,7 +2150,7 @@ created for each block in the program (so they all have an unique address).</p>
     </thead>
     <tbody>
         <tr>
-          <td><code>proto_index</code></td>
+          <td><code><span title="quokka.block.Block.proto_index">proto_index</span></code></td>
           <td>
                 <code><span title="quokka.types.Index">Index</span></code>
           </td>
@@ -2039,7 +2161,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>parent</code></td>
+          <td><code><span title="quokka.block.Block.parent">parent</span></code></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="quokka.Chunk" href="../function/#quokka.function.Chunk">Chunk</a></code>
           </td>
@@ -2050,7 +2172,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>program</code></td>
+          <td><code><span title="quokka.block.Block.program">program</span></code></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="quokka.Program" href="../program/#quokka.program.Program">Program</a></code>
           </td>
@@ -2061,7 +2183,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>start</code></td>
+          <td><code><span title="quokka.block.Block.start">start</span></code></td>
           <td>
                 <code>int</code>
           </td>
@@ -2072,7 +2194,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>fake</code></td>
+          <td><code><span title="quokka.block.Block.fake">fake</span></code></td>
           <td>
                 <code>bool</code>
           </td>
@@ -2083,7 +2205,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>type</code></td>
+          <td><code><span title="quokka.block.Block.type">type</span></code></td>
           <td>
                 <code><a class="autorefs autorefs-internal" title="quokka.types.BlockType" href="../types/#quokka.types.BlockType">BlockType</a></code>
           </td>
@@ -2094,7 +2216,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>address_to_index</code></td>
+          <td><code><span title="quokka.block.Block.address_to_index">address_to_index</span></code></td>
           <td>
                 <code><span title="quokka.types.Dict">Dict</span>[<span title="quokka.types.AddressT">AddressT</span>, <span title="quokka.types.Index">Index</span>]</code>
           </td>
@@ -2105,7 +2227,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>end</code></td>
+          <td><code><span title="quokka.block.Block.end">end</span></code></td>
           <td>
                 <code>int</code>
           </td>
@@ -2116,7 +2238,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>comments</code></td>
+          <td><code><span title="quokka.block.Block.comments">comments</span></code></td>
           <td>
                 <code><span title="quokka.types.Dict">Dict</span>[<span title="quokka.types.AddressT">AddressT</span>, str]</code>
           </td>
@@ -2127,7 +2249,7 @@ created for each block in the program (so they all have an unique address).</p>
           </td>
         </tr>
         <tr>
-          <td><code>references</code></td>
+          <td><code><span title="quokka.block.Block.references">references</span></code></td>
           <td>
                 <code><span title="quokka.types.Dict">Dict</span>[str, <span title="quokka.types.List">List</span>[int]]</code>
           </td>
@@ -2600,7 +2722,6 @@ created for each block in the program (so they all have an unique address).</p>
 
 
 
-
 <h3 id="quokka.block.Block.bytes" class="doc doc-heading">
           <code class="highlight language-python"><span class="nb">bytes</span><span class="p">:</span> <span class="nb">bytes</span></code>
   
@@ -2622,7 +2743,6 @@ cached.</p>
 </div>
 
 <div class="doc doc-object doc-attribute">
-
 
 
 
@@ -2648,7 +2768,6 @@ cached.</p>
 
 
 
-
 <h3 id="quokka.block.Block.data_references" class="doc doc-heading">
           <code class="highlight language-python"><span class="n">data_references</span></code>
   
@@ -2667,7 +2786,6 @@ cached.</p>
 </div>
 
 <div class="doc doc-object doc-attribute">
-
 
 
 
@@ -2692,7 +2810,6 @@ cached.</p>
 
 
 
-
 <h3 id="quokka.block.Block.last_instruction" class="doc doc-heading">
           <code class="highlight language-python"><span class="n">last_instruction</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span></code>
   
@@ -2711,7 +2828,6 @@ cached.</p>
 </div>
 
 <div class="doc doc-object doc-attribute">
-
 
 
 
@@ -2765,7 +2881,6 @@ len(self.pcode_insts) != sum(len(inst.pcode_insts) for inst in block.values()) )
 
 
 
-
 <h3 id="quokka.block.Block.size" class="doc doc-heading">
           <code class="highlight language-python"><span class="n">size</span><span class="p">:</span> <span class="nb">int</span></code>
   
@@ -2786,7 +2901,6 @@ architecture with fixed length instructions (e.g. ARM).</p>
 </div>
 
 <div class="doc doc-object doc-attribute">
-
 
 
 
@@ -2815,7 +2929,6 @@ architecture with fixed length instructions (e.g. ARM).</p>
 
 
 
-
 <h3 id="quokka.block.Block.__delitem__" class="doc doc-heading">
           <code class="highlight language-python"><span class="fm">__delitem__</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code>
 
@@ -2841,7 +2954,6 @@ architecture with fixed length instructions (e.g. ARM).</p>
 
 
 <div class="doc doc-object doc-function">
-
 
 
 
@@ -2882,7 +2994,6 @@ architecture with fixed length instructions (e.g. ARM).</p>
 
 
 <div class="doc doc-object doc-function">
-
 
 
 
@@ -2929,7 +3040,6 @@ forget about un-hashable types.</p>
 
 
 <div class="doc doc-object doc-function">
-
 
 
 
@@ -3025,7 +3135,6 @@ forget about un-hashable types.</p>
 
 
 
-
 <h3 id="quokka.block.Block.__iter__" class="doc doc-heading">
           <code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
 
@@ -3054,7 +3163,6 @@ forget about un-hashable types.</p>
 
 
 
-
 <h3 id="quokka.block.Block.__len__" class="doc doc-heading">
           <code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
 
@@ -3080,7 +3188,6 @@ forget about un-hashable types.</p>
 
 
 <div class="doc doc-object doc-function">
-
 
 
 
@@ -3116,7 +3223,6 @@ forget about un-hashable types.</p>
 
 
 
-
 <h3 id="quokka.block.Block.__setitem__" class="doc doc-heading">
           <code class="highlight language-python"><span class="fm">__setitem__</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></code>
 
@@ -3142,7 +3248,6 @@ forget about un-hashable types.</p>
 
 
 <div class="doc doc-object doc-function">
-
 
 
 
@@ -3228,7 +3333,6 @@ forget about un-hashable types.</p>
 
 
 
-
 <h3 id="quokka.block.Block.predecessors" class="doc doc-heading">
           <code class="highlight language-python"><span class="n">predecessors</span><span class="p">()</span></code>
 
@@ -3254,7 +3358,6 @@ forget about un-hashable types.</p>
 
 
 <div class="doc doc-object doc-function">
-
 
 
 
@@ -3287,6 +3390,7 @@ forget about un-hashable types.</p>
 
   </div>
 
+
 </div>
 
 
@@ -3298,20 +3402,44 @@ forget about un-hashable types.</p>
 
 </div>
 
-  <hr>
-<div class="md-source-file">
-  <small>
+
+
+
+
+
+
+  
     
-      Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2023</span>
-      
-        <br>
-        Created:
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2023</span>
-      
+  
+  
     
-  </small>
-</div>
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 8, 2024</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3h-2Z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">March 8, 2024</span>
+  </span>
+
+    
+    
+    
+  </aside>
 
 
 
@@ -3322,6 +3450,7 @@ forget about un-hashable types.</p>
             </div>
           
           
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
@@ -3350,10 +3479,10 @@ forget about un-hashable types.</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.aecac24b.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.c8d2eff1.min.js"></script>
       
     
   </body>
