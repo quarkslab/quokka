@@ -61,11 +61,24 @@ void HeadIterator::InitAddresses(ea_t address) {
   this->next_unk_addr = next_unknown(address, this->max_ea);
   this->next_head_addr = next_head(address, this->max_ea);
 
-  this->SetNextChunk(address);
+  this->SetNextChunk(address, false);
 }
 
-void HeadIterator::SetNextChunk(ea_t address) {
-  func_t* func = get_next_fchunk(address);
+void HeadIterator::SetNextChunk(ea_t address, bool skip_current /* = true*/) {
+  func_t* func;
+
+  // Check if there is a chunk starting at provided address
+  if (!skip_current) {
+    func = get_fchunk(address);
+    if (func != nullptr && func->start_ea == address) {
+      this->next_chunk_addr = address;
+      this->next_func_chunk = func;
+      return;
+    }
+  }
+
+  // Find the next chunk, not considering the one at the current address
+  func = get_next_fchunk(address);
   if (func != nullptr) {
     this->next_chunk_addr = func->start_ea;
     this->next_func_chunk = func;

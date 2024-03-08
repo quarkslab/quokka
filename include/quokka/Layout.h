@@ -271,8 +271,10 @@ class HeadIterator {
   /**
    * Retrieve the next chunk address if any are found
    * @param address Address to start from
+   * @param skip_current Do not consider the chunk starting at the current
+   * address
    */
-  void SetNextChunk(ea_t address);
+  void SetNextChunk(ea_t address, bool skip_current = true);
 
   /**
    * Compute the next address and state
