@@ -107,8 +107,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a352c16874dfc97bcf45b83489ed0579d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44e63b1fb560156a060d59121ca93e5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1HeadIterator.html#a44e63b1fb560156a060d59121ca93e5f">InitAddresses</a> (ea_t address)</td></tr>
 <tr class="separator:a44e63b1fb560156a060d59121ca93e5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad358898e78d5179292ea17bf13a247bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1HeadIterator.html#ad358898e78d5179292ea17bf13a247bb">SetNextChunk</a> (ea_t address)</td></tr>
-<tr class="separator:ad358898e78d5179292ea17bf13a247bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a572c3bf564fb09817861f77fe3f4069e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1HeadIterator.html#a572c3bf564fb09817861f77fe3f4069e">SetNextChunk</a> (ea_t address, bool skip_current=true)</td></tr>
+<tr class="separator:a572c3bf564fb09817861f77fe3f4069e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04d38dd468b13593d7873a25c6146b58"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1HeadIterator.html#a04d38dd468b13593d7873a25c6146b58">NextAddressAndState</a> ()</td></tr>
 <tr class="separator:a04d38dd468b13593d7873a25c6146b58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb33bec8d5f3e742fa91a72a09bb94b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1HeadIterator.html#adb33bec8d5f3e742fa91a72a09bb94b4">StartLayout</a> (ea_t start_addr, <a class="el" href="Layout_8h.html#a628a016044fed1eac52c7522479585eb">State</a> current_state, ea_t size=0)</td></tr>
@@ -527,8 +527,8 @@ quokka::HeadIterator</h2>
 
 </div>
 </div>
-<a id="ad358898e78d5179292ea17bf13a247bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad358898e78d5179292ea17bf13a247bb">&#9670;&nbsp;</a></span>SetNextChunk()</h2>
+<a id="a572c3bf564fb09817861f77fe3f4069e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a572c3bf564fb09817861f77fe3f4069e">&#9670;&nbsp;</a></span>SetNextChunk()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -537,14 +537,25 @@ quokka::HeadIterator</h2>
           <td class="memname">void quokka::HeadIterator::SetNextChunk </td>
           <td>(</td>
           <td class="paramtype">ea_t&#160;</td>
-          <td class="paramname"><em>address</em></td><td>)</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>skip_current</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Retrieve the next chunk address if any are found </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">address</td><td>Address to start from </td></tr>
+    <tr><td class="paramname">skip_current</td><td>Do not consider the chunk starting at the current address </td></tr>
   </table>
   </dd>
 </dl>

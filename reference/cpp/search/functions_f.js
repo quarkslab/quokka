@@ -14,7 +14,7 @@ var searchData=
   ['setlevel_433',['SetLevel',['../classquokka_1_1Logger.html#aa3eb814a8bebd8fdc4c284d505b94da7',1,'quokka::Logger']]],
   ['setmode_434',['SetMode',['../classquokka_1_1Settings.html#a9328243fe142aad21acb033a8420e028',1,'quokka::Settings']]],
   ['setname_435',['SetName',['../classquokka_1_1Data.html#af32c93f17395057dcec6ea0625338815',1,'quokka::Data']]],
-  ['setnextchunk_436',['SetNextChunk',['../classquokka_1_1HeadIterator.html#ad358898e78d5179292ea17bf13a247bb',1,'quokka::HeadIterator']]],
+  ['setnextchunk_436',['SetNextChunk',['../classquokka_1_1HeadIterator.html#a572c3bf564fb09817861f77fe3f4069e',1,'quokka::HeadIterator']]],
   ['setstop_437',['SetStop',['../classquokka_1_1Timer.html#a0034b7fda1ecca430537fb7cb182b71b',1,'quokka::Timer']]],
   ['size_438',['size',['../classquokka_1_1Structures.html#a8dd9fbd0cfc87275365ed41c7b0b3a3f',1,'quokka::Structures::size()'],['../classquokka_1_1FuncChunkCollection.html#a3ba73312d208435d6467ffc3e20716c6',1,'quokka::FuncChunkCollection::size()'],['../classquokka_1_1ReferenceHolder.html#a8c0d28e098cd1fd1abff5704fc689482',1,'quokka::ReferenceHolder::size()'],['../classquokka_1_1BucketNew.html#a025b1b0798d4d52a10940ed09fbbe23f',1,'quokka::BucketNew::size()']]],
   ['sort_439',['Sort',['../classquokka_1_1FuncChunkCollection.html#aed5c0131e9ca70ddaedef16ba5baff7b',1,'quokka::FuncChunkCollection']]],
