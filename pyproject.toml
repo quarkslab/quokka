@@ -24,9 +24,9 @@ test = [
     "pytest-mock",
     "pytest-cov",
     "coverage[toml]",
-    "pypcode>=1.1.1",
+    "pypcode>=1.1.2",
 ]
-pypcode = ["pypcode>=1.1.1"]
+pypcode = ["pypcode>=1.1.2"]
 doc = [
     "mkdocs",
     "mkdocs-material",
@@ -45,7 +45,7 @@ dev = [
     "mypy",
     "mypy-protobuf",
     "nox",
-    "pypcode>=1.1.1",
+    "pypcode>=1.1.2",
 ]
 
 [tool.setuptools]
