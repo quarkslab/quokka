@@ -60,6 +60,7 @@ def get_pypcode_context(
 
     Arguments:
         arch: Quokka program architecture
+        endian: Architecture endianness
 
     Raises:
         PypcodeError: if the conversion for arch is not found
@@ -74,7 +75,7 @@ def get_pypcode_context(
         quokka.analysis.ArchARM64: "AARCH64:LE:64:v8A",
         quokka.analysis.ArchARMThumb: "ARM:LE:32:v8T",
         quokka.analysis.ArchMIPS: "MIPS:LE:32:default",
-        quokka.analysis.ArchMIPS: "MIPS:LE:64:default",
+        quokka.analysis.ArchMIPS64: "MIPS:LE:64:default",
         quokka.analysis.ArchPPC: "PowerPC:LE:32:default",
         quokka.analysis.ArchPPC64: "PowerPC:LE:64:default",
     }
@@ -91,105 +92,6 @@ def get_pypcode_context(
 
     pcode_arch = get_arch_from_string(target_id)
     return pypcode.Context(pcode_arch)
-
-
-def equality(self: pypcode.ContextObj, other: Any) -> bool:
-    """Check if two pypcode objets are the same
-
-    We use monkey patching to attach the equality method to other classes and rely on
-    __slots__ to check which fields to check.
-
-    Arguments:
-        self: First object
-        other: Other variable
-
-    Returns:
-        Boolean for equality
-    """
-    return isinstance(other, self.__class__) and all(
-        getattr(other, attr) == getattr(self, attr)
-        for attr in self.__slots__
-        if attr != "cobj"
-    )
-
-
-def object_hash(obj: pypcode.ContextObj) -> int:
-    """Create a hash value for a pypcode object
-
-    This allows to create set of values.
-
-    Arguments:
-        obj: Object to hash
-
-    Returns:
-        An integer for the hash
-    """
-
-    assert isinstance(obj, pypcode.ContextObj)
-    return sum(hash(getattr(obj, attr)) for attr in obj.__slots__ if attr != "cobj")
-
-
-pypcode.Varnode.__eq__ = equality
-pypcode.Varnode.__hash__ = object_hash
-
-pypcode.AddrSpace.__eq__ = equality
-pypcode.AddrSpace.__hash__ = object_hash
-
-pypcode.PcodeOp.__eq__ = equality
-pypcode.PcodeOp.__hash__ = object_hash
-
-
-def combine_instructions(
-    block: quokka.Block, translated_instructions: Sequence[pypcode.Translation]
-) -> List[pypcode.PcodeOp]:
-    """Combine instructions between the Quokka and PyPcode
-
-    Some instruction are split between IDA and Ghidra, so we have to account for it.
-    A problem for example is the support of prefixes (such LOCK) which are decoded as 2
-    instructions by Ghidra (wrong) but only 1 by IDA (correct).
-
-    Arguments:
-        block: Quokka block
-        translated_instructions: Translated instructions by Pypcode
-
-    Raises
-        PypcodeError: if the combination doesn't work
-
-    Returns:
-        A list of Pypcode statements
-    """
-    pcode_instructions: List[pypcode.PcodeOp] = []
-    translated_instructions = iter(translated_instructions)
-
-    instruction: quokka.Instruction
-    for instruction in block.instructions:
-        instruction._pcode_insts = []
-        remaining_size: int = instruction.size
-        while remaining_size > 0:
-            try:
-                pcode_inst: pypcode.Translation = next(translated_instructions)
-            except StopIteration as exc:
-                logger.error(
-                    "Disassembly discrepancy between Pypcode / IDA: missing inst"
-                )
-                raise quokka.PypcodeError(
-                    f"Decoding error for block at 0x{block.start:x}"
-                ) from exc
-
-            remaining_size -= pcode_inst.length
-            instruction._pcode_insts.extend(pcode_inst.ops)
-
-            if remaining_size < 0:
-                logger.error(
-                    "Disassembly discrepancy between Pypcode / IDA: sizes mismatch"
-                )
-                raise quokka.PypcodeError(
-                    f"Decoding error for block at 0x{block.start:x}"
-                )
-
-            pcode_instructions.extend(list(pcode_inst.ops))
-
-    return pcode_instructions
 
 
 def update_pypcode_context(program: quokka.Program, is_thumb: bool) -> pypcode.Context:
@@ -246,19 +148,22 @@ def pypcode_decode_block(block: quokka.Block) -> List[pypcode.PcodeOp]:
         block.program, first_instruction.thumb
     )
 
-    # Translate
-    translation = context.translate(
-        code=block.bytes,
-        base=block.start,
-        max_inst=0,
-    )
+    try:
+        # Translate
+        translation = context.translate(
+            block.bytes,  # buf
+            block.start,  # base_address
+            0,  # max_bytes
+            0,  # max_instructions
+        )
+        return translation.ops
 
-    if translation.error:
-        logger.error(translation.error.explain)
-        raise quokka.PypcodeError(f"Decoding error for block at 0x{block.start:x}")
-
-    pcode_instructions = combine_instructions(block, translation.instructions)
-    return pcode_instructions
+    except pypcode.BadDataError as e:
+        logger.error(e)
+        raise quokka.PypcodeError(f"Decoding error for block at 0x{block.start:x} (BadDataError)")
+    except pypcode.UnimplError as e:
+        logger.error(e)
+        raise quokka.PypcodeError(f"Decoding error for block at 0x{block.start:x} (UnimplError)")
 
 
 def pypcode_decode_instruction(
@@ -268,7 +173,7 @@ def pypcode_decode_instruction(
 
     This will return the list of Pcode operations done for the instruction.
     Note that a (binary) instruction is expected to have several pcode instructions
-    associated.
+    associated. When decoding a single instruction IMARK instructions are excluded!
 
     Arguments:
         inst: Instruction to translate
@@ -281,22 +186,19 @@ def pypcode_decode_instruction(
     """
 
     context: pypcode.Context = update_pypcode_context(inst.program, inst.thumb)
-    translation = context.translate(
-        code=inst.bytes,
-        base=inst.address,
-        max_inst=1,
-    )
-
-    if not translation.error:
-
-        instructions = translation.instructions
-        if len(instructions) > 1:
-            logger.warning("Mismatch of instruction size IDA/Pypcode")
-
-        instructions = list(
-            itertools.chain.from_iterable(inst.ops for inst in instructions)
+    try:
+        translation = context.translate(
+            inst.bytes,  # buf
+            inst.address,  # base_address
+            0,  # max_bytes
+            1,  # max_instructions
         )
-        return instructions
 
-    logger.error(translation.error.explain)
-    raise quokka.PypcodeError("Unable to decode instruction")
+        return [x for x in translation.ops if x.opcode != pypcode.OpCode.IMARK]
+
+    except pypcode.BadDataError as e:
+        logger.error(e)
+        raise quokka.PypcodeError(f"Unable to decode instruction (BadDataError)")
+    except pypcode.UnimplError as e:
+        logger.error(e)
+        raise quokka.PypcodeError(f"Unable to decode instruction (UnimplError)")

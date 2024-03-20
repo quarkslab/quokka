@@ -8,16 +8,16 @@ import quokka.backends.pypcode as pypcode_backend
 def test_pypcode_context():
 
     context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchX86)
-    assert context.lang.id == "x86:LE:32:default"
+    assert context.language.id == "x86:LE:32:default"
 
     context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchX64)
-    assert context.lang.id == "x86:LE:64:default"
+    assert context.language.id == "x86:LE:64:default"
 
     context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchARM64)
-    assert context.lang.id == "AARCH64:LE:64:v8A"
+    assert context.language.id == "AARCH64:LE:64:v8A"
 
     context = pypcode_backend.get_pypcode_context(quokka.analysis.ArchARM)
-    assert context.lang.id == "ARM:LE:32:v8"
+    assert context.language.id == "ARM:LE:32:v8"
 
     with pytest.raises(quokka.PypcodeError):
         pypcode_backend.get_pypcode_context(quokka.analysis.QuokkaArch)
