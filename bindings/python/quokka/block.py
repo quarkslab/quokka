@@ -243,7 +243,7 @@ class Block(MutableMapping):
 
         return block_bytes
 
-    @property
+    @cached_property
     def pcode_insts(self) -> List[pypcode.PcodeOp]:
         """Generate PCode instructions for the block
 
