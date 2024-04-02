@@ -1,4 +1,4 @@
-FROM docker.io/library/debian:stable-slim
+FROM --platform=linux/amd64 docker.io/library/debian:stable-slim
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
