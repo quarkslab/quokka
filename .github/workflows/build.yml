@@ -96,15 +96,26 @@ jobs:
 
       - name: Rename Plugin
         shell: bash
-        run:
-          mv build${{ matrix.ida_sdk }}/quokka-install/quokka_* ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
+        run: |
+          mv build${{ matrix.ida_sdk }}/quokka-install/quokka_*64* ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
+          mv build${{ matrix.ida_sdk }}/quokka-install/quokka_*32* ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
 
-      - name: Upload Artifacts
+      # We need one action per file
+      # See https://github.com/actions/upload-artifact/issues/331
+      - name: Upload Artifacts (64)
         uses: actions/upload-artifact@v4
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
           path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
           if-no-files-found: error
+
+      - name: Upload Artifacts (32)
+        uses: actions/upload-artifact@v4
+        with:
+          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
+          path: ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
+          if-no-files-found: error
+        
 
   upload:
     name: Upload artifacts for Release
