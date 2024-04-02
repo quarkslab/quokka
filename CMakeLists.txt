@@ -8,6 +8,8 @@ if (CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif ()
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Targeting MacOS Version" FORCE)
+
 project(quokka
         DESCRIPTION "Quokka: A Fast and Accurate Binary Exporter"
         VERSION 0.5.8
@@ -41,6 +43,23 @@ option(NO_BUILD "Don't build plugin" OFF)
 option(NO_DEPRECATED "Don't use deprecated functions from IDA SDK" OFF)
 option(ENABLE_SANITIZER "Enable address sanitizer" OFF)
 
+if (UNIX)
+    if(APPLE)
+        add_compile_options(
+            -gfull
+            -Wno-nullability-completeness
+        )
+        add_link_options(
+            -dead_strip
+            # Work around assertion failure with LTO symbols
+            # https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Linking
+            LINKER:-ld_classic
+        )
+    else()
+    endif()
+elseif(WIN32)
+endif()
+
 if (NOT NO_BUILD)
 
     if (ENABLE_SANITIZER)
@@ -61,22 +80,16 @@ if (NOT NO_BUILD)
     FetchContent_Declare(
             protobuf
             GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
+            SOURCE_SUBDIR cmake
             GIT_TAG v3.11.4
     )
-
-    FetchContent_GetProperties(protobuf)
-    if (NOT protobuf_POPULATED)
-        FetchContent_Populate(protobuf)
-
-        set(protobuf_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-        set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-        set(protobuf_WITH_ZLIB_DEFAULT OFF CACHE BOOL "" FORCE)
-        set(protobuf_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
-        set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
-        # Top level doesn't contain the CMakeLists.txt, it is in the "cmake" subdirectory
-        add_subdirectory(${protobuf_SOURCE_DIR}/cmake
-                ${protobuf_BINARY_DIR})
-    endif ()
+    set(protobuf_BUILD_TESTS OFF CACHE INTERNAL "")
+    set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+    set(protobuf_BUILD_EXPORT OFF)
+    set(protobuf_WITH_ZLIB_DEFAULT OFF CACHE BOOL "" FORCE)
+    set(protobuf_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
+    set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(protobuf)
 
     # Find protoc
     set(_PROTOBUF_PROTOC $<TARGET_FILE:protoc>)
