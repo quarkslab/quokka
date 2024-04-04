@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         ida_sdk: [74, 77, 80, 81, 82, 83, 84]
         include:
           - ida_sdk: 74
@@ -30,6 +30,12 @@ jobs:
             ext: so
           - os: windows-latest
             ext: dll
+          - os: macos-latest
+            ext: dylib
+        exclude:
+          # We exclude these because ARM libraries were not available in 7.4 and the latest macos runner on GitHub are Mx machines
+          - os: macos-latest
+            ida_sdk: 74
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -48,9 +54,9 @@ jobs:
         with:
           cmake-version: 'latest'
 
-      - name: Install Ninja (Linux only)
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Install Ninja (Linux / MacOS)
+        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+        uses: seanmiddleditch/gha-setup-ninja@v4
 
       - name: Fetch IDA SDKs (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
@@ -75,6 +81,24 @@ jobs:
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
           cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION
       
+      # We need to differentiate MacOS build from Linux because we want to use a specific compiler on MacOS
+      - name: Prepare build environment (MacOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        env:
+          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
+          IDA_SDK_PASSWORD: ${{ secrets[matrix.sdk_password] }}
+          CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
+        run: |
+          [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
+          [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
+          cmake -B $CMAKE_BUILD_DIR \
+                -S $GITHUB_WORKSPACE \
+                -G Ninja \
+                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+                -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION \
+                -DCMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang \
+                -DCMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++
+
       - name: Prepare build environment (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         env:
@@ -103,19 +127,18 @@ jobs:
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
       - name: Upload Artifacts (64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
           path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
           if-no-files-found: error
 
       - name: Upload Artifacts (32)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
           path: ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
           if-no-files-found: error
-        
 
   upload:
     name: Upload artifacts for Release
@@ -125,18 +148,25 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         ida_sdk: [74, 77, 80, 81, 82, 83, 84]
+        bitness: ['', '-32']
         include:
           - os: windows-latest
             ext: dll
           - os: ubuntu-latest
             ext: so
+          - os: macos-latest
+            ext: dylib
+        exclude:
+          - os: macos-latest
+            ida_sdk: 74
+
     steps:
       - name: Download Artefact
         uses: actions/download-artifact@v4
         with:
-          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
+          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}${{ matrix.bitness }}
 
       - name: Release
         uses: softprops/action-gh-release@v2.2.1
