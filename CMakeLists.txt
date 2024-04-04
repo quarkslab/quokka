@@ -18,7 +18,7 @@ project(quokka
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include(FetchContent)
-include(CMakePrintHelpers)
+include(CheckLinkerFlag)
 include(GoogleTest)
 
 if (PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
@@ -49,12 +49,17 @@ if (UNIX)
             -gfull
             -Wno-nullability-completeness
         )
+
+        # Originates from google/binexport
+        # https://github.com/google/binexport/blob/85c89a4ab96febcccc4cdc01ca5fc6c005e9a2cf/cmake/CompileOptions.cmake#L71-L74
+        check_linker_flag(CXX "LINKER:-ld_classic" _ld_classic_supported)
+        if(_ld_classic_supported)
+          add_link_options(LINKER:-ld_classic)
+        endif()
+
         add_link_options(
             -dead_strip
-            # Work around assertion failure with LTO symbols
-            # https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Linking
-            LINKER:-ld_classic
-        )
+        )        
     else()
     endif()
 elseif(WIN32)
