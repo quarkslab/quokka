@@ -36,6 +36,8 @@ from quokka.types import (
 
 if TYPE_CHECKING:
     import pypcode
+    from quokka.instruction import Instruction
+    from typing import Iterator
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -187,9 +189,9 @@ class Block(MutableMapping):
         return constants
 
     @property
-    def instructions(self):
+    def instructions(self) -> Iterator[Instruction]:
         """Accessor of the block instructions"""
-        return self.values()
+        return iter(self.values())
 
     def __repr__(self) -> str:
         """Block Representation"""
