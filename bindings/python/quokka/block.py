@@ -258,6 +258,6 @@ class Block(MutableMapping):
             A list of PCode instructions
 
         """
-        from quokka.backend.pypcode import pypcode_decode_block
+        from quokka.backends.pypcode import pypcode_decode_block
 
         return pypcode_decode_block(self)
