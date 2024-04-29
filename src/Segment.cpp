@@ -85,7 +85,10 @@ int ExportSegments(quokka::Quokka* proto) {
 
   segment_t* seg = get_first_seg();
   while (seg != nullptr) {
-    if (is_visible_segm(seg) && not is_ephemeral_segm(seg->start_ea)) {
+    // A HEADER segment is considered ephemeral even though instructions might
+    // reference it. See https://github.com/quarkslab/quokka/issues/29
+    if (seg->is_header_segm() ||
+        (is_visible_segm(seg) && !is_ephemeral_segm(seg->start_ea))) {
       segments.emplace_back(seg);
     }
 
