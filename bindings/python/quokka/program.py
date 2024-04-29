@@ -322,7 +322,7 @@ class Program(dict):
             if segment.in_segment(address):
                 return segment
 
-        raise KeyError(f"No segment has been found for address 0x{address}")
+        raise KeyError(f"No segment has been found for address {address:#x}")
 
     @cached_property
     def func_chunk_index(self) -> Dict[Index, List[quokka.Function]]:
