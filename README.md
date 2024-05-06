@@ -193,4 +193,5 @@ For a complete overview of the difference between the two modes look at the tabl
 | CFG drawing coordinates | ✅¹² | ✅¹² |
 
 <sup>¹ Optionally enabled</sup>
+
 <sup>² Currently not supported</sup>
