@@ -160,3 +160,37 @@ Documentation is available online at
 
 ## FAQ
 You can see a list of questions here [FAQ](docs/FAQ.md)
+
+## Exporting modes
+
+Quokka offers two modes to export the disassembly analysis: the **light mode** and the **self contained mode**.
+
+The **light mode** focuses on exporting only essential information, producing fast and lightweight files. In this mode no information at instruction level or below is exported, so the capstone engine will be used at runtime to obtain the instructions' disassembly.
+
+The **self contained mode** instead exports the full disassembly, exactly how the backend disassembler shows it. This will produce heavier files but it doesn't require depending on third party disassemblers at runtime.
+
+It's important to note that both modes offer the same API in the python bindings.
+
+> ![WARNING]
+> From the *self contained mode* it is still possible to obtain the capstone instruction object
+> but beware that the capstone disassembly might be different than the one exported by quokka
+> (instructions might be splitted, merged, not supported, have different mnemonics, etc.).
+> In general different binary analysis platforms produce different disassembly, keep this in mind
+> when mixing capstone with the self contained mode.
+
+For a complete overview of the difference between the two modes look at the table below:
+
+|  | Light Mode | Self contained Mode |
+| -------- | -------- | -------- |
+| Functions | ✅ | ✅ |
+| Basic Blocks | ✅ | ✅ |
+| Instructions | ❌ | ✅ |
+| Operands | ❌ | ✅ |
+| Data References | ✅ | ✅ |
+| Cross References | ✅ | ✅ |
+| Sections/Layout | ✅ | ✅ |
+| Decompilation | ✅¹ | ✅¹ |
+| CFG drawing coordinates | ✅¹² | ✅¹² |
+
+<sup>¹ Optionally enabled</sup>
+<sup>² Currently not supported</sup>
