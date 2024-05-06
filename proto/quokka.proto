@@ -5,12 +5,11 @@ message Quokka {
   message ExporterMeta {
     enum Mode {
       MODE_LIGHT = 0;
-      MODE_FULL = 1;
-      MODE_NORMAL = 2;
+      MODE_SELF_CONTAINED = 1;
     }
 
     Mode mode = 1;
-    string version = 2; // Quokka version
+    string version = 2;  // Quokka version
   }
 
   enum AddressSize {
@@ -60,11 +59,19 @@ message Quokka {
         HASH_NONE = 0;
         HASH_SHA256 = 1;
         HASH_MD5 = 2;
-
       }
 
       HashType hash_type = 1;
       string hash_value = 2;
+    }
+
+    message Backend {
+      string name = 1;
+
+      // The version is stored as a string but it might have different meaning
+      // depending on the actual backend used.
+      // For example on IDA, the version is the IDA_SDK_VERSION constant.
+      string version = 2;
     }
 
     // Executable name : only the basename
@@ -76,31 +83,30 @@ message Quokka {
     CallingConvention calling_convention = 4;
     Hash hash = 5;
     Endianess endianess = 6;
-    AddressSize address_size = 9;
+    AddressSize address_size = 7;
 
-    // Base addr: Most of the time will be at 0x400000. It is used to never a store a full
-    // address but something smaller as an offset.
-    uint64 base_addr = 7;
-
-    // IDA Version, as reported by the IDA_SDK_VERSION constant. It is used because operands are
-    // exported as constants, and the mapping may change between IDA SDK versions
-    uint32 ida_version = 8;
+    Backend backend = 8;
   }
 
   message Operand {
-    uint32 type = 1;
-    uint32 flags = 2;
-    uint32 value_type = 3;
+    enum OperandType {
+      OPERAND_REGISTER = 0;
+      OPERAND_IMMEDIATE = 1;
+      OPERAND_MEMORY = 2;
+      OPERAND_OTHER = 3;
+    }
 
-    uint32 register_id = 4;
-    uint32 phrase_id = 5;
-    uint64 value = 6;
+    OperandType type = 1;
 
-    // This is a relative offset <!>
-    int64 address = 7; //Address pointed by the operand
+    oneof Value {
+      string register_index = 2;
+      int64 value = 3;  // TODO merge with address below?
+      int64 address = 4;
+      string other = 5;  // TODO umbrella value for whatever operand
+    }
 
-    uint64 specval = 8;
-    repeated uint32 specflags = 9;
+    // Optionally encodes disassembler specific data
+    optional bytes specific_info = 6;
   }
 
   message Instruction {
@@ -108,12 +114,25 @@ message Quokka {
     uint32 mnemonic_index = 2;
     repeated uint32 operand_index = 3;
     bool is_thumb = 4;
-    repeated uint64 operand_strings = 5;
   }
 
-  message FunctionChunk {
-    message Block {
+  message Function {
+    message Edge {
+      enum EdgeType {
+        TYPE_UNCONDITIONAL = 0;
+        TYPE_TRUE = 1;
+        TYPE_FALSE = 2;
+        TYPE_DYNAMIC = 3;  // Like a switch jump table
+      }
 
+      EdgeType edge_type = 1;
+      uint32 source = 2;       // Block index source
+      uint32 destination = 3;  // Block index destination
+
+      bool user_defined = 4;
+    }
+
+    message Block {
       enum BlockType {
         BLOCK_TYPE_NORMAL = 0;
         BLOCK_TYPE_INDJUMP = 1;
@@ -126,46 +145,18 @@ message Quokka {
         BLOCK_TYPE_FAKE = 8;
       }
 
-      uint64 offset_start = 1;
-      bool is_fake = 2;
-      repeated uint32 instructions_index = 3;
-      BlockType block_type = 4;
+      uint32 segment_index = 1;
+      uint32 file_offset = 2;
+      BlockType block_type = 3;
 
+      // TODO optimize for more than 4 billions 1 byte instructions?
+      repeated uint64 instruction_index = 4;
+
+      uint32 size = 5;  // The size in terms of bytes
+
+      // Whether the first instruction of the BB is in thumb mode
+      bool is_thumb = 6;
     }
-
-    uint64 offset_start = 1;
-    repeated Block blocks = 2;
-    repeated Edge edges = 3;
-    bool is_fake = 4;
-
-    // Some functions have real file offset
-    bool is_infile = 5;
-  }
-
-  message BlockIdentifier {
-    uint32 block_id = 1;
-
-    oneof ChunkId {
-      bool no_chunk = 2;
-      uint32 chunk_id = 3;
-    }
-  }
-
-  message Edge {
-    enum EdgeType {
-      TYPE_UNCONDITIONAL = 0;
-      TYPE_TRUE = 1;
-      TYPE_FALSE = 2;
-      TYPE_SWITCH = 3;
-    }
-
-    EdgeType edge_type = 1;
-    BlockIdentifier source = 2;
-    BlockIdentifier destination = 3;
-
-  }
-
-  message Function {
 
     enum FunctionType {
       TYPE_NORMAL = 0;
@@ -176,7 +167,6 @@ message Quokka {
     }
 
     message Position {
-
       enum PositionType {
         CENTER = 0;
         TOP_LEFT = 1;
@@ -188,24 +178,25 @@ message Quokka {
     }
 
     message BlockPosition {
-
-      BlockIdentifier block_id = 1;
+      uint32 block_id = 1;
       Position position = 2;
     }
 
-    uint32 offset = 1;
-    repeated uint32 function_chunks_index = 2;
+    uint32 segment_index = 1;
+    uint32 file_offset = 2;
 
-    FunctionType function_type = 3;
-    string name = 4;
+    repeated Block blocks = 3;
+    repeated Edge edges = 4;
 
-    // Used for link between chunks
-    repeated Edge chunk_edges = 5;
+    FunctionType function_type = 5;
+    string name = 6;
 
-    repeated BlockPosition block_positions = 6;
+    repeated BlockPosition block_positions = 7;
 
     // Optional mangled name, it is non-null only if different from `name`
-    string mangled_name = 7;
+    string mangled_name = 8;
+
+    optional string decompilation = 9;
   }
 
   message Layout {
@@ -238,102 +229,131 @@ message Quokka {
     TYPE_STRUCT = 9;
     TYPE_ALIGN = 10;
     TYPE_POINTER = 11;
+    TYPE_ENUM = 12;
+    TYPE_UNION = 13;
   }
 
   message Data {
-    uint64 offset = 1;
-    DataType type = 2;
+    uint32 segment_index = 1;
+    uint32 file_offset = 2;
+    DataType type = 3;
+    // In case the type is composite or enum and there is a custom type
+    // exported, this variable is referencing it
+    optional uint32 type_index = 9;
 
     oneof DataSize {
-      uint32 size = 3;
-      bool no_size = 4;
+      uint32 size = 4;
+      bool no_size = 5;
     }
 
-    uint32 value_index = 5; //Store the value
-    uint32 name_index = 6; //Store the name of the data if any
+    string name = 6;
     bool not_initialized = 7;
   }
 
-  message Structure {
-
+  message CompositeType {
     message Member {
       uint32 offset = 1;
       string name = 2;
       DataType type = 3;
-      uint32 size = 4;
-      int64 value = 5;
+      optional uint32 type_index = 4;  // Only if the type is composite or enum
+      uint32 size = 5;
     }
 
-    enum StructureType {
+    enum CompositeSubType {
       TYPE_STRUCT = 0;
-      TYPE_ENUM = 1;
-      TYPE_UNION = 2;
-      TYPE_UNK = 3;
+      TYPE_UNION = 1;
+      TYPE_UNK = 2;
     }
 
     string name = 1;
-    StructureType type = 2;
+    CompositeSubType type = 2;
     uint32 size = 3;
-    bool variable_size = 4;
-    repeated Member members = 5;
+    repeated Member members = 4;
+  }
+
+  message EnumType {
+    message EnumValue {
+      string name = 1;
+      int64 value = 2;
+    }
+    string name = 1;
+    repeated EnumValue values = 2;
+  }
+
+  message CompositeDataTypeIdentifier {
+    uint32 data_type_index = 1;
+    oneof MemberIndex {
+      uint32 member_index = 2;
+      bool no_member = 3;  // Identify the whole data type
+    }
+  }
+
+  message DataIdentifier {
+    uint32 data_index = 1;
+    // Optionally, if the data is composite, a list of member indices is
+    // provided. For example to identify data `a.b.c.d` the indices [#b, #c, #d]
+    // will be stored in member_chain.
+    repeated uint32 member_chain = 2;
+  }
+
+  message InstructionIdentifier {
+    uint32 function_index = 1;
+    uint32 block_index = 2;
+    // Offset (in bytes) of the instruction within the basic block
+    uint32 offset = 3;
   }
 
   message Comment {
-
     enum CommentType {
       COMMENT_INSTRUCTION = 0;
       COMMENT_FUNCTION = 1;
-      COMMENT_STRUCTURE = 2;
-      COMMENT_INVALID = 3;
+      COMMENT_DATA = 2;
+      COMMENT_DATA_TYPE = 3;
+      COMMENT_INVALID = 4;
     }
 
     CommentType type = 1;
-    uint32 string_idx = 2;
-    Location location = 3;
-  }
-
-  message Location {
-    message StructurePosition {
-      uint32 structure_idx = 1;
-      oneof MemberId {
-        uint32 member_idx = 2;
-        bool no_member = 3;
-      }
-    }
-
-    message InstructionIdentifier {
-      uint32 func_chunk_idx = 1;
-      uint32 block_idx = 2;
-      uint32 instruction_idx = 3;
-    }
-
-    oneof LocationType {
-      uint64 inst_idx = 1;
-      uint32 data_idx = 2;
-      StructurePosition struct_position = 3;
-      InstructionIdentifier instruction_position = 4;
-      uint32 function_idx = 5;
-      uint32 chunk_idx = 6;
+    string content = 2;
+    oneof Location {
+      InstructionIdentifier instruction_id = 3;
+      uint32 function_index = 4;
+      DataIdentifier data_id = 5;
+      CompositeDataTypeIdentifier data_type_id = 6;
     }
   }
 
   message Reference {
-
     enum ReferenceType {
-      REF_CALL = 0;
+      REF_CODE = 0;
       REF_DATA = 1;
-      REF_ENUM = 2;
-      REF_STRUC = 3;
-      REF_UNK = 4;
+      REF_UNK = 2;
     }
 
-    Location source = 1;
-    Location destination = 2;
+    // TODO merge Origin and Target into a single Location?
+    message ReferenceOrigin {
+      oneof Type {
+        InstructionIdentifier instruction_id = 1;
+        DataIdentifier data_index = 2;
+      }
+    }
+
+    message ReferenceTarget {
+      oneof Type {
+        InstructionIdentifier instruction_id = 1;
+        DataIdentifier data_index = 2;
+        // Works only for composite data types
+        CompositeDataTypeIdentifier data_type_index = 3;
+      }
+    }
+
+    // The location that reference (for ex: an instruction)
+    ReferenceOrigin source = 1;
+    // The location that is referenced (for ex: data)
+    ReferenceTarget destination = 2;
     ReferenceType reference_type = 3;
   }
 
   message Segment {
-
     enum Type {
       SEGMENT_UNK = 0;
       SEGMENT_CODE = 1;
@@ -353,7 +373,7 @@ message Quokka {
     }
 
     string name = 1;
-    uint64 start_addr = 2;
+    uint64 virtual_addr = 2;
     uint64 size = 3;
     uint32 permissions = 4;
     Type type = 5;
@@ -371,17 +391,16 @@ message Quokka {
 
   repeated Layout layout = 3;
   repeated Data data = 4;
-  repeated Structure structs = 5;
+  repeated CompositeType composite_types = 5;
+  repeated EnumType enums = 6;
 
-  repeated FunctionChunk function_chunks = 6;
   repeated Instruction instructions = 7;
   repeated string mnemonics = 8;
 
   repeated Function functions = 9;
   repeated Reference references = 10;
 
-  repeated string string_table = 11;
-  repeated string operand_table = 16;
+  repeated string register_table = 11;
   repeated Operand operands = 12;
 
   repeated string comment_table = 13;
