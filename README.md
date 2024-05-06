@@ -171,7 +171,7 @@ The **self contained mode** instead exports the full disassembly, exactly how th
 
 It's important to note that both modes offer the same API in the python bindings.
 
-> ![WARNING]
+> [!WARNING]
 > From the *self contained mode* it is still possible to obtain the capstone instruction object
 > but beware that the capstone disassembly might be different than the one exported by quokka
 > (instructions might be splitted, merged, not supported, have different mnemonics, etc.).
