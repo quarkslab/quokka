@@ -20,11 +20,16 @@
 #ifndef QUOKKA_UTIL_H
 #define QUOKKA_UTIL_H
 
+#include <concepts>
 #include <cstdint>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
 #include <bytes.hpp>
 #include <idp.hpp>
@@ -247,6 +252,119 @@ class Timer {
     return absl::ToDoubleSeconds(Elapsed(t));
   }
 };
+
+// Concept for checking that all the std::variant types are derived from T
+template <typename T, typename Var>
+concept AllVariantDeriveFrom = requires(const Var& var) {
+  []<typename... VarArgsT>
+    requires(std::derived_from<VarArgsT, T> && ...)
+  (const std::variant<VarArgsT...>) {}(var);
+};
+
+/**
+ * ---------------------------------------------
+ * quokka::RefCounter
+ * ---------------------------------------------
+ * Reference Counter to ProtoHelper object utility
+ *
+ * Utility for managing the reference counter of the ProtoHelper objects
+ * (protobuf objects). It works also on std::variant whose types are all derived
+ * from ProtoHelper.
+ * It models a non-owning reference (aka non-null raw pointer). The object
+ * referenced should out-live the RefCounter.
+ */
+template <typename T>
+  requires(std::derived_from<T, ProtoHelper> ||
+           AllVariantDeriveFrom<ProtoHelper, T>)
+class RefCounter {
+ public:
+  ~RefCounter() noexcept {
+    if (ptr_ != nullptr) {
+      if constexpr (std::derived_from<T, ProtoHelper>) {
+        ptr_->ref_count--;
+      } else {
+        std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
+      }
+    }
+    ptr_ = nullptr;
+  }
+
+  RefCounter(const T* obj) : ptr_(obj) {
+    if (obj == nullptr)
+      throw new std::invalid_argument(
+          "Cannot have a RefCounter to a null pointer");
+    if constexpr (std::derived_from<T, ProtoHelper>) {
+      ptr_->ref_count++;
+    } else {
+      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+    }
+  }
+
+  RefCounter(const RefCounter<T>& obj) noexcept : ptr_(obj.ptr_) {
+    if constexpr (std::derived_from<T, ProtoHelper>) {
+      ptr_->ref_count++;
+    } else {
+      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+    }
+  }
+
+  RefCounter(RefCounter<T>&& obj) noexcept
+      : ptr_(std::exchange(obj.ptr_, nullptr)) {}
+
+  RefCounter& operator=(const T* obj) {
+    if (obj == nullptr)
+      throw new std::invalid_argument(
+          "Cannot have a RefCounter to null pointer");
+    if constexpr (std::derived_from<T, ProtoHelper>) {
+      ptr_->ref_count--;
+      ptr_ = obj;
+      ptr_->ref_count++;
+    } else {
+      std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
+      ptr_ = obj;
+      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+    }
+    return *this;
+  }
+
+  RefCounter& operator=(const RefCounter<T>& obj) noexcept {
+    if constexpr (std::derived_from<T, ProtoHelper>) {
+      ptr_->ref_count--;
+      ptr_ = obj.ptr_;
+      ptr_->ref_count++;
+    } else {
+      std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
+      ptr_ = obj.ptr_;
+      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+    }
+    return *this;
+  }
+
+  RefCounter& operator=(RefCounter<T>&& obj) noexcept {
+    if constexpr (std::derived_from<T, ProtoHelper>) {
+      ptr_->ref_count--;
+    } else {
+      std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
+    }
+    ptr_ = std::exchange(obj.ptr_, nullptr);
+    return *this;
+  }
+
+  T* operator->() const noexcept { return ptr_; }
+  T& operator*() const noexcept { return *ptr_; }
+
+ private:
+  T* ptr_;
+};
+
+/**
+ * Syntax sugar for iterating over a collection of std::variant
+ */
+static constexpr inline void for_each_visit(auto& collection, auto lambda) {
+  for (auto& element : collection) {
+    std::visit(lambda, element);
+  }
+}
 
 /**
  * Implementation of a merge adjacent method
