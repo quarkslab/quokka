@@ -15,7 +15,6 @@
 #include <cstddef>
 #include <string>
 #include <type_traits>
-#include <variant>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
@@ -186,7 +185,7 @@ static void ExportCompositeMembers(T& composite_type) {
               << "` is of composite type `" << base_type_name
               << "` but it was not found within the exported composite types.";
       } else {
-        member.composite_type_ptr = *it;
+        member.composite_type_ptr = &(*it);
       }
     }
 
@@ -259,16 +258,12 @@ void ExportCompositeDataTypes(Quokka* proto) {
   // incomplete.
   // For ex: struct A { A *a; };
   CompositeTypes& composite_types = CompositeTypes::GetInstance();
-  for (const auto& type_ptr : composite_types) {
-    std::visit(
-        [](auto& composite) {
-          struc_t* ida_struct = get_struc(composite.type_id);
+  for_each_visit(composite_types, [](auto& composite) {
+    struc_t* ida_struct = get_struc(composite.type_id);
 
-          if (ida_struct->memqty != 0)
-            ExportCompositeMembers(composite);
-        },
-        *type_ptr);
-  }
+    if (ida_struct->memqty != 0)
+      ExportCompositeMembers(composite);
+  });
 
   WriteCompositeTypes(proto);
 
@@ -317,7 +312,7 @@ void ExportEnums(Quokka* proto) {
   QLOGI << "Start exporting enums";
   Timer timer(absl::Now());
 
-  std::vector<EnumType> enums;
+  auto& enums = Enums::GetInstance();
 
   enum_t ida_enum;
   for (int ida_enum_idx = 0; (ida_enum = getn_enum(ida_enum_idx)) != BADADDR;
@@ -331,11 +326,12 @@ void ExportEnums(Quokka* proto) {
 
     // TODO References and comments
     // ExportStructureReference(ea_t(ida_enum), structure, STRUCT_STRUCT);
+
     // Check for comment for the enum
-    // GetEnumComment(structure, ida_enum);
+    GetEnumComment(enum_type);
   }
 
-  WriteEnums(proto, enums);
+  WriteEnums(proto);
 
   QLOGI << absl::StrFormat("Enums written (took %.2fs)",
                            timer.ElapsedSeconds(absl::Now()));
