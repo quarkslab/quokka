@@ -22,9 +22,10 @@
 
 #include <concepts>
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
+#include <type_traits>
 #include <utility>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -47,6 +48,20 @@
 #include "Windows.h"
 
 namespace quokka {
+
+// Simple flag to know if the plugin is loaded/running or it is being
+// terminated. This is useful in the destructor for some singleton classes in
+// order to avoid annoying circular reference issues.
+extern bool is_running;
+
+// Concept for checking that type T is one of the std::variant types not
+// considering cv qualifiers
+template <typename T, typename Var>
+concept IsOneOf = requires(const Var& var) {
+  []<typename... VarArgsT>
+    requires(std::same_as<std::decay_t<T>, VarArgsT> || ...)
+  (const std::variant<VarArgsT...>) {}(var);
+};
 
 /**
  * Comparer struct
@@ -279,91 +294,111 @@ template <typename T>
 class RefCounter {
  public:
   ~RefCounter() noexcept {
-    if (ptr_ != nullptr) {
+    if (auto spt = ptr_.lock()) {
       if constexpr (std::derived_from<T, ProtoHelper>) {
-        ptr_->ref_count--;
+        spt->ref_count--;
       } else {
-        std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
+        std::visit([](const auto& v) { v.ref_count--; }, *spt);
       }
     }
-    ptr_ = nullptr;
   }
 
-  RefCounter(const T* obj) : ptr_(obj) {
-    if (obj == nullptr)
+  RefCounter(const std::shared_ptr<T>& obj) : ptr_(obj) {
+    if (!obj)
       throw new std::invalid_argument(
           "Cannot have a RefCounter to a null pointer");
     if constexpr (std::derived_from<T, ProtoHelper>) {
-      ptr_->ref_count++;
+      obj->ref_count++;
     } else {
-      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+      std::visit([](const auto& v) { v.ref_count++; }, *obj);
     }
   }
 
   RefCounter(const RefCounter<T>& obj) noexcept : ptr_(obj.ptr_) {
-    if constexpr (std::derived_from<T, ProtoHelper>) {
-      ptr_->ref_count++;
-    } else {
-      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+    if (auto spt = ptr_.lock()) {
+      if constexpr (std::derived_from<T, ProtoHelper>) {
+        spt->ref_count++;
+      } else {
+        std::visit([](const auto& v) { v.ref_count++; }, *spt);
+      }
     }
   }
 
-  RefCounter(RefCounter<T>&& obj) noexcept
-      : ptr_(std::exchange(obj.ptr_, nullptr)) {}
+  RefCounter(RefCounter<T>&& obj) noexcept { std::swap(ptr_, obj.ptr_); }
 
-  RefCounter& operator=(const T* obj) {
-    if (obj == nullptr)
+  RefCounter& operator=(const std::shared_ptr<T>& obj) {
+    if (!obj)
       throw new std::invalid_argument(
           "Cannot have a RefCounter to null pointer");
-    if constexpr (std::derived_from<T, ProtoHelper>) {
-      ptr_->ref_count--;
-      ptr_ = obj;
-      ptr_->ref_count++;
-    } else {
-      std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
-      ptr_ = obj;
-      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+    if (auto spt = ptr_.lock()) {
+      if constexpr (std::derived_from<T, ProtoHelper>) {
+        spt->ref_count--;
+        obj->ref_count++;
+      } else {
+        std::visit([](const auto& v) { v.ref_count--; }, *spt);
+        std::visit([](const auto& v) { v.ref_count++; }, *obj);
+      }
     }
+    ptr_ = obj;
     return *this;
   }
 
   RefCounter& operator=(const RefCounter<T>& obj) noexcept {
-    if constexpr (std::derived_from<T, ProtoHelper>) {
-      ptr_->ref_count--;
-      ptr_ = obj.ptr_;
-      ptr_->ref_count++;
-    } else {
-      std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
-      ptr_ = obj.ptr_;
-      std::visit([](const auto& v) { v.ref_count++; }, *ptr_);
+    if (auto spt = ptr_.lock()) {
+      if constexpr (std::derived_from<T, ProtoHelper>)
+        spt->ref_count--;
+      else
+        std::visit([](const auto& v) { v.ref_count--; }, *spt);
+    }
+    ptr_ = obj.ptr_;
+    if (auto spt = ptr_.lock()) {
+      if constexpr (std::derived_from<T, ProtoHelper>)
+        spt->ref_count++;
+      else
+        std::visit([](const auto& v) { v.ref_count++; }, *spt);
     }
     return *this;
   }
 
   RefCounter& operator=(RefCounter<T>&& obj) noexcept {
-    if constexpr (std::derived_from<T, ProtoHelper>) {
-      ptr_->ref_count--;
-    } else {
-      std::visit([](const auto& v) { v.ref_count--; }, *ptr_);
+    if (auto spt = ptr_.lock()) {
+      if constexpr (std::derived_from<T, ProtoHelper>)
+        spt->ref_count--;
+      else
+        std::visit([](const auto& v) { v.ref_count--; }, *spt);
     }
-    ptr_ = std::exchange(obj.ptr_, nullptr);
+    std::swap(ptr_, obj.ptr_);
     return *this;
   }
 
-  T* operator->() const noexcept { return ptr_; }
-  T& operator*() const noexcept { return *ptr_; }
+  const T operator*() const {
+    if (auto spt = ptr_.lock()) {
+      return *spt;
+    } else {
+      throw new std::runtime_error("Cannot dereference an expired RefCount");
+    }
+  }
+
+  const std::shared_ptr<T> operator->() const {
+    if (auto spt = ptr_.lock()) {
+      return spt;
+    } else {
+      throw new std::runtime_error("Cannot dereference an expired RefCount");
+    }
+  }
 
  private:
-  T* ptr_;
+  std::weak_ptr<T> ptr_;
 };
 
 /**
  * Syntax sugar for iterating over a collection of std::variant
  */
 static constexpr inline void for_each_visit(auto& collection, auto lambda) {
-  for (auto& element : collection) {
-    std::visit(lambda, element);
-  }
+  for (auto& element : collection) std::visit(lambda, element);
+}
+static constexpr inline void for_each_ptr_visit(auto& collection, auto lambda) {
+  for (auto& element : collection) std::visit(lambda, *element);
 }
 
 /**

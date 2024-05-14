@@ -14,7 +14,7 @@
 
 #include <cstddef>
 #include <string>
-#include <type_traits>
+#include <variant>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
@@ -27,6 +27,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
 
+#include "quokka/Comment.h"
 #include "quokka/DataType.h"
 #include "quokka/Logger.h"  // Kept for logger
 #include "quokka/Util.h"
@@ -130,11 +131,15 @@ CompositeTypeMember::CompositeTypeMember(ea_t o, std::string&& n, DataType t,
  *
  * @param composite_type The `CompositeType` object to analyze
  */
-template <IsOneOf<CompositeConcreteType> T>
-static void ExportCompositeMembers(T& composite_type) {
-  constexpr bool is_union = std::is_same_v<T, UnionType>;
+static void ExportCompositeMembers(
+    std::shared_ptr<CompositeConcreteType>& composite_type_ptr) {
+  // Get the underlying object
+  CompositeConcreteType& composite_type = *composite_type_ptr;
 
-  struc_t* ida_struct = get_struc(composite_type.type_id);
+  bool is_union = std::holds_alternative<UnionType>(composite_type);
+
+  struc_t* ida_struct = get_struc(
+      std::visit([](const auto& t) { return t.type_id; }, composite_type));
 
   for (ea_t member_offset = get_struc_first_offset(ida_struct);
        member_offset != BADADDR;
@@ -171,8 +176,13 @@ static void ExportCompositeMembers(T& composite_type) {
     const ea_t offset = (is_union ? 0 : ida_member->soff);
 
     // Emplace the CompositeTypeMember
-    auto& member = composite_type.members.emplace_back(
-        offset, ConvertIdaString(get_member_name(ida_member->id)), type, size);
+    auto& member = std::visit(
+        [&](auto& composite) -> auto& {
+          return composite.members.emplace_back(
+              offset, ConvertIdaString(get_member_name(ida_member->id)), type,
+              size);
+        },
+        composite_type);
 
     // Add the composite type pointer if the member is composite as well
     if (type == TYPE_STRUCT || type == TYPE_UNION) {
@@ -185,13 +195,19 @@ static void ExportCompositeMembers(T& composite_type) {
               << "` is of composite type `" << base_type_name
               << "` but it was not found within the exported composite types.";
       } else {
-        member.composite_type_ptr = &(*it);
+        member.composite_type_ptr = *it;
       }
     }
 
-    // TODO references and comments
     /* Retrieve comments */
-    //   GetStructureMemberComment(structure->members.back(), ida_member->id);
+    std::visit(
+        [&](auto& composite) {
+          GetStructureMemberComment(composite_type_ptr,
+                                    composite.members.size(), ida_member->id);
+        },
+        composite_type);
+
+    // TODO references
     //   ExportStructureMemberReference(ea_t(ida_member->id),
     //                                  structure->members.back(),
     //                                  STRUCT_STRUCT);
@@ -205,7 +221,7 @@ static void ExportCompositeMembers(T& composite_type) {
  * comments. Will populate the `CompositeTypes` singleton container.
  *
  * @see ExportStructureReference
- * @see GetStructureComment
+ * @see GetCompositeTypeComment
  *
  * @param ida_struct A pointer to the IDA struct
  */
@@ -227,11 +243,11 @@ static void ExportStructOrUnion(struc_t* ida_struct) {
     composite_types.emplace_back<StructureType>(
         ConvertIdaString(get_struc_name(ida_struct->id)), ida_struct->id, size);
 
-  // TODO references and comments
+  // TODO references
   //   ExportStructureReference(ea_t(structure->addr), structure,
   //   STRUCT_STRUCT);
 
-  //   GetStructureComment(structure, ida_struct->id);
+  GetCompositeTypeComment(composite_types.back());
 }
 
 void ExportCompositeDataTypes(Quokka* proto) {
@@ -258,12 +274,16 @@ void ExportCompositeDataTypes(Quokka* proto) {
   // incomplete.
   // For ex: struct A { A *a; };
   CompositeTypes& composite_types = CompositeTypes::GetInstance();
-  for_each_visit(composite_types, [](auto& composite) {
-    struc_t* ida_struct = get_struc(composite.type_id);
+  for (auto& composite_type_ptr : composite_types) {
+    std::visit(
+        [&composite_type_ptr](auto& composite) {
+          struc_t* ida_struct = get_struc(composite.type_id);
 
-    if (ida_struct->memqty != 0)
-      ExportCompositeMembers(composite);
-  });
+          if (ida_struct->memqty != 0)
+            ExportCompositeMembers(composite_type_ptr);
+        },
+        *composite_type_ptr);
+  }
 
   WriteCompositeTypes(proto);
 
@@ -280,24 +300,27 @@ void ExportCompositeDataTypes(Quokka* proto) {
  * @param enum_type The enum type object that define the whole type
  * @param ida_enum Ida-enum
  */
-static void ExportEnumMembers(EnumType& enum_type, enum_t ida_enum) {
+static void ExportEnumMembers(std::shared_ptr<EnumType>& enum_type,
+                              enum_t ida_enum) {
   class EnumMemberVisitor : public enum_member_visitor_t {
    private:
-    EnumType& enum_type;
+    std::shared_ptr<EnumType>& enum_type;
 
    public:
-    EnumMemberVisitor(EnumType& enum_type) : enum_type(enum_type) {}
+    EnumMemberVisitor(std::shared_ptr<EnumType>& enum_type)
+        : enum_type(enum_type) {}
 
     int idaapi visit_enum_member(const_t cid, uval_t value) override {
       qstring member_name;
       get_enum_member_name(&member_name, cid);
 
-      enum_type.values.emplace_back(ConvertIdaString(member_name),
-                                    static_cast<int64_t>(value));
+      enum_type->values.emplace_back(ConvertIdaString(member_name),
+                                     static_cast<int64_t>(value));
 
-      // TODO references and comments
-      // /* Retrieve comments */
-      // GetEnumMemberComment(this->enumeration->members.back(), cid);
+      /* Retrieve comments */
+      GetEnumMemberComment(enum_type, enum_type->values.size(), cid);
+
+      // TODO references
       // ExportStructureMemberReference(
       //     ea_t(cid), this->enumeration->members.back(), STRUCT_ENUM);
       return 0;
@@ -324,7 +347,7 @@ void ExportEnums(Quokka* proto) {
     if (get_enum_size(ida_enum) > 0)
       ExportEnumMembers(enum_type, ida_enum);
 
-    // TODO References and comments
+    // TODO References
     // ExportStructureReference(ea_t(ida_enum), structure, STRUCT_STRUCT);
 
     // Check for comment for the enum

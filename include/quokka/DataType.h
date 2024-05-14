@@ -21,11 +21,10 @@
 #ifndef QUOKKA_COMPOSITE_DATA_H
 #define QUOKKA_COMPOSITE_DATA_H
 
-#include <concepts>
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -97,7 +96,8 @@ class CompositeType : public ProtoHelper {
 class StructureType : public CompositeType {
  public:
   template <typename... ArgsT>
-  StructureType(ArgsT... Args) : CompositeType(std::forward<ArgsT>(Args)...) {}
+  StructureType(ArgsT&&... Args)
+      : CompositeType(std::forward<ArgsT>(Args)...) {}
 };
 
 /**
@@ -109,19 +109,10 @@ class StructureType : public CompositeType {
 class UnionType : public CompositeType {
  public:
   template <typename... ArgsT>
-  UnionType(ArgsT... Args) : CompositeType(std::forward<ArgsT>(Args)...) {}
+  UnionType(ArgsT&&... Args) : CompositeType(std::forward<ArgsT>(Args)...) {}
 };
 
 using CompositeConcreteType = std::variant<StructureType, UnionType>;
-
-// Concept for checking that type T is one of the std::variant types not
-// considering cv qualifiers
-template <typename T, typename Var>
-concept IsOneOf = requires(const Var& var) {
-  []<typename... VarArgsT>
-    requires(std::same_as<std::decay_t<T>, VarArgsT> || ...)
-  (const std::variant<VarArgsT...>) {}(var);
-};
 
 /**
  * -----------------------------------------------------------------------------
@@ -153,13 +144,14 @@ class CompositeTypeMember : public ProtoHelper {
  */
 class CompositeTypes {
  private:
-  std::vector<CompositeConcreteType> composite_types_;  ///< Internal list
+  using ElementT = std::shared_ptr<CompositeConcreteType>;
+  std::vector<ElementT> composite_types_;  ///< Internal list
 
   explicit CompositeTypes() = default;  ///< Private constructor
 
  public:
-  using iterator = std::vector<CompositeConcreteType>::iterator;
-  using const_iterator = std::vector<CompositeConcreteType>::const_iterator;
+  using iterator = std::vector<ElementT>::iterator;
+  using const_iterator = std::vector<ElementT>::const_iterator;
 
   /**
    * Return the instance of the `CompositeTypes` class.
@@ -187,8 +179,10 @@ class CompositeTypes {
    * @return A reference to the newly added object
    */
   template <IsOneOf<CompositeConcreteType> T, typename... ArgsT>
-  CompositeConcreteType& emplace_back(ArgsT... args) {
-    return composite_types_.emplace_back(T(std::forward<ArgsT>(args)...));
+  ElementT& emplace_back(ArgsT&&... args) {
+    return composite_types_.emplace_back(
+        std::make_shared<CompositeConcreteType>(
+            T(std::forward<ArgsT>(args)...)));
   }
 
   /**
@@ -201,7 +195,7 @@ class CompositeTypes {
         composite_types_.begin(), composite_types_.end(),
         [&name](const auto& element) {
           return std::visit([&name](const auto& el) { return el.name == name; },
-                            element);
+                            *element);
         });
   }
 
@@ -210,6 +204,13 @@ class CompositeTypes {
    * @return Size of the container
    */
   [[nodiscard]] std::size_t size() const { return composite_types_.size(); }
+
+  /**
+   * Proxy for the std::vector::back()
+   * @return Reference to the last element
+   */
+  constexpr ElementT& back() { return composite_types_.back(); }
+  constexpr const ElementT& back() const { return composite_types_.back(); }
 
   /**
    * Proxy iterators
@@ -249,13 +250,14 @@ class EnumType : public ProtoHelper {
  */
 class Enums {
  private:
-  std::vector<EnumType> enums_;  ///< Internal list
+  using ElementT = std::shared_ptr<EnumType>;
+  std::vector<ElementT> enums_;  ///< Internal list
 
   explicit Enums() = default;  ///< Private constructor
 
  public:
-  using iterator = std::vector<EnumType>::iterator;
-  using const_iterator = std::vector<EnumType>::const_iterator;
+  using iterator = std::vector<ElementT>::iterator;
+  using const_iterator = std::vector<ElementT>::const_iterator;
 
   /**
    * Return the instance of the `Enums` class.
@@ -281,8 +283,9 @@ class Enums {
    * @return A reference to the newly added object
    */
   template <typename... ArgsT>
-  constexpr EnumType& emplace_back(ArgsT... args) {
-    return enums_.emplace_back(std::forward<ArgsT>(args)...);
+  constexpr ElementT& emplace_back(ArgsT&&... args) {
+    return enums_.emplace_back(
+        std::make_shared<EnumType>(std::forward<ArgsT>(args)...));
   }
 
   /**
