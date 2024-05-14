@@ -49,11 +49,6 @@
 
 namespace quokka {
 
-// Simple flag to know if the plugin is loaded/running or it is being
-// terminated. This is useful in the destructor for some singleton classes in
-// order to avoid annoying circular reference issues.
-extern bool is_running;
-
 // Concept for checking that type T is one of the std::variant types not
 // considering cv qualifiers
 template <typename T, typename Var>
