@@ -64,7 +64,8 @@ enum DataType : short {
   TYPE_ARRAY,
 };
 
-DataType GetDataType(tinfo_t* flags);
+DataType GetDataType(const tinfo_t& flags);
+DataType GetDataType(flags_t flags);
 
 struct CompositeTypeMember;  // forward declaration
 
@@ -81,7 +82,7 @@ class CompositeType : public ProtoHelper {
   CompositeType(std::string&& n, tid_t id, size_t sz);
 
   std::string name;  ///< Composite type name
-  tid_t type_id;     ///< Type id (IDA internal)
+  tid_t id;          ///< Type id (IDA internal)
   size_t size;       ///< Structure size
 
   std::vector<CompositeTypeMember> members;  ///< Members list
@@ -196,6 +197,21 @@ class CompositeTypes {
         [&name](const auto& element) {
           return std::visit([&name](const auto& el) { return el.name == name; },
                             *element);
+        });
+  }
+
+  /**
+   * Find the composite type with the specified ID.
+   * @return An iterator to the requested element. If no such element is found,
+   * past-the-end (see end()) iterator is returned.
+   */
+  constexpr const_iterator get_by_id(tid_t type_id) const {
+    return std::find_if(
+        composite_types_.begin(), composite_types_.end(),
+        [&type_id](const auto& element) {
+          return std::visit(
+              [&type_id](const auto& el) { return el.id == type_id; },
+              *element);
         });
   }
 

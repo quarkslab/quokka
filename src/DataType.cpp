@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
 #include <cstddef>
 #include <string>
 #include <variant>
@@ -20,6 +21,7 @@
 #include "quokka/Compatibility.h"
 // clang-format on
 #include <pro.h>
+#include <bytes.hpp>
 #include <enum.hpp>
 #include <struct.hpp>
 #include <typeinf.hpp>
@@ -34,6 +36,32 @@
 #include "quokka/Writer.h"
 
 namespace quokka {
+
+DataType GetDataType(flags_t flags) {
+  if (is_byte(flags)) {
+    return TYPE_B;
+  } else if (is_word(flags)) {
+    return TYPE_W;
+  } else if (is_dword(flags)) {
+    return TYPE_DW;
+  } else if (is_qword(flags)) {
+    return TYPE_QW;
+  } else if (is_oword(flags)) {
+    return TYPE_OW;
+  } else if (is_float(flags)) {
+    return TYPE_FLOAT;
+  } else if (is_double(flags)) {
+    return TYPE_DOUBLE;
+  } else if (is_struct(flags)) {
+    return TYPE_STRUCT;
+  } else if (is_strlit(flags)) {
+    return TYPE_ASCII;
+  } else if (is_align(flags)) {
+    return TYPE_ALIGN;
+  }
+
+  return TYPE_UNK;
+}
 
 DataType GetDataType(const tinfo_t& tinf) {
   auto int_from_tinfo_size = [&tinf]() {
@@ -116,8 +144,8 @@ DataType GetDataType(const tinfo_t& tinf) {
   }
 }
 
-CompositeType::CompositeType(std::string&& n, tid_t id, size_t sz)
-    : name(std::forward<std::string>(n)), type_id(id), size(sz) {}
+CompositeType::CompositeType(std::string&& n, tid_t id_, size_t sz)
+    : name(std::forward<std::string>(n)), id(id_), size(sz) {}
 
 CompositeTypeMember::CompositeTypeMember(ea_t o, std::string&& n, DataType t,
                                          asize_t sz)
@@ -138,8 +166,8 @@ static void ExportCompositeMembers(
 
   bool is_union = std::holds_alternative<UnionType>(composite_type);
 
-  struc_t* ida_struct = get_struc(
-      std::visit([](const auto& t) { return t.type_id; }, composite_type));
+  struc_t* ida_struct =
+      get_struc(std::visit([](const auto& t) { return t.id; }, composite_type));
 
   for (ea_t member_offset = get_struc_first_offset(ida_struct);
        member_offset != BADADDR;
@@ -277,7 +305,7 @@ void ExportCompositeDataTypes(Quokka* proto) {
   for (auto& composite_type_ptr : composite_types) {
     std::visit(
         [&composite_type_ptr](auto& composite) {
-          struc_t* ida_struct = get_struc(composite.type_id);
+          struc_t* ida_struct = get_struc(composite.id);
 
           if (ida_struct->memqty != 0)
             ExportCompositeMembers(composite_type_ptr);
