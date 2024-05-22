@@ -18,6 +18,9 @@ Repository = "https://github.com/quarkslab/quokka/"
 Documentation = "https://quarkslab.github.io/quokka/"
 "Bug Tracker" = "https://github.com/quarkslab/quokka/issues"
 
+[project.scripts]
+quokka-cli = 'quokka.__main__:main'
+
 [project.optional-dependencies]
 test = [
     "pytest",
