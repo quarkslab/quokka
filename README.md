@@ -75,6 +75,17 @@ because we don't need the graphical interface.
 
 - Using the plugin shortcut inside IDA: (by default) Alt+A
 
+### Export a file in batch
+
+One can write its own bash script run multiple `idat64` in parallel. However,
+Quokka provides an utility tool to automatically export all executable files
+of a given directory in parallel. An example to automate the export using 8 threads:
+
+```commandline
+$ quokka-cli -t 8 dir/
+```
+
+
 ### Load an export file
 
 ```python
