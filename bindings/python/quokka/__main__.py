@@ -11,7 +11,6 @@ import click
 import subprocess
 from multiprocessing import Pool, Queue, Manager
 import queue
-from binexport import ProgramBinExport
 
 BINARY_FORMAT = {
     "application/x-dosexec",
