@@ -9,7 +9,15 @@ authors = [{ name = "Quarkslab", email = "diffing@quarkslab.com" }]
 license = { text = "Apache Software License (Apache License, Version 2)" }
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.8"
-dependencies = ["capstone>=4.0.2", "networkx>=2.4", "protobuf>=3.12.2"]
+dependencies = [
+    "capstone>=4.0.2",
+    "networkx>=2.4",
+    "protobuf>=3.12.2",
+
+    # Wait for python-magic to solve/merge https://github.com/ahupp/python-magic/pull/294
+    "python-magic; os_name!='nt'",
+    "python-magic-bin; os_name=='nt'",
+]
 dynamic = ["version"]
 
 [project.urls]
