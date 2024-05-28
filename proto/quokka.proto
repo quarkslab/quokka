@@ -204,6 +204,8 @@ message Quokka {
 
     repeated BlockPosition block_positions = 6;
 
+    // Optional mangled name, it is non-null only if different from `name`
+    string mangled_name = 7;
   }
 
   message Layout {
