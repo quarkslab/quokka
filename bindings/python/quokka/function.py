@@ -548,6 +548,7 @@ class Function(dict):
     Attributes:
         start: Start address
         name: Function name
+        mangled_name: Function mangled name (it might be equal to the function name)
         program: Program reference
         type: Function type
         index_to_address: Mapping of Chunks to Protobuf indexes
@@ -559,6 +560,7 @@ class Function(dict):
         super(dict, self).__init__()
         self.start: int = program.addresser.absolute(func.offset)
         self.name: str = func.name
+        self.mangled_name: str = func.mangled_name or func.name
 
         self.program: quokka.Program = program
 
