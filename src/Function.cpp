@@ -139,6 +139,11 @@ Function::Function(func_t* func_p) {
 
   // Get function name (not mangled)
   this->name = GetName(func_p->start_ea, false);
+  
+  // Get the mangled function name, store it only if different
+  std::string mangled_name = GetName(func_p->start_ea, true);
+  if (mangled_name != this->name)
+    this->mangled_name = std::move(mangled_name);
 
   if (func_p->flags & FUNC_THUNK) {
     this->func_type = TYPE_THUNK;

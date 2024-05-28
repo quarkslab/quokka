@@ -464,8 +464,10 @@ class FuncChunkCollection {
  */
 class Function {
  public:
-  ea_t start_addr = BADADDR;           ///< Starting address
-  std::string name;                    ///< Function name
+  ea_t start_addr = BADADDR;  ///< Starting address
+  std::string name;           ///< Function name
+  std::string mangled_name;   ///< Function mangled name (not empty only if
+                              ///< different than the standard one)
   FunctionType func_type = TYPE_NONE;  ///< Function type
 
   int proto_index = -1;  ///< Index in the protobuf
