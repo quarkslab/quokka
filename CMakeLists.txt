@@ -10,7 +10,7 @@ endif ()
 
 project(quokka
         DESCRIPTION "Quokka: A Fast and Accurate Binary Exporter"
-        VERSION 0.5.6
+        VERSION 0.5.7
         LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
