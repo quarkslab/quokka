@@ -1,18 +1,18 @@
 include_guard()
 
-get_filename_component(hw_proto "quokka.proto" ABSOLUTE)
+# get_filename_component(hw_proto "quokka.proto" ABSOLUTE)
 
-protobuf_generate_python(PROTO_PY "${hw_proto}")
-protobuf_generate_cpp(PROTO_SRC PROTO_HDRS "${hw_proto}")
+set(PROTO_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-add_custom_target(quokka_python ALL
-        DEPENDS "${PROTO_PY}")
+add_library(quokka_proto OBJECT "${CMAKE_CURRENT_LIST_DIR}/quokka.proto")
 
-add_custom_target(quokka_proto
-        DEPENDS ${PROTO_SRC} ${PROTO_HDRS})
+protobuf_generate(
+        TARGET quokka_proto
+        LANGUAGE cpp)
 
-set_target_properties(quokka_proto PROPERTIES
-        GENERATED_FILES "${PROTO_SRC};${PROTO_HDRS}")
+target_link_libraries(quokka_proto PUBLIC protobuf::libprotobuf)
 
-set_target_properties(quokka_python PROPERTIES
-        GENERATED_FILES ${PROTO_PY})
+protobuf_generate(
+        TARGET quokka_proto
+        LANGUAGE python
+        OUT_VARS PROTO_PY)
