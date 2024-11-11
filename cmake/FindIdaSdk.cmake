@@ -59,8 +59,8 @@ find_package_handle_standard_args(
         FAIL_MESSAGE "IDA SDK not found, try setting IdaSdk_ROOT_DIR")
 
 find_path(IDA_ROOT_DIR
-        NAMES appico.png appico64.png
-        PATHS /opt/ida/
+        NAMES ida64
+        PATHS /opt/
         HINTS ${Ida_BIN_DIR} ENV IDA_BIN
         DOC "Location of IDA root dir")
 
@@ -71,11 +71,12 @@ else ()
 endif ()
 
 if (UNIX)
-    set(IdaLib ${IdaSdk_DIR}/lib/x64_linux_gcc_64/libida64.so)
     if (APPLE)
         set(IdaSdk_PLATFORM __MAC__)
+        set(IdaLib ${IdaSdk_DIR}/lib/arm64_mac_clang_64_pro/libida64.dylib)
     else ()
         set(IdaSdk_PLATFORM __LINUX__)
+        set(IdaLib ${IdaSdk_DIR}/lib/x64_linux_gcc_64/libida64.so)
     endif ()
 elseif (WIN32)
     set(IdaSdk_PLATFORM __NT__)
