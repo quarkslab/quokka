@@ -118,7 +118,7 @@ endfunction()
 
 function(_ida_plugin name link_script)  # ARGN contains sources
     # Define a module with the specified sources.
-    add_library(${name} MODULE ${ARGN})
+    add_library(${name} SHARED ${ARGN})
     ida_common_target_settings(${name})
 
     # Rename the plugin to have the proper naming scheme for IDA
