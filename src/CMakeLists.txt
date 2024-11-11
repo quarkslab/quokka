@@ -64,7 +64,7 @@ if (NOT ${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
             quokka_shared
             absl::strings
             absl::str_format
-            stdc++fs
+            #stdc++fs
             protobuf::libprotobuf
     )
 else ()
