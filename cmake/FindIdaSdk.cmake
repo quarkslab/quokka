@@ -131,7 +131,8 @@ function(_ida_plugin name link_script)  # ARGN contains sources
             target_link_libraries(${name}
                     -Wl,-flat_namespace
                     -Wl,-undefined,warning
-                    -Wl,-exported_symbol,_PLUGIN)
+                    -Wl,-exported_symbol,_PLUGIN
+                    ${IdaLib})
         else ()
             # Always use the linker script needed for IDA.
             target_link_libraries(${name}
