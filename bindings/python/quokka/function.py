@@ -289,16 +289,20 @@ class Chunk(MutableMapping, Iterable):
     @property
     def calls(self) -> List[quokka.Chunk]:
         """Return the list of calls made by this chunk.
+        The semantic of a "call" is to jump or call to the **starting** chunk of a function.
+        Beware that this might lead to different results than the program call graph.
 
         Note: The list is not deduplicated so a target may occur multiple time.
         """
 
         calls = []
         for inst_instance in self.program.references.resolve_calls(self, towards=False):
-            if isinstance(inst_instance, tuple):
-                calls.append(inst_instance[0])
-            else:
-                calls.append(inst_instance)
+            chunk = (
+                inst_instance[0] if isinstance(inst_instance, tuple) else inst_instance
+            )
+            # Check that the chunk is the **starting** chunk of a function
+            if chunk.start in self.program:
+                calls.append(chunk)
 
         return calls
 
