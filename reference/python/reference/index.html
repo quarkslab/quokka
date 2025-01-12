@@ -2291,7 +2291,7 @@ i.e. how to resolve the pointed object.</p>
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
-<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Reference</span><span class="p">:</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Reference</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reference: a link between a source and a destination</span>
 
 <span class="sd">    Arguments:</span>
@@ -2305,7 +2305,7 @@ i.e. how to resolve the pointed object.</p>
 <span class="sd">        type: Type of the reference</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="n">ReferenceTarget</span><span class="p">,</span>
         <span class="n">destination</span><span class="p">:</span> <span class="n">ReferenceTarget</span><span class="p">,</span>
@@ -2354,7 +2354,7 @@ i.e. how to resolve the pointed object.</p>
 <span class="normal">72</span>
 <span class="normal">73</span>
 <span class="normal">74</span>
-<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">75</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">source</span><span class="p">:</span> <span class="n">ReferenceTarget</span><span class="p">,</span>
     <span class="n">destination</span><span class="p">:</span> <span class="n">ReferenceTarget</span><span class="p">,</span>
@@ -2879,7 +2879,7 @@ structure key and the instruction key</p>
 <span class="normal">507</span>
 <span class="normal">508</span>
 <span class="normal">509</span>
-<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">References</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
+<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">References</span><span class="p">(</span><span class="n">Mapping</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;References bucket : maintain the list of all references inside the program</span>
 
 <span class="sd">    The instantiation of the class will create a mapping for every reference but not</span>
@@ -2903,7 +2903,7 @@ structure key and the instruction key</p>
     <span class="n">SOURCE</span> <span class="o">=</span> <span class="s2">&quot;source&quot;</span>
     <span class="n">DESTINATION</span> <span class="o">=</span> <span class="s2">&quot;destination&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Init method</span>
 
 <span class="sd">        Arguments:</span>
@@ -2911,7 +2911,7 @@ structure key and the instruction key</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Define the update method</span>
-        <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
             <span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
             <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">LocationValueType</span><span class="p">],</span>
             <span class="n">value</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
@@ -2958,13 +2958,13 @@ structure key and the instruction key</p>
             <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">location_type</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">location_type</span><span class="p">(</span>
         <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferencesLocation</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the proto location type&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ReferencesLocation</span><span class="o">.</span><span class="n">from_proto</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">WhichOneof</span><span class="p">(</span><span class="s2">&quot;LocationType&quot;</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">get_location_value</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_location_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LocationValueType</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve a location</span>
@@ -3005,34 +3005,34 @@ structure key and the instruction key</p>
 
         <span class="k">raise</span> <span class="ne">ValueError</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reference</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reference</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Lazy loading for references&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_reference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto_ref</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;References count&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto_ref</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">AddressT</span><span class="p">,</span> <span class="n">Reference</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">AddressT</span><span class="p">,</span> <span class="n">Reference</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterator over references&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">structures</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Structure</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">structures</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Structure</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Accessor to the program structures&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">structures</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Accessor to the program PROTO data&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">data</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Accessor to the program proto instruction&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">instructions</span>
 
-    <span class="k">def</span> <span class="nf">create_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Reference</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Reference&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Reference</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Reference&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a reference</span>
 
 <span class="sd">        Start with resolving both the source and the destination.</span>
@@ -3050,7 +3050,7 @@ structure key and the instruction key</p>
             <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">ReferenceType</span><span class="o">.</span><span class="n">from_proto</span><span class="p">(</span><span class="n">reference</span><span class="o">.</span><span class="n">reference_type</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">find_instruction</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_instruction</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">instruction_identifier</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Location.InstructionIdentifier&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">,</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span> <span class="n">Index</span><span class="p">]:</span>
@@ -3071,7 +3071,7 @@ structure key and the instruction key</p>
         <span class="n">block</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[</span><span class="n">chunk</span><span class="o">.</span><span class="n">index_to_address</span><span class="p">[</span><span class="n">instruction_identifier</span><span class="o">.</span><span class="n">block_idx</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">instruction_identifier</span><span class="o">.</span><span class="n">instruction_idx</span>
 
-    <span class="k">def</span> <span class="nf">resolve_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferenceTarget</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferenceTarget</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve a location</span>
 
 <span class="sd">        This convert a proto location to the actual instance of the object.</span>
@@ -3111,14 +3111,14 @@ structure key and the instruction key</p>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No location found&quot;</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_direction</span><span class="p">(</span><span class="n">towards</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_direction</span><span class="p">(</span><span class="n">towards</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method to analyze if we take the reference or unwind it&quot;&quot;&quot;</span>
         <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;destination&quot;</span> <span class="k">if</span> <span class="n">towards</span> <span class="k">else</span> <span class="s2">&quot;source&quot;</span>
         <span class="n">wanted</span> <span class="o">=</span> <span class="s2">&quot;destination&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">towards</span> <span class="k">else</span> <span class="s2">&quot;source&quot;</span>
 
         <span class="k">return</span> <span class="n">target</span><span class="p">,</span> <span class="n">wanted</span>
 
-    <span class="k">def</span> <span class="nf">resolve_block_references</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_block_references</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">chunk_index</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
         <span class="n">block_index</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
@@ -3157,7 +3157,7 @@ structure key and the instruction key</p>
 
         <span class="k">return</span> <span class="n">return_list</span>
 
-    <span class="k">def</span> <span class="nf">resolve_inst_instance</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_inst_instance</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">inst_tuple</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">reference_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ReferenceType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3196,7 +3196,7 @@ structure key and the instruction key</p>
 
         <span class="k">return</span> <span class="n">return_list</span>
 
-    <span class="k">def</span> <span class="nf">resolve_calls</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_calls</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">,</span> <span class="n">towards</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">,</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve calls to a chunk</span>
@@ -3243,7 +3243,7 @@ structure key and the instruction key</p>
 
         <span class="k">return</span> <span class="n">return_list</span>
 
-    <span class="k">def</span> <span class="nf">resolve_data</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_index</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
         <span class="n">reference_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ReferenceType</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3368,7 +3368,7 @@ structure key and the instruction key</p>
               <summary>Source code in <code>quokka/reference.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
 <span class="normal">244</span>
-<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reference</span><span class="p">:</span>
+<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reference</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Lazy loading for references&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_reference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto_ref</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
@@ -3475,7 +3475,7 @@ structure key and the instruction key</p>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
-<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Init method</span>
 
 <span class="sd">    Arguments:</span>
@@ -3483,7 +3483,7 @@ structure key and the instruction key</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Define the update method</span>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
         <span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
         <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">LocationValueType</span><span class="p">],</span>
         <span class="n">value</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
@@ -3551,7 +3551,7 @@ structure key and the instruction key</p>
               <summary>Source code in <code>quokka/reference.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
 <span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">AddressT</span><span class="p">,</span> <span class="n">Reference</span><span class="p">]]:</span>
+<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">AddressT</span><span class="p">,</span> <span class="n">Reference</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterator over references&quot;&quot;&quot;</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </code></pre></div></td></tr></table></div>
@@ -3577,7 +3577,7 @@ structure key and the instruction key</p>
               <summary>Source code in <code>quokka/reference.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;References count&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto_ref</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3672,7 +3672,7 @@ structure key and the instruction key</p>
 <span class="normal">283</span>
 <span class="normal">284</span>
 <span class="normal">285</span>
-<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">create_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Reference</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Reference&quot;</span><span class="p">:</span>
+<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reference</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Reference</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Reference&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a reference</span>
 
 <span class="sd">    Start with resolving both the source and the destination.</span>
@@ -3785,7 +3785,7 @@ block.</p>
 <span class="normal">304</span>
 <span class="normal">305</span>
 <span class="normal">306</span>
-<span class="normal">307</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">find_instruction</span><span class="p">(</span>
+<span class="normal">307</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">find_instruction</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">instruction_identifier</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Location.InstructionIdentifier&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">,</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span> <span class="n">Index</span><span class="p">]:</span>
@@ -3837,7 +3837,7 @@ block.</p>
 <span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">get_direction</span><span class="p">(</span><span class="n">towards</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_direction</span><span class="p">(</span><span class="n">towards</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper method to analyze if we take the reference or unwind it&quot;&quot;&quot;</span>
     <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;destination&quot;</span> <span class="k">if</span> <span class="n">towards</span> <span class="k">else</span> <span class="s2">&quot;source&quot;</span>
     <span class="n">wanted</span> <span class="o">=</span> <span class="s2">&quot;destination&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">towards</span> <span class="k">else</span> <span class="s2">&quot;source&quot;</span>
@@ -3958,7 +3958,7 @@ block.</p>
 <span class="normal">238</span>
 <span class="normal">239</span>
 <span class="normal">240</span>
-<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_location_value</span><span class="p">(</span>
+<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_location_value</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LocationValueType</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a location</span>
@@ -4029,7 +4029,7 @@ block.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">location_type</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">location_type</span><span class="p">(</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferencesLocation</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the proto location type&quot;&quot;&quot;</span>
@@ -4195,7 +4195,7 @@ False if we want the references <em>from</em> the block.</p>
 <span class="normal">390</span>
 <span class="normal">391</span>
 <span class="normal">392</span>
-<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_block_references</span><span class="p">(</span>
+<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_block_references</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">chunk_index</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
     <span class="n">block_index</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
@@ -4382,7 +4382,7 @@ from this chunk Chunk -&gt; {X,Y,Z} ?</p>
 <span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
-<span class="normal">479</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_calls</span><span class="p">(</span>
+<span class="normal">479</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_calls</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">chunk</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">,</span> <span class="n">towards</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">,</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Chunk</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve calls to a chunk</span>
@@ -4550,7 +4550,7 @@ If a reference_type is specified the references will be filtered by their type</
 <span class="normal">507</span>
 <span class="normal">508</span>
 <span class="normal">509</span>
-<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_data</span><span class="p">(</span>
+<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_data</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">data_index</span><span class="p">:</span> <span class="n">Index</span><span class="p">,</span>
     <span class="n">reference_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ReferenceType</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4726,7 +4726,7 @@ If a reference_type is specified the references will be filtered by their type</
 <span class="normal">429</span>
 <span class="normal">430</span>
 <span class="normal">431</span>
-<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_inst_instance</span><span class="p">(</span>
+<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_inst_instance</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">inst_tuple</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
     <span class="n">reference_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ReferenceType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4900,7 +4900,7 @@ If a reference_type is specified the references will be filtered by their type</
 <span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
-<span class="normal">346</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferenceTarget</span><span class="p">:</span>
+<span class="normal">346</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolve_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">Location</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferenceTarget</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a location</span>
 
 <span class="sd">    This convert a proto location to the actual instance of the object.</span>
@@ -5026,7 +5026,7 @@ If a reference_type is specified the references will be filtered by their type</
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ReferencesLocation</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ReferencesLocation</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reference location</span>
 
 <span class="sd">    A reference may be attached to one of the following :</span>
@@ -5047,7 +5047,7 @@ If a reference_type is specified the references will be filtered by their type</
     <span class="n">CHUNK</span> <span class="o">=</span> <span class="s2">&quot;chunk_idx&quot;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span><span class="n">location_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferencesLocation</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span><span class="n">location_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferencesLocation</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert reference location from proto&quot;&quot;&quot;</span>
         <span class="c1"># These are the name of the fields in the protobuf</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
@@ -5062,7 +5062,7 @@ If a reference_type is specified the references will be filtered by their type</
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">mapping</span><span class="p">[</span><span class="n">location_type</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown location type&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown location type&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -5114,7 +5114,7 @@ If a reference_type is specified the references will be filtered by their type</
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span><span class="n">location_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferencesLocation</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span><span class="n">location_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReferencesLocation</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert reference location from proto&quot;&quot;&quot;</span>
     <span class="c1"># These are the name of the fields in the protobuf</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
@@ -5129,7 +5129,7 @@ If a reference_type is specified the references will be filtered by their type</
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">mapping</span><span class="p">[</span><span class="n">location_type</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown location type&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown location type&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5174,7 +5174,7 @@ If a reference_type is specified the references will be filtered by their type</
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2025</span>
   </span>
 
     
@@ -5184,7 +5184,7 @@ If a reference_type is specified the references will be filtered by their type</
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2025</span>
   </span>
 
     

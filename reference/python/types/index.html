@@ -2201,7 +2201,7 @@
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">AddressSize</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AddressSize</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Address size&quot;&quot;&quot;</span>
 
     <span class="n">ADDRESS_64</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -2210,7 +2210,7 @@
     <span class="n">ADDRESS_UNK</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">address_size</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.AddressSizeValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AddressSize&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2265,7 +2265,7 @@
 <span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">address_size</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.AddressSizeValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AddressSize&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2344,7 +2344,7 @@
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
-<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BlockType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BlockType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Block Type&quot;&quot;&quot;</span>
 
     <span class="n">NORMAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -2358,7 +2358,7 @@
     <span class="n">FAKE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">block_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.FunctionChunk.Block.BlockTypeValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockType</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2427,7 +2427,7 @@
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">block_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.FunctionChunk.Block.BlockTypeValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockType</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2516,7 +2516,7 @@
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">DataType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Data Type&quot;&quot;&quot;</span>
 
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -2533,7 +2533,7 @@
     <span class="n">POINTER</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.DataTypeValue&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.DataTypeValue&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">TYPE_B</span><span class="p">:</span> <span class="n">DataType</span><span class="o">.</span><span class="n">BYTE</span><span class="p">,</span>
@@ -2602,7 +2602,7 @@
 <span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.DataTypeValue&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.DataTypeValue&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataType&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">TYPE_B</span><span class="p">:</span> <span class="n">DataType</span><span class="o">.</span><span class="n">BYTE</span><span class="p">,</span>
@@ -2682,7 +2682,7 @@
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
-<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">EdgeType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EdgeType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Edge Type&quot;&quot;&quot;</span>
 
     <span class="n">UNCONDITIONAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -2691,7 +2691,7 @@
     <span class="n">SWITCH</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">edge_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Edge.EdgeTypeValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;EdgeType&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2758,7 +2758,7 @@
 <span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">edge_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Edge.EdgeTypeValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;EdgeType&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2844,7 +2844,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Endianness</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Endianness</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Endianness of the program</span>
 
 <span class="sd">    LE: Little endian (least significant bit first)</span>
@@ -2859,7 +2859,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">endianness</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Meta.EndianessValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Endianness</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2914,7 +2914,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">endianness</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Meta.EndianessValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Endianness</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -2981,7 +2981,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">327</span>
 <span class="normal">328</span>
 <span class="normal">329</span>
-<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ExporterMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExporterMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mode type</span>
 
 <span class="sd">    The exporter mode controls the type of exported data.</span>
@@ -2992,7 +2992,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="n">NORMAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.ExporterMeta.ModeValue&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExporterMode&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.ExporterMeta.ModeValue&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExporterMode&quot;</span><span class="p">:</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">ExporterMeta</span><span class="o">.</span><span class="n">MODE_LIGHT</span><span class="p">:</span> <span class="n">ExporterMode</span><span class="o">.</span><span class="n">LIGHT</span><span class="p">,</span>
             <span class="n">quokka</span><span class="o">.</span><span class="n">pb</span><span class="o">.</span><span class="n">Quokka</span><span class="o">.</span><span class="n">ExporterMeta</span><span class="o">.</span><span class="n">MODE_FULL</span><span class="p">:</span> <span class="n">ExporterMode</span><span class="o">.</span><span class="n">FULL</span><span class="p">,</span>
@@ -3069,7 +3069,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">FunctionType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FunctionType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function Type&quot;&quot;&quot;</span>
 
     <span class="n">NORMAL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -3080,7 +3080,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="n">INVALID</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">function_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Function.FunctionTypeValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FunctionType&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3139,7 +3139,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">function_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Function.FunctionTypeValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FunctionType&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3211,7 +3211,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
-<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">ReferenceType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ReferenceType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reference Type&quot;&quot;&quot;</span>
 
     <span class="n">CALL</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -3221,7 +3221,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">reference_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Reference.ReferenceTypeValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ReferenceType&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3280,7 +3280,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">reference_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Reference.ReferenceTypeValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ReferenceType&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3336,7 +3336,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RegAccessMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RegAccessMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Register access mode&quot;&quot;&quot;</span>
 
     <span class="n">READ</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -3417,7 +3417,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
-<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">SegmentType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SegmentType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Segment Type&quot;&quot;&quot;</span>
 
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -3430,7 +3430,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="n">ABSOLUTE_SYMBOLS</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">segment_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Segment.TypeValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SegmentType&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3495,7 +3495,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">segment_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Segment.TypeValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SegmentType&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3568,7 +3568,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">307</span>
 <span class="normal">308</span>
 <span class="normal">309</span>
-<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">StructureType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StructureType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Structure Type&quot;&quot;&quot;</span>
 
     <span class="n">STRUCT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -3577,7 +3577,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
         <span class="n">structure_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Structure.StructureTypeValue&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StructureType&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3634,7 +3634,7 @@ BE: Big endian (most significant bit first)</p>
 <span class="normal">308</span>
 <span class="normal">309</span>
 <span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
-<span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_proto</span><span class="p">(</span>
     <span class="n">structure_type</span><span class="p">:</span> <span class="s2">&quot;quokka.pb.Quokka.Structure.StructureTypeValue&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StructureType&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the protobuf value into this enumeration&quot;&quot;&quot;</span>
@@ -3689,7 +3689,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2025</span>
   </span>
 
     
@@ -3699,7 +3699,7 @@ BE: Big endian (most significant bit first)</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2025</span>
   </span>
 
     

@@ -1644,12 +1644,12 @@ to get a basic feature extractor.</p>
 <span class="sd">    Written by dm (Alexis Challande) in 2022.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">quokka</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
 
 <span class="c1"># Use the code from arch.py in this repo</span>
 <span class="c1"># Originally</span>
@@ -1659,7 +1659,7 @@ to get a basic feature extractor.</p>
 <span class="n">FeaturesDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="s2">&quot;FeaturesDict&quot;</span><span class="p">]]</span>
 
 
-<span class="k">def</span> <span class="nf">get_bb_features</span><span class="p">(</span><span class="n">block</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FeaturesDict</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bb_features</span><span class="p">(</span><span class="n">block</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FeaturesDict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract features from a Basic Block&quot;&quot;&quot;</span>
 
     <span class="n">mnemonics</span> <span class="o">=</span> <span class="p">[</span><span class="n">inst</span><span class="o">.</span><span class="n">cs_inst</span><span class="o">.</span><span class="n">mnemonic</span> <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">instructions</span><span class="p">]</span>
@@ -1692,13 +1692,13 @@ to get a basic feature extractor.</p>
     <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">sum_block_features</span><span class="p">(</span><span class="n">bb_features</span><span class="p">:</span> <span class="n">FeaturesDict</span><span class="p">,</span> <span class="n">feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sum_block_features</span><span class="p">(</span><span class="n">bb_features</span><span class="p">:</span> <span class="n">FeaturesDict</span><span class="p">,</span> <span class="n">feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sum the values for every basic block in the function&quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="n">feature</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;n_&quot;</span><span class="p">),</span> <span class="s2">&quot;Only numeric values can be summed&quot;</span>
     <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">basic_block</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="k">for</span> <span class="n">basic_block</span> <span class="ow">in</span> <span class="n">bb_features</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
 
-<span class="k">def</span> <span class="nf">get_func_features</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FeaturesDict</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_func_features</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FeaturesDict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts features from a Function&quot;&quot;&quot;</span>
     <span class="n">bb_features</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">block_start</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
@@ -1719,7 +1719,7 @@ to get a basic feature extractor.</p>
     <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">export_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_binary</span><span class="p">(</span><span class="n">binary</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Export features from a Program&quot;&quot;&quot;</span>
 
     <span class="n">prog_features</span><span class="p">:</span> <span class="n">FeaturesDict</span> <span class="o">=</span> <span class="p">{}</span>

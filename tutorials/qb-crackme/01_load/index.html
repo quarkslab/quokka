@@ -1717,8 +1717,8 @@ shell.</p>
 <p>To load a program, <code>quokka</code> needs both the export file <strong>and</strong> the original 
 binary. Indeed, to reduce the size of the export, information directly available
 in the binary are not exported.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">quokka</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">samples</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;docs/samples&#39;</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">samples</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(),</span> <span class="s2">&quot;You should run this code in Quokka main directory&quot;</span>
@@ -1733,7 +1733,7 @@ in the binary are not exported.</p>
 <p>We now have in <code>prog</code> a complete program representation.
 Using <code>dir(prog)</code>, you can see the different possibilities.</p>
 <p>For instance, you can list the strings found in the program using :</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">quokka</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
 <span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;docs/samples/qb-crackme.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;docs/samples/qb-crackme&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">prog</span><span class="o">.</span><span class="n">strings</span><span class="p">)</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">prog</span><span class="o">.</span><span class="n">export_file</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
@@ -1745,7 +1745,7 @@ well documented.</p>
 </div>
 <h2 id="export-and-load">Export and load</h2>
 <p>If the IDA plugin has been installed you can also create the exported directly using the convenient method <code>from_binary</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">quokka</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
 
 <span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span><span class="s1">&#39;docs/samples/qb-crackme&#39;</span><span class="p">)</span>
 <span class="k">assert</span> <span class="n">prog</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Unable to export qb-crackme&quot;</span>
@@ -1754,7 +1754,7 @@ well documented.</p>
 <p>By default, IDA will store the database of the exported file next to the binary
 file. However, this is not convenient when dealing with read only filesystems. 
 Use the <code>database_file</code> option to control where it should be stored.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">quokka</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
 
 <span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span><span class="s1">&#39;/bin/ls&#39;</span><span class="p">)</span>
 <span class="c1"># Will fail because /bin is not writable</span>

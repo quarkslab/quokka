@@ -1712,7 +1712,7 @@
 is a (simple) crackme. </p>
 <p>Let's try to see how we can start to solve it with <code>quokka</code>.</p>
 <h2 id="finding-the-challenges">Finding the challenges</h2>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">quokka</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
 
 <span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s1">&#39;docs/samples/qb-crackme.Quokka&#39;</span><span class="p">,</span> <span class="s1">&#39;docs/samples/qb-crackme&#39;</span><span class="p">)</span>
 
@@ -1807,7 +1807,7 @@ allows us to recover it!</p>
 <p>We load a data and push it on the stack before calling a function.
 We can ask <code>quokka</code> to help us to identify the calling convention used by the 
 binary in two ways: 
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">quokka.analysis</span> <span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">Platform</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">Platform</span>
 
 <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">Platform</span><span class="o">.</span><span class="n">LINUX</span><span class="p">,</span> <span class="n">prog</span><span class="o">.</span><span class="n">arch</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">calling_convention</span><span class="p">)</span>

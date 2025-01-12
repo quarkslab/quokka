@@ -1844,7 +1844,7 @@ The decoding logic is done by the inner method <code>_decode</code>.</p>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">capstone_decode_instruction</span><span class="p">(</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">capstone_decode_instruction</span><span class="p">(</span>
     <span class="n">inst</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Instruction</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">capstone</span><span class="o">.</span><span class="n">CsInsn</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Decode an instruction with capstone</span>
@@ -1999,7 +1999,7 @@ interested in most of the details, we already set the details to True.</p>
 <span class="normal">73</span>
 <span class="normal">74</span>
 <span class="normal">75</span>
-<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_capstone_context</span><span class="p">(</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_capstone_context</span><span class="p">(</span>
         <span class="n">arch</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">quokka</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">QuokkaArch</span><span class="p">],</span>
         <span class="n">endian</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Endianness</span><span class="p">]</span> <span class="o">=</span> <span class="n">Endianness</span><span class="o">.</span><span class="n">LITTLE_ENDIAN</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the capstone context for the program</span>
@@ -2045,7 +2045,7 @@ interested in most of the details, we already set the details to True.</p>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">capstone_arch</span><span class="p">,</span> <span class="n">capstone_mode</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">CapstoneError</span><span class="p">(</span><span class="s2">&quot;Unable to find the Architecture&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+        <span class="k">raise</span> <span class="n">quokka</span><span class="o">.</span><span class="n">CapstoneError</span><span class="p">(</span><span class="s2">&quot;Unable to find the Architecture&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="n">context</span> <span class="o">=</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">(</span><span class="n">capstone_arch</span><span class="p">,</span> <span class="n">capstone_mode</span><span class="p">)</span>
     <span class="n">context</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2166,7 +2166,7 @@ interested in most of the details, we already set the details to True.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">update_capstone_context</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">,</span> <span class="n">is_thumb</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">:</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">update_capstone_context</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">,</span> <span class="n">is_thumb</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">capstone</span><span class="o">.</span><span class="n">Cs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an appropriate context for Capstone instructions</span>
 
 <span class="sd">    For ARM architecture, if the instruction is Thumb, we must use a different context.</span>
@@ -2225,7 +2225,7 @@ interested in most of the details, we already set the details to True.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2025</span>
   </span>
 
     
@@ -2235,7 +2235,7 @@ interested in most of the details, we already set the details to True.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 3, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">January 12, 2025</span>
   </span>
 
     
