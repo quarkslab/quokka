@@ -37,7 +37,7 @@ class Bcolors:
 
 
 def recursive_file_iter(p: Path) -> Generator[Path, None, None]:
-    if p.is_file():
+    if p.is_file() and not p.is_symlink():
         mime_type = magic.from_file(p, mime=True)
         if mime_type not in BINARY_FORMAT and p.suffix not in EXTENSIONS_WHITELIST.get(
             mime_type, []
@@ -45,7 +45,7 @@ def recursive_file_iter(p: Path) -> Generator[Path, None, None]:
             pass
         else:
             yield p
-    elif p.is_dir():
+    elif p.is_dir() and not p.is_symlink():
         for f in p.iterdir():
             yield from recursive_file_iter(f)
 
