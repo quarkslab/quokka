@@ -1781,7 +1781,7 @@ user ID uid.
 <p>Lets select the function:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># WARNING: Not working</span>
 
-<span class="kn">from</span> <span class="nn">quokka</span> <span class="kn">import</span> <span class="n">Function</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka</span><span class="w"> </span><span class="kn">import</span> <span class="n">Function</span>
 <span class="n">function</span><span class="p">:</span> <span class="n">Function</span> <span class="o">=</span> <span class="n">bionic</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;getpwuid&quot;</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">function</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;getpwuid&quot;</span> <span class="c1"># Raises an error</span>
@@ -1807,7 +1807,7 @@ None<span class="w"> </span><span class="o">(</span>DataType.DOUBLE_WORD<span cl
 </code></pre></div>
 So the second and third reference in the function are towards the table we are looking for!</p>
 <p>Let's find the beginning of our user table:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">quokka</span> <span class="kn">import</span> <span class="n">Data</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka</span><span class="w"> </span><span class="kn">import</span> <span class="n">Data</span>
 <span class="n">user_table</span><span class="p">:</span> <span class="n">Data</span> <span class="o">=</span> <span class="n">getpwuid</span><span class="o">.</span><span class="n">data_references</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">user_table</span><span class="o">.</span><span class="n">address</span><span class="si">=:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1824,7 +1824,7 @@ towards it.</p>
 <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">code_references</span> <span class="o">!=</span> <span class="p">[],</span> <span class="s2">&quot;Has code references&quot;</span>
 </code></pre></div>
 <p>So our loop to iterate <em>until</em> the end of the table will look like this:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">quokka.types</span> <span class="kn">import</span> <span class="n">AddressT</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressT</span>
 
 <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span>
 <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -1855,10 +1855,10 @@ error:</p>
 <div class="highlight"><pre><span></span><code>ValueError:<span class="w"> </span>No<span class="w"> </span>data<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span>0x8cdbc
 </code></pre></div>
 <p>Another solution is to write this helper script:
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">quokka</span> <span class="kn">import</span> <span class="n">Program</span>
-<span class="kn">from</span> <span class="nn">quokka.types</span> <span class="kn">import</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">DataType</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka</span><span class="w"> </span><span class="kn">import</span> <span class="n">Program</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressT</span><span class="p">,</span> <span class="n">DataType</span>
 
-<span class="k">def</span> <span class="nf">read_userid</span><span class="p">(</span><span class="n">prog</span><span class="p">:</span> <span class="n">Program</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_userid</span><span class="p">(</span><span class="n">prog</span><span class="p">:</span> <span class="n">Program</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AddressT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read an user ID within the program at `address`&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">prog</span><span class="o">.</span><span class="n">executable</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
         <span class="n">prog</span><span class="o">.</span><span class="n">addresser</span><span class="o">.</span><span class="n">file</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="n">DataType</span><span class="o">.</span><span class="n">DOUBLE_WORD</span>
@@ -1866,7 +1866,7 @@ error:</p>
 </code></pre></div></p>
 <h2 id="step-5-repeat-until-the-end-of-the-table">Step 5: Repeat until the end of the table</h2>
 <p>Now, we have every component of our script, let put it together within a loop:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">quokka.types</span> <span class="kn">import</span> <span class="n">AddressT</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddressT</span>
 
 <span class="n">start</span><span class="p">:</span> <span class="n">AddressT</span> <span class="o">=</span> <span class="n">user_table</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="mh">0x8</span>
 <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>

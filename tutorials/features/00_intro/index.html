@@ -1765,21 +1765,21 @@ purpose.</p>
 <span class="c1">#                                                                            #</span>
 <span class="c1">##############################################################################</span>
 
-<span class="kn">import</span> <span class="nn">idautils</span>
-<span class="kn">import</span> <span class="nn">idc</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">ntpath</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">idautils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">idc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ntpath</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">capstone</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">core</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">capstone</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">BasicBlock</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;BasicBlock&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;va&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">,</span> <span class="s1">&#39;succs&#39;</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">get_bitness</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bitness</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return 32/64 according to the binary bitness.&quot;&quot;&quot;</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">idaapi</span><span class="o">.</span><span class="n">get_inf_structure</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">is_64bit</span><span class="p">():</span>
@@ -1788,7 +1788,7 @@ purpose.</p>
         <span class="k">return</span> <span class="mi">32</span>
 
 
-<span class="k">def</span> <span class="nf">initialize_capstone</span><span class="p">(</span><span class="n">procname</span><span class="p">,</span> <span class="n">bitness</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">initialize_capstone</span><span class="p">(</span><span class="n">procname</span><span class="p">,</span> <span class="n">bitness</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize the Capstone disassembler.</span>
 
@@ -1832,7 +1832,7 @@ purpose.</p>
     <span class="k">return</span> <span class="n">md</span><span class="p">,</span> <span class="n">arch</span>
 
 
-<span class="k">def</span> <span class="nf">capstone_disassembly</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">capstone_disassembly</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="n">ea</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Disassemble a basic block using Capstone.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Define a fixed constant to extract immediates</span>
@@ -1871,7 +1871,7 @@ purpose.</p>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">get_basic_blocks</span><span class="p">(</span><span class="n">fva</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_basic_blocks</span><span class="p">(</span><span class="n">fva</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the list of BasicBlock for a given function.&quot;&quot;&quot;</span>
     <span class="n">bb_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">func</span> <span class="o">=</span> <span class="n">idaapi</span><span class="o">.</span><span class="n">get_func</span><span class="p">(</span><span class="n">fva</span><span class="p">)</span>
@@ -1889,7 +1889,7 @@ purpose.</p>
     <span class="k">return</span> <span class="n">bb_list</span>
 
 
-<span class="k">def</span> <span class="nf">get_bb_disasm</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bb_disasm</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper around a basic block disassembly.&quot;&quot;&quot;</span>
     <span class="n">bb_bytes</span> <span class="o">=</span> <span class="n">idc</span><span class="o">.</span><span class="n">get_bytes</span><span class="p">(</span><span class="n">bb</span><span class="o">.</span><span class="n">va</span><span class="p">,</span> <span class="n">bb</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
     <span class="n">bb_heads</span><span class="p">,</span> <span class="n">bb_mnems</span><span class="p">,</span> <span class="n">bb_disasm</span><span class="p">,</span> <span class="n">bb_numerics</span> <span class="o">=</span> \
@@ -1897,7 +1897,7 @@ purpose.</p>
     <span class="k">return</span> <span class="n">bb_bytes</span><span class="p">,</span> <span class="n">bb_heads</span><span class="p">,</span> <span class="n">bb_mnems</span><span class="p">,</span> <span class="n">bb_disasm</span><span class="p">,</span> <span class="n">bb_numerics</span>
 
 
-<span class="k">def</span> <span class="nf">get_bb_features</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="n">string_list</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">arch</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_bb_features</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="n">string_list</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">arch</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the features associated to a BB.&quot;&quot;&quot;</span>
     <span class="n">features_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
@@ -1945,7 +1945,7 @@ purpose.</p>
     <span class="k">return</span> <span class="n">features_dict</span>
 
 
-<span class="k">def</span> <span class="nf">run_acfg_features</span><span class="p">(</span><span class="n">idb_path</span><span class="p">,</span> <span class="n">fva_list</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_acfg_features</span><span class="p">(</span><span class="n">idb_path</span><span class="p">,</span> <span class="n">fva_list</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the features from each function. Save results to JSON.&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[D] Processing: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">idb_path</span><span class="p">)</span>
 
