@@ -25,7 +25,7 @@
 #include <pro.h>
 
 // Workaround for fixing IDA SDK missing header
-#if IDA_SDK_VERSION == 810 || IDA_SDK_VERSION == 820
+#if IDA_SDK_VERSION == 800 || IDA_SDK_VERSION == 810 || IDA_SDK_VERSION == 820
 #include <cstdint>
 #endif
 
