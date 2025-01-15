@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84]
         include:
           - ida_sdk: 74
             sdk_password: IDA_SDK74_PASSWORD
@@ -24,6 +24,8 @@ jobs:
             sdk_password: IDA_SDK82_PASSWORD
           - ida_sdk: 83
             sdk_password: IDA_SDK83_PASSWORD
+          - ida_sdk: 84
+            sdk_password: IDA_SDK84_PASSWORD
           - os: ubuntu-latest
             ext: so
           - os: windows-latest
@@ -32,7 +34,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          lfs: 'true'
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v1.12
@@ -92,7 +96,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84]
         include:
           - os: windows-latest
             ext: dll
