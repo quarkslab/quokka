@@ -10,48 +10,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: '3.10'
-      - name: Install dependencies
-        run: pip install wheel
+          cache-dependency-glob: pyproject.toml
       - name: Build wheel
-        run: pip wheel -w wheels .
-      - uses: actions/upload-artifact@v3
+        run: uv build --wheel
+      - uses: actions/upload-artifact@v4
         with:
-          path: ./wheels/quokka*.whl
+          name: wheels
+          path: dist/*.whl
 
   build_sdist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: '3.10'
+          cache-dependency-glob: pyproject.toml
       - name: Build sdist
-        run: python setup.py sdist
-      - uses: actions/upload-artifact@v3
+        run: uv build --sdist
+      - uses: actions/upload-artifact@v4
         with:
+          name: sdist
           path: dist/*.tar.gz
 
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
+    permissions:
+      # Used to publish to PyPI with Trusted Publishing.
+      id-token: write
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          # unpacks default artifact into dist/
-          # if `name: artifact` is omitted, the action will create extra parent dir
-          name: artifact
-          path: dist
+          path: dist/
+          merge-multiple: true
 
       - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.1
+        uses: pypa/gh-action-pypi-publish@v1.12.3
         with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          attestations: true
 
       - name: Upload Python packages for release notes
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v2
         with:
           files: dist/*
