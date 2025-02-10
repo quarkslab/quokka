@@ -39,7 +39,7 @@ jobs:
           lfs: 'true'
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.12
+        uses: jwlawson/actions-setup-cmake@v2.0
 
       - name: Install Ninja (Linux only)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -81,7 +81,7 @@ jobs:
           mv build${{ matrix.ida_sdk }}/quokka-install/quokka_* ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
           path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
@@ -104,12 +104,12 @@ jobs:
             ext: so
     steps:
       - name: Download Artefact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
 
       - name: Release
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v2.2.1
         with:
           files: ${{ matrix.ida_sdk }}-quokka_*
           fail_on_unmatched_files: true

@@ -54,11 +54,11 @@ jobs:
           merge-multiple: true
 
       - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.12.3
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           attestations: true
 
       - name: Upload Python packages for release notes
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.2.1
         with:
           files: dist/*
