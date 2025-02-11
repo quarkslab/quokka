@@ -45,17 +45,17 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Fetch IDA SDKs
+      - name: Fetch IDA SDKs (Linux)
+        if ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           cd scripts
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            ./fetch_sdk.sh
-          elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            .\fetch_sdk.bat
-          else
-            echo "Unsupported OS";
-            exit 1
-          fi
+          ./fetch_sdk.sh
+
+      - name: Fetch IDA SDKs (Windows)
+        if ${{ matrix.os == 'windows-latest' }}
+        run: |
+          cd scripts
+          .\fetch_sdk.bat
 
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
