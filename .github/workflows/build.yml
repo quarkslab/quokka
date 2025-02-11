@@ -59,7 +59,7 @@ jobs:
           ./fetch_sdk.sh
 
       - name: Fetch IDA SDKs (Windows)
-        if: ${{ matrix.os == 'windows-latest'  && steps.cache-sdk.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.os == 'windows-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
         run: |
           cd scripts
           .\fetch_sdk.bat
