@@ -35,8 +35,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          lfs: 'true'
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2.0
