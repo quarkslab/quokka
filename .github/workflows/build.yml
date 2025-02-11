@@ -38,6 +38,8 @@ jobs:
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2.0
+        with:
+          cmake-version: 'latest'
 
       - name: Install Ninja (Linux only)
         if: ${{ matrix.os == 'ubuntu-latest' }}
