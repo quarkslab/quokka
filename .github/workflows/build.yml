@@ -53,17 +53,13 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@master
 
       - name: Fetch IDA SDKs (Linux)
-        if: |
-          ${{ matrix.os == 'ubuntu-latest' }} &&
-          steps.cache-sdk.outputs.cache-hit != 'true'
+        if: ${{ matrix.os == 'ubuntu-latest' }} && steps.cache-sdk.outputs.cache-hit != 'true'
         run: |
           cd scripts
           ./fetch_sdk.sh
 
       - name: Fetch IDA SDKs (Windows)
-        if: |
-          ${{ matrix.os == 'windows-latest' }} &&
-          steps.cache-sdk.outputs.cache-hit != 'true'
+        if: ${{ matrix.os == 'windows-latest' }} && steps.cache-sdk.outputs.cache-hit != 'true'
         run: |
           cd scripts
           .\fetch_sdk.bat
