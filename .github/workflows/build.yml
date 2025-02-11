@@ -47,10 +47,11 @@ jobs:
 
       - name: Fetch IDA SDKs
         run: |
+          cd scripts
           if [[ "$RUNNER_OS" == "Linux" ]]; then
-            ./scripts/fetch_sdk.sh
+            ./fetch_sdk.sh
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            .\scripts\fetch_sdk.bat
+            .\fetch_sdk.bat
           else
             echo "Unsupported OS";
             exit 1
