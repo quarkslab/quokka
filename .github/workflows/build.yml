@@ -35,15 +35,34 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Cache third_party folder
+        id: cache-sdk
+        uses: actions/cache@v4
         with:
-          lfs: 'true'
+          path: third_party
+          key: ${{ matrix.os }}-third-party-${{ hashFiles('sdk_lockfile') }}
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2.0
+        with:
+          cmake-version: 'latest'
 
       - name: Install Ninja (Linux only)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Fetch IDA SDKs (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
+        run: |
+          cd scripts
+          ./fetch_sdk.sh
+
+      - name: Fetch IDA SDKs (Windows)
+        if: ${{ matrix.os == 'windows-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
+        run: |
+          cd scripts
+          .\fetch_sdk.bat
 
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
