@@ -16,6 +16,8 @@
 
 #include "quokka/Compatibility.h"
 
+#include <struct.hpp>
+
 #include "quokka/Comment.h"
 #include "quokka/Reference.h"
 
