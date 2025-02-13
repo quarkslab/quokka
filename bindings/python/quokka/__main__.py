@@ -2,15 +2,20 @@
 # coding: utf-8
 
 import logging
+import os
 import os.path
 from pathlib import Path
 from typing import Generator
+import sys
 
 import magic
 import click
 import subprocess
 from multiprocessing import Pool, Queue, Manager
 import queue
+
+from quokka.utils import find_ida_executable
+
 
 BINARY_FORMAT = {
     "application/x-dosexec",
@@ -34,6 +39,8 @@ class Bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+
 
 
 def recursive_file_iter(p: Path) -> Generator[Path, None, None]:
@@ -64,9 +71,12 @@ def do_quokka(exec_path: Path) -> bool:
     else:
         exec_path = database_file
 
-    ida_path = os.environ.get("IDA_PATH", "idat64")
+    ida_path = os.environ.get("IDA_PATH", "")
+    if not ida_path:  # Should be set at this point
+        return False
     try:
         cmd = [ida_path, "-OQuokkaAuto:true", f"-OQuokkaFile:{output_file}"] + additional_options + ["-A", f"{exec_path!s}"]
+        logging.debug(f"run: {' '.join(cmd)}")
 
         result = subprocess.run(
             cmd,
@@ -100,6 +110,55 @@ def export_job(ingress, egress) -> bool:
             break
 
 
+def run_async(root_path: Path, threads: int) -> None:
+    manager = Manager()
+    ingress = manager.Queue()
+    egress = manager.Queue()
+    pool = Pool(threads)
+
+    if threads > 1:
+        # Launch all workers
+        for _ in range(threads):
+            pool.apply_async(export_job, (ingress, egress))
+
+    # Pre-fill ingress queue
+    total = 0
+    for file in recursive_file_iter(root_path):
+        ingress.put(file)
+        total += 1
+
+    logging.info(f"Start exporting {total} binaries")
+
+    i = 0
+    while True:
+        item = egress.get()
+        i += 1
+        path, res = item
+        if res:
+            pp_res = Bcolors.OKGREEN + "OK" + Bcolors.ENDC
+        else:
+            pp_res = Bcolors.FAIL + "KO" + Bcolors.ENDC
+        logging.info(f"[{i}/{total}] {str(path) + '.quokka'} [{pp_res}]")
+        if i == total:
+            break
+
+    pool.terminate()
+
+def run_sequential(root_path: Path) -> None:
+    # Pre-fill ingress queue
+    total_files = list(recursive_file_iter(root_path))
+    total = len(total_files)
+
+    logging.info(f"Start exporting {total} binaries")
+
+    for i, exe_path in enumerate(total_files):
+        if do_quokka(exe_path):
+            pp_res = Bcolors.OKGREEN + "OK" + Bcolors.ENDC
+        else:
+            pp_res = Bcolors.FAIL + "KO" + Bcolors.ENDC
+        logging.info(f"[{i+1}/{total}] {str(exe_path) + '.quokka'} [{pp_res}]")
+
+
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option(
     "-i",
@@ -128,42 +187,18 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool) -> None:
         format="%(message)s", level=logging.DEBUG if verbose else logging.INFO
     )
 
-    if ida_path:
-        os.environ["IDA_PATH"] = Path(ida_path).absolute().as_posix()
+    if ida_path := find_ida_executable(ida_path):
+        os.environ["IDA_PATH"] = ida_path
+    else:
+        logging.error(f"can't find IDA Pro executable")
+        exit(1)
 
     root_path = Path(input_file)
 
-    manager = Manager()
-    ingress = manager.Queue()
-    egress = manager.Queue()
-    pool = Pool(threads)
-
-    # Launch all workers
-    for _ in range(threads):
-        pool.apply_async(export_job, (ingress, egress))
-
-    # Pre-fill ingress queue
-    total = 0
-    for file in recursive_file_iter(root_path):
-        ingress.put(file)
-        total += 1
-
-    logging.info(f"Start exporting {total} binaries")
-
-    i = 0
-    while True:
-        item = egress.get()
-        i += 1
-        path, res = item
-        if res:
-            pp_res = Bcolors.OKGREEN + "OK" + Bcolors.ENDC
-        else:
-            pp_res = Bcolors.FAIL + "KO" + Bcolors.ENDC
-        logging.info(f"[{i}/{total}] {str(path) + '.quokka'} [{pp_res}]")
-        if i == total:
-            break
-
-    pool.terminate()
+    if threads > 1:
+        run_async(root_path, threads)
+    else:
+        run_sequential(root_path)
 
 
 
