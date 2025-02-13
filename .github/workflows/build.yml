@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1]
         include:
           - ida_sdk: 74
             sdk_password: IDA_SDK74_PASSWORD
@@ -26,6 +26,10 @@ jobs:
             sdk_password: IDA_SDK83_PASSWORD
           - ida_sdk: 84
             sdk_password: IDA_SDK84_PASSWORD
+          - ida_sdk: 90
+            sdk_password: IDA_SDK90_PASSWORD
+          - ida_sdk: 90sp1
+            sdk_password: IDA_SDK90sp1_PASSWORD
           - os: ubuntu-latest
             ext: so
           - os: windows-latest
@@ -149,7 +153,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1]
         bitness: ['', '-32']
         include:
           - os: windows-latest
