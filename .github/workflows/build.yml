@@ -58,8 +58,8 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@v4
 
-      - name: Fetch IDA SDKs (Linux)
-        if: ${{ matrix.os == 'ubuntu-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
+      - name: Fetch IDA SDKs (Linux / MacOS)
+        if: ${{ (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') && steps.cache-sdk.outputs.cache-hit != 'true' }}
         run: |
           cd scripts
           ./fetch_sdk.sh
