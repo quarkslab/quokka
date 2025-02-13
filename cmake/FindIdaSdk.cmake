@@ -207,7 +207,7 @@ if(APPLE)
       IMPORTED_LOCATION "${_ida32_universal_lib}"
     )
   else()
-    messag(STATUS "Couldn't find the 32 bits version of the IDA sdk. Skipping it.")
+    message(STATUS "Couldn't find the 32 bits version of the IDA sdk. Skipping it.")
   endif()
 elseif(UNIX)
   set(IdaSdk_PLATFORM __LINUX__)
