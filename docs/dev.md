@@ -45,7 +45,6 @@ To compile tests:
 user@host:~/quokka$ cmake -B build-tests \ # Where to build 
                           -S . \ # Where are the sources
                           -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK 
-                          -DIda_BIN_DIR:STRING=/path/to/ida/dir \ # Path to IDA 
                           -DCMAKE_BUILD_TYPE:STRING=Debug \ # Build Type 
                           -DBUILD_TEST:BOOL=On
 ```
