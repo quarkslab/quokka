@@ -4,13 +4,20 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   deploy-doc:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'

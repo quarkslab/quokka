@@ -4,6 +4,8 @@ on:
   release:
     types: [published]
 
+permissions: {}
+
 jobs:
   build_wheels:
     name: Build wheel
@@ -47,6 +49,8 @@ jobs:
     permissions:
       # Used to publish to PyPI with Trusted Publishing.
       id-token: write
+      # Used for uploading the release notes.
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
