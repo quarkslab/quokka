@@ -14,9 +14,17 @@
 
 #include "quokka/Reference.h"
 
+#include "quokka/Compatibility.h"
+
 #include "quokka/Block.h"
 #include "quokka/Data.h"
 #include "quokka/Function.h"
+
+#if IDA_SDK_VERSION < 900
+#include "api_v8/Reference.cpp"
+#else
+#include "api_v9/Reference.cpp"
+#endif
 
 namespace quokka {
 
@@ -95,38 +103,6 @@ Location ResolveAddr(ea_t addr, const FuncChunkCollection& chunks,
    * instruction. A temp fix here is to never attach the reference to the
    * instruction itself but always to an instance */
   return InstructionInstance(chunk, block, instruction_index.value());
-}
-
-Location ResolveStructure(ea_t addr, const Structures& structures) {
-  struc_t* struc;
-  member_t* member = get_member_by_id(tid_t(addr));
-  if (member == nullptr) {
-    struc = get_struc(tid_t(addr));
-  } else {
-    struc = get_sptr(member);
-  }
-
-  if (struc == nullptr) {
-    return BADADDR;
-  }
-  auto it = std::find_if(structures.begin(), structures.end(),
-                         [&](const std::shared_ptr<Structure>& s) -> bool {
-                           return s->addr == ea_t(struc->id);
-                         });
-
-  if (it != structures.end()) {
-    if (member == nullptr) {
-      return *it;
-    } else {
-      for (const std::shared_ptr<StructureMember>& m : (*it)->members) {
-        if (member->soff == m->offset) {
-          return m;
-        }
-      }
-    }
-  }
-
-  return BADADDR;
 }
 
 Location ReferenceHolder::ResolveData(ea_t addr,
