@@ -109,15 +109,50 @@ if(APPLE)
   # Not using find_library(), as static-lib search might be enforced in
   # calling project.
   _ida_get_libpath_suffixes(_ida64_x64_suffixes "x64_mac_clang_64")
+
   find_path(IdaSdk_LIBPATH64_X64 libida64.dylib
     PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida64_x64_suffixes}
-    NO_DEFAULT_PATH REQUIRED
+    NO_DEFAULT_PATH
   )
+  # If the 64 bit library was not found, check without the bitness qualifier (IDA >= 9.0)
+  if(NOT IdaSdk_LIBPATH64_X64)
+    find_path(IdaSdk_LIBPATH_X64 libida.dylib
+    PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida64_x64_suffixes}
+    NO_DEFAULT_PATH)
+  endif()
+
+  # Merge the libraries found in a single variable
+  set(IdaSdk_FINAL_LIBPATH_X64 "")
+  if(IdaSdk_LIBPATH64_X64)
+    set(IdaSdk_FINAL_LIBPATH_X64 "${IdaSdk_LIBPATH64_X64}/libida64.dylib")
+  elseif(IdaSdk_LIBPATH_X64)
+    set(IdaSdk_FINAL_LIBPATH_X64 "${IdaSdk_LIBPATH_X64}/libida.dylib")
+  else()
+    message(FATAL_ERROR "Couldn't find x64 version of either libida.dylib or libida64.dylib")
+  endif()
+
   _ida_get_libpath_suffixes(_ida64_arm64_suffixes "arm64_mac_clang_64")
   find_path(IdaSdk_LIBPATH64_ARM64 libida64.dylib
     PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida64_arm64_suffixes}
-    NO_DEFAULT_PATH REQUIRED
+    NO_DEFAULT_PATH
   )
+  # If the 64 bit library was not found, check without the bitness qualifier (IDA >= 9.0)
+  if(NOT IdaSdk_LIBPATH64_ARM64)
+    find_path(IdaSdk_LIBPATH_ARM64 libida.dylib
+    PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida64_arm64_suffixes}
+    NO_DEFAULT_PATH)
+  endif()
+
+  # Merge the libraries found in a single variable
+  set(IdaSdk_FINAL_LIBPATH_ARM64 "")
+  if(IdaSdk_LIBPATH64_ARM64)
+    set(IdaSdk_FINAL_LIBPATH_ARM64 "${IdaSdk_LIBPATH64_ARM64}/libida64.dylib")
+  elseif(IdaSdk_LIBPATH_ARM64)
+    set(IdaSdk_FINAL_LIBPATH_ARM64 "${IdaSdk_LIBPATH_ARM64}/libida.dylib")
+  else()
+    message(FATAL_ERROR "Couldn't find ARM64 version of either libida.dylib or libida64.dylib")
+  endif()
+
   if(NOT TARGET ida64_universal)
     set(_ida64_universal_lib
       "${CMAKE_CURRENT_BINARY_DIR}/libida64_universal.dylib"
@@ -127,11 +162,11 @@ if(APPLE)
     # correct one per architecture. Ideally, Hex Rays would just compile
     # libida64.dylib as a universal bundle.
     add_custom_target(ida64_universal
-      DEPENDS "${IdaSdk_LIBPATH64_ARM64}/libida64.dylib"
-              "${IdaSdk_LIBPATH64_X64}/libida64.dylib"
+      DEPENDS ${IdaSdk_FINAL_LIBPATH_ARM64}
+              ${IdaSdk_FINAL_LIBPATH_X64}
       BYPRODUCTS "${_ida64_universal_lib}"
-      COMMAND lipo -create "${IdaSdk_LIBPATH64_ARM64}/libida64.dylib"
-                           "${IdaSdk_LIBPATH64_X64}/libida64.dylib"
+      COMMAND lipo -create ${IdaSdk_FINAL_LIBPATH_ARM64}
+                           ${IdaSdk_FINAL_LIBPATH_X64}
                    -output "${_ida64_universal_lib}"
     )
   endif()
@@ -144,54 +179,80 @@ if(APPLE)
   _ida_get_libpath_suffixes(_ida32_x64_suffixes "x64_mac_clang_32")
   find_path(IdaSdk_LIBPATH32_X64 libida.dylib
     PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida32_x64_suffixes}
-    NO_DEFAULT_PATH REQUIRED
+    NO_DEFAULT_PATH
   )
   _ida_get_libpath_suffixes(_ida32_arm64_suffixes "arm64_mac_clang_32")
   find_path(IdaSdk_LIBPATH32_ARM64 libida.dylib
     PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida32_arm64_suffixes}
-    NO_DEFAULT_PATH REQUIRED
+    NO_DEFAULT_PATH
   )
-  if(NOT TARGET ida32_universal)
-    set(_ida32_universal_lib
-      "${CMAKE_CURRENT_BINARY_DIR}/libida32_universal.dylib"
-      CACHE INTERNAL ""
+  if(IdaSdk_LIBPATH32_X64 AND IdaSdk_LIBPATH32_ARM64)
+    if(NOT TARGET ida32_universal)
+      set(_ida32_universal_lib
+        "${CMAKE_CURRENT_BINARY_DIR}/libida32_universal.dylib"
+        CACHE INTERNAL ""
+      )
+      add_custom_target(ida32_universal
+        DEPENDS "${IdaSdk_LIBPATH32_ARM64}/libida.dylib"
+                "${IdaSdk_LIBPATH32_X64}/libida.dylib"
+        BYPRODUCTS "${_ida32_universal_lib}"
+        COMMAND lipo -create "${IdaSdk_LIBPATH32_ARM64}/libida.dylib"
+                            "${IdaSdk_LIBPATH32_X64}/libida.dylib"
+                    -output "${_ida32_universal_lib}"
+      )
+    endif()
+    add_library(ida32 SHARED IMPORTED)
+    add_dependencies(ida32 ida32_universal)
+    set_target_properties(ida32 PROPERTIES
+      IMPORTED_LOCATION "${_ida32_universal_lib}"
     )
-    add_custom_target(ida32_universal
-      DEPENDS "${IdaSdk_LIBPATH32_ARM64}/libida.dylib"
-              "${IdaSdk_LIBPATH32_X64}/libida.dylib"
-      BYPRODUCTS "${_ida32_universal_lib}"
-      COMMAND lipo -create "${IdaSdk_LIBPATH32_ARM64}/libida.dylib"
-                           "${IdaSdk_LIBPATH32_X64}/libida.dylib"
-                   -output "${_ida32_universal_lib}"
-    )
+  else()
+    messag(STATUS "Couldn't find the 32 bits version of the IDA sdk. Skipping it.")
   endif()
-  add_library(ida32 SHARED IMPORTED)
-  add_dependencies(ida32 ida32_universal)
-  set_target_properties(ida32 PROPERTIES
-    IMPORTED_LOCATION "${_ida32_universal_lib}"
-  )
 elseif(UNIX)
   set(IdaSdk_PLATFORM __LINUX__)
 
   _ida_get_libpath_suffixes(_ida64_suffixes "x64_linux_gcc_64")
+
   find_path(IdaSdk_LIBPATH64 libida64.so
     PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida64_suffixes}
-    NO_DEFAULT_PATH REQUIRED
+    NO_DEFAULT_PATH
   )
+  # If the 64 bit library was not found, check without the bitness qualifier (IDA >= 9.0)
+  if(NOT IdaSdk_LIBPATH64)
+    find_path(IdaSdk_LIBPATH libida.so
+    PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida64_suffixes}
+    NO_DEFAULT_PATH)
+  endif()
+
+  # Merge the libraries found in a single variable
+  set(IdaSdk_FINAL_LIBPATH "")
+  if(IdaSdk_LIBPATH64)
+    set(IdaSdk_FINAL_LIBPATH "${IdaSdk_LIBPATH64}/libida64.so")
+  elseif(IdaSdk_LIBPATH)
+    set(IdaSdk_FINAL_LIBPATH "${IdaSdk_LIBPATH}/libida.so")
+  else()
+    message(FATAL_ERROR "Couldn't find x64 version of either libida.so or libida64.so")
+  endif()
+
   add_library(ida64 SHARED IMPORTED)
   set_target_properties(ida64 PROPERTIES
-    IMPORTED_LOCATION "${IdaSdk_LIBPATH64}/libida64.so"
+    IMPORTED_LOCATION ${IdaSdk_FINAL_LIBPATH}
   )
 
   _ida_get_libpath_suffixes(_ida32_suffixes "x64_linux_gcc_32")
   find_path(IdaSdk_LIBPATH32 libida.so
     PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida32_suffixes}
-    NO_DEFAULT_PATH REQUIRED
+    NO_DEFAULT_PATH
   )
-  add_library(ida32 SHARED IMPORTED)
-  set_target_properties(ida32 PROPERTIES
-    IMPORTED_LOCATION "${IdaSdk_LIBPATH32}/libida.so"
-  )
+  if(IdaSdk_LIBPATH32)
+    add_library(ida32 SHARED IMPORTED)
+    set_target_properties(ida32 PROPERTIES
+      IMPORTED_LOCATION "${IdaSdk_LIBPATH32}/libida.so"
+    )
+  else()
+    message(STATUS "Couldn't find the 32 bits version of the IDA sdk. Skipping it.")
+  endif()
 elseif(WIN32)
   set(IdaSdk_PLATFORM __NT__)
 
@@ -425,4 +486,21 @@ function(ida_install)
     endif()
   endforeach()
   install(${args})
+endfunction()
+
+function(ida_get_version version_var)
+  # # Path to the header file
+  # set(LIBRARY_HEADER_PATH /path/to/library/version.h)
+
+  # Read the header file and extract the version using CMake's file(READ) and string operations
+  file(READ "${IdaSdk_DIR}/include/pro.h" HEADER_CONTENT)
+
+  # Search for the #define IDA_SDK_VERSION line and extract the version number
+  string(REGEX MATCH "#define IDA_SDK_VERSION[ \t\r\n]*([0-9]+)" regex_match ${HEADER_CONTENT})
+
+  if(regex_match)
+    set(${version_var} ${CMAKE_MATCH_1} PARENT_SCOPE)
+  else()
+      message(WARNING "IDA SDK version not found in header file.")
+  endif()
 endfunction()
