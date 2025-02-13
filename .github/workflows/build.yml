@@ -64,7 +64,7 @@ jobs:
 
       - name: Install Ninja (Linux / MacOS)
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
-        uses: seanmiddleditch/gha-setup-ninja@v4
+        uses: seanmiddleditch/gha-setup-ninja@v6
 
       - name: Fetch IDA SDKs (Linux / MacOS)
         if: ${{ (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') && steps.cache-sdk.outputs.cache-hit != 'true' }}
