@@ -126,7 +126,7 @@ jobs:
         shell: bash
         run: |
           mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin64.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
-          [[ -e "build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin64.${{ matrix.ext }}" ]] && mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
+          [[ -e "build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }}" ]] && mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
 
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
