@@ -139,7 +139,7 @@ Function::Function(func_t* func_p) {
 
   // Get function name (not mangled)
   this->name = GetName(func_p->start_ea, false);
-  
+
   // Get the mangled function name, store it only if different
   std::string mangled_name = GetName(func_p->start_ea, true);
   if (mangled_name != this->name)
@@ -160,6 +160,79 @@ void ExportImportedFunctions(const ImportManager& import_manager,
     assert(chunk != nullptr && "An imported function must have a chunk!");
     func_list.emplace_back(address, import.name, chunk);
   }
+}
+
+static void ExportFunctionGraph(Function& function, func_t* ida_func,
+                                const qflow_chart_t& flow_chart) {
+#if IDA_SDK_VERSION < 900
+  mutable_graph_t* graph = create_disasm_graph(ida_func->start_ea);
+  graph->create_tree_layout();
+
+  // TODO(dm) ASK ida support to export this function
+  // graph->create_orthogonal_layout();
+
+  // TODO(dm) If called from command line, the graph is not rendered
+  // TODO(dm) ASK Idasupport for a solution
+  /*
+  if (graph->empty() || flow_chart.blocks.size() != graph->size()) {
+      goto next;
+  }
+  */
+
+  if (graph != nullptr && !graph->empty()) {
+    for (int node_idx = 0; node_idx != graph->node_qty(); ++node_idx) {
+      rect_t node = graph->nodes[node_idx];
+
+      ea_t node_ea = flow_chart.blocks[node_idx].start_ea;
+      if (node_ea == BADADDR) {
+        QLOGE << "Node addr is not set";
+        continue;
+      }
+
+      assert(node_ea - function.start_addr >= 0 &&
+             "Negative offset for function chunk");
+      function.node_position.insert(
+          {Position{CENTER, node.center().x, node.center().y},
+           ChunkLocalization(node_ea,
+                             function.chunks_index.at(
+                                 get_func_chunknum(ida_func, node_ea)))});
+    }
+  }
+#else
+  interactive_graph_t* graph = create_disasm_graph(ida_func->start_ea);
+  graph->create_tree_layout();
+
+  // TODO(dm) ASK ida support to export this function
+  // graph->create_orthogonal_layout();
+
+  // TODO(dm) If called from command line, the graph is not rendered
+  // TODO(dm) ASK Idasupport for a solution
+  /*
+  if (graph->empty() || flow_chart.blocks.size() != graph->size()) {
+      goto next;
+  }
+  */
+
+  if (graph != nullptr && !graph->empty()) {
+    for (int node_idx = 0; node_idx != graph->node_qty(); ++node_idx) {
+      rect_t node = graph->nodes[node_idx];
+
+      ea_t node_ea = flow_chart.blocks[node_idx].start_ea;
+      if (node_ea == BADADDR) {
+        QLOGE << "Node addr is not set";
+        continue;
+      }
+
+      assert(node_ea - function.start_addr >= 0 &&
+             "Negative offset for function chunk");
+      function.node_position.insert(
+          {Position{CENTER, node.center().x, node.center().y},
+           ChunkLocalization(node_ea,
+                             function.chunks_index.at(
+                                 get_func_chunknum(ida_func, node_ea)))});
+    }
+  }
+#endif
 }
 
 void ExportFunctions(std::vector<Function>& func_list,
@@ -192,15 +265,7 @@ void ExportFunctions(std::vector<Function>& func_list,
 
     auto function = Function(func);
 
-    // Export also comments
-    GetFunctionComments(comments, func, std::make_shared<Function>(function));
-
     qflow_chart_t flow_chart("", func, func->start_ea, func->end_ea, FC_NOEXT);
-    mutable_graph_t* graph = create_disasm_graph(func->start_ea);
-    graph->create_tree_layout();
-
-    // TODO(dm) ASK ida support to export this function
-    // graph->create_orthogonal_layout();
 
     if (function.func_type == TYPE_NONE) {
       if (flow_chart.blocks.empty()) {
@@ -210,12 +275,8 @@ void ExportFunctions(std::vector<Function>& func_list,
       }
     }
 
-    // TODO(dm) If called from command line, the graph is not rendered
-    // TODO(dm) ASK Idasupport for a solution
-    /*
-            if (graph->empty() || flow_chart.blocks.size() != graph->size()) {
-                goto next;
-            } */
+    // Export also comments
+    GetFunctionComments(comments, func, std::make_shared<Function>(function));
 
     // We search the chunk for the head !
     std::shared_ptr<FuncChunk> chunk = chunks.GetElement(func->start_ea, true);
@@ -272,25 +333,8 @@ void ExportFunctions(std::vector<Function>& func_list,
       }
     }
 
-    if (graph != nullptr && !graph->empty()) {
-      for (int node_idx = 0; node_idx != graph->node_qty(); ++node_idx) {
-        rect_t node = graph->nodes[node_idx];
+    ExportFunctionGraph(function, func, flow_chart);
 
-        ea_t node_ea = flow_chart.blocks[node_idx].start_ea;
-        if (node_ea == BADADDR) {
-          QLOGE << "Node addr is not set";
-          continue;
-        }
-
-        assert(node_ea - function.start_addr >= 0 &&
-               "Negative offset for function chunk");
-        function.node_position.insert(
-            {Position{CENTER, node.center().x, node.center().y},
-             ChunkLocalization(
-                 node_ea,
-                 function.chunks_index.at(get_func_chunknum(func, node_ea)))});
-      }
-    }
     /**
      * Check if the imports function are already exported
      * This is the case for ELF file but not PE

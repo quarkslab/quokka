@@ -14,7 +14,6 @@
 
 #include "quokka/Comment.h"
 
-#include "quokka/Data.h"
 #include "quokka/Function.h"
 #include "quokka/Instruction.h"
 
@@ -78,54 +77,11 @@ void GetFunctionComments(Comments& comments, const func_t* func,
   }
 }
 
-void GetEnumMemberComment(std::shared_ptr<StructureMember> member_p,
-                          const_t member) {
-  qstring ida_comment;
-  Comments& comments = Comments::GetInstance();
-
-  for (bool repeatable : {false, true}) {
-    if (get_enum_member_cmt(&ida_comment, member, repeatable) > 0) {
-      comments.insert(ConvertIdaString(ida_comment), Location(member_p),
-                      STRUCTURE);
-    }
-  }
-}
-
-void GetEnumComment(std::shared_ptr<Structure> structure, enum_t ida_enum) {
-  qstring ida_comment;
-  Comments& comments = Comments::GetInstance();
-
-  for (bool repeatable : {false, true}) {
-    if (get_enum_cmt(&ida_comment, ida_enum, repeatable) > 0) {
-      comments.insert(ConvertIdaString(ida_comment), Location(structure),
-                      STRUCTURE);
-    }
-  }
-}
-
-void GetStructureMemberComment(std::shared_ptr<StructureMember> member_p,
-                               tid_t member) {
-  qstring ida_comment;
-  Comments& comments = Comments::GetInstance();
-
-  for (bool repeatable : {false, true}) {
-    if (get_member_cmt(&ida_comment, member, repeatable) > 0) {
-      comments.insert(ConvertIdaString(ida_comment), Location(member_p),
-                      STRUCTURE);
-    }
-  }
-}
-
-void GetStructureComment(std::shared_ptr<Structure> structure,
-                         tid_t ida_struct) {
-  qstring ida_comment;
-  Comments& comments = Comments::GetInstance();
-
-  for (bool repeatable : {false, true}) {
-    if (get_struc_cmt(&ida_comment, ida_struct, repeatable) > 0) {
-      comments.insert(ConvertIdaString(ida_comment), Location(structure),
-                      STRUCTURE);
-    }
-  }
-}
 }  // namespace quokka
+
+// Additional IDA version specific code
+#if IDA_SDK_VERSION < 900
+#include "api_v8/Comment.cpp"
+#else
+#include "api_v9/Comment.cpp"
+#endif

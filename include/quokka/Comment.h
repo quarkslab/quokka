@@ -25,11 +25,10 @@
 #include <vector>
 
 #include "Compatibility.h"
+
 #include <bytes.hpp>
-#include <enum.hpp>
 #include <funcs.hpp>
 #include <ida.hpp>
-#include <struct.hpp>
 
 #include "absl/container/flat_hash_map.h"
 
@@ -37,6 +36,11 @@
 #include "Util.h"
 #include "Windows.h"
 
+#if IDA_SDK_VERSION < 900
+#include "api_v8/Comment_v8.h"
+#else
+#include "api_v9/Comment_v9.h"
+#endif
 
 namespace quokka {
 
@@ -221,45 +225,6 @@ bool GetLineComment(ea_t addr, int index, std::string* output);
  */
 void GetFunctionComments(Comments& comments, const func_t* func,
                          std::shared_ptr<Function> function_p);
-
-/**
- * Retrieve the comments associated to the member of an enumeration.
- *
- * @param member_p Pointer to the `quokka::StructureMember`
- * @param member Pointer to the `const_t` (IDA)
- */
-void GetEnumMemberComment(std::shared_ptr<StructureMember> member_p,
-                          const_t member);
-
-/**
- * Retrieve the comments associated to the enum.
- *
- * @warning Does not retrieve the comments associated to the enum member
- *
- * @param structure A quokka::Structure pointer
- * @param ida_enum The ida enum
- */
-void GetEnumComment(std::shared_ptr<Structure> structure, enum_t ida_enum);
-
-/**
- * Retrieve the comments associated to the members of a structure
- *
- * @param member_p Pointer to the `quokka::StructureMember`
- * @param member Pointer to the `tid_t` (IDA)
- */
-void GetStructureMemberComment(std::shared_ptr<StructureMember> member_p,
-                               tid_t member);
-
-/**
- * Retrieve the comments associated to the structure.
- *
- * @warning Does not retrieve the comments associated to the struct member
- *
- * @param structure A quokka::Structure pointer
- * @param ida_struct The ida struct
- */
-void GetStructureComment(std::shared_ptr<Structure> structure,
-                         tid_t ida_struct);
 
 }  // namespace quokka
 #endif  // QUOKKA_COMMENT_H

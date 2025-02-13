@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1]
         include:
           - ida_sdk: 74
             sdk_password: IDA_SDK74_PASSWORD
@@ -26,6 +26,10 @@ jobs:
             sdk_password: IDA_SDK83_PASSWORD
           - ida_sdk: 84
             sdk_password: IDA_SDK84_PASSWORD
+          - ida_sdk: 90
+            sdk_password: IDA_SDK90_PASSWORD
+          - ida_sdk: 90sp1
+            sdk_password: IDA_SDK90sp1_PASSWORD
           - os: ubuntu-latest
             ext: so
           - os: windows-latest
@@ -122,7 +126,7 @@ jobs:
         shell: bash
         run: |
           mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin64.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
-          mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
+          [[ -e "build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }}" ]] && mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }} || echo "Skipping 32 bit plugin"
 
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
@@ -134,6 +138,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Artifacts (32)
+        if: ${{ contains('74,77,80,81,82,83,84', matrix.ida_sdk) }}
         uses: actions/upload-artifact@v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
@@ -149,7 +154,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1]
         bitness: ['', '-32']
         include:
           - os: windows-latest
