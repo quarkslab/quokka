@@ -5,6 +5,8 @@ on: [push]
 env:
   BUILD_TYPE: Release
 
+permissions: {}
+
 jobs:
   build:
     strategy:
@@ -45,6 +47,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Cache third_party folder
         id: cache-sdk
