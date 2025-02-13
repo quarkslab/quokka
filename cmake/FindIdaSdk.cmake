@@ -268,11 +268,15 @@ elseif(WIN32)
   _ida_get_libpath_suffixes(_ida32_suffixes "x64_win_vc_32")
   find_library(IdaSdk_LIB32 ida
     PATHS "${IdaSdk_DIR}/lib" PATH_SUFFIXES ${_ida32_suffixes}
-    NO_DEFAULT_PATH REQUIRED
+    NO_DEFAULT_PATH
   )
-  add_library(ida32 SHARED IMPORTED)
-  set_target_properties(ida32 PROPERTIES IMPORTED_LOCATION "${IdaSdk_LIB32}")
-  set_target_properties(ida32 PROPERTIES IMPORTED_IMPLIB "${IdaSdk_LIB32}")
+  if(IdaSdk_LIB32)
+    add_library(ida32 SHARED IMPORTED)
+    set_target_properties(ida32 PROPERTIES IMPORTED_LOCATION "${IdaSdk_LIB32}")
+    set_target_properties(ida32 PROPERTIES IMPORTED_IMPLIB "${IdaSdk_LIB32}")
+  else()
+    message(STATUS "Couldn't find the 32 bits version of the IDA sdk. Skipping it.")
+  endif()
 else()
   message(FATAL_ERROR "Unsupported system type: ${CMAKE_SYSTEM_NAME}")
 endif()
