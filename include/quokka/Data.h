@@ -21,15 +21,16 @@
 #ifndef QUOKKA_DATA_H
 #define QUOKKA_DATA_H
 
-#include <cassert>
 #include <cstdint>
+#include <memory>
+#include <string>
 
 #include "Compatibility.h"
+
 #include <bytes.hpp>
-#include <enum.hpp>
 #include <kernwin.hpp>
 #include <name.hpp>
-#include <struct.hpp>
+#include <typeinf.hpp>
 
 #include "absl/hash/hash.h"
 #include "absl/strings/str_format.h"
@@ -164,6 +165,14 @@ class Data : public ProtoHelper {
  */
 DataType GetDataType(flags_t flags);
 
+/**
+ * Return the type associated to the data.
+ *
+ * @param tinf IDA Type info object
+ * @return A data type
+ */
+DataType GetDataType(const tinfo_t& tinf);
+
 class Structure;
 
 /**
@@ -177,36 +186,42 @@ struct StructureMember : public ProtoHelper {
   std::string name;  ///< Name of the field
   DataType type;     ///< Type of the value
   asize_t size = 0;  ///< Size of the field
-  int64 value = 0;   ///< Value of the field
+  uint64 value = 0;  ///< Value of the field
 
   std::weak_ptr<Structure> parent;  ///< Back pointer towards the parent
+
+  StructureMember(const StructureMember& obj)
+      : offset(obj.offset),
+        name(obj.name),
+        type(obj.type),
+        size(obj.size),
+        value(obj.value),
+        parent(obj.parent) {}
+
+  StructureMember(StructureMember&& obj)
+      : offset(obj.offset),
+        name(std::move(obj.name)),
+        type(obj.type),
+        size(obj.size),
+        value(obj.value),
+        parent(std::move(obj.parent)) {}
 
   /**
    * Constructor for struct member
    *
-   * @param ida_member A ida structure of the struct member
+   * @param _offset Field offset (IDA internal)
+   * @param _name Name of the field
+   * @param _type Type of the value
+   * @param _size Size of the field
+   * @param _value Value of the field
    */
-  explicit StructureMember(member_t* ida_member) {
-    offset = ida_member->soff;
-    name = ConvertIdaString(get_member_name(ida_member->id));
-    type = GetDataType(ida_member->flag);
-  }
-
-  /**
-   * Constructor for enum member
-   *
-   * @param cid Enum id
-   * @param member_value Member value
-   */
-  explicit StructureMember(const_t cid, uval_t member_value) {
-    qstring member_name;
-    get_enum_member_name(&member_name, cid);
-    offset = ea_t(cid);
-    name = ConvertIdaString(member_name);
-    // TODO(dm) IDA reports member value as a *positive* integer
-    value = int64_t(member_value);
-    type = TYPE_B;
-  }
+  explicit StructureMember(ea_t _offset, const qstring& _name, DataType _type,
+                           asize_t _size = 0, uint64_t _value = 0)
+      : offset(_offset),
+        name(ConvertIdaString(_name)),
+        type(_type),
+        size(_size),
+        value(_value) {}
 };
 
 /**
@@ -301,30 +316,6 @@ class Structures {
 };
 
 /**
- * Export the struct members
- *
- * Iterate through the ida-struct member and export each of them.
- *
- * @param structure A pointer to the `Structure` object
- * @param ida_struc A pointer to the IDA struct
- */
-void ExportStructMembers(std::shared_ptr<Structure>& structure,
-                         struc_t* ida_struc);
-
-/**
- * Export an IDA-struct or an union
- *
- * Completely export a structure, including the references and comments.
- *
- * @see ExportStructureReference
- * @see GetStructureComment
- *
- * @param ida_struct A pointer to the IDA struct
- * @return Created structure
- */
-std::shared_ptr<Structure> ExportStructure(struc_t* ida_struct);
-
-/**
  * Export all the structures defined in the program
  *
  * Will populate the `Structures` container.
@@ -332,33 +323,6 @@ std::shared_ptr<Structure> ExportStructure(struc_t* ida_struct);
  * @param structure_list The structures container
  */
 void ExportStructures(Structures& structure_list);
-
-/**
- * Export the enum members of enumeration.
- *
- * @note Use a visitor pattern because that's the IDA way of iterating
- * through the enum members ..
- *
- * @param enumeration A pointer to the quokka::Structure
- * @param ida_enum Ida-enum
- * @param enum_idx Index of the enumeration (@see ExportEnum)
- */
-void ExportEnumMembers(std::shared_ptr<Structure>& enumeration, enum_t ida_enum,
-                       size_t enum_idx);
-
-/**
- * Export an enum
- *
- * Ghost enum don't have an index, so we use the position in the `Structures`
- * for all of enumeration as an index. It will be used for attaching comments
- * and references.
- *
- * @param ida_enum Ida-enum
- * @param enum_idx Index of the enumeration (position in the Structures
- *                 container)
- * @return Created structure
- */
-std::shared_ptr<Structure> ExportEnum(enum_t ida_enum, size_t enum_idx);
 
 /**
  * Export all the enums defined in the program
