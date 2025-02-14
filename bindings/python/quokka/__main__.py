@@ -116,10 +116,9 @@ def run_async(root_path: Path, threads: int) -> None:
     egress = manager.Queue()
     pool = Pool(threads)
 
-    if threads > 1:
-        # Launch all workers
-        for _ in range(threads):
-            pool.apply_async(export_job, (ingress, egress))
+    # Launch all workers
+    for _ in range(threads):
+        pool.apply_async(export_job, (ingress, egress))
 
     # Pre-fill ingress queue
     total = 0
