@@ -75,11 +75,10 @@ ls = quokka.Program("ls.quokka",  # the exported file
 user@host:~/quokka$ cmake -B build \ # Where to build 
                           -S . \ # Where are the sources
                           -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK 
-                          -DIda_BIN_DIR:STRING=/path/to/ida/dir \ # Path to IDA 
                           -DCMAKE_BUILD_TYPE:STRING=Release \ # Build Type 
                           -DBUILD_TEST:BOOL=OFF # Don't build the tests
 
-user@host:~/quokka$ cmake --build build --target quokka_plugin -- -j
+user@host:~/quokka$ cmake --build build -- -j 8
 ```
 
 To install the plugin:
