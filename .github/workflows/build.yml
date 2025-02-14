@@ -172,6 +172,12 @@ jobs:
         exclude:
           - os: macos-latest
             ida_sdk: 74
+          - os: macos-latest
+            ida_sdk: 90
+            bitness: '-32'
+          - os: macos-latest
+            ida_sdk: 90sp1
+            bitness: '-32'
 
     steps:
       - name: Download Artefact
