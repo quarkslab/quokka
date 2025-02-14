@@ -17,6 +17,7 @@ dependencies = [
     # Wait for python-magic to solve/merge https://github.com/ahupp/python-magic/pull/294
     "python-magic; os_name!='nt'",
     "python-magic-bin; os_name=='nt'",
+    "click",
 ]
 dynamic = ["version"]
 

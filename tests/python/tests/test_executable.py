@@ -21,5 +21,5 @@ def test_read_string_unknown_size(prog: quokka.Program):
 
 
 def test_read_string(prog: quokka.Program):
-    data = prog.data_holder[20]
+    data = prog.data_holder[73]
     assert prog.executable.read_string(0x3088, data.size) == "F00d1e"
