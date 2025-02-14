@@ -33,7 +33,7 @@ var searchData=
   ['startlayout_30',['StartLayout',['../classquokka_1_1HeadIterator.html#adb33bec8d5f3e742fa91a72a09bb94b4',1,'quokka::HeadIterator']]],
   ['state_31',['state',['../classquokka_1_1HeadIterator.html#a548f3763add7571c93ea6d24a394835b',1,'quokka::HeadIterator::state'],['../Layout_8h.html#a628a016044fed1eac52c7522479585eb',1,'quokka::State']]],
   ['structure_32',['Structure',['../classquokka_1_1Structure.html',1,'quokka']]],
-  ['structuremember_33',['structuremember',['../structquokka_1_1StructureMember.html',1,'quokka::StructureMember'],['../structquokka_1_1StructureMember.html#acc980edefd02e955d5df676ad6e29ad8',1,'quokka::StructureMember::StructureMember(member_t *ida_member)'],['../structquokka_1_1StructureMember.html#a0f3ca1ea3207c6f15711fbbcf6e85ed5',1,'quokka::StructureMember::StructureMember(const_t cid, uval_t member_value)']]],
+  ['structuremember_33',['structuremember',['../structquokka_1_1StructureMember.html',1,'quokka::StructureMember'],['../structquokka_1_1StructureMember.html#a33b607014985947ba8844267ab41328a',1,'quokka::StructureMember::StructureMember()']]],
   ['structures_34',['structures',['../classquokka_1_1Structures.html#a615776cd9a7112583f9a9d706bafaaa4',1,'quokka::Structures::Structures()'],['../classquokka_1_1Structures.html',1,'quokka::Structures']]],
   ['structuretype_35',['StructureType',['../Data_8h.html#a453bb1c09f06046c9d4615e153888e61',1,'quokka']]]
 ];

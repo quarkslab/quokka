@@ -20,6 +20,6 @@ var searchData=
   ['sort_17',['Sort',['../classquokka_1_1FuncChunkCollection.html#aed5c0131e9ca70ddaedef16ba5baff7b',1,'quokka::FuncChunkCollection']]],
   ['sortbyfrequency_18',['SortByFrequency',['../classquokka_1_1BucketNew.html#a88a3e4297437307a3d54a2b2ac819477',1,'quokka::BucketNew']]],
   ['startlayout_19',['StartLayout',['../classquokka_1_1HeadIterator.html#adb33bec8d5f3e742fa91a72a09bb94b4',1,'quokka::HeadIterator']]],
-  ['structuremember_20',['structuremember',['../structquokka_1_1StructureMember.html#acc980edefd02e955d5df676ad6e29ad8',1,'quokka::StructureMember::StructureMember(member_t *ida_member)'],['../structquokka_1_1StructureMember.html#a0f3ca1ea3207c6f15711fbbcf6e85ed5',1,'quokka::StructureMember::StructureMember(const_t cid, uval_t member_value)']]],
+  ['structuremember_20',['StructureMember',['../structquokka_1_1StructureMember.html#a33b607014985947ba8844267ab41328a',1,'quokka::StructureMember']]],
   ['structures_21',['Structures',['../classquokka_1_1Structures.html#a615776cd9a7112583f9a9d706bafaaa4',1,'quokka::Structures']]]
 ];

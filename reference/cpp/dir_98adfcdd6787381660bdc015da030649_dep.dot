@@ -7,6 +7,11 @@ digraph "include/quokka"
   compound=true
   subgraph clusterdir_d44c64559bbebec7f509842c48db8b23 {
     graph [ bgcolor="#edf0f7", pencolor="grey25", label="include", fontname=Helvetica,fontsize=10 style="filled,dashed", URL="dir_d44c64559bbebec7f509842c48db8b23.html",tooltip=""]
-  dir_98adfcdd6787381660bdc015da030649 [label="quokka", fillcolor="#edf0f7", color="grey25", style="filled,bold", URL="dir_98adfcdd6787381660bdc015da030649.html",tooltip=""];
+  subgraph clusterdir_98adfcdd6787381660bdc015da030649 {
+    graph [ bgcolor="#edf0f7", pencolor="grey25", label="", fontname=Helvetica,fontsize=10 style="filled,bold", URL="dir_98adfcdd6787381660bdc015da030649.html",tooltip=""]
+    dir_98adfcdd6787381660bdc015da030649 [shape=plaintext, label="quokka"];
+  dir_df5cc0758fe864f4300a45010aff1681 [label="api_v8", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_df5cc0758fe864f4300a45010aff1681.html",tooltip=""];
+  dir_dafeba2b1b57a903898d455a40aea22f [label="api_v9", fillcolor="#a2b4d6", color="grey25", style="filled", URL="dir_dafeba2b1b57a903898d455a40aea22f.html",tooltip=""];
+  }
   }
 }

@@ -85,18 +85,22 @@ $(function() {
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="Compatibility_8h_source.html">Compatibility.h</a>&quot;</code><br />
 <code>#include &lt;bytes.hpp&gt;</code><br />
-<code>#include &lt;enum.hpp&gt;</code><br />
 <code>#include &lt;funcs.hpp&gt;</code><br />
 <code>#include &lt;ida.hpp&gt;</code><br />
-<code>#include &lt;struct.hpp&gt;</code><br />
 <code>#include &quot;absl/container/flat_hash_map.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="Localization_8h_source.html">Localization.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Util_8h_source.html">Util.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Windows_8h_source.html">Windows.h</a>&quot;</code><br />
+<code>#include &quot;api_v8/Comment_v8.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Comment.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="Comment_8h__incl.png" border="0" usemap="#ainclude_2quokka_2Comment_8h" alt=""/></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="Comment_8h__dep__incl.png" border="0" usemap="#ainclude_2quokka_2Comment_8hdep" alt=""/></div>
 </div>
 </div>
 <p><a href="Comment_8h_source.html">Go to the source code of this file.</a></p>
@@ -128,14 +132,6 @@ Functions</h2></td></tr>
 <tr class="separator:a172ba9585fdcb8c2e6542cddbcdbe9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f4eb7cdc52087eece21d5fe5fa084ae" id="r_a5f4eb7cdc52087eece21d5fe5fa084ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Comment_8cpp.html#a5f4eb7cdc52087eece21d5fe5fa084ae">quokka::GetFunctionComments</a> (<a class="el" href="classquokka_1_1Comments.html">Comments</a> &amp;comments, <a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">func_t</a> *<a class="el" href="classquokka_1_1BucketNew.html">func</a>, std::shared_ptr&lt; <a class="el" href="classquokka_1_1Function.html">Function</a> &gt; <a class="el" href="classquokka_1_1BucketNew.html">function_p</a>)</td></tr>
 <tr class="separator:a5f4eb7cdc52087eece21d5fe5fa084ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af07898bb83dc0166c99fc6b51d91fe5b" id="r_af07898bb83dc0166c99fc6b51d91fe5b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Comment_8cpp.html#af07898bb83dc0166c99fc6b51d91fe5b">quokka::GetEnumMemberComment</a> (std::shared_ptr&lt; <a class="el" href="structquokka_1_1StructureMember.html">StructureMember</a> &gt; <a class="el" href="classquokka_1_1BucketNew.html">member_p</a>, <a class="el" href="classquokka_1_1BucketNew.html">const_t</a> <a class="el" href="classquokka_1_1BucketNew.html">member</a>)</td></tr>
-<tr class="separator:af07898bb83dc0166c99fc6b51d91fe5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b2458fd880c5eaf0a68023ddaa8cb16" id="r_a4b2458fd880c5eaf0a68023ddaa8cb16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Comment_8cpp.html#a4b2458fd880c5eaf0a68023ddaa8cb16">quokka::GetEnumComment</a> (std::shared_ptr&lt; <a class="el" href="classquokka_1_1Structure.html">Structure</a> &gt; <a class="el" href="classquokka_1_1BucketNew.html">structure</a>, <a class="el" href="classquokka_1_1BucketNew.html">enum_t</a> <a class="el" href="classquokka_1_1BucketNew.html">ida_enum</a>)</td></tr>
-<tr class="separator:a4b2458fd880c5eaf0a68023ddaa8cb16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f7e32098b98d66b27c3ea3df2c06bfb" id="r_a8f7e32098b98d66b27c3ea3df2c06bfb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Comment_8cpp.html#a8f7e32098b98d66b27c3ea3df2c06bfb">quokka::GetStructureMemberComment</a> (std::shared_ptr&lt; <a class="el" href="structquokka_1_1StructureMember.html">StructureMember</a> &gt; <a class="el" href="classquokka_1_1BucketNew.html">member_p</a>, <a class="el" href="classquokka_1_1BucketNew.html">tid_t</a> <a class="el" href="classquokka_1_1BucketNew.html">member</a>)</td></tr>
-<tr class="separator:a8f7e32098b98d66b27c3ea3df2c06bfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f622af0751de47646833050248eeeb0" id="r_a9f622af0751de47646833050248eeeb0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Comment_8cpp.html#a9f622af0751de47646833050248eeeb0">quokka::GetStructureComment</a> (std::shared_ptr&lt; <a class="el" href="classquokka_1_1Structure.html">Structure</a> &gt; <a class="el" href="classquokka_1_1BucketNew.html">structure</a>, <a class="el" href="classquokka_1_1BucketNew.html">tid_t</a> <a class="el" href="classquokka_1_1BucketNew.html">ida_struct</a>)</td></tr>
-<tr class="separator:a9f622af0751de47646833050248eeeb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Management of comments. </p>
@@ -189,79 +185,6 @@ GetRegularComments</dd></dl>
   <table class="params">
     <tr><td class="paramname">addr</td><td>Address to look at </td></tr>
     <tr><td class="paramname">inst</td><td>Instruction to attach the comment </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a4b2458fd880c5eaf0a68023ddaa8cb16" name="a4b2458fd880c5eaf0a68023ddaa8cb16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b2458fd880c5eaf0a68023ddaa8cb16">&#9670;&#160;</a></span>GetEnumComment()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::GetEnumComment </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classquokka_1_1Structure.html">Structure</a> &gt;&#160;</td>
-          <td class="paramname"><em>structure</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">enum_t</a>&#160;</td>
-          <td class="paramname"><em>ida_enum</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieve the comments associated to the enum.</p>
-<dl class="section warning"><dt>Warning</dt><dd>Does not retrieve the comments associated to the enum member</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">structure</td><td>A <a class="el" href="classquokka_1_1Structure.html">quokka::Structure</a> pointer </td></tr>
-    <tr><td class="paramname">ida_enum</td><td>The ida enum </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="af07898bb83dc0166c99fc6b51d91fe5b" name="af07898bb83dc0166c99fc6b51d91fe5b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af07898bb83dc0166c99fc6b51d91fe5b">&#9670;&#160;</a></span>GetEnumMemberComment()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::GetEnumMemberComment </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="structquokka_1_1StructureMember.html">StructureMember</a> &gt;&#160;</td>
-          <td class="paramname"><em>member_p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const_t</a>&#160;</td>
-          <td class="paramname"><em>member</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieve the comments associated to the member of an enumeration.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">member_p</td><td>Pointer to the <code><a class="el" href="structquokka_1_1StructureMember.html">quokka::StructureMember</a></code> </td></tr>
-    <tr><td class="paramname">member</td><td>Pointer to the <code>const_t</code> (IDA) </td></tr>
   </table>
   </dd>
 </dl>
@@ -437,79 +360,6 @@ GetRegularComments</dd></dl>
     <tr><td class="paramname">comments</td><td>The comments container </td></tr>
     <tr><td class="paramname">addr</td><td>Address to look at </td></tr>
     <tr><td class="paramname">inst</td><td>Instruction to attach the comment </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a9f622af0751de47646833050248eeeb0" name="a9f622af0751de47646833050248eeeb0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f622af0751de47646833050248eeeb0">&#9670;&#160;</a></span>GetStructureComment()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::GetStructureComment </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classquokka_1_1Structure.html">Structure</a> &gt;&#160;</td>
-          <td class="paramname"><em>structure</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">tid_t</a>&#160;</td>
-          <td class="paramname"><em>ida_struct</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieve the comments associated to the structure.</p>
-<dl class="section warning"><dt>Warning</dt><dd>Does not retrieve the comments associated to the struct member</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">structure</td><td>A <a class="el" href="classquokka_1_1Structure.html">quokka::Structure</a> pointer </td></tr>
-    <tr><td class="paramname">ida_struct</td><td>The ida struct </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a8f7e32098b98d66b27c3ea3df2c06bfb" name="a8f7e32098b98d66b27c3ea3df2c06bfb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f7e32098b98d66b27c3ea3df2c06bfb">&#9670;&#160;</a></span>GetStructureMemberComment()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::GetStructureMemberComment </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="structquokka_1_1StructureMember.html">StructureMember</a> &gt;&#160;</td>
-          <td class="paramname"><em>member_p</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">tid_t</a>&#160;</td>
-          <td class="paramname"><em>member</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieve the comments associated to the members of a structure</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">member_p</td><td>Pointer to the <code><a class="el" href="structquokka_1_1StructureMember.html">quokka::StructureMember</a></code> </td></tr>
-    <tr><td class="paramname">member</td><td>Pointer to the <code>tid_t</code> (IDA) </td></tr>
   </table>
   </dd>
 </dl>
