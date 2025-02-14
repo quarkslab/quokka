@@ -34,6 +34,7 @@ import networkx
 import quokka
 import quokka.analysis
 import quokka.backends
+from quokka.utils import find_ida_executable
 
 from quokka.types import (
     AddressT,
@@ -511,7 +512,7 @@ class Program(dict):
             raise FileNotFoundError("Missing exec file")
 
         if output_file is None:
-            output_file = exec_path.parent / f"{exec_path.name}.Quokka"
+            output_file = exec_path.parent / f"{exec_path.name}.quokka"
         else:
             output_file = pathlib.Path(output_file)
 
@@ -530,7 +531,12 @@ class Program(dict):
         else:
             exec_file = database_file
 
-        ida_path = os.environ.get("IDA_PATH", "idat64")
+        # Search for the IDA Pro executable
+        ida_path = find_ida_executable()
+        if not ida_path:
+            Program.logger.warning(f"IDA executable not found")
+            return None
+
         try:
             cmd = (
                 [

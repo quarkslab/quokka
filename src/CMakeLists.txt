@@ -14,6 +14,9 @@ if (NO_DEPRECATED)
     add_compile_definitions(NO_OBSOLETE_FUNCS)
 endif ()
 
+ida_get_version(IDA_SDK_VERSION)
+message(STATUS "Compiling against IDA SDK ${IDA_SDK_VERSION}.")
+
 add_ida_library(quokka_shared STATIC
         "Block.cpp"
         "Comment.cpp"
@@ -43,8 +46,14 @@ ida_target_link_libraries(quokka_shared PUBLIC
         absl::flat_hash_map
         absl::hash)
 
-add_ida_plugin(quokka_plugin
-        "Quokka.cpp")
+if(IDA_SDK_VERSION VERSION_GREATER "900" OR IDA_SDK_VERSION VERSION_EQUAL "900")
+        # No 32 bit version in IDA >= 9.0
+        add_ida_plugin(quokka_plugin NOEA32
+                "Quokka.cpp")
+else()
+        add_ida_plugin(quokka_plugin
+                "Quokka.cpp")
+endif()
 
 ida_target_include_directories(quokka_plugin 
         PRIVATE "${quokka_SOURCE_DIR}/include"
