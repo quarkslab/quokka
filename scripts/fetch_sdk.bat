@@ -11,5 +11,6 @@ curl -L -o ..\third_party\idasdk83.zip https://files.quarkslab.com/c2c793ae-7a42
 curl -L -o ..\third_party\idasdk84.zip https://files.quarkslab.com/45f34231-eac9-4b8a-9b39-52237b83515a/idasdk84.zip
 curl -L -o ..\third_party\idasdk90.zip https://files.quarkslab.com/2fe96720-93f5-46f2-a476-69a0304df901/idasdk90.zip
 curl -L -o ..\third_party\idasdk90sp1.zip https://files.quarkslab.com/4b1d22ac-209e-46f8-bed1-df32a7d772d1/idasdk90sp1.zip
+curl -L -o ..\third_party\idasdk91.zip https://files.quarkslab.com/f773930b-3c20-4974-992b-472b88223cd9/idasdk91.zip
 
 echo Download complete.
