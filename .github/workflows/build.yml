@@ -182,7 +182,7 @@ jobs:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}${{ matrix.bitness }}
 
       - name: Release
-        uses: softprops/action-gh-release@v2.2.1
+        uses: softprops/action-gh-release@v2.2.2
         with:
           files: ${{ matrix.ida_sdk }}-quokka_*
           fail_on_unmatched_files: true
