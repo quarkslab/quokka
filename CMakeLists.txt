@@ -86,7 +86,7 @@ if (NOT NO_BUILD)
             protobuf
             GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
             SOURCE_SUBDIR cmake
-            GIT_TAG v3.11.4
+            GIT_TAG v30.2
     )
     set(protobuf_BUILD_TESTS OFF CACHE INTERNAL "")
     set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
