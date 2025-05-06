@@ -78,21 +78,20 @@ if (NOT NO_BUILD)
     FetchContent_Declare(
             abseil
             GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
-            GIT_TAG 20220623.1
+            GIT_TAG 20250127.0
     )
     FetchContent_MakeAvailable(abseil)
 
     FetchContent_Declare(
             protobuf
             GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-            SOURCE_SUBDIR cmake
             GIT_TAG v30.2
     )
     set(protobuf_BUILD_TESTS OFF CACHE INTERNAL "")
     set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    set(protobuf_BUILD_EXPORT OFF)
+    set(protobuf_BUILD_PROTOBUF_BINARIES ON CACHE BOOL "" FORCE)
+    set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
     set(protobuf_WITH_ZLIB_DEFAULT OFF CACHE BOOL "" FORCE)
-    set(protobuf_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
     set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(protobuf)
 
