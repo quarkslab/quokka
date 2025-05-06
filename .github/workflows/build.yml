@@ -28,6 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set IDA SDK password
+        shell: bash
         run: |
           case "${{ matrix.ida_sdk }}" in
             74) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK74_PASSWORD }}" >> "$GITHUB_ENV" ;;
