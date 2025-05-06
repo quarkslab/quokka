@@ -14,26 +14,6 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1, 91]
         include:
-          - ida_sdk: 74
-            sdk_password: IDA_SDK74_PASSWORD
-          - ida_sdk: 77
-            sdk_password: IDA_SDK77_PASSWORD
-          - ida_sdk: 80
-            sdk_password: IDA_SDK80_PASSWORD
-          - ida_sdk: 81
-            sdk_password: IDA_SDK81_PASSWORD
-          - ida_sdk: 82
-            sdk_password: IDA_SDK82_PASSWORD
-          - ida_sdk: 83
-            sdk_password: IDA_SDK83_PASSWORD
-          - ida_sdk: 84
-            sdk_password: IDA_SDK84_PASSWORD
-          - ida_sdk: 90
-            sdk_password: IDA_SDK90_PASSWORD
-          - ida_sdk: 90sp1
-            sdk_password: IDA_SDK90sp1_PASSWORD
-          - ida_sdk: 91
-            sdk_password: IDA_SDK91_PASSWORD
           - os: ubuntu-latest
             ext: so
           - os: windows-latest
@@ -47,6 +27,22 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Set IDA SDK password
+        run: |
+          case "${{ matrix.ida_sdk }}" in
+            74) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK74_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            77) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK77_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            80) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK80_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            81) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK81_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            82) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK82_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            83) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK83_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            84) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK84_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            90) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK90_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            90sp1) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK90sp1_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            91) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK91_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            *) echo "No password defined for this IDA SDK version" && exit 1 ;;
+          esac
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -62,7 +58,7 @@ jobs:
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2.0
         with:
-          cmake-version: 'latest'
+          cmake-version: "latest"
 
       - name: Install Ninja (Linux / MacOS)
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
@@ -84,19 +80,17 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
-          IDA_SDK_PASSWORD: ${{ secrets[matrix.sdk_password] }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
           cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION
-      
+
       # We need to differentiate MacOS build from Linux because we want to use a specific compiler on MacOS
       - name: Prepare build environment (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
-          IDA_SDK_PASSWORD: ${{ secrets[matrix.sdk_password] }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
@@ -113,7 +107,6 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
-          IDA_SDK_PASSWORD: ${{ secrets[matrix.sdk_password] }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
           7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
@@ -163,7 +156,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1, 91]
-        bitness: ['', '-32']
+        bitness: ["", "-32"]
         include:
           - os: windows-latest
             ext: dll
@@ -175,11 +168,11 @@ jobs:
           - os: macos-latest
             ida_sdk: 74
           - ida_sdk: 90
-            bitness: '-32'
+            bitness: "-32"
           - ida_sdk: 90sp1
-            bitness: '-32'
+            bitness: "-32"
           - ida_sdk: 91
-            bitness: '-32'
+            bitness: "-32"
 
     steps:
       - name: Download Artefact
