@@ -45,6 +45,24 @@ option(ENABLE_SANITIZER "Enable address sanitizer" OFF)
 
 if (UNIX)
     if(APPLE)
+        if(DEFINED LLVM_ROOT)
+            message(STATUS "Using provided LLVM_ROOT: ${LLVM_ROOT}")
+        else()
+            message(WARNING "LLVM_ROOT not provided via -DLLVM_ROOT. Falling back to Homebrew's llvm@15.")
+            # Fallback to LLVM 15 install path from Homebrew
+            execute_process(
+                COMMAND brew --prefix llvm@15
+                OUTPUT_VARIABLE LLVM_PREFIX
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+
+            if(NOT EXISTS "${LLVM_ROOT}/bin/clang++")
+                message(FATAL_ERROR "Failed to locate llvm@15 via Homebrew. Please install it or provide LLVM_ROOT manually.")
+            endif()
+
+            message(STATUS "Using fallback LLVM_ROOT: ${LLVM_ROOT}")
+        endif()
+
         add_compile_options(
             -gfull
             -Wno-nullability-completeness
@@ -60,6 +78,20 @@ if (UNIX)
         add_link_options(
             -dead_strip
         )
+
+        execute_process(
+            COMMAND xcrun --sdk macosx --show-sdk-path
+            OUTPUT_VARIABLE SDKROOT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+
+        message(STATUS "Using macOS SDK: ${SDKROOT}")
+
+        set(CMAKE_C_COMPILER "${LLVM_ROOT}/bin/clang" CACHE FILEPATH "The C compiler")
+        set(CMAKE_CXX_COMPILER "${LLVM_ROOT}/bin/clang++" CACHE FILEPATH "The C++ compiler")
+        set(CMAKE_OSX_SYSROOT "${SDKROOT}")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isysroot ${SDKROOT}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isysroot ${SDKROOT} -stdlib=libc++")
     else()
     endif()
 elseif(WIN32)
