@@ -52,7 +52,7 @@ if (UNIX)
             # Fallback to LLVM 15 install path from Homebrew
             execute_process(
                 COMMAND brew --prefix llvm@15
-                OUTPUT_VARIABLE LLVM_PREFIX
+                OUTPUT_VARIABLE LLVM_ROOT
                 OUTPUT_STRIP_TRAILING_WHITESPACE
             )
 
