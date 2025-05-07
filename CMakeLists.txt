@@ -59,7 +59,7 @@ if (UNIX)
 
         add_link_options(
             -dead_strip
-        )        
+        )
     else()
     endif()
 elseif(WIN32)
