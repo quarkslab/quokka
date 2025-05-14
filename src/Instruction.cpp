@@ -42,12 +42,6 @@ Operand::Operand(op_t operand) {
                      operand.specflag4};
 }
 
-template <typename H>
-H AbslHashValue(H h, const Operand& m) {
-  return H::combine(std::move(h), m.type, m.flags, m.op_value_type, m.value,
-                    m.register_id, m.phrase_id, m.addr, m.specflags, m.specval);
-}
-
 bool Operand::operator<(const Operand& rhs) const {
   return absl::Hash<Operand>()(rhs) < absl::Hash<Operand>()(*this);
 }
@@ -61,11 +55,6 @@ bool Operand::operator==(const Operand& rhs) const {
 }
 
 bool Operand::operator!=(const Operand& rhs) const { return !(rhs == *this); }
-
-template <typename H>
-H AbslHashValue(H h, const Mnemonic& m) {
-  return H::combine(std::move(h), m.mnemonic);
-}
 
 Instruction::Instruction(const insn_t& instruction,
                          BucketNew<Operand>& operand_bucket,
@@ -114,11 +103,6 @@ inline bool is_thumb_ea(ea_t ea) {
   // 20 is the segment used for ARM to store thumb mode
   sel_t t = get_sreg(ea, 20);
   return t != BADSEL && t != 0;
-}
-
-template <typename H>
-H AbslHashValue(H h, const OperandString& m) {
-  return H::combine(std::move(h), m.representation);
 }
 
 }  // namespace quokka
