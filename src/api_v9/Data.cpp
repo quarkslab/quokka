@@ -92,13 +92,13 @@ static std::shared_ptr<Structure> ExportStructure(const tinfo_t& struct_tif) {
     structure->type = STRUCT_STRUCT;
 
   if (!struct_tif.is_varstruct())
-    structure->size = struct_tif.get_size();
+    structure->size = struct_tif.is_forward_decl() ? 0 : struct_tif.get_size();
   else
     structure->has_variable_size = true;
 
   ExportStructureReference(ea_t(structure->addr), structure, STRUCT_STRUCT);
 
-  if (!struct_tif.is_empty_udt())
+  if (!struct_tif.is_empty_udt() && !struct_tif.is_forward_decl())
     ExportStructMembers(structure, struct_tif);
 
   GetStructureComment_v9(structure, struct_tif);
@@ -109,7 +109,8 @@ static std::shared_ptr<Structure> ExportStructure(const tinfo_t& struct_tif) {
 void ExportStructures(Structures& structures) {
   for (uint32_t ordinal = 1; ordinal < get_ordinal_limit(); ++ordinal) {
     tinfo_t tif;
-    if (!tif.get_numbered_type(ordinal, BTF_STRUCT | BTF_UNION))
+    if (!tif.get_numbered_type(ordinal, BTF_STRUCT) &&
+        !tif.get_numbered_type(ordinal, BTF_UNION))
       continue;
 
     structures.emplace_back(ExportStructure(tif));

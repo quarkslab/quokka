@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "Compatibility.h"
+
 #include <ida.hpp>
 #include <idp.hpp>
 #include <lines.hpp>
@@ -113,7 +114,7 @@ class OperandString : public ProtoHelper {
   template <typename H>
   friend H AbslHashValue(H h, const OperandString& m);
 
-  explicit OperandString(std::string m_) : representation(std::move(m_)){};
+  explicit OperandString(std::string m_) : representation(std::move(m_)) {};
 
   /**
    * Operator overloading
@@ -152,7 +153,7 @@ class Mnemonic : public ProtoHelper {
    * Constructor
    * @param m_ Value of the mnemonic
    */
-  explicit Mnemonic(std::string m_) : mnemonic(std::move(m_)){};
+  explicit Mnemonic(std::string m_) : mnemonic(std::move(m_)) {};
 
   /**
    * Operator overloading
@@ -229,6 +230,22 @@ class Instruction : public ProtoHelper {
  * @return Boolean for success
  */
 bool is_thumb_ea(ea_t ea);
+
+template <typename H>
+H AbslHashValue(H h, const Operand& m) {
+  return H::combine(std::move(h), m.type, m.flags, m.op_value_type, m.value,
+                    m.register_id, m.phrase_id, m.addr, m.specflags, m.specval);
+}
+
+template <typename H>
+H AbslHashValue(H h, const Mnemonic& m) {
+  return H::combine(std::move(h), m.mnemonic);
+}
+
+template <typename H>
+H AbslHashValue(H h, const OperandString& m) {
+  return H::combine(std::move(h), m.representation);
+}
 
 }  // namespace quokka
 
