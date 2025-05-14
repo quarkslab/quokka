@@ -109,7 +109,7 @@ static std::shared_ptr<Structure> ExportStructure(const tinfo_t& struct_tif) {
 void ExportStructures(Structures& structures) {
   for (uint32_t ordinal = 1; ordinal < get_ordinal_limit(); ++ordinal) {
     tinfo_t tif;
-    if (!tif.get_numbered_type(ordinal, BTF_STRUCT | BTF_UNION))
+    if (!tif.get_numbered_type(ordinal, BTF_STRUCT) && !tif.get_numbered_type(ordinal, BTF_UNION))
       continue;
 
     structures.emplace_back(ExportStructure(tif));
