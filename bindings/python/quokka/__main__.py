@@ -23,6 +23,7 @@ BINARY_FORMAT = {
     "application/x-mach-binary",
     "application/x-executable",
     "application/x-pie-executable",
+    "application/x-object", #.ko files
 }
 
 EXTENSIONS_WHITELIST = {"application/octet-stream": [".dex"]}
