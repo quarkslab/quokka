@@ -21,7 +21,7 @@ jobs:
           cache-dependency-glob: pyproject.toml
       - name: Build wheel
         run: uv build --wheel
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: wheels
           path: dist/*.whl
@@ -38,7 +38,7 @@ jobs:
           cache-dependency-glob: pyproject.toml
       - name: Build sdist
         run: uv build --sdist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: sdist
           path: dist/*.tar.gz
@@ -58,11 +58,11 @@ jobs:
           merge-multiple: true
 
       - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.12.4
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
         with:
           attestations: true
 
       - name: Upload Python packages for release notes
-        uses: softprops/action-gh-release@v2.2.2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           files: dist/*

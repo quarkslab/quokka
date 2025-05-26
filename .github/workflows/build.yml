@@ -51,7 +51,7 @@ jobs:
 
       - name: Cache third_party folder
         id: cache-sdk
-        uses: actions/cache@v4
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
         with:
           path: third_party
           key: ${{ matrix.os }}-third-party-${{ hashFiles('sdk_lockfile') }}
@@ -131,7 +131,7 @@ jobs:
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
       - name: Upload Artifacts (64)
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
           path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
@@ -139,7 +139,7 @@ jobs:
 
       - name: Upload Artifacts (32)
         if: ${{ contains('74,77,80,81,82,83,84', matrix.ida_sdk) }}
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
           path: ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
@@ -182,7 +182,7 @@ jobs:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}${{ matrix.bitness }}
 
       - name: Release
-        uses: softprops/action-gh-release@v2.2.2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           files: ${{ matrix.ida_sdk }}-quokka_*
           fail_on_unmatched_files: true
