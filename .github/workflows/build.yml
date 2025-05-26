@@ -11,8 +11,10 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1, 91]
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+        # ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1, 91]
+        os: [macos-latest]
+        ida_sdk: [84]
         include:
           - os: ubuntu-latest
             ext: so
@@ -112,6 +114,9 @@ jobs:
           7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
           rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
           cmake -B "${env:CMAKE_BUILD_DIR}" -S "${env:GITHUB_WORKSPACE}" -DIdaSdk_ROOT_DIR="${env:GITHUB_WORKSPACE}/third_party/${env:IDA_SDK_VERSION}"
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Build
         env:
