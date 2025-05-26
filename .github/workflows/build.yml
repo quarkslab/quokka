@@ -101,8 +101,7 @@ jobs:
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
                 -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION \
-                -DCMAKE_C_COMPILER=$(brew --prefix llvm@15)/bin/clang \
-                -DCMAKE_CXX_COMPILER=$(brew --prefix llvm@15)/bin/clang++
+                -DLLVM_ROOT=$(brew --prefix llvm@15)
 
       - name: Prepare build environment (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
