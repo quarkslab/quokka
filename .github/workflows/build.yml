@@ -167,6 +167,8 @@ jobs:
         exclude:
           - os: macos-latest
             ida_sdk: 74
+          - os: macos-latest
+            bitness: "-32"
           - ida_sdk: 90
             bitness: "-32"
           - ida_sdk: 90sp1
