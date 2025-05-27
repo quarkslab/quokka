@@ -137,7 +137,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Artifacts (32)
-        if: ${{ contains('74,77,80,81,82,83,84', matrix.ida_sdk) }}
+        if: ${{ contains('74,77,80,81,82,83,84', matrix.ida_sdk) && matrix.os != 'macos-latest' }}
         uses: actions/upload-artifact@v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
