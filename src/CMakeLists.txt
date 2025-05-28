@@ -46,7 +46,7 @@ ida_target_link_libraries(quokka_shared PUBLIC
         absl::flat_hash_map
         absl::hash)
 
-if(IDA_SDK_VERSION VERSION_GREATER "900" OR IDA_SDK_VERSION VERSION_EQUAL "900" OR APPLE)
+if(IDA_SDK_VERSION VERSION_GREATER "900" OR IDA_SDK_VERSION VERSION_EQUAL "900")
         # No 32 bit version in IDA >= 9.0
         # Remove 32 bit support for apple
         add_ida_plugin(quokka_plugin NOEA32
