@@ -3,6 +3,7 @@
 This is the main class of Quokka.
 It deals with the most common abstraction, the Program.
 """
+
 #  Copyright 2022-2023 Quarkslab
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,16 +26,15 @@ from itertools import product
 import logging
 import os
 import pathlib
-import subprocess
 from typing import TYPE_CHECKING
 
 import capstone
 import networkx
+import idascript
 
 import quokka
 import quokka.analysis
 import quokka.backends
-from quokka.utils import find_ida_executable
 
 from quokka.types import (
     AddressT,
@@ -525,50 +525,34 @@ class Program(dict):
         else:
             database_file = pathlib.Path(database_file)
 
-        additional_options = []
         if not database_file.is_file():
-            additional_options.append(f'-o{database_file.with_suffix("")}')
+            database_path = database_file.with_suffix("")
         else:
-            exec_file = database_file
+            exec_path = database_file
+            database_path = None
 
-        # Search for the IDA Pro executable
-        ida_path = find_ida_executable()
-        if not ida_path:
-            Program.logger.warning(f"IDA executable not found")
-            return None
-
-        try:
-            cmd = (
-                [
-                    ida_path,
-                    "-OQuokkaAuto:true",
-                    f"-OQuokkaFile:{output_file}",
-                ]
-                + additional_options
-                + ["-A", f"{exec_file!s}"]
+        ida = idascript.IDA(
+            exec_path,
+            script_file=None,
+            script_params=["QuokkaAuto:true", f"QuokkaFile:{output_file}"],
+            database_path=database_path,
+            timeout=timeout,
+        )
+        ida.start()
+        if (ret_code := ida.wait()) == idascript.TIMEOUT_RETURNCODE:
+            Program.logger.error(
+                f"Failed to export the binary {exec_path}. IDA timeout of {timeout}s reached."
+            )
+        elif ret_code != 0:
+            Program.logger.error(
+                f"Failed to export the binary {exec_path}. IDA returned code {ret_code}."
             )
 
-            Program.logger.info("%s", " ".join(cmd))
-            result = subprocess.run(
-                cmd,
-                stderr=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                env={
-                    "TVHEADLESS": "1",
-                    "HOME": os.environ["HOME"],
-                    "PATH": os.environ.get("PATH", ""),
-                    "TERM": "xterm",  # problem with libcurses
-                },
-                timeout=timeout,
-                check=True,
-            )
-            if debug or result.returncode != 0:
-                Program.logger.debug(result.stderr)
+        if debug:
+            Program.logger.debug(f"IDA returned code {ret_code}")
+            Program.logger.debug(ida.stderr.read().decode("utf-8"))
 
-        except subprocess.CalledProcessError:
-            return None
-
-        if not output_file.is_file():
+        if ret_code:
             return None
 
         return Program(output_file, exec_path)

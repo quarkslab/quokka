@@ -18,6 +18,7 @@ dependencies = [
     "python-magic; os_name!='nt'",
     "python-magic-bin; os_name=='nt'",
     "click",
+    "idascript>=0.3.3"
 ]
 dynamic = ["version"]
 

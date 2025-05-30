@@ -17,10 +17,7 @@
 from __future__ import annotations
 import functools
 import hashlib
-import pathlib
 import logging
-import os
-import sys
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
@@ -42,36 +39,10 @@ from quokka.analysis import (
 from quokka.types import Type, RegAccessMode
 
 if TYPE_CHECKING:
+    import pathlib
     from quokka.instruction import Instruction
 
 logger = logging.getLogger()
-
-
-def find_ida_executable(ida_path: str | None = None) -> str:
-    # Search different names to be version independent
-    names = ["idat64", "idat"]
-    if sys.platform == "win32":
-        names = [x+".exe" for x in names]
-
-    def find_in_dir(d: pathlib.Path) -> str:
-        for bin_name in names:
-            if (d / bin_name).exists():
-                return (d / bin_name).absolute().as_posix()
-        return ""
-
-    # If directory provided look for the
-    # appropriate name inside
-    if ida_path:
-        return find_in_dir(pathlib.Path(ida_path))
-    # Else search for a IDA_PATH environment variable
-    elif path := os.environ.get("IDA_PATH", ""):
-        return find_in_dir(pathlib.Path(path))
-    else: # Else iterate PATH (linux only)
-        if "PATH" in os.environ:
-            for p in os.environ["PATH"].split(":"):
-                if ida_path := find_in_dir(pathlib.Path(p)):
-                    return ida_path
-    return ""
 
 
 def md5_file(file_path: pathlib.Path) -> str:
