@@ -10,11 +10,9 @@ import sys
 
 import magic
 import click
-import subprocess
+import idascript
 from multiprocessing import Pool, Queue, Manager
 import queue
-
-from quokka.utils import find_ida_executable
 
 
 BINARY_FORMAT = {
@@ -65,39 +63,27 @@ def do_quokka(exec_path: Path) -> bool:
         return True
 
     database_file = exec_path.parent / f"{exec_path.name}.i64"
-
-    additional_options = []
     if not database_file.is_file():
-        additional_options.append(f'-o{database_file.with_suffix("")}')
+        database_path = database_file.with_suffix("")
     else:
         exec_path = database_file
+        database_path = None
 
-    ida_path = os.environ.get("IDA_PATH", "")
-    if not ida_path:  # Should be set at this point
-        return False
-    try:
-        cmd = [ida_path, "-OQuokkaAuto:true", f"-OQuokkaFile:{output_file}"] + additional_options + ["-A", f"{exec_path!s}"]
-        logging.debug(f"run: {' '.join(cmd)}")
+    ida = idascript.IDA(
+        exec_path,
+        script_file=None,
+        script_params=["QuokkaAuto:true", f"QuokkaFile:{output_file}"],
+        database_path=database_path,
+    )
 
-        result = subprocess.run(
-            cmd,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            env={
-                "TVHEADLESS": "1",
-                "HOME": os.environ["HOME"],
-                "PATH": os.environ.get("PATH", ""),
-                "TERM": "xterm",  # problem with libcurses
-            },
-            check=True,
-        )
-    except subprocess.CalledProcessError:
-        return False
-
-    if output_file.is_file():
+    ida.start()
+    if (ret_code := ida.wait()) == 0:
         return True
-    else:
-        return False
+
+    logging.error(
+        f"Failed to export the binary {exec_path}. IDA returned code {ret_code}."
+    )
+    return False
 
 def export_job(ingress, egress) -> bool:
     while True:
@@ -165,7 +151,7 @@ def run_sequential(root_path: Path) -> None:
     "--ida-path",
     type=click.Path(exists=True),
     default=None,
-    help="IDA Pro installation directory",
+    help="IDA Pro headless executable path",
 )
 @click.option("-t", "--threads", type=int, default=1, help="Thread number to use")
 @click.option("-v", "--verbose", count=True, help="To activate or not the verbosity")
@@ -176,7 +162,7 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool) -> None:
     for a given binary or a directory. It all open the binary file and export files
     seamlessly.
 
-    :param ida_path: Path to the IDA Pro installation directory
+    :param ida_path: Path to the IDA Pro headless executable (idat or idat64)
     :param input_file: Path of the binary to export
     :param threads: number of threads to use
     :param verbose: To activate or not the verbosity
@@ -187,10 +173,10 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool) -> None:
         format="%(message)s", level=logging.DEBUG if verbose else logging.INFO
     )
 
-    if ida_path := find_ida_executable(ida_path):
+    if ida_path:
         os.environ["IDA_PATH"] = ida_path
-    else:
-        logging.error(f"can't find IDA Pro executable")
+    if not idascript.get_ida_path():
+        logging.error("Can't find IDA Pro executable. Try setting IDA_PATH or use -i option")
         exit(1)
 
     root_path = Path(input_file)
