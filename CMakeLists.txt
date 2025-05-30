@@ -45,6 +45,24 @@ option(ENABLE_SANITIZER "Enable address sanitizer" OFF)
 
 if (UNIX)
     if(APPLE)
+        if(DEFINED LLVM_ROOT)
+            message(STATUS "Using provided LLVM_ROOT: ${LLVM_ROOT}")
+        else()
+            message(WARNING "LLVM_ROOT not provided via -DLLVM_ROOT. Falling back to Homebrew's llvm@15.")
+            # Fallback to LLVM 15 install path from Homebrew
+            execute_process(
+                COMMAND brew --prefix llvm@15
+                OUTPUT_VARIABLE LLVM_ROOT
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+
+            if(NOT EXISTS "${LLVM_ROOT}/bin/clang++")
+                message(FATAL_ERROR "Failed to locate llvm@15 via Homebrew. Please install it or provide LLVM_ROOT manually.")
+            endif()
+
+            message(STATUS "Using fallback LLVM_ROOT: ${LLVM_ROOT}")
+        endif()
+
         add_compile_options(
             -gfull
             -Wno-nullability-completeness
@@ -59,7 +77,21 @@ if (UNIX)
 
         add_link_options(
             -dead_strip
-        )        
+        )
+
+        execute_process(
+            COMMAND xcrun --sdk macosx --show-sdk-path
+            OUTPUT_VARIABLE SDKROOT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+
+        message(STATUS "Using macOS SDK: ${SDKROOT}")
+
+        set(CMAKE_C_COMPILER "${LLVM_ROOT}/bin/clang" CACHE FILEPATH "The C compiler")
+        set(CMAKE_CXX_COMPILER "${LLVM_ROOT}/bin/clang++" CACHE FILEPATH "The C++ compiler")
+        set(CMAKE_OSX_SYSROOT "${SDKROOT}")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isysroot ${SDKROOT}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isysroot ${SDKROOT} -stdlib=libc++")
     else()
     endif()
 elseif(WIN32)
@@ -78,21 +110,20 @@ if (NOT NO_BUILD)
     FetchContent_Declare(
             abseil
             GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
-            GIT_TAG 20220623.1
+            GIT_TAG 20250127.0
     )
     FetchContent_MakeAvailable(abseil)
 
     FetchContent_Declare(
             protobuf
             GIT_REPOSITORY https://github.com/protocolbuffers/protobuf.git
-            SOURCE_SUBDIR cmake
-            GIT_TAG v3.11.4
+            GIT_TAG v30.2
     )
     set(protobuf_BUILD_TESTS OFF CACHE INTERNAL "")
     set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-    set(protobuf_BUILD_EXPORT OFF)
+    set(protobuf_BUILD_PROTOBUF_BINARIES ON CACHE BOOL "" FORCE)
+    set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
     set(protobuf_WITH_ZLIB_DEFAULT OFF CACHE BOOL "" FORCE)
-    set(protobuf_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
     set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(protobuf)
 
