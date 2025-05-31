@@ -50,6 +50,8 @@ from quokka.types import (
     Type,
     Union,
 )
+from quokka.exc import QuokkaError
+
 
 if TYPE_CHECKING:
     import pypcode
@@ -486,6 +488,7 @@ class Program(dict):
         output_file: Optional[Union[pathlib.Path, str]] = None,
         database_file: Optional[Union[pathlib.Path, str]] = None,
         debug: bool = False,
+        override: bool = True,
         timeout: Optional[int] = 600,
     ) -> Optional[Program]:
         """Generate an export file directly from the binary.
@@ -504,6 +507,61 @@ class Program(dict):
             A |`Program` instance or None if
 
         Raises:
+            QuokkaError: If the export fails
+            FileNotFoundError: If the executable is not found
+        """
+        quokka_file = Program.generate(
+            exec_path=exec_path,
+            output_file=output_file,
+            override=override,
+            debug=debug,
+            timeout=timeout,
+        )
+
+        # In theory if reach here export file exists otherwise an exception has been raised
+        if quokka_file.exists():
+            return Program.open(quokka_file, exec_path)
+        else:
+            raise FileNotFoundError(f"Cannot open Quokka export it does not exists: {quokka_file}")
+
+
+    @staticmethod
+    def open(export_file: pathlib.Path | str, exec_file: pathlib.Path | str) -> Program:
+        """
+        Open a BinExport file and return an instance of Program.
+
+        :param export_file: BinExport file path
+        :param exec_file: Path to the executable file
+        :return: an instance of Program
+        """
+        return Program(export_file, exec_file)
+
+    @staticmethod
+    def generate(
+        exec_path: Union[pathlib.Path, str],
+        output_file: Optional[Union[pathlib.Path, str]] = None,
+        database_file: Optional[Union[pathlib.Path, str]] = None,
+        debug: bool = False,
+        override: bool = True,
+        timeout: Optional[int] = 600,
+    ) -> pathlib.Path:
+        """Generate an export file directly from the binary.
+
+        This methods will export `exec_path` directly using Quokka IDA's plugin if
+        installed.
+
+        Arguments:
+            exec_path: Binary to export.
+            output_file: Where to store the result (by default: near the executable)
+            database_file: Where to store IDA database (by default: near the executable)
+            timeout: How long should we wait for the export to finish (default: 10 min)
+            debug: Activate the debug output
+
+        Returns:
+            A |`Program` instance or None if
+
+        Raises:
+            QuokkaError: If the export fails
             FileNotFoundError: If the executable is not found
         """
 
@@ -516,9 +574,9 @@ class Program(dict):
         else:
             output_file = pathlib.Path(output_file)
 
-        if output_file.is_file():
-            return Program(output_file, exec_path)
-
+        if output_file.is_file() and not override:
+            return output_file
+        
         exec_file = exec_path
         if database_file is None:
             database_file = exec_file.parent / f"{exec_file.name}.i64"
@@ -539,7 +597,7 @@ class Program(dict):
             timeout=timeout,
         )
         ida.start()
-        if (ret_code := ida.wait()) == idascript.TIMEOUT_RETURNCODE:
+        if (ret_code := ida.wait()) == idascript.IDA.TIMEOUT_RETURNCODE:
             Program.logger.error(
                 f"Failed to export the binary {exec_path}. IDA timeout of {timeout}s reached."
             )
@@ -552,7 +610,10 @@ class Program(dict):
             Program.logger.debug(f"IDA returned code {ret_code}")
             Program.logger.debug(ida.stderr.read().decode("utf-8"))
 
-        if ret_code:
-            return None
+        if ret_code:  # Everything but 0 is an error
+            raise QuokkaError(
+                f"IDA failed to export the binary {exec_path}. "
+                f"IDA returned code {ret_code}."
+            )
 
-        return Program(output_file, exec_path)
+        return output_file
