@@ -489,7 +489,7 @@ class Program(dict):
         database_file: Optional[Union[pathlib.Path, str]] = None,
         debug: bool = False,
         override: bool = True,
-        timeout: Optional[int] = 600,
+        timeout: Optional[int] = 0,
     ) -> Optional[Program]:
         """Generate an export file directly from the binary.
 
