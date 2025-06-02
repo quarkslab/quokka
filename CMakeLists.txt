@@ -12,7 +12,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Targeting MacOS Version" FO
 
 project(quokka
         DESCRIPTION "Quokka: A Fast and Accurate Binary Exporter"
-        VERSION 0.6.0
+        VERSION 0.6.1
         LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
