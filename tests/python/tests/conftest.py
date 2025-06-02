@@ -27,5 +27,6 @@ def root_directory(request) -> Path:
 
 @pytest.fixture
 def prog(root_directory: Path):
-    return quokka.Program.from_binary(root_directory / "docs/samples/qb-crackme")
+    binary_path = root_directory / "docs/samples/qb-crackme"
+    return quokka.Program(binary_path.with_suffix(".quokka"), binary_path)
 

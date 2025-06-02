@@ -3,7 +3,7 @@ from quokka.types import FunctionType
 
 
 def test_export():
-    prog: quokka.Program = quokka.Program.from_binary("docs/samples/qb-crackme")
+    prog: quokka.Program = quokka.Program("docs/samples/qb-crackme.quokka", "docs/samples/qb-crackme")
     assert prog is not None, "Unable to export"
 
     # Check number of functions
