@@ -28,8 +28,8 @@
 
 #include "../Data.h"
 
-#if IDA_SDK_VERSION < 900
-#error "Comment_v9.h can only be used with IDA SDK >= 9.0"
+#if IDA_SDK_VERSION < 850
+#error "Comment_v9.h can only be used with IDA SDK >= 8.5"
 #endif
 
 namespace quokka {

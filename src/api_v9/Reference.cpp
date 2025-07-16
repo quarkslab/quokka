@@ -22,8 +22,8 @@
 #include "quokka/Data.h"
 #include "quokka/Localization.h"
 
-#if IDA_SDK_VERSION < 900
-#error "api_v9/Reference.cpp can only be used with IDA SDK >= 9.0"
+#if IDA_SDK_VERSION < 850
+#error "api_v9/Reference.cpp can only be used with IDA SDK >= 8.5"
 #endif
 
 namespace quokka {
