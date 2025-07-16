@@ -38,6 +38,7 @@ jobs:
             82) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK82_PASSWORD }}" >> "$GITHUB_ENV" ;;
             83) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK83_PASSWORD }}" >> "$GITHUB_ENV" ;;
             84) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK84_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            85) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK85_PASSWORD }}" >> "$GITHUB_ENV" ;;
             90) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK90_PASSWORD }}" >> "$GITHUB_ENV" ;;
             90sp1) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK90sp1_PASSWORD }}" >> "$GITHUB_ENV" ;;
             91) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK91_PASSWORD }}" >> "$GITHUB_ENV" ;;
