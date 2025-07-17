@@ -80,7 +80,7 @@ void GetFunctionComments(Comments& comments, const func_t* func,
 }  // namespace quokka
 
 // Additional IDA version specific code
-#if IDA_SDK_VERSION < 900
+#if IDA_SDK_VERSION < 850
 #include "api_v8/Comment.cpp"
 #else
 #include "api_v9/Comment.cpp"

@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1, 91]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91]
         include:
           - os: ubuntu-latest
             ext: so
@@ -38,6 +38,7 @@ jobs:
             82) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK82_PASSWORD }}" >> "$GITHUB_ENV" ;;
             83) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK83_PASSWORD }}" >> "$GITHUB_ENV" ;;
             84) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK84_PASSWORD }}" >> "$GITHUB_ENV" ;;
+            85) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK85_PASSWORD }}" >> "$GITHUB_ENV" ;;
             90) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK90_PASSWORD }}" >> "$GITHUB_ENV" ;;
             90sp1) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK90sp1_PASSWORD }}" >> "$GITHUB_ENV" ;;
             91) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK91_PASSWORD }}" >> "$GITHUB_ENV" ;;
@@ -155,7 +156,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 90, 90sp1, 91]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91]
         bitness: ["", "-32"]
         include:
           - os: windows-latest
@@ -167,6 +168,8 @@ jobs:
         exclude:
           - os: macos-latest
             ida_sdk: 74
+          - ida_sdk: 85
+            bitness: "-32"
           - ida_sdk: 90
             bitness: "-32"
           - ida_sdk: 90sp1

@@ -36,7 +36,7 @@
 #include "Util.h"
 #include "Windows.h"
 
-#if IDA_SDK_VERSION < 900
+#if IDA_SDK_VERSION < 850
 #include "api_v8/Comment_v8.h"
 #else
 #include "api_v9/Comment_v9.h"

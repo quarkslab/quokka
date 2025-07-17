@@ -22,8 +22,8 @@
 #include "quokka/Data.h"
 #include "quokka/Util.h"
 
-#if IDA_SDK_VERSION >= 900
-#error "api_v8/Comment.cpp can only be used with IDA SDK < 9.0"
+#if IDA_SDK_VERSION >= 850
+#error "api_v8/Comment.cpp can only be used with IDA SDK < 8.5"
 #endif
 
 namespace quokka {

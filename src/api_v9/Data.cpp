@@ -21,8 +21,8 @@
 #include "quokka/Comment.h"
 #include "quokka/Reference.h"
 
-#if IDA_SDK_VERSION < 900
-#error "api_v9/Data.cpp can only be used with IDA SDK >= 9.0"
+#if IDA_SDK_VERSION < 850
+#error "api_v9/Data.cpp can only be used with IDA SDK >= 8.5"
 #endif
 
 namespace quokka {
@@ -171,6 +171,8 @@ void ExportEnums(Structures& structures) {
     tinfo_t tif;
     if (!tif.get_numbered_type(ordinal, BTF_ENUM))
       continue;
+    if (tif.get_realtype() == BTMT_SIZE0 | BT_UNK && tif.is_forward_decl())
+      continue;  // Most likely it has already been exported as a struct
     if (tif.is_empty_enum())  // Do not export empty enums
       continue;
 

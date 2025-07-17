@@ -164,7 +164,7 @@ void ExportImportedFunctions(const ImportManager& import_manager,
 
 static void ExportFunctionGraph(Function& function, func_t* ida_func,
                                 const qflow_chart_t& flow_chart) {
-#if IDA_SDK_VERSION < 900
+#if IDA_SDK_VERSION < 850
   mutable_graph_t* graph = create_disasm_graph(ida_func->start_ea);
   graph->create_tree_layout();
 
