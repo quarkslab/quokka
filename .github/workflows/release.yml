@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v6
         with:
           python-version: '3.10'
           cache-dependency-glob: pyproject.toml
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v6
         with:
           python-version: '3.10'
           cache-dependency-glob: pyproject.toml
@@ -52,7 +52,7 @@ jobs:
       # Used for uploading the release notes.
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           path: dist/
           merge-multiple: true
@@ -63,6 +63,6 @@ jobs:
           attestations: true
 
       - name: Upload Python packages for release notes
-        uses: softprops/action-gh-release@v2.2.1
+        uses: softprops/action-gh-release@v2.3.2
         with:
           files: dist/*
