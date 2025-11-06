@@ -46,25 +46,25 @@ jobs:
           esac
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           persist-credentials: false
 
       - name: Cache third_party folder
         id: cache-sdk
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: third_party
           key: ${{ matrix.os }}-third-party-${{ hashFiles('sdk_lockfile') }}
 
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v2.0
+        uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
         with:
           cmake-version: "latest"
 
       - name: Install Ninja (Linux / MacOS)
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
-        uses: seanmiddleditch/gha-setup-ninja@v6
+        uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
       - name: Fetch IDA SDKs (Linux / MacOS)
         if: ${{ (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') && steps.cache-sdk.outputs.cache-hit != 'true' }}
@@ -131,7 +131,7 @@ jobs:
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
       - name: Upload Artifacts (64)
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
           path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
@@ -139,7 +139,7 @@ jobs:
 
       - name: Upload Artifacts (32)
         if: ${{ contains('74,77,80,81,82,83,84', matrix.ida_sdk) }}
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
           path: ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
@@ -179,12 +179,12 @@ jobs:
 
     steps:
       - name: Download Artefact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}${{ matrix.bitness }}
 
       - name: Release
-        uses: softprops/action-gh-release@v2.2.1
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
         with:
           files: ${{ matrix.ida_sdk }}-quokka_*
           fail_on_unmatched_files: true
