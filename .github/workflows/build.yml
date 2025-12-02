@@ -78,8 +78,8 @@ jobs:
           cd scripts
           .\fetch_sdk.bat
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -87,6 +87,7 @@ jobs:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
+          unzip -v
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
           cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION
@@ -98,6 +99,7 @@ jobs:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
+          unzip -v
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
           cmake -B $CMAKE_BUILD_DIR \
