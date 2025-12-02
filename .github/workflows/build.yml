@@ -78,6 +78,9 @@ jobs:
           cd scripts
           .\fetch_sdk.bat
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
