@@ -49,10 +49,10 @@ jobs:
       - name: Set cmake IDA option
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
+        shell: bash
         run: |
           if [[ "${{ matrix.ida_sdk }}" =~ ^(7|8|90|91) ]]; then
             echo "CMAKE_IDA_PARAM=-DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION" >> $GITHUB_ENV
-            -DIdaSdk_ROOT_DIR="${env:GITHUB_WORKSPACE}/third_party/${env:IDA_SDK_VERSION}"
           else
             echo "CMAKE_IDA_PARAM=-DIDA_VERSION=${{ matrix.ida_sdk }}" >> $GITHUB_ENV
           fi
