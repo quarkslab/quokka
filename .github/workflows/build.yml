@@ -79,6 +79,7 @@ jobs:
         run: |
           cd scripts
           ./fetch_sdk.sh
+          cd ..
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && rm third_party/$IDA_SDK_VERSION/include/regex.h
 
@@ -90,6 +91,7 @@ jobs:
         run: |
           cd scripts
           .\fetch_sdk.bat
+          cd ..
           7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
           rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
 
