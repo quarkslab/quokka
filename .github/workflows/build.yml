@@ -62,13 +62,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Cache third_party folder
-        id: cache-sdk
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: third_party
-          key: ${{ matrix.os }}-third-party-${{ hashFiles('sdk_lockfile') }}
-
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
         with:
@@ -80,8 +73,7 @@ jobs:
 
       - name: Fetch IDA SDKs (Linux / MacOS)
         if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
-            (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') &&
-            steps.cache-sdk.outputs.cache-hit != 'true' }}
+            (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
@@ -92,8 +84,7 @@ jobs:
 
       - name: Fetch IDA SDKs (Windows)
         if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
-            matrix.os == 'windows-latest' &&
-            steps.cache-sdk.outputs.cache-hit != 'true' }}
+            matrix.os == 'windows-latest' }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
@@ -101,9 +92,6 @@ jobs:
           .\fetch_sdk.bat
           7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
           rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
-
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
