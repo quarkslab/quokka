@@ -108,7 +108,7 @@ jobs:
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
           cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja \
-                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} $CMAKE_IDA_PARAM
+                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "$CMAKE_IDA_PARAM"
 
       # We need to differentiate MacOS build from Linux because we want to use a specific compiler on MacOS
       - name: Prepare build environment (MacOS)
