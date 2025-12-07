@@ -37,11 +37,55 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_PREFIX ${quokka_BINARY_DIR})
+set(IDA_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ida-sdk)
 
 option(BUILD_TEST "Build C++ test binaries (need gtest)" OFF)
 option(NO_BUILD "Don't build plugin" OFF)
 option(NO_DEPRECATED "Don't use deprecated functions from IDA SDK" OFF)
 option(ENABLE_SANITIZER "Enable address sanitizer" OFF)
+option(IDA_VERSION "Specify the version of IDA SDK, like 9.2 (works only on >=9.2)" "")
+
+if (IDA_VERSION)
+    # Check if IDA_VERSION is <major>.<minor> (TODO maybe add also spX)
+    if(NOT IDA_VERSION MATCHES "^[0-9]+\\.[0-9]+$")
+        message(FATAL_ERROR
+            "Variable IDA_VERSION must be in format <major>.<minor> (e.g. 9.2). "
+            "Got: ${IDA_VERSION}")
+    endif()
+    
+    # Check if IDA_VERSION is >= 9.2
+    string(REPLACE "." ";" _ida_version_list "${IDA_VERSION}")
+    list(GET _ida_version_list 0 IDA_VERSION_MAJOR)
+    list(GET _ida_version_list 1 IDA_VERSION_MINOR)
+    if((IDA_VERSION_MAJOR LESS 9) OR (IDA_VERSION_MAJOR EQUAL 9 AND IDA_VERSION_MINOR LESS 2))
+        message(FATAL_ERROR
+            "Variable IDA_VERSION must be at least 9.2. Got: ${IDA_VERSION}. "
+            "Older versions are supported but the sdk is private source. "
+            "Use IdaSdk_ROOT_DIR to point to the right path of the sdk")
+    endif()
+
+    message(STATUS "Using IDA SDK version ${IDA_VERSION}")
+
+    # Init the submodule
+    execute_process(
+        COMMAND git submodule update --init --recursive ${IDA_SDK_PATH}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+
+    # Checkout the correct tag inside the submodule
+    execute_process(
+        COMMAND git -C ${IDA_SDK_PATH} fetch --tags
+        COMMAND git -C ${IDA_SDK_PATH} checkout v${IDA_VERSION}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE GIT_RESULT
+    )
+    if (NOT GIT_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to checkout IDA SDK version ${IDA_VERSION}")
+    endif()
+
+    # Override the old variable
+    set(IdaSdk_ROOT_DIR "${IDA_SDK_PATH}/src" CACHE PATH "" FORCE)
+endif ()
 
 if (UNIX)
     if(APPLE)

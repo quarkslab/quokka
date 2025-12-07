@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91, 9.2]
         include:
           - os: ubuntu-latest
             ext: so
@@ -28,6 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set IDA SDK password
+        if: ${{ matrix.ida_sdk =~ '^(7|8|90|91)' }}
         shell: bash
         run: |
           case "${{ matrix.ida_sdk }}" in
@@ -44,6 +45,17 @@ jobs:
             91) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK91_PASSWORD }}" >> "$GITHUB_ENV" ;;
             *) echo "No password defined for this IDA SDK version" && exit 1 ;;
           esac
+
+      - name: Set cmake IDA option
+        env:
+          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
+        run: |
+          if [[ "${{ matrix.ida_sdk }}" =~ ^(7|8|90|91) ]]; then
+            echo "CMAKE_IDA_PARAM=-DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION" >> $GITHUB_ENV
+            -DIdaSdk_ROOT_DIR="${env:GITHUB_WORKSPACE}/third_party/${env:IDA_SDK_VERSION}"
+          else
+            echo "CMAKE_IDA_PARAM=-DIDA_VERSION=${{ matrix.ida_sdk }}" >> $GITHUB_ENV
+          fi
 
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -67,41 +79,46 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
       - name: Fetch IDA SDKs (Linux / MacOS)
-        if: ${{ (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') && steps.cache-sdk.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.ida_sdk =~ '^(7|8|90|91)' &&
+            (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') &&
+            steps.cache-sdk.outputs.cache-hit != 'true' }}
+        env:
+          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
           cd scripts
           ./fetch_sdk.sh
+          [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
+          [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && rm third_party/$IDA_SDK_VERSION/include/regex.h
 
       - name: Fetch IDA SDKs (Windows)
-        if: ${{ matrix.os == 'windows-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
+        if: ${{ matrix.ida_sdk =~ '^(7|8|90|91)' && matrix.os == 'windows-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
+        env:
+          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
           cd scripts
           .\fetch_sdk.bat
+          7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
+          rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
 
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
-          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
-          [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
-          [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
-          cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION
+          cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja \
+                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} $CMAKE_IDA_PARAM
 
       # We need to differentiate MacOS build from Linux because we want to use a specific compiler on MacOS
       - name: Prepare build environment (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
         env:
-          IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         run: |
-          [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
-          [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && mv third_party/$IDA_SDK_VERSION/include/regex.h third_party/$IDA_SDK_VERSION/include/regex.bak
           cmake -B $CMAKE_BUILD_DIR \
                 -S $GITHUB_WORKSPACE \
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-                -DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION \
+                $CMAKE_IDA_PARAM \
                 -DLLVM_ROOT=$(brew --prefix llvm@18)
 
       - name: Prepare build environment (Windows)
@@ -109,10 +126,9 @@ jobs:
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
+        shell: bash
         run: |
-          7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
-          rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
-          cmake -B "${env:CMAKE_BUILD_DIR}" -S "${env:GITHUB_WORKSPACE}" -DIdaSdk_ROOT_DIR="${env:GITHUB_WORKSPACE}/third_party/${env:IDA_SDK_VERSION}"
+          cmake -B "$CMAKE_BUILD_DIR" -S "$GITHUB_WORKSPACE" -DCMAKE_BUILD_TYPE=${BUILD_TYPE} $CMAKE_IDA_PARAM
 
       - name: Build
         env:
@@ -156,7 +172,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91, 9.2]
         bitness: ["", "-32"]
         include:
           - os: windows-latest
@@ -175,6 +191,8 @@ jobs:
           - ida_sdk: 90sp1
             bitness: "-32"
           - ida_sdk: 91
+            bitness: "-32"
+          - ida_sdk: 9.2
             bitness: "-32"
 
     steps:
