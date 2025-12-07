@@ -28,7 +28,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set IDA SDK password
-        if: ${{ matrix.ida_sdk =~ '^(7|8|90|91)' }}
+        if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) }}
         shell: bash
         run: |
           case "${{ matrix.ida_sdk }}" in
@@ -79,7 +79,7 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
       - name: Fetch IDA SDKs (Linux / MacOS)
-        if: ${{ matrix.ida_sdk =~ '^(7|8|90|91)' &&
+        if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
             (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') &&
             steps.cache-sdk.outputs.cache-hit != 'true' }}
         env:
@@ -91,7 +91,9 @@ jobs:
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && rm third_party/$IDA_SDK_VERSION/include/regex.h
 
       - name: Fetch IDA SDKs (Windows)
-        if: ${{ matrix.ida_sdk =~ '^(7|8|90|91)' && matrix.os == 'windows-latest' && steps.cache-sdk.outputs.cache-hit != 'true' }}
+        if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
+            matrix.os == 'windows-latest' &&
+            steps.cache-sdk.outputs.cache-hit != 'true' }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
