@@ -83,14 +83,39 @@ The first step is to download the sources. You can clone the repository like in 
 
 
 To compile `quokka`, you first need to generate the configuration using `CMake`.
+The process for building depends on which version of the IDA SDK you are using.
+These two modes are also referred as *the new mode* and *the old mode*.
+
+##### IDA < 9.2 (The old way)
+
+Since the IDA SDK is still proprietary code, you have to fetch it yourself and provide
+its path to cmake through the option `-DIdaSdk_ROOT_DIR:STRING=path/to/sdk`
+
+**NOTE:** This will also work on newer versions but it requires more steps from
+the users as they will have to download the sdk themselves.
 
 ```console
-user@host:~$ cd quokka
-user@host:~/quokka$ cmake -B build \ # Where to build 
+user@host:~/quokka$ cmake -B build \ # Where to build
                           -S . \ # Where are the sources
-                          -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK 
+                          -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK
                           -DCMAKE_BUILD_TYPE:STRING=Release # Build Type
 ```
+
+### IDA >= 9.2 (The new way)
+
+Ida SDK has been finally [open sourced](https://github.com/HexRaysSA/ida-sdk) so there is no need
+anymore to download it separately.
+
+You can use the cmake option `-DIDA_VERSION=<major>.<minor>` to automatically sync it from github.
+
+```console
+user@host:~/quokka$ cmake -B build \ # Where to build
+                          -S . \ # Where are the sources
+                          -DIDA_VERSION=9.2 \ # IDA SDK version
+                          -DCMAKE_BUILD_TYPE:STRING=Release # Build Type
+```
+
+##### Finalize the build
 
 If the first step succeeded, you can now do the actual building.
 
