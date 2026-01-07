@@ -18,6 +18,7 @@
 #include "quokka/Comment.h"
 #include "quokka/Imports.h"
 #include "quokka/Reference.h"
+#include "quokka/Settings.h"
 #include "quokka/Util.h"
 
 namespace quokka {
@@ -149,6 +150,44 @@ Function::Function(func_t* func_p) {
     this->func_type = TYPE_THUNK;
   } else if (func_p->flags & FUNC_LIB) {
     this->func_type = TYPE_LIBRARY;
+  }
+
+  // If exporting decompiled code is enabled export function decompiled code
+  if (Settings::GetInstance().ExportDecompiledCode()) {
+    ExportDecompiledFunction(func_p);
+  }
+}
+
+void Function::ExportDecompiledFunction(func_t* func_p) {
+  hexrays_failure_t hf;
+  cfunc_t *cfunc = decompile_func(func_p, &hf);
+  qstring decompiled_s;
+  qstring_printer_t qp(cfunc, decompiled_s, false);
+  
+  // Error codes are documented in: https://cpp.docs.hex-rays.com/group___m_e_r_r__.html#ga124713999eb84ddba531f5c2e9eedcab
+  if (hf.code == MERR_OK && cfunc != nullptr) {
+      // lines = cfunc->get_pseudocode();
+
+      // Print the decompiled code into qstring
+      cfunc->print_func(qp);
+      
+      // Store the decompiled code into protobuf string
+      this->decompiled_code = std::move(decompiled_s.c_str());
+
+      cfunc->release();
+  }
+  else if (hf.code == MERR_LICENSE) {
+      QLOGI << "Hex-Rays license not available, cannot export "
+                "decompiled code. Disable export.";
+      Settings::GetInstance().SetExportDecompiledCode(false);
+  }
+  else if (hf.code == MERR_EXTERN) {
+    // do not print anything as extern functions do not have a body
+  }
+  else {
+      QLOGI << absl::StrFormat("Decompilation failed for function %s at "
+                                "address 0x%a (%s)",
+                                this->name, this->start_addr, hf.desc().c_str());
   }
 }
 

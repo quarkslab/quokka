@@ -255,8 +255,13 @@ void WriteFunctions(quokka::Quokka* proto, std::vector<Function>& func_list,
     function.proto_index = proto->functions_size();
     quokka::Quokka::Function* proto_func = proto->add_functions();
     proto_func->set_name(function.name);
+
     if (!function.mangled_name.empty())
       proto_func->set_mangled_name(function.mangled_name);
+
+    if (!function.decompiled_code.empty())
+      proto_func->set_decompiled_code(function.decompiled_code);
+
     assert(function.start_addr - base_addr >= 0 &&
            "Function address offset is negative");
     proto_func->set_offset(function.start_addr - base_addr);
