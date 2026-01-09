@@ -25,7 +25,7 @@ Quokka is a binary exporter: from the disassembly of a program, it generates
 an export file that can be used without the disassembler.
 
 The main objective of **Quokka** is to enable to completely manipulate the
-binary without ever opening a disassembler after the initial step. Moreover, it
+binary without ever opening a disassembler after the initial export. Moreover, it
 abstracts the disassembler's API to expose a clean interface to the users.
 
 Quokka is heavily inspired by [BinExport](https://github.com/google/binexport),
@@ -58,7 +58,22 @@ To download the plugin, get the file named `quokka_plugin**.so`.
 
 ## Usage
 
-### Export a file
+### Exporting via GUI
+
+The first manual way to export a binary is to use the plugin inside IDA Pro.
+The default shortcut inside IDA is `Alt+A`. It opens the following dialog:
+
+![Export Dialog](docs/img/gui_view.png)
+
+Modes available are:
+
+* LIGHT: Exports data up to basic blocks start/stop *(instructions are disassembled by bindings)*
+* NORMAL: Exports data and instructions address *(instruction content and operands are retrieved by bindings)*
+* FULL: Exports data, instructions and operands *(self-contained mode, do not require disassembling
+in binding)*
+
+
+### Exporting in headless
 
 !!! note
 
@@ -67,26 +82,32 @@ To download the plugin, get the file named `quokka_plugin**.so`.
 
 - Either using command line:
 ```commandline
-$ idat64 -OQuokkaAuto:true -A /path/to/hello.i64
+$ idat -OQuokkaAuto:true -OQuokkaDecompiled:true -A /path/to/hello.i64
 ```
 
-Note: We are using `idat64` and not `ida64` to increase the export speed
-because we don't need the graphical interface.
+All available options are described in the [Usage](https://quarkslab.github.io/quokka/usage/).
 
-- Using the plugin shortcut inside IDA: (by default) Alt+A
+Note: `idat` is used instead of `ida` to increase the export speed as graphical interface
+is not needed.
 
-### Export a file in batch
+### Exporting in CLI
 
-One can write its own bash script run multiple `idat64` in parallel. However,
-Quokka provides an utility tool to automatically export all executable files
-of a given directory in parallel. An example to automate the export using 8 threads:
+Quokka provides a CLI utility tool to automatically export a single file or
+all executable files of a given directory in parallel. An example to automate
+the export using 8 threads:
 
 ```commandline
 $ quokka-cli -t 8 dir/
 ```
 
+It also accepts various arguments:
 
-### Load an export file
+* `--ida-path` to provide the path to IDA Pro (directory or binary)
+* `--decompiled` to enable decompiled code export
+* `--verbose` to enable verbose logging
+
+
+### Loading an export file
 
 ```python
 import quokka

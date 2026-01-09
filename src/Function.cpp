@@ -166,15 +166,12 @@ void Function::ExportDecompiledFunction(func_t* func_p) {
   
   // Error codes are documented in: https://cpp.docs.hex-rays.com/group___m_e_r_r__.html#ga124713999eb84ddba531f5c2e9eedcab
   if (hf.code == MERR_OK && cfunc != nullptr) {
-      // lines = cfunc->get_pseudocode();
-
+      
       // Print the decompiled code into qstring
       cfunc->print_func(qp);
       
       // Store the decompiled code into protobuf string
-      this->decompiled_code = std::move(decompiled_s.c_str());
-
-      cfunc->release();
+      this->decompiled_code = decompiled_s.c_str();
   }
   else if (hf.code == MERR_LICENSE) {
       QLOGI << "Hex-Rays license not available, cannot export "

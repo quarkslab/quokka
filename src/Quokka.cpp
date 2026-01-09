@@ -182,6 +182,7 @@ ssize_t idaapi UIHook(void* /* not used */, int event_id,
 
   // TODO(dm) Set the flag only when we are loading from a database
   // Or set an option to see if we need to save the database
+  term_hexrays_plugin();
 
   // set_database_flag(DBFL_KILL);
   qexit(0);
