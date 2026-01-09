@@ -600,6 +600,7 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
   proto_meta->set_base_addr(uint64_t(metadata.base_addr));
 
   proto_meta->set_ida_version(uint32_t(metadata.ida_version));
+  proto_meta->set_decompilation_activated(metadata.decompilation_activated);
 }
 
 quokka::Quokka::Structure::StructureType ToProtoStructType(

@@ -141,6 +141,8 @@ class Program(dict):
 
         self.endianness: Endianness = Endianness.from_proto(self.proto.meta.endianess)
 
+        self.decompiled_activated: bool = self.proto.meta.decompilation_activated
+
         self.chunks: Dict[int, Union[quokka.Chunk, quokka.SuperChunk]] = {}
 
         self.executable = quokka.Executable(exec_path, self.endianness)
