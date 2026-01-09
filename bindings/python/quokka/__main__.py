@@ -14,6 +14,9 @@ import idascript
 from multiprocessing import Pool, Queue, Manager
 import queue
 
+# local imports
+from quokka import Program, QuokkaError
+
 
 BINARY_FORMAT = {
     "application/x-dosexec",
@@ -56,40 +59,24 @@ def recursive_file_iter(p: Path) -> Generator[Path, None, None]:
             yield from recursive_file_iter(f)
 
 
-def do_quokka(exec_path: Path) -> bool:
-    output_file = Path(str(exec_path)+".quokka")
-
-    if output_file.is_file():
+def do_quokka(exec_path: Path, decompiled: bool = False) -> bool:
+    
+    try:
+        Program.generate(
+            exec_path=exec_path,
+            decompiled=decompiled,
+        )
         return True
+    except QuokkaError as e:
+        logging.error(f"Failed to export the binary {exec_path}. Error: {str(e)}")
+        return False
+    
 
-    database_file = exec_path.parent / f"{exec_path.name}.i64"
-    if not database_file.is_file():
-        database_path = database_file.with_suffix("")
-    else:
-        exec_path = database_file
-        database_path = None
-
-    ida = idascript.IDA(
-        exec_path,
-        script_file=None,
-        script_params=["QuokkaAuto:true", f"QuokkaFile:{output_file}"],
-        database_path=database_path,
-    )
-
-    ida.start()
-    if (ret_code := ida.wait()) == 0:
-        return True
-
-    logging.error(
-        f"Failed to export the binary {exec_path}. IDA returned code {ret_code}."
-    )
-    return False
-
-def export_job(ingress, egress) -> bool:
+def export_job(ingress, egress, decompiled: bool = False) -> None:
     while True:
         try:
             file = ingress.get(timeout=0.5)
-            res = do_quokka(file)
+            res = do_quokka(file, decompiled=decompiled)
             egress.put((file, res))
         except queue.Empty:
             pass
@@ -97,7 +84,7 @@ def export_job(ingress, egress) -> bool:
             break
 
 
-def run_async(root_path: Path, threads: int) -> None:
+def run_async(root_path: Path, threads: int, decompiled: bool = False) -> None:
     manager = Manager()
     ingress = manager.Queue()
     egress = manager.Queue()
@@ -105,7 +92,7 @@ def run_async(root_path: Path, threads: int) -> None:
 
     # Launch all workers
     for _ in range(threads):
-        pool.apply_async(export_job, (ingress, egress))
+        pool.apply_async(export_job, (ingress, egress, decompiled))
 
     # Pre-fill ingress queue
     total = 0
@@ -130,7 +117,7 @@ def run_async(root_path: Path, threads: int) -> None:
 
     pool.terminate()
 
-def run_sequential(root_path: Path) -> None:
+def run_sequential(root_path: Path, decompiled: bool = False) -> None:
     # Pre-fill ingress queue
     total_files = list(recursive_file_iter(root_path))
     total = len(total_files)
@@ -138,7 +125,7 @@ def run_sequential(root_path: Path) -> None:
     logging.info(f"Start exporting {total} binaries")
 
     for i, exe_path in enumerate(total_files):
-        if do_quokka(exe_path):
+        if do_quokka(exe_path, decompiled=decompiled):
             pp_res = Bcolors.OKGREEN + "OK" + Bcolors.ENDC
         else:
             pp_res = Bcolors.FAIL + "KO" + Bcolors.ENDC
@@ -155,8 +142,9 @@ def run_sequential(root_path: Path) -> None:
 )
 @click.option("-t", "--threads", type=int, default=1, help="Thread number to use")
 @click.option("-v", "--verbose", count=True, help="To activate or not the verbosity")
+@click.option("--decompiled", is_flag=True, default=False, help="Export decompiled code")
 @click.argument("input_file", type=click.Path(exists=True), metavar="<binary file|directory>")
-def main(ida_path: str, input_file: str, threads: int, verbose: bool) -> None:
+def main(ida_path: str, input_file: str, threads: int, verbose: bool, decompiled: bool) -> None:
     """
     quokka-cli is a very simple utility to generate a .Quokka file
     for a given binary or a directory. It all open the binary file and export files
@@ -166,6 +154,7 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool) -> None:
     :param input_file: Path of the binary to export
     :param threads: number of threads to use
     :param verbose: To activate or not the verbosity
+    :param decompiled: Whether to export decompiled code
     :return: None
     """
 
@@ -182,9 +171,9 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool) -> None:
     root_path = Path(input_file)
 
     if threads > 1:
-        run_async(root_path, threads)
+        run_async(root_path, threads, decompiled=decompiled)
     else:
-        run_sequential(root_path)
+        run_sequential(root_path, decompiled=decompiled)
 
 
 
