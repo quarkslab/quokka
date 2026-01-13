@@ -38,9 +38,14 @@ Use this option to override the file written by quokka.
 If none is given, <path_to_idb>.quokka is used.
 
 #### Auto - Auto mode
-* Usage: ``-OQuokkaAuto:<NON_EMPTY_STRING>``
+* Usage: ``-OQuokkaAuto:<true|false>``
 
 Use this option to launch quokka directly from the command line.
+
+#### Decompilation
+* Usage: ``-OQuokkaDecompiled:<true|false>``
+
+Use this option to also export decompiled code in the resulting export.
 
 #### Export Level
 * Usage: ``-OQuokkaMode:<MODE>``
