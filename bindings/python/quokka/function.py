@@ -565,6 +565,7 @@ class Function(dict):
         self.start: int = program.addresser.absolute(func.offset)
         self.name: str = func.name
         self.mangled_name: str = func.mangled_name or func.name
+        self.decompiled_code: str = func.decompiled_code or ""
 
         self.program: quokka.Program = program
 

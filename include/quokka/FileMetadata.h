@@ -144,6 +144,8 @@ class Metadata {
 
   int ida_version = 0;  ///< Ida version for this export
 
+  bool decompilation_activated = false;  ///< Whether decompilation was activated during export
+
   /**
    * Compute the hash of the input file. Try MD5 first, and fallback as
    * sha256.
@@ -187,9 +189,14 @@ class Metadata {
   inline void SetBaseAddr();
 
   /**
-   * Get `IDA_SDK_VERSION`
+   * Set `IDA_SDK_VERSION`
    */
   inline void SetIdaVersion();
+
+  /**
+   * Set decompilation_activated field
+   */
+  inline void SetDecompilationActivated(bool activated);
 };
 
 /**

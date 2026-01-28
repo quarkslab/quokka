@@ -57,6 +57,11 @@ class Settings {
    */
   ExporterMode mode = MODE_NORMAL;
 
+  /**
+    * Decompiled code export choice
+  */
+  bool export_decompiled_code = false;
+
  public:
   /**
    * Singleton pattern
@@ -78,6 +83,22 @@ class Settings {
    * @param mode_ Mode to set
    */
   void SetMode(ExporterMode mode_) { this->mode = mode_; }
+
+  /**
+   * Accessor for decompiled code export choice
+   * @return Boolean
+   */
+  [[nodiscard]] bool ExportDecompiledCode() const {
+    return this->export_decompiled_code;
+  }
+
+  /**
+   * Setter for decompiled code export choice
+   * @param do_decompilation Boolean
+   */
+  void SetExportDecompiledCode(bool do_decompilation) {
+    this->export_decompiled_code = do_decompilation;
+  }
 
   /**
    * Should we export instructions ?
