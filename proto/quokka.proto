@@ -300,7 +300,11 @@ message Quokka {
     uint32 function_index = 1;
     uint32 block_index = 2;
     // Offset (in bytes) of the instruction within the basic block
+    // Especially useful in light mode
     uint32 offset = 3;
+    // Index in the basic block, not in the global instruction table
+    // Useful only in self-contained mode
+    uint32 instruction_index = 4;
   }
 
   message Comment {
