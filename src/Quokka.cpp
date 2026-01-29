@@ -14,7 +14,6 @@
 
 #include "quokka/Quokka.h"
 
-#include "quokka/Data.h"
 #include "quokka/FileMetadata.h"
 #include "quokka/Layout.h"
 #include "quokka/Segment.h"
