@@ -21,9 +21,7 @@
 #define QUOKKA_SETTINGS_H
 
 #include <cassert>
-
-#include "Version.h"
-#include "Windows.h"
+#include <string>
 
 namespace quokka {
 
@@ -35,8 +33,7 @@ namespace quokka {
  */
 enum ExporterMode : short {
   MODE_LIGHT = 0,
-  MODE_NORMAL,
-  MODE_FULL,
+  MODE_SELF_CONTAINED,
 };
 
 /**
@@ -53,9 +50,9 @@ class Settings {
   explicit Settings() = default;
 
   /**
-   * Exporter mode. Defaults to NORMAL.
+   * Exporter mode. Defaults to LIGHT.
    */
-  ExporterMode mode = MODE_NORMAL;
+  ExporterMode mode = MODE_LIGHT;
 
  public:
   /**
@@ -80,19 +77,11 @@ class Settings {
   void SetMode(ExporterMode mode_) { this->mode = mode_; }
 
   /**
-   * Should we export instructions ?
+   * Should we export instructions?
    * @return Boolean
    */
   [[nodiscard]] bool ExportInstructions() const {
-    return this->mode >= MODE_NORMAL;
-  }
-
-  /**
-   * Should we export the instruction strings?
-   * @return Boolean
-   */
-  [[nodiscard]] bool ExportInstructionStrings() const {
-    return this->mode >= MODE_FULL;
+    return this->mode >= MODE_SELF_CONTAINED;
   }
 
   /**
@@ -103,10 +92,8 @@ class Settings {
     switch (this->mode) {
       case ExporterMode::MODE_LIGHT:
         return "LIGHT";
-      case ExporterMode::MODE_NORMAL:
-        return "NORMAL";
-      case ExporterMode::MODE_FULL:
-        return "FULL";
+      case ExporterMode::MODE_SELF_CONTAINED:
+        return "SELF_CONTAINED";
     }
 
     assert(false && "Should not reach the end of the function");

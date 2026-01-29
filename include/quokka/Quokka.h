@@ -53,7 +53,7 @@ enum ExporterMode : short;
  * Retrieve the export mode by looking at the argument passed on the command
  * line
  *
- * @return The correct export mode. By default it is MODE_NORMAL
+ * @return The correct export mode. By default it is MODE_LIGHT
  */
 ExporterMode GetModeFromArgument();
 

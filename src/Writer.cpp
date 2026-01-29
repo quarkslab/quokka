@@ -641,10 +641,8 @@ quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode) {
   switch (mode) {
     case ExporterMode::MODE_LIGHT:
       return quokka::Quokka::ExporterMeta::MODE_LIGHT;
-    case ExporterMode::MODE_FULL:
-      return quokka::Quokka::ExporterMeta::MODE_FULL;
-    case ExporterMode::MODE_NORMAL:
-      return quokka::Quokka::ExporterMeta::MODE_NORMAL;
+    case ExporterMode::MODE_SELF_CONTAINED:
+      return quokka::Quokka::ExporterMeta::MODE_SELF_CONTAINED;
   }
   assert(false && "Should not reach this point");
 }

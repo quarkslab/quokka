@@ -75,12 +75,12 @@ int ExportBinary(const std::string& filename) {
 
 ExporterMode GetModeFromArgument() {
   // Look for options on command line
-  ExporterMode mode = ExporterMode::MODE_NORMAL;
+  ExporterMode mode = ExporterMode::MODE_LIGHT;
   std::string quokka_mode = GetArgument("Mode", true);
   if (quokka_mode == "LIGHT") {
     mode = ExporterMode::MODE_LIGHT;
-  } else if (quokka_mode == "FULL") {
-    mode = ExporterMode::MODE_FULL;
+  } else if (quokka_mode == "SELF_CONTAINED") {
+    mode = ExporterMode::MODE_SELF_CONTAINED;
   }
 
   return mode;
@@ -224,8 +224,7 @@ bool idaapi PluginRun(size_t) {
       "Quokka Plugin (@Quarkslab)",
       "\nExport the current binary ?\n",
       "<#Light mode#Choose a mode##LIGHT:R>",
-      "<#Normal mode#NORMAL:R>",
-      "<#Full mode#FULL:R>>",
+      "<#Self contained mode#SELF_CONTAINED:R>",
   };
 
   std::string dialog = absl::StrJoin(form, "\n");
@@ -238,10 +237,7 @@ bool idaapi PluginRun(size_t) {
         mode = ExporterMode::MODE_LIGHT;
         break;
       case 1:
-        mode = ExporterMode::MODE_NORMAL;
-        break;
-      case 2:
-        mode = ExporterMode::MODE_FULL;
+        mode = ExporterMode::MODE_SELF_CONTAINED;
         break;
       default:
         assert(false && "Impossible choice for export mode");
