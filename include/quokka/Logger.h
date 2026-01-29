@@ -23,7 +23,9 @@
 #include <ctime>
 #include <utility>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
 #include <kernwin.hpp>
 
@@ -60,7 +62,7 @@ class Record {
    * @param line Line pointed
    */
   Record(LogLevel level, const char* func, size_t line)
-      : m_level(level), m_line(line), m_func(func){};
+      : m_level(level), m_line(line), m_func(func) {};
 
   /**
    * Return an pointer of self
