@@ -75,14 +75,14 @@ int ExportBinary(const std::string& filename) {
 
 ExporterMode GetModeFromArgument() {
   // Look for options on command line
-  ExporterMode mode = ExporterMode::MODE_NORMAL;
+  ExporterMode mode = ExporterMode::MODE_LIGHT;
   std::string quokka_mode = GetArgument("Mode", true);
   if (quokka_mode == "NORMAL") {
     mode = ExporterMode::MODE_NORMAL;
   } else if (quokka_mode == "LIGHT") {
     mode = ExporterMode::MODE_LIGHT;
-  } else if (quokka_mode == "FULL") {
-    mode = ExporterMode::MODE_FULL;
+  } else if (quokka_mode == "SELF_CONTAINED") {
+    mode = ExporterMode::MODE_SELF_CONTAINED;
   } else {
     QLOGW << "Unknown mode provided in argument, using default (NORMAL)";
   }
@@ -123,11 +123,10 @@ bool GetBoolArgument(const char* name, bool default_value) {
   std::string option = GetArgument(name, true);
   if (option.empty()) {
     return default_value;
-  }
-  else {
+  } else {
     std::transform(
-          option.begin(), option.end(), option.begin(),
-          [](unsigned char c) -> unsigned char { return std::toupper(c); });
+        option.begin(), option.end(), option.begin(),
+        [](unsigned char c) -> unsigned char { return std::toupper(c); });
     return (option == "TRUE");
   }
 }
@@ -171,11 +170,11 @@ ssize_t idaapi UIHook(void* /* not used */, int event_id,
 
   // Retrieve if we need to export decompiled code
   bool export_decompiled = GetBoolArgument("Decompiled", false);
-  if(export_decompiled){
+  if (export_decompiled) {
 #ifdef HAS_HEXRAYS
     if (init_hexrays_plugin()) {
-      QLOGI << "Hex-Rays plugin initialized. Decompilation: " << 
-                  (export_decompiled ? "enabled" : "disabled");
+      QLOGI << "Hex-Rays plugin initialized. Decompilation: "
+            << (export_decompiled ? "enabled" : "disabled");
       Settings::GetInstance().SetExportDecompiledCode(export_decompiled);
     } else {
       QLOGW << "Hex-Rays plugin not available, cannot export decompiled code";
@@ -253,7 +252,8 @@ bool idaapi PluginRun(size_t) {
   }
 
   /*
-    Field documentation: https://cpp.docs.hex-rays.com/group___f_o_r_m___c.html#ga56bdea2f1808b588da54c343f42ebf41
+    Field documentation:
+    https://cpp.docs.hex-rays.com/group___f_o_r_m___c.html#ga56bdea2f1808b588da54c343f42ebf41
   */
   std::vector<std::string> form = {
       "STARTITEM 0",
@@ -266,8 +266,7 @@ bool idaapi PluginRun(size_t) {
       "Quokka Plugin (@Quarkslab)",
       "\nExport the current binary ?\n",
       "<#Light mode#Choose a mode##LIGHT:R>",
-      "<#Normal mode#NORMAL:R>",
-      "<#Full mode#FULL:R>>",
+      "<#Self contained mode#SELF_CONTAINED:R>",
 #ifdef HAS_HEXRAYS
       "<#Requires hex-rays (slows down export)#Export Decompiled:C>>"
 #endif
@@ -284,10 +283,7 @@ bool idaapi PluginRun(size_t) {
         mode = ExporterMode::MODE_LIGHT;
         break;
       case 1:
-        mode = ExporterMode::MODE_NORMAL;
-        break;
-      case 2:
-        mode = ExporterMode::MODE_FULL;
+        mode = ExporterMode::MODE_SELF_CONTAINED;
         break;
       default:
         assert(false && "Impossible choice for export mode");
