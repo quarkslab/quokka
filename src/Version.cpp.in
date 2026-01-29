@@ -14,21 +14,24 @@
 
 #include "quokka/Version.h"
 
+#include <string_view>
+
 namespace quokka {
 
-    std::string GetVersion() {
-        return "@quokka_VERSION@";
+    constexpr std::string_view GetVersion() {
+        using namespace std::string_view_literals;
+        return "@quokka_VERSION@"sv;
     }
 
-    inline unsigned int GetVersionMajor() {
+    constexpr unsigned int GetVersionMajor() {
         return @quokka_VERSION_MAJOR@ + 0;
     }
 
-    inline unsigned int GetVersionMinor() {
+    constexpr unsigned int GetVersionMinor() {
         return @quokka_VERSION_MINOR@ + 0;
     }
 
-    inline unsigned int GetVersionPatch() {
+    constexpr unsigned int GetVersionPatch() {
         return @quokka_VERSION_PATCH@ + 0;
     }
 
