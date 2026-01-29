@@ -215,7 +215,7 @@ void SetLogLevel() {
 bool PluginInit() {
   SetLogLevel();
 
-  std::string version = GetVersion();
+  std::string_view version = GetVersion();
   QLOGI << absl::StrFormat("Starting to register Quokka (version %s)", version);
 
   addon_info_t addon_info;
@@ -223,7 +223,7 @@ bool PluginInit() {
   addon_info.id = "quokka";
   addon_info.name = "Quokka";
   addon_info.producer = "Quarkslab";
-  addon_info.version = &*version.begin();
+  addon_info.version = version.data();
   addon_info.url = "https://www.quarkslab.com";
   addon_info.freeform = "";
   register_addon(&addon_info);

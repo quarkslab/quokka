@@ -20,9 +20,7 @@
 #ifndef QUOKKA_VERSION_H
 #define QUOKKA_VERSION_H
 
-#include <string>
-
-#include "Windows.h"
+#include <string_view>
 
 namespace quokka {
 
@@ -30,25 +28,25 @@ namespace quokka {
  * Get the version string (format: "MAJOR.MINOR.PATCH")
  * @return A formatted version string
  */
-std::string GetVersion();
+constexpr std::string_view GetVersion();
 
 /**
  * Get version major
  * @return Version major
  */
-inline unsigned int GetVersionMajor();
+constexpr unsigned int GetVersionMajor();
 
 /**
  * Get version minor
  * @return Version minor
  */
-inline unsigned int GetVersionMinor();
+constexpr unsigned int GetVersionMinor();
 
 /**
  * Get version patch
  * @return Version patch
  */
-inline unsigned int GetVersionPatch();
+constexpr unsigned int GetVersionPatch();
 
 }  // namespace quokka
 
