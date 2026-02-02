@@ -30,8 +30,8 @@ int ExportBinary(const std::string& filename) {
 
   show_wait_box("quokka: start export");
 
-  QLOG_INFO << absl::StrFormat("Exporter set in %s",
-                               Settings::GetInstance().GetModeString());
+  QLOGI << absl::StrFormat("Exporter set in %s",
+                           Settings::GetInstance().GetModeString());
   QLOGI << absl::StrFormat("Starting to export to %s", filename);
 
   Timer timer(absl::Now());
