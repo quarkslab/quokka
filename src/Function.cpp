@@ -160,7 +160,7 @@ Function::Function(func_t* func_p) {
 
 void Function::ExportDecompiledFunction(func_t* func_p) {
   hexrays_failure_t hf;
-  cfunc_t *cfunc = decompile_func(func_p, &hf);
+  cfuncptr_t cfunc = decompile_func(func_p, &hf);
   qstring decompiled_s;
   qstring_printer_t qp(cfunc, decompiled_s, false);
   
