@@ -493,6 +493,7 @@ class Program(dict):
         debug: bool = False,
         override: bool = True,
         timeout: Optional[int] = 0,
+        mode: ExporterMode = ExporterMode.NORMAL,
     ) -> Optional[Program]:
         """Generate an export file directly from the binary.
 
@@ -506,6 +507,7 @@ class Program(dict):
             decompiled: Whether to export decompiled code (default: False)
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
+            mode: Export mode (LIGHT, NORMAL or FULL)
 
         Returns:
             A |`Program` instance or None if
@@ -522,6 +524,7 @@ class Program(dict):
             override=override,
             debug=debug,
             timeout=timeout,
+            mode=mode
         )
 
         # In theory if reach here export file exists otherwise an exception has been raised
@@ -551,6 +554,7 @@ class Program(dict):
         debug: bool = False,
         override: bool = True,
         timeout: Optional[int] = 600,
+        mode: ExporterMode = ExporterMode.NORMAL,
     ) -> pathlib.Path:
         """Generate an export file directly from the binary.
 
@@ -564,6 +568,7 @@ class Program(dict):
             decompiled: Whether to export decompiled code (default: False)
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
+            mode: Export mode (LIGHT, NORMAL or FULL)
 
         Returns:
             A |`Program` instance or None if
@@ -603,6 +608,7 @@ class Program(dict):
             script_params=[
                 "QuokkaAuto:true",
                 f"QuokkaDecompiled:{str(decompiled).lower()}",
+                f"QuokkaMode:{mode.name}",
                 f"QuokkaFile:{output_file}"],
             database_path=database_path,
             timeout=timeout,

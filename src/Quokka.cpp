@@ -78,10 +78,14 @@ ExporterMode GetModeFromArgument() {
   // Look for options on command line
   ExporterMode mode = ExporterMode::MODE_NORMAL;
   std::string quokka_mode = GetArgument("Mode", true);
-  if (quokka_mode == "LIGHT") {
+  if (quokka_mode == "NORMAL") {
+    mode = ExporterMode::MODE_NORMAL;
+  } else if (quokka_mode == "LIGHT") {
     mode = ExporterMode::MODE_LIGHT;
   } else if (quokka_mode == "FULL") {
     mode = ExporterMode::MODE_FULL;
+  } else {
+    QLOGW << "Unknown mode provided in argument, using default (NORMAL)";
   }
 
   return mode;
