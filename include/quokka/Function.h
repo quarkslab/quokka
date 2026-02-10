@@ -30,7 +30,9 @@
 #include <gdl.hpp>
 #include <graph.hpp>
 #include <loader.hpp>
+#ifdef HAS_HEXRAYS
 #include <hexrays.hpp>
+#endif
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"

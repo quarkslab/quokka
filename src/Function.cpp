@@ -159,6 +159,7 @@ Function::Function(func_t* func_p) {
 }
 
 void Function::ExportDecompiledFunction(func_t* func_p) {
+#ifdef HAS_HEXRAYS
   hexrays_failure_t hf;
   cfuncptr_t cfunc = decompile_func(func_p, &hf);
   qstring decompiled_s;
@@ -186,6 +187,9 @@ void Function::ExportDecompiledFunction(func_t* func_p) {
                                 "address 0x%a (%s)",
                                 this->name, this->start_addr, hf.desc().c_str());
   }
+#else
+  assert(false && "This code should not be reachable, check the preprocessor directives");
+#endif
 }
 
 void ExportImportedFunctions(const ImportManager& import_manager,
