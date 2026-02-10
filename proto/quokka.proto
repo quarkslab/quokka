@@ -85,6 +85,9 @@ message Quokka {
     // IDA Version, as reported by the IDA_SDK_VERSION constant. It is used because operands are
     // exported as constants, and the mapping may change between IDA SDK versions
     uint32 ida_version = 8;
+
+    // Whether the quokka export was done with decompiled code or not
+    bool decompilation_activated = 10;
   }
 
   message Operand {
@@ -206,6 +209,9 @@ message Quokka {
 
     // Optional mangled name, it is non-null only if different from `name`
     string mangled_name = 7;
+
+    // Optional decompiled code as a string
+    string decompiled_code = 8;
   }
 
   message Layout {

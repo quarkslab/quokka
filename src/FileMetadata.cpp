@@ -15,6 +15,7 @@
 #include "quokka/FileMetadata.h"
 
 #include "quokka/Writer.h"
+#include "quokka/Settings.h"
 
 namespace quokka {
 
@@ -178,6 +179,12 @@ void Metadata::SetBaseAddr() {
 
 void Metadata::SetIdaVersion() { this->ida_version = IDA_SDK_VERSION; }
 
+
+void Metadata::SetDecompilationActivated(bool activated) {
+  this->decompilation_activated = activated;
+}
+
+
 int ExportMeta(quokka::Quokka* proto) {
   Timer timer(absl::Now());
   QLOG_INFO << "Start to export FileMetadata";
@@ -193,6 +200,9 @@ int ExportMeta(quokka::Quokka* proto) {
   metadata.SetCallingConvention();
   metadata.SetBaseAddr();
   metadata.SetIdaVersion();
+
+  // Retrieve whether decompilation was activated and put it in the metadata
+  metadata.SetDecompilationActivated(Settings::GetInstance().ExportDecompiledCode());
 
   WriteMetadata(proto, metadata);
   QLOG_INFO << absl::StrFormat("FileMetadata exported (took %.2fs)",

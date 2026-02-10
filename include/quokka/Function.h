@@ -30,6 +30,9 @@
 #include <gdl.hpp>
 #include <graph.hpp>
 #include <loader.hpp>
+#ifdef HAS_HEXRAYS
+#include <hexrays.hpp>
+#endif
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
@@ -469,6 +472,7 @@ class Function {
   std::string mangled_name;   ///< Function mangled name (not empty only if
                               ///< different than the standard one)
   FunctionType func_type = TYPE_NONE;  ///< Function type
+  std::string decompiled_code;  ///< Decompiled code (if any)
 
   int proto_index = -1;  ///< Index in the protobuf
 
@@ -499,6 +503,9 @@ class Function {
       : start_addr(start_), name(std::move(name_)), func_type(TYPE_IMPORTED) {
     this->chunks_index[0] = std::move(chunk_);
   };
+
+
+  void ExportDecompiledFunction(func_t* func_p);
 };
 
 /**
