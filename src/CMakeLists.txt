@@ -69,6 +69,7 @@ ida_target_link_libraries(
         absl::strings
         absl::str_format
         protobuf::libprotobuf
+        LibLZMA::LibLZMA
 )
 
 ida_install(TARGETS quokka_plugin

@@ -177,6 +177,8 @@ if (NOT NO_BUILD)
     # Include protobuf functions
     include(cmake/protobuf.cmake)
 
+    find_package(LibLZMA REQUIRED)
+
     find_package(IdaSdk REQUIRED)
 
     add_subdirectory(proto)

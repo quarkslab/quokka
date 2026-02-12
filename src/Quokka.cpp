@@ -17,6 +17,7 @@
 #include "quokka/Data.h"
 #include "quokka/FileMetadata.h"
 #include "quokka/Layout.h"
+#include "quokka/LzmaStreambuf.h"
 #include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
@@ -47,20 +48,25 @@ int ExportBinary(const std::string& filename) {
   replace_wait_box("quokka: exporting layout");
   ExportLayout(&quokka_protobuf);
 
-  replace_wait_box("quokka: writing on the wire");
+  replace_wait_box("quokka: compressing & writing");
   std::string outfile = filename;
 
-  std::fstream stream(outfile,
-                      std::ios::binary | std::ios::out | std::ios::trunc);
-  if (!quokka_protobuf.SerializeToOstream(&stream)) {
-    QLOGE << "Unable to write the file, trying with a temp file.";
-    outfile = "/tmp/Exported.quokka";
-    stream = std::fstream(outfile,
-                          std::ios::binary | std::ios::out | std::ios::trunc);
-    if (!quokka_protobuf.SerializeToOstream(&stream)) {
-      QLOG_FATAL << "Unable to write to temp file as well";
-    }
-  }
+  std::fstream file(outfile,
+                    std::ios::binary | std::ios::out | std::ios::trunc);
+  if (!file)
+    return false;
+  
+  LzmaStreambuf lzma_buf(file);
+  std::ostream lzma_out(&lzma_buf);
+  
+  if (!quokka_protobuf.SerializeToOstream(&lzma_out))
+    return false;
+  
+  if (!lzma_buf.finish())
+    return false;
+  
+    QLOG_INFO << absl::StrFormat("Compressed %llu bytes -> %llu bytes (%.1f%%)",
+      lzma_buf.total_in(), lzma_buf.total_out(), 100.0 * lzma_buf.total_out() / lzma_buf.total_in());
 
   QLOG_INFO << absl::StrFormat("File %s is written", outfile);
   QLOG_INFO << absl::StrFormat("quokka finished (took %.2fs)",
