@@ -407,6 +407,22 @@ jobs:
           path: third_party/idasdk${{ matrix.ida_sdk }}
           key: idasdk-${{ runner.os }}-${{ matrix.ida_sdk }}-${{ hashFiles('sdk_lockfile') }}
 
+      - name: Install liblzma (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y liblzma-dev
+
+      - name: Install liblzma (MacOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          brew install xz
+
+      - name: Install liblzma (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          vcpkg install liblzma:x64-windows
+
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
