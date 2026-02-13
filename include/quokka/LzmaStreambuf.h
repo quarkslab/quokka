@@ -78,15 +78,17 @@ class LzmaStreambuf : public std::streambuf {
  protected:
   int overflow(int ch) override {
     if (!ok_) return EOF;
-    if (ch != EOF) {
-      *pptr() = static_cast<char>(ch);
-      pbump(1);
-    }
+    // Flush the full buffer first
     if (!flush_to_lzma(LZMA_RUN)) {
       ok_ = false;
       return EOF;
     }
-    return ch;
+    // Now the buffer is reset, safe to write the new character
+    if (ch != EOF) {
+      *pptr() = static_cast<char>(ch);
+      pbump(1);
+    }
+    return (ch == EOF) ? 0 : ch;
   }
 
   int sync() override {
@@ -106,8 +108,7 @@ class LzmaStreambuf : public std::streambuf {
     lzma_stream_.avail_in = static_cast<size_t>(pptr() - pbase());
 
     do {
-      uint8_t out_buf[kBufSize];
-      lzma_stream_.next_out = out_buf;
+      lzma_stream_.next_out = out_buf_;
       lzma_stream_.avail_out = kBufSize;
 
       lzma_ret ret = lzma_code(&lzma_stream_, action);
@@ -115,7 +116,7 @@ class LzmaStreambuf : public std::streambuf {
 
       size_t have = kBufSize - lzma_stream_.avail_out;
       if (have > 0) {
-        dest_.write(reinterpret_cast<const char*>(out_buf), have);
+        dest_.write(reinterpret_cast<const char*>(out_buf_), have);
         if (!dest_) return false;
       }
 
@@ -129,6 +130,7 @@ class LzmaStreambuf : public std::streambuf {
   std::ostream& dest_;
   lzma_stream lzma_stream_;
   char in_buf_[kBufSize];
+  uint8_t out_buf_[kBufSize];
   bool ok_;
   bool finished_;
 };

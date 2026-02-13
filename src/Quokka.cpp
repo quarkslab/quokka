@@ -49,24 +49,47 @@ int ExportBinary(const std::string& filename) {
   ExportLayout(&quokka_protobuf);
 
   replace_wait_box("quokka: compressing & writing");
+  QLOG_INFO << "Compressing and writing the file...";
   std::string outfile = filename;
 
   std::fstream file(outfile,
                     std::ios::binary | std::ios::out | std::ios::trunc);
-  if (!file)
+  if (!file) {
+    QLOG_ERROR << absl::StrFormat("Failed to open file %s for writing", outfile);
     return false;
-  
+  }
+
   LzmaStreambuf lzma_buf(file);
   std::ostream lzma_out(&lzma_buf);
-  
-  if (!quokka_protobuf.SerializeToOstream(&lzma_out))
+
+  if (!quokka_protobuf.SerializeToOstream(&lzma_out)) {
+    // Print internal state for debugging
+    QLOG_ERROR << "Failed to serialize protobuf to output stream";
+    QLOG_ERROR << absl::StrFormat("Stream state: good=%d, bad=%d, fail=%d, eof=%d",
+                                  lzma_out.good(), lzma_out.bad(), lzma_out.fail(), lzma_out.eof());
+    QLOG_ERROR << absl::StrFormat("Underlying file state: good=%d, bad=%d, fail=%d",
+                                  file.good(), file.bad(), file.fail());
+
+    // Check protobuf message size to see if it exceeds 2GB limit
+    size_t msg_size = quokka_protobuf.ByteSizeLong();
+    QLOG_INFO << absl::StrFormat("Protobuf message size: %.2f MB", msg_size / (1024.0 * 1024.0));
+    if (msg_size > INT_MAX) {
+      QLOG_ERROR << "Protobuf message exceeds 2GB serialization limit";
+    }
+
     return false;
+  }
   
-  if (!lzma_buf.finish())
+  if (!lzma_buf.finish()) {
+    QLOG_ERROR << "Failed to finalize LZMA stream";
     return false;
-  
-    QLOG_INFO << absl::StrFormat("Compressed %llu bytes -> %llu bytes (%.1f%%)",
-      lzma_buf.total_in(), lzma_buf.total_out(), 100.0 * lzma_buf.total_out() / lzma_buf.total_in());
+  }
+
+  uint64_t in_size = lzma_buf.total_in();
+  uint64_t out_size = lzma_buf.total_out();
+
+  QLOG_INFO << absl::StrFormat("Compressed %llu bytes -> %llu bytes (%.1f%%)",
+    in_size, out_size, (100.0* (in_size - out_size) / in_size));
 
   QLOG_INFO << absl::StrFormat("File %s is written", outfile);
   QLOG_INFO << absl::StrFormat("quokka finished (took %.2fs)",
