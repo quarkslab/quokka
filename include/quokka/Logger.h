@@ -182,6 +182,18 @@ class Logger {
   }
 
   /**
+   * Flush all pending log messages
+   */
+  void Flush() {
+    fflush(stderr);
+    fflush(stdout);
+    if (m_defaultui) {
+      // Force IDA to flush its message buffer
+      refresh_idaview_anyway();
+    }
+  }
+
+  /**
    * Singleton pattern
    * @return An instance to self
    */

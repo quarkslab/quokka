@@ -27,6 +27,7 @@ import logging
 import os
 import pathlib
 from typing import TYPE_CHECKING
+import lzma
 
 import capstone
 import networkx
@@ -100,8 +101,16 @@ class Program(dict):
 
         self.proto: quokka.pb.Quokka = quokka.pb.Quokka()
         self.export_file: pathlib.Path = pathlib.Path(export_file)
-        with open(self.export_file, "rb") as fd:
-            self.proto.ParseFromString(fd.read())
+        try:
+            with lzma.open(self.export_file, "rb") as fd:
+                raw_data = fd.read()
+        except lzma.LZMAError:
+            # try reading it as a plain-bytes Quokka (but should raise version mismatch later)
+            with open(self.export_file, "rb") as fd:
+                raw_data = fd.read()
+
+        self.proto.ParseFromString(raw_data)
+        
 
         # Export mode
         self.mode: ExporterMode = ExporterMode.from_proto(self.proto.exporter_meta.mode)
