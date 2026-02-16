@@ -77,32 +77,6 @@ void HeadIterator::InitAddresses(ea_t address) {
   this->next_unk_addr = next_unknown(address, this->max_ea);
   this->next_head_addr = next_head(address, this->max_ea);
   this->UpdateNextEa();
-
-  this->SetNextChunk(address, false);
-}
-
-void HeadIterator::SetNextChunk(ea_t address, bool skip_current /* = true*/) {
-  func_t* func;
-
-  // Check if there is a chunk starting at provided address
-  if (!skip_current) {
-    func = get_fchunk(address);
-    if (func != nullptr && func->start_ea == address) {
-      this->next_chunk_addr = address;
-      this->next_func_chunk = func;
-      return;
-    }
-  }
-
-  // Find the next chunk, not considering the one at the current address
-  func = get_next_fchunk(address);
-  if (func != nullptr) {
-    this->next_chunk_addr = func->start_ea;
-    this->next_func_chunk = func;
-  } else {
-    this->next_chunk_addr = BADADDR;
-    this->next_func_chunk = nullptr;
-  }
 }
 
 void HeadIterator::StartLayout(ea_t start_addr, State current_state,
@@ -194,10 +168,6 @@ void HeadIterator::Iterate() {
   this->current_ea = this->next_ea;
   this->UpdateNextEa();
   this->item_size = uint64_t(get_item_size(this->current_ea));
-
-  // Update the next chunk address if we already passed it
-  if (this->next_chunk_addr < this->current_ea)
-    this->SetNextChunk(this->current_ea);
 
   /* Reset instruction */
   if (this->state != CODE) {
@@ -366,6 +336,12 @@ void HeadIterator::Scan(
             addr < range_it->second);
   };
 
+  if constexpr (LOCAL_TRACE) {
+    QLOGD << "Excluded ranges";
+    for (const auto& r : exclude_ranges)
+      QLOGD << absl::StrFormat("0x%08x - 0x%08x", r.first, r.second);
+  }
+
   while (true) {
     if constexpr (LOCAL_TRACE)
       this->DebugPrint();
@@ -374,6 +350,8 @@ void HeadIterator::Scan(
     // We still have to take into account the skipped range for the layout
     if (is_excluded(this->current_ea)) {
       this->AddLayoutSize(range_it->second - range_it->first);
+      this->InitAddresses(range_it->second);
+      this->next_ea = range_it->second;
       goto iterate;
     }
 
