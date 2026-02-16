@@ -127,6 +127,9 @@ concept StorageLike = requires(const StorageT& storage) {
 
 template <std::derived_from<ProtoHelper> P, StorageLike<P> StorageT>
 class CommonSortableBucket {
+ private:
+  bool sorted = false;
+
  protected:
   /**
    * Internal storage that will be shared between container and views
@@ -149,11 +152,20 @@ class CommonSortableBucket {
    *
    * @return
    */
-  void freeze() {
+  void Freeze() {
     if (this->frozen)
       return;
 
     this->frozen = true;
+  }
+
+  void Sort() {
+    if (this->sorted)
+      return;
+
+    if (!this->frozen)
+      this->Freeze();
+
     storage->sorted_view.clear();
     storage->sorted_view.reserve(this->size());
     for (const auto& e : storage->bucket_values())
@@ -162,6 +174,7 @@ class CommonSortableBucket {
     std::sort(
         storage->sorted_view.begin(), storage->sorted_view.end(),
         [](const P* a, const P* b) { return a->ref_count > b->ref_count; });
+    this->sorted = true;
   }
 
   /**

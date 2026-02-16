@@ -139,7 +139,7 @@ int ExportSegments() {
   QLOG_INFO << absl::StrFormat("Segments exported (took: %.2fs)",
                                timer.ElapsedSeconds(absl::Now()));
 
-  segments.freeze();  // Freezing guarantees stable pointers
+  segments.Freeze();  // Freezing guarantees stable pointers
 
   return 0;
 }
