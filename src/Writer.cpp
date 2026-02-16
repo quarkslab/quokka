@@ -30,6 +30,27 @@
 
 namespace quokka {
 
+/**
+ * Convert a function type to the proto associated type
+ * @param func_type Type to convert
+ * @return Converted type
+ */
+static quokka::Quokka::Function::FunctionType ToProtoFuncType(
+    FunctionType func_type) {
+  switch (func_type) {
+    case TYPE_NORMAL:
+      return quokka::Quokka::Function::TYPE_NORMAL;
+    case TYPE_IMPORTED:
+      return quokka::Quokka::Function::TYPE_IMPORTED;
+    case TYPE_LIBRARY:
+      return quokka::Quokka::Function::TYPE_LIBRARY;
+    case TYPE_THUNK:
+      return quokka::Quokka::Function::TYPE_THUNK;
+    default:
+      return quokka::Quokka::Function::TYPE_INVALID;
+  }
+}
+
 // void WriteMnemonic(quokka::Quokka* proto, BucketNew<Mnemonic>& mnemonics) {
 //   proto->mutable_mnemonics()->Reserve(static_cast<int>(mnemonics.size()));
 //   for (const auto& [ref_count, mnemonic] : mnemonics.SortByFrequency()) {
@@ -216,22 +237,6 @@ namespace quokka {
 //   QLOGD << absl::StrFormat("Written %d fake chunks", fake_chunks);
 // }
 
-// quokka::Quokka::Function::FunctionType ToProtoFuncType(FunctionType
-// func_type) {
-//   switch (func_type) {
-//     case TYPE_NORMAL:
-//       return quokka::Quokka::Function::TYPE_NORMAL;
-//     case TYPE_IMPORTED:
-//       return quokka::Quokka::Function::TYPE_IMPORTED;
-//     case TYPE_LIBRARY:
-//       return quokka::Quokka::Function::TYPE_LIBRARY;
-//     case TYPE_THUNK:
-//       return quokka::Quokka::Function::TYPE_THUNK;
-//     default:
-//       return quokka::Quokka::Function::TYPE_INVALID;
-//   }
-// }
-
 // quokka::Quokka::Function::Position::PositionType ToProtoPositionType(
 //     PositionType position_type) {
 //   switch (position_type) {
@@ -251,54 +256,55 @@ namespace quokka {
 //   proto_position->set_y(position.y);
 // }
 
-// void WriteFunctions(quokka::Quokka* proto, std::vector<Function>& func_list,
-//                     const FuncChunkCollection& chunk_map) {
-//   uint64_t base_addr = proto->meta().base_addr();
+void WriteFunctions(quokka::Quokka* proto,
+                    const std::vector<Function>& functions) {
+  // uint64_t base_addr = proto->meta().base_addr();
 
-//   proto->mutable_functions()->Reserve(static_cast<int>(func_list.size()));
-//   for (auto& function : func_list) {
-//     function.proto_index = proto->functions_size();
-//     quokka::Quokka::Function* proto_func = proto->add_functions();
-//     proto_func->set_name(function.name);
-//     if (!function.mangled_name.empty())
-//       proto_func->set_mangled_name(function.mangled_name);
+  proto->mutable_functions()->Reserve(static_cast<int>(functions.size()));
+  for (const auto& function : functions) {
+    quokka::Quokka::Function* proto_func = proto->add_functions();
+    proto_func->set_name(function.name);
+    if (!function.mangled_name.empty())
+      proto_func->set_mangled_name(function.mangled_name);
 
-// if (!function.decompiled_code.empty())
-//   proto_func->set_decompiled_code(function.decompiled_code);
+    if (!function.decompiled_code.empty())
+      proto_func->set_decompiled_code(function.decompiled_code);
 
-//     assert(function.start_addr - base_addr >= 0 &&
-//            "Function address offset is negative");
-//     proto_func->set_offset(function.start_addr - base_addr);
+    assert(function.segment != nullptr);
+    proto_func->set_segment_index(function.segment->proto_index);
+    // assert(function.start_addr - base_addr >= 0 &&
+    //        "Function address offset is negative");
+    //   proto_func->set_offset(function.start_addr - base_addr);
 
-//     proto_func->set_function_type(ToProtoFuncType(function.func_type));
+    proto_func->set_function_type(ToProtoFuncType(function.func_type));
 
-//     proto_func->mutable_function_chunks_index()->Reserve(
-//         static_cast<int>(function.chunks_index.size()));
-//     for (const auto& [ida_idx, chunk_p] : function.chunks_index) {
-//       proto_func->add_function_chunks_index(chunk_p->proto_index);
-//     }
+    //   proto_func->mutable_function_chunks_index()->Reserve(
+    //       static_cast<int>(function.chunks_index.size()));
+    //   for (const auto& [ida_idx, chunk_p] : function.chunks_index) {
+    //     proto_func->add_function_chunks_index(chunk_p->proto_index);
+    //   }
 
-//     for (const auto& chunk_edge : function.edges) {
-//       quokka::Quokka::Edge* proto_edge = proto_func->add_chunk_edges();
-//       WriteBlockIdentifier(proto_edge->mutable_source(),
-//                            chunk_edge.source.block_idx,
-//                            chunk_edge.source.chunk->proto_index);
-//       WriteBlockIdentifier(proto_edge->mutable_destination(),
-//                            chunk_edge.destination.block_idx,
-//                            chunk_edge.destination.chunk->proto_index);
-//       proto_edge->set_edge_type(ToProtoEdgeType(chunk_edge.edge_type));
-//     }
+    //   for (const auto& chunk_edge : function.edges) {
+    //     quokka::Quokka::Edge* proto_edge = proto_func->add_chunk_edges();
+    //     WriteBlockIdentifier(proto_edge->mutable_source(),
+    //                          chunk_edge.source.block_idx,
+    //                          chunk_edge.source.chunk->proto_index);
+    //     WriteBlockIdentifier(proto_edge->mutable_destination(),
+    //                          chunk_edge.destination.block_idx,
+    //                          chunk_edge.destination.chunk->proto_index);
+    //     proto_edge->set_edge_type(ToProtoEdgeType(chunk_edge.edge_type));
+    //   }
 
-//     for (const auto& node_pair : function.node_position) {
-//       quokka::Quokka::Function::BlockPosition* block_position =
-//           proto_func->add_block_positions();
-//       WriteBlockIdentifier(block_position->mutable_block_id(),
-//                            node_pair.second.block_idx,
-//                            node_pair.second.chunk->proto_index);
-//       WritePosition(block_position->mutable_position(), node_pair.first);
-//     }
-//   }
-// }
+    //   for (const auto& node_pair : function.node_position) {
+    //     quokka::Quokka::Function::BlockPosition* block_position =
+    //         proto_func->add_block_positions();
+    //     WriteBlockIdentifier(block_position->mutable_block_id(),
+    //                          node_pair.second.block_idx,
+    //                          node_pair.second.chunk->proto_index);
+    //     WritePosition(block_position->mutable_position(), node_pair.first);
+    //   }
+  }
+}
 
 // quokka::Quokka::Reference::ReferenceType ToProtoReferenceType(
 //     ReferenceType ref_type) {
@@ -692,7 +698,7 @@ quokka::Quokka::Segment::Type ToProtoSegmentType(SegmentType type) {
 
 void WriteSegments(quokka::Quokka* proto) {
   Segments& segments = Segments::GetInstance();
-  segments.freeze();
+  segments.Sort();
 
   proto->mutable_segments()->Reserve(segments.size());
 

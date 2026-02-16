@@ -86,14 +86,6 @@ enum ExporterMode : short;
 
 // /**
 //  * Convert a function type to the proto associated type
-//  * @param func_type Type to convert
-//  * @return Converted type
-//  */
-// quokka::Quokka::Function::FunctionType ToProtoFuncType(FunctionType
-// func_type);
-
-// /**
-//  * Convert a function type to the proto associated type
 //  * @param position_type Type to convert
 //  * @return Converted type
 //  */
@@ -282,15 +274,14 @@ quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode);
 // void WritePosition(quokka::Quokka::Function::Position* proto_position,
 //                    const Position& position);
 
-// /**
-//  * Write the functions
-//  *
-//  * @param proto Protobuf main object
-//  * @param func_list Function collections
-//  * @param chunk_map Chunks collection
-//  */
-// void WriteFunctions(quokka::Quokka* proto, std::vector<Function>& func_list,
-//                     const FuncChunkCollection& chunk_map);
+/**
+ * Write the functions
+ *
+ * @param proto Protobuf main object
+ * @param functions Function collections
+ */
+void WriteFunctions(quokka::Quokka* proto,
+                    const std::vector<Function>& functions);
 
 // /**
 //  * Write location element
