@@ -119,6 +119,32 @@ message Quokka {
     bool is_thumb = 4;
   }
 
+  message Block {
+    enum BlockType {
+      BLOCK_TYPE_NORMAL = 0;
+      BLOCK_TYPE_INDJUMP = 1;
+      BLOCK_TYPE_RET = 2;
+      BLOCK_TYPE_NORET = 3;
+      BLOCK_TYPE_CNDRET = 4;
+      BLOCK_TYPE_ENORET = 5;
+      BLOCK_TYPE_EXTERN = 6;
+      BLOCK_TYPE_ERROR = 7;
+      BLOCK_TYPE_FAKE = 8;
+    }
+
+    uint32 segment_index = 1;
+    uint32 file_offset = 2;
+    BlockType block_type = 3;
+
+    // TODO optimize for more than 4 billions 1 byte instructions?
+    repeated uint64 instruction_index = 4;
+
+    uint32 size = 5;  // The size in terms of bytes
+
+    // Whether the first instruction of the BB is in thumb mode
+    bool is_thumb = 6;
+  }
+
   message Function {
     message Edge {
       enum EdgeType {
@@ -133,32 +159,6 @@ message Quokka {
       uint32 destination = 3;  // Block index destination
 
       bool user_defined = 4;
-    }
-
-    message Block {
-      enum BlockType {
-        BLOCK_TYPE_NORMAL = 0;
-        BLOCK_TYPE_INDJUMP = 1;
-        BLOCK_TYPE_RET = 2;
-        BLOCK_TYPE_NORET = 3;
-        BLOCK_TYPE_CNDRET = 4;
-        BLOCK_TYPE_ENORET = 5;
-        BLOCK_TYPE_EXTERN = 6;
-        BLOCK_TYPE_ERROR = 7;
-        BLOCK_TYPE_FAKE = 8;
-      }
-
-      uint32 segment_index = 1;
-      uint32 file_offset = 2;
-      BlockType block_type = 3;
-
-      // TODO optimize for more than 4 billions 1 byte instructions?
-      repeated uint64 instruction_index = 4;
-
-      uint32 size = 5;  // The size in terms of bytes
-
-      // Whether the first instruction of the BB is in thumb mode
-      bool is_thumb = 6;
     }
 
     enum FunctionType {
@@ -186,15 +186,18 @@ message Quokka {
     }
 
     uint32 segment_index = 1;
-    uint32 file_offset = 2;
+    oneof offset_type {
+      uint64 file_offset = 2;
+      bool no_offset = 3;
+    }
 
-    repeated Block blocks = 3;
-    repeated Edge edges = 4;
+    repeated Block blocks = 4;
+    repeated Edge edges = 5;
 
-    FunctionType function_type = 5;
-    string name = 6;
+    FunctionType function_type = 6;
+    string name = 7;
 
-    repeated BlockPosition block_positions = 7;
+    repeated BlockPosition block_positions = 8;
 
     // Optional mangled name, it is non-null only if different from `name`
     string mangled_name = 7;
@@ -235,6 +238,7 @@ message Quokka {
     TYPE_POINTER = 11;
     TYPE_ENUM = 12;
     TYPE_UNION = 13;
+    TYPE_ARRAY = 14;
   }
 
   message Data {
@@ -415,4 +419,6 @@ message Quokka {
   repeated Comment comments = 14;
 
   repeated Segment segments = 15;
+
+  repeated Block orphaned_blocks = 16;
 }
