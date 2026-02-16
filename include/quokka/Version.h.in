@@ -28,25 +28,30 @@ namespace quokka {
  * Get the version string (format: "MAJOR.MINOR.PATCH")
  * @return A formatted version string
  */
-constexpr std::string_view GetVersion();
+constexpr std::string_view GetVersion() {
+  using namespace std::string_view_literals;
+  return "@quokka_VERSION@"sv;
+}
 
 /**
  * Get version major
  * @return Version major
  */
-constexpr unsigned int GetVersionMajor();
+
+constexpr unsigned int GetVersionMajor() { return @quokka_VERSION_MAJOR@+0; }
 
 /**
  * Get version minor
  * @return Version minor
  */
-constexpr unsigned int GetVersionMinor();
+
+constexpr unsigned int GetVersionMinor() { return @quokka_VERSION_MINOR@+0; }
 
 /**
  * Get version patch
  * @return Version patch
  */
-constexpr unsigned int GetVersionPatch();
+constexpr unsigned int GetVersionPatch() { return @quokka_VERSION_PATCH@+0; }
 
 }  // namespace quokka
 
