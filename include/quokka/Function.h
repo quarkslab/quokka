@@ -344,7 +344,7 @@ class FuncChunk {
  *
  * A function is composed at least from one FunctionChunk.
  */
-class Function : public ProtoHelper {
+class Function {
  private:
   void InitFromAddr(ea_t addr);
   void ExportBody(func_t* func_p);
