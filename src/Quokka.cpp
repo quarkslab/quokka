@@ -61,15 +61,16 @@ int ExportBinary(const std::string& filename) {
   QLOGI << absl::StrFormat("%d functions exported successfully (took: %.2fs)",
                            functions.size(), timer.ElapsedSecondsAndReset());
 
+  // Export layout and remaining data through linear scanning
+  replace_wait_box("quokka: linear scan in progress");
+  ExportLinearScan(&quokka_protobuf, std::move(ranges));
+
   // Write on the protobuf
+  timer.Reset();
   QLOGI << "Writing functions in the protobuf message...";
   WriteFunctions(&quokka_protobuf, std::move(functions));
   QLOGI << absl::StrFormat("Protobuf message populated (took: %.2fs)",
                            timer.ElapsedSecondsAndReset());
-
-  // Export layout and remaining data through linear scanning
-  replace_wait_box("quokka: linear scan in progress");
-  ExportLinearScan(&quokka_protobuf, ranges);
 
   replace_wait_box("quokka: writing on the wire");
   std::string outfile = filename;
