@@ -135,44 +135,6 @@ void Metadata::SetFileName() {
   this->file_name = std::string(root_filename);
 }
 
-void Metadata::SetCompiler() {
-  comp_t compiler_id = inf_get_cc_id();
-
-  if (compiler_id & COMP_UNSURE) {
-    this->compiler = COMPILER_UNK;
-    return;
-  }
-  switch (compiler_id) {
-    case COMP_GNU:  // Visual C++
-      this->compiler = COMPILER_GCC;
-      break;
-
-    case COMP_MS:  // Visual C++
-      this->compiler = COMPILER_MS;
-      break;
-
-    case COMP_VISAGE:  // Visual C++
-      this->compiler = COMPILER_VISAGE;
-      break;
-
-    case COMP_BC:  // Borland C++
-      this->compiler = COMPILER_BC;
-      break;
-
-    case COMP_BP:  // Delphi
-      this->compiler = COMPILER_BP;
-      break;
-
-    case COMP_WATCOM:  // Watcom C++
-      this->compiler = COMPILER_WATCOM;
-      break;
-
-    default:
-      this->compiler = COMPILER_UNK;
-      break;
-  }
-}
-
 void Metadata::SetBaseAddr() {
   this->base_addr = get_imagebase();
   assert(this->base_addr != BADADDR && "Problem with the base address");
@@ -199,7 +161,6 @@ int ExportMeta(quokka::Quokka* proto) {
   metadata.SetEndianness();
   metadata.SetAddressSize();
   metadata.SetFileName();
-  metadata.SetCompiler();
   metadata.SetCallingConvention();
   metadata.SetBaseAddr();
   metadata.SetIdaVersion();
