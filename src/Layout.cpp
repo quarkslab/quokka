@@ -111,7 +111,7 @@ void HeadIterator::StartLayout(ea_t start_addr, State current_state,
 }
 
 void HeadIterator::AddLayoutSize(size_t size /* = 0 */) {
-  assert(this->current_ea == BADADDR);  // should never happen
+  assert(this->current_ea != BADADDR);  // should never happen
 
   if (this->state == GAP) {
     assert(this->current_layout.size == 0 && "Problem with gap size");
