@@ -371,7 +371,8 @@ ExportFunctions() {
     if (import_manager.IsImport(func->start_ea))
       continue;
 
-    functions.emplace_back(func);
+    // Create the function and increase the ref counter of the segment
+    functions.emplace_back(func).segment->ref_count++;
 
     // TODO
     if (export_instructions) {
@@ -392,7 +393,7 @@ ExportFunctions() {
 
   // Export imported functions
   for (auto const& [address, import] : import_manager.imports) {
-    functions.emplace_back(address, import.name);
+    functions.emplace_back(address, import.name).segment->ref_count++;
     chunks.emplace_back(address, address + get_item_size(address));
   }
 
