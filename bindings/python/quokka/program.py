@@ -39,6 +39,7 @@ import quokka.backends
 from quokka.types import (
     AddressT,
     Dict,
+    Disassembler,
     Endianness,
     ExporterMode,
     FunctionType,
@@ -142,7 +143,11 @@ class Program(dict):
 
         self.endianness: Endianness = Endianness.from_proto(self.proto.meta.endianess)
 
+        # Get disassembly backend
+        self.disassembler: Disassembler = Disassembler.from_proto(self.proto.meta.backend.name) 
+        self.disassembler_version: str = self.proto.meta.backend.version
         self.decompiled_activated: bool = self.proto.meta.decompilation_activated
+
         self.calling_convention: CallingConvention = CallingConvention.from_proto(self.proto.meta.calling_convention)
 
         self.chunks: Dict[int, Union[quokka.Chunk, quokka.SuperChunk]] = {}

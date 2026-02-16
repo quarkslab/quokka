@@ -513,25 +513,6 @@ quokka::Quokka::Meta::Hash::HashType ToProtoHashType(HashType hash_type) {
   }
 }
 
-quokka::Quokka::Meta::Compiler ToProtoCompiler(Compiler compiler_type) {
-  switch (compiler_type) {
-    case COMPILER_GCC:
-      return quokka::Quokka::Meta::COMP_GCC;
-    case COMPILER_MS:
-      return quokka::Quokka::Meta::COMP_MS;
-    case COMPILER_BC:
-      return quokka::Quokka::Meta::COMP_BC;
-    case COMPILER_WATCOM:
-      return quokka::Quokka::Meta::COMP_WATCOM;
-    case COMPILER_VISAGE:
-      return quokka::Quokka::Meta::COMP_VISAGE;
-    case COMPILER_BP:
-      return quokka::Quokka::Meta::COMP_BP;
-    default:
-      return quokka::Quokka::Meta::COMP_UNK;
-  }
-}
-
 quokka::Quokka::CallingConvention ToProtoCallingConvention(
     CallingConvention cc) {
   switch (cc) {
@@ -604,7 +585,6 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
 
   proto_meta->set_isa(ToProtoIsa(metadata.proc_name));
 
-  proto_meta->set_compiler(ToProtoCompiler(metadata.compiler));
   proto_meta->set_calling_convention(
       ToProtoCallingConvention(metadata.calling_convention));
 
@@ -617,7 +597,7 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
   proto_meta->set_address_size(ToProtoAddressSize(metadata.address_size));
 
   auto* proto_backend = proto_meta->mutable_backend();
-  proto_backend->set_name(BACKEND_NAME);
+  proto_backend->set_name(quokka::Quokka::Meta::Backend::DISASS_IDA);
   proto_backend->set_version(metadata.ida_version);
   proto_meta->set_decompilation_activated(metadata.decompilation_activated);
 }

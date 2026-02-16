@@ -357,3 +357,24 @@ class CallingConvention(enum.Enum):
             QuokkaPb.CC_GOLANG: CallingConvention.GOLANG,
             QuokkaPb.CC_GOSTK: CallingConvention.GOSTK,
         }[proto_cc]
+
+class Disassembler(enum.Enum):
+    """Disassembler"""
+
+    UNKNOWN = enum.auto()
+    IDA = enum.auto()
+    GHIDRA = enum.auto()
+    BINARY_NINJA = enum.auto()
+
+    @staticmethod
+    def from_proto(
+        proto_disass: "QuokkaPb.Meta.Backend.Disassembler",
+    ) -> "Disassembler":
+        """Convert the protobuf value into this enumeration"""
+        mapping = {
+            QuokkaPb.Meta.Backend.Disassembler.DISASS_IDA: Disassembler.IDA,
+            QuokkaPb.Meta.Backend.Disassembler.DISASS_GHIDRA: Disassembler.GHIDRA,
+            QuokkaPb.Meta.Backend.Disassembler.DISASS_BINARY_NINJA: Disassembler.BINARY_NINJA,
+        }
+
+        return mapping.get(proto_disass, Disassembler.UNKNOWN)

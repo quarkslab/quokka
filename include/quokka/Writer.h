@@ -138,13 +138,6 @@ quokka::Quokka::AddressSize ToProtoAddressSize(AddressSize addr_size);
 
 /**
  * Convert a function type to the proto associated type
- * @param compiler_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Meta::Compiler ToProtoCompiler(Compiler compiler_type);
-
-/**
- * Convert a function type to the proto associated type
  * @param cc Type to convert
  * @return Converted type
  */

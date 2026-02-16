@@ -59,7 +59,13 @@ message Quokka {
     }
 
     message Backend {
-      string name = 1;
+      enum Disassembler {
+        DISASS_UNKNOWN = 0;
+        DISASS_IDA = 1;
+        DISASS_GHIDRA = 2;
+        DISASS_BINARY_NINJA = 3;
+      }
+      Disassembler name = 1;
 
       // The version is stored as a string but it might have different meaning
       // depending on the actual backend used.
@@ -195,10 +201,10 @@ message Quokka {
     string mangled_name = 7;
 
     // Calling convention of the function
-    optional CallingConvention calling_convention = 7;
+    optional CallingConvention calling_convention = 10;
 
     // Optional decompiled code as a string
-    string decompiled_code = 8;
+    string decompiled_code = 11;
   }
 
   message Layout {
