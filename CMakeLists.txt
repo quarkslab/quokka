@@ -75,9 +75,16 @@ if (IDA_VERSION)
     # Checkout the correct tag inside the submodule
     execute_process(
         COMMAND git -C ${IDA_SDK_PATH} fetch --tags
-        COMMAND git -C ${IDA_SDK_PATH} checkout v${IDA_VERSION}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         RESULT_VARIABLE GIT_RESULT
+    )
+    if (NOT GIT_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to fetch new tags from IDA SDK")
+    endif()
+    execute_process(
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE GIT_RESULT
+        COMMAND git -C ${IDA_SDK_PATH} checkout v${IDA_VERSION}
     )
     if (NOT GIT_RESULT EQUAL 0)
         message(FATAL_ERROR "Failed to checkout IDA SDK version ${IDA_VERSION}")
