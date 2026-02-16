@@ -20,7 +20,9 @@
 #ifndef FILEMETADATA_H
 #define FILEMETADATA_H
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
 #include <ida.hpp>
 #include <kernwin.hpp>
@@ -36,6 +38,13 @@
 #include "Windows.h"
 
 namespace quokka {
+
+namespace {
+  using namespace std::string_view_literals;
+
+  // Protobuf backend codename
+  constexpr const std::string_view BACKEND_NAME = "IDA"sv;
+}  // namespace quokka
 
 /**
  * Processor types
@@ -142,7 +151,7 @@ class Metadata {
   Compiler compiler = COMPILER_UNK;               ///< Detected processor
   CallingConvention calling_convention = CC_UNK;  ///< Detected calling conv
 
-  int ida_version = 0;  ///< Ida version for this export
+  std::string ida_version;  ///< Stringified Ida version for this export
 
   bool decompilation_activated = false;  ///< Whether decompilation was activated during export
 

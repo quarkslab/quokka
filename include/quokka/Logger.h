@@ -21,6 +21,7 @@
 #define QUOKKA_LOGGER_H
 
 #include <ctime>
+#include <string_view>
 #include <utility>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -75,7 +76,7 @@ class Record {
    * @param data Message to add
    * @return A reference of self
    */
-  Record& operator<<(const std::string& data) {
+  Record& operator<<(const std::string_view& data) {
     m_message.append(data);
     return *this;
   }

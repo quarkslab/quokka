@@ -32,7 +32,6 @@
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
 // clang-format on
-
 #include <pro.h>
 #include <bytes.hpp>
 #include <kernwin.hpp>
@@ -40,10 +39,10 @@
 #include <typeinf.hpp>
 
 // #include "absl/hash/hash.h"
-#include "absl/strings/str_format.h"
+// #include "absl/strings/str_format.h"
 
 #include "DataType.h"
-#include "ProtoHelper.h"  // Kept for ProtoHelper
+#include "ProtoHelper.h"
 #include "Segment.h"
 #include "Util.h"
 
@@ -65,6 +64,20 @@ class Data : public ProtoHelper {
   std::string name;  ///< If applicable, the name of the data
   std::optional<RefTypeT>
       ref_type;  ///< Referenced type when the data type is enum or composite
+
+  /**
+   * Constructor
+   *
+   * @param addr_ Address where the data has been found
+   * @param data_type_ Type of the data
+   * @param size_ Size of the data
+   * @param segment_ IDA segment
+   */
+  Data(ea_t addr_, DataType data_type_, uint64_t size_, const Segment* segment_)
+      : addr(addr_), type(data_type_), size(size_), segment(segment_) {
+    if (HasName(false))
+      this->SetName();
+  }
 
   template <typename T>
   void SetReferenceTypeImpl(RefCounter<T> type) {
@@ -89,49 +102,16 @@ class Data : public ProtoHelper {
   ea_t addr = BADADDR;       ///< Address attached to the data
   DataType type = TYPE_UNK;  ///< Data type
   uint64_t size;  ///< Size of the data (not always redundant for certain types)
-  RefCounter<Segment> segment;  ///< Reference to the segment
+  const Segment* segment;  ///< IDA segment. It has to outlive Data
 
   /**
-   * Constructor
+   * Static method to build a Data object
    *
-   * @param addr_ Address where the data has been found
-   * @param data_type_ Type of the data
-   * @param size_ Size of the data
+   * @param addr The address at which the data is located
+   * @param size The size of the data object
+   * @return The newly built Data object
    */
-  Data(ea_t addr_, DataType data_type_, uint64_t size_,
-       RefCounter<Segment> segment_)
-      : addr(addr_), type(data_type_), size(size_), segment(segment_) {
-    if (HasName(false))
-      this->SetName();
-  }
-
-  Data(const Data& data)
-      : addr(data.addr),
-        type(data.type),
-        size(data.size),
-        segment(data.segment) {}
-
-  Data(Data&& data)
-      : addr(std::exchange(data.addr, 0)),
-        type(std::exchange(data.type, TYPE_UNK)),
-        size(std::exchange(data.size, 0)),
-        segment(std::move(data.segment)) {}
-
-  Data& operator=(const Data& data) {
-    addr = data.addr;
-    type = data.type;
-    size = data.size;
-    segment = data.segment;
-    return *this;
-  }
-
-  Data& operator=(Data&& data) {
-    addr = std::exchange(data.addr, 0);
-    type = std::exchange(data.type, TYPE_UNK);
-    size = std::exchange(data.size, 0);
-    segment = std::move(data.segment);
-    return *this;
-  }
+  static Data Make(ea_t addr, uint64_t size);
 
   /**
    * Accessor for the name
@@ -186,8 +166,6 @@ class Data : public ProtoHelper {
     return H::combine(std::move(h), m.addr, m.type, m.size);
   }
 };
-
-Data MakeData(ea_t addr, uint64_t size);
 
 }  // namespace quokka
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cassert>
 #include <cstdint>
 #include <stdexcept>
 
@@ -57,7 +58,7 @@ bool Data::IsInitialized() const {
   return has_value(get_full_flags(this->addr));
 }
 
-Data MakeData(ea_t addr, uint64_t size) {
+Data Data::Make(ea_t addr, uint64_t size) {
   DataType data_type;
   tinfo_t tinf;
   // Try to obtain the tinfo descriptor
@@ -69,15 +70,18 @@ Data MakeData(ea_t addr, uint64_t size) {
   const Segments& segments = Segments::GetInstance();
 
   segment_t* ida_seg = getseg(addr);
-  const auto& it = segments.get_by_id(ida_seg->sel);
-  if (it == segments.end()) {
-    QLOGE << absl::StrFormat(
-        "Data at address 0x%x doesn't belong to any segment", addr);
-    throw new std::runtime_error(absl::StrFormat(
+  if (!ida_seg ||
+      !segments.contains(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea)) {
+    throw std::runtime_error(absl::StrFormat(
         "Data at address 0x%x doesn't belong to any segment", addr));
   }
 
-  Data data(addr, data_type, size, *it);
+  // Address must always be inside the boundaries of the segment
+  const auto& segment =
+      segments.get_exact(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea);
+  assert(addr >= segment.start_addr && addr < segment.end_addr);
+
+  Data data(addr - segment.start_addr, data_type, size, &segment);
 
   const CompositeTypes& composite_types = CompositeTypes::GetInstance();
 
@@ -105,6 +109,9 @@ Data MakeData(ea_t addr, uint64_t size) {
     default:
       break;
   }
+
+  // Increment the ref-counter of the segment
+  segment.ref_count++;
 
   return data;
 }

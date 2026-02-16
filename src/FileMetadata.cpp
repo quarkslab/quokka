@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "quokka/FileMetadata.h"
+#include <string>
 
 #include "quokka/Writer.h"
 #include "quokka/Settings.h"
@@ -177,7 +178,9 @@ void Metadata::SetBaseAddr() {
   assert(this->base_addr != BADADDR && "Problem with the base address");
 }
 
-void Metadata::SetIdaVersion() { this->ida_version = IDA_SDK_VERSION; }
+void Metadata::SetIdaVersion() {
+  this->ida_version = std::to_string(IDA_SDK_VERSION);
+}
 
 
 void Metadata::SetDecompilationActivated(bool activated) {

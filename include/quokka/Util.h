@@ -22,11 +22,14 @@
 
 #include <concepts>
 #include <cstdint>
+#include <iterator>
 #include <memory>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
@@ -38,9 +41,7 @@
 #include <ua.hpp>
 
 #include "absl/container/btree_map.h"
-#include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
-#include "absl/hash/hash.h"
 #include "absl/strings/str_cat.h"
 #include "absl/time/clock.h"
 
@@ -56,133 +57,6 @@ concept IsOneOf = requires(const Var& var) {
   []<typename... VarArgsT>
     requires(std::same_as<std::decay_t<T>, VarArgsT> || ...)
   (const std::variant<VarArgsT...>) {}(var);
-};
-
-/**
- * Comparer struct
- * @tparam T A generic type
- */
-template <typename T>
-struct Comparer {
-  /**
-   * Compare the two shared pointed elements by looking at their pointee
-   * objects
-   * @param a First element
-   * @param b Second element
-   * @return Boolean
-   */
-  bool operator()(const std::shared_ptr<T>& a,
-                  const std::shared_ptr<T>& b) const {
-    return *a == *b;
-  }
-};
-
-/**
- * Hasher
- * @tparam T Generic type (must implement hashable)
- */
-template <typename T>
-struct Hasher {
-  /**
-   * Retrieve the hash of element
-   * @param elem Element to hash
-   * @return
-   */
-  size_t operator()(const std::shared_ptr<T>& elem) const {
-    return absl::Hash<T>()(*elem);
-  }
-};
-
-/**
- * ---------------------------------------------
- * quokka::BucketNew
- * ---------------------------------------------
- * Bucket representation
- *
- * A bucket is a deduplicated container where every element is only stored
- * once and everytime a new element already existing is added, the reference
- * count is incremented.
- *
- * @tparam P A descendant of ProtoHelper type
- */
-template <typename P>
-class BucketNew {
- private:
-  using custom_set =
-      absl::flat_hash_set<std::shared_ptr<P>, Hasher<P>, Comparer<P>>;
-
-  /**
-   * The bucket where elements are kept
-   */
-  custom_set bucket;
-
- public:
-  using iterator = typename custom_set::iterator;
-  using const_iterator = typename custom_set::const_iterator;
-
-  /**
-   * Add P to the bucket
-   *
-   * This creates P if it does not exists or increment the reference counter.
-   *
-   * @tparam Args Arguments
-   * @param args arguments
-   * @return A pointer to P
-   */
-  template <typename... Args>
-  std::shared_ptr<P> emplace(Args&&... args) {
-    static_assert(std::is_base_of<ProtoHelper, P>::value,
-                  "P must inherit from ProtoHelper");
-    auto [it, result] =
-        bucket.emplace(std::make_shared<P>(std::forward<Args>(args)...));
-    (*it)->ref_count++;
-    return *it;
-  }
-
-  /* Iterators proxy */
-  iterator begin() { return bucket.begin(); }
-  iterator end() { return bucket.end(); }
-  [[nodiscard]] const_iterator begin() const { return bucket.begin(); }
-  [[nodiscard]] const_iterator end() const { return bucket.end(); }
-
-  /**
-   * Size proxy
-   * @return Size of the bucket
-   */
-  [[nodiscard]] size_t size() const { return bucket.size(); }
-
-  using frequency_map =
-      absl::btree_multimap<uint64_t, std::shared_ptr<P>, std::greater<>>;
-
-  /**
-   * Sort the element in the bucket by frequency
-   *
-   * This is used to retrieve first the most common elements.
-   *
-   * @return A mapping between the reference count and a pointer to its
-   * element
-   */
-  [[nodiscard]] frequency_map SortByFrequency() const {
-    frequency_map ordered_map;
-    // ordered_map.reserve(bucket.size());
-    for (auto const element : bucket) {
-      ordered_map.emplace(element->ref_count, element);
-    }
-
-    return ordered_map;
-  }
-
-  /**
-   * Proxy to clear the bucket
-   */
-  void clear() { this->bucket.clear(); }
-
-  /**
-   * Remove an element from the bucket
-   *
-   * @param key Element to remove
-   */
-  void erase(const std::shared_ptr<P>& key) { this->bucket.erase(key); }
 };
 
 /**

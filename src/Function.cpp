@@ -12,16 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Function.h"
+#include <algorithm>
+#include <stdexcept>
+
+// clang-format off: Compatibility.h must come before ida headers
+#include "bytes.hpp"
+#include "quokka/Compatibility.h"
+// clang-format on
+#include <pro.h>
+
+#include "absl/strings/str_format.h"
 
 #include "quokka/Block.h"
 #include "quokka/Comment.h"
+#include "quokka/DataType.h"
+#include "quokka/Function.h"
 #include "quokka/Imports.h"
-#include "quokka/Reference.h"
+// #include "quokka/Reference.h"
+#include "quokka/Logger.h"
+#include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 
 namespace quokka {
+
+static EdgeType GetEdgeType(size_t out_degree, const Block& src_block,
+                            const Block& dst_block) {
+  switch (out_degree) {
+    case 0:  // No outgoing edges (end of function)
+      return EdgeType::EDGE_UNK;
+    case 1:  // 1 outgoing edge: unconditional jump
+      return EdgeType::TYPE_UNCONDITIONAL;
+    case 2:  // 2 edges -> condition
+      return src_block.end_addr == dst_block.start_addr ? EdgeType::TYPE_FALSE
+                                                        : EdgeType::TYPE_TRUE;
+    default:  // 2+ edges -> switch
+      return EdgeType::TYPE_SWITCH;
+  }
+}
 
 ChunkEdge CreateChunkEdge(EdgeType edge_type,
                           std::shared_ptr<FuncChunk> source_chunk,
@@ -37,12 +65,12 @@ ChunkEdge CreateChunkEdge(EdgeType edge_type,
   return chunk_edge;
 }
 
-FuncChunk::FuncChunk(ea_t start, func_t* func) {
-  this->start_addr = start;
+FuncChunk::FuncChunk(func_t* func) {
+  this->start_addr = func->start_ea;
   this->end_addr = func->end_ea;
 
   qflow_chart_t fchart =
-      qflow_chart_t("", nullptr, start, func->end_ea, FC_NOEXT);
+      qflow_chart_t("", nullptr, func->start_ea, func->end_ea, FC_NOEXT);
 
   size_t index = 0;
   for (const auto& block : fchart.blocks) {
@@ -53,43 +81,46 @@ FuncChunk::FuncChunk(ea_t start, func_t* func) {
     ++index;
   }
 
-  if (get_fileregion_offset(start) == -1) {
+  if (get_fileregion_offset(func->start_ea) == -1) {
     this->in_file = false;
   }
+
+  QLOGD << absl::StrFormat("Creating FuncChunk [0x%08x; 0x%08x]", start_addr,
+                           end_addr);
 }
 
 void FuncChunk::AddEdge(ea_t source_addr, ea_t dest_addr, EdgeType edge_type) {
   // If this is a fake chunk, we want to keep the target in the list of
   // potential heads. It may not be correct, but we have no way of finding it
   // right now.
-  if (this->fake_chunk) {
-    auto result = this->block_heads.find(dest_addr);
-    if (result == this->block_heads.end()) {
-      this->block_heads.emplace(dest_addr);
-    }
-  }
+  // if (this->fake_chunk) {
+  //   auto result = this->block_heads.find(dest_addr);
+  //   if (result == this->block_heads.end()) {
+  //     this->block_heads.emplace(dest_addr);
+  //   }
+  // }
 
   this->pending_edges.emplace_back(edge_type, source_addr, dest_addr);
 }
 
-std::shared_ptr<Block> FuncChunk::GetBlockContainingAddress(ea_t addr) {
-  /*
-        auto it = std::lower_bound(blocks.begin(), blocks.end(), addr,
-                [](const Block* lhs, const ea_t addr) -> bool {
-           return lhs->start_addr < addr;
-        });
-    */
+// std::shared_ptr<Block> FuncChunk::GetBlockContainingAddress(ea_t addr) {
+//   /*
+//         auto it = std::lower_bound(blocks.begin(), blocks.end(), addr,
+//                 [](const Block* lhs, const ea_t addr) -> bool {
+//            return lhs->start_addr < addr;
+//         });
+//     */
 
-  auto it = std::find_if(blocks.begin(), blocks.end(),
-                         [addr](const std::shared_ptr<Block>& b) -> bool {
-                           return b->IsBetween(addr);
-                         });
+//   auto it = std::find_if(blocks.begin(), blocks.end(),
+//                          [addr](const std::shared_ptr<Block>& b) -> bool {
+//                            return b->IsBetween(addr);
+//                          });
 
-  if (it != blocks.end() && (*it)->IsBetween(addr)) {
-    return *it;
-  }
-  return nullptr;
-}
+//   if (it != blocks.end() && (*it)->IsBetween(addr)) {
+//     return *it;
+//   }
+//   return nullptr;
+// }
 
 std::optional<int> FuncChunk::GetBlockIdx(
     const std::shared_ptr<Block>& block) const {
@@ -136,26 +167,138 @@ void FuncChunk::Resize(ea_t endaddr) {
 }
 
 Function::Function(func_t* func_p) {
-  this->start_addr = func_p->start_ea;
+  assert(func_p != nullptr);
+
+  this->InitFromAddr(func_p->start_ea);
+  this->ExportBody(func_p);
+}
+
+Function::Function(ea_t start_, std::string name_) : func_type(TYPE_IMPORTED) {
+  this->InitFromAddr(start_);
+  this->name = std::move(name_);
+}
+
+void Function::InitFromAddr(ea_t addr) {
+  this->start_addr = addr;
+
+  try {
+    this->segment = &GetSegment(this->start_addr);
+  } catch (const std::out_of_range& e) {
+    std::throw_with_nested(std::runtime_error(absl::StrFormat(
+        "Function at address 0x%x doesn't belong to any segment",
+        this->start_addr)));
+  }
+
+  this->file_offset = get_fileregion_offset(this->start_addr);
 
   // Get function name (not mangled)
-  this->name = GetName(func_p->start_ea, false);
+  this->name = GetName(this->start_addr, false);
 
   // Get the mangled function name, store it only if different
-  std::string mangled_name = GetName(func_p->start_ea, true);
+  std::string mangled_name = GetName(this->start_addr, true);
   if (mangled_name != this->name)
     this->mangled_name = std::move(mangled_name);
+}
 
+void Function::ExportBody(func_t* func_p) {
+  assert(func_p != nullptr);
+
+  qflow_chart_t flow_chart("", func_p, this->start_addr, func_p->end_ea,
+                           FC_NOEXT);
+  assert(!flow_chart.blocks.empty() &&
+         "Cannot export body of an imported function");
+
+  // If it has a body, the function should never be imported
   if (func_p->flags & FUNC_THUNK) {
     this->func_type = TYPE_THUNK;
   } else if (func_p->flags & FUNC_LIB) {
     this->func_type = TYPE_LIBRARY;
+  } else {
+    this->func_type = TYPE_NORMAL;
+  }
+
+  // If we have a thunk, it may be hard afterwards to detect the target
+  // of the thunk function, so get it from here.
+  // For most architecture, the call will already be identified to the
+  // last instruction of the thunk (e.g. for ARM64, x86). However, in
+  // ARM, we may have the pattern of ADD in PC. So we add the call here.
+  // It will be deduplicated when the references will be sorted
+  // afterwards. if (this->func_type == TYPE_THUNK) {
+  //   ea_t indirect_jump = BADADDR;
+  //   ea_t target = calc_thunk_func_target(func, &indirect_jump);
+  //   if (indirect_jump == BADADDR) {
+  //     const std::shared_ptr<Block> block = chunk->blocks.back();
+  //     ReferenceHolder::GetInstance().emplace_back(
+  //         InstructionInstance(chunk, block, block->instructions.size()
+  //         - 1), target, REF_CALL);
+  //   }
+  // }
+
+  /**
+   * Check if the imports function are already exported
+   * This is the case for ELF file but not PE
+   */
+  // TODO
+  // if (import_manager.IsImport(this->start_addr)) {
+  //   function.func_type = TYPE_IMPORTED;
+  //   has_exported_imports = true;
+  // }
+
+#if IDA_SDK_VERSION < 850
+  mutable_graph_t* graph = create_disasm_graph(this->start_addr);
+#else
+  interactive_graph_t* graph = create_disasm_graph(this->start_addr);
+#endif
+
+  // TODO(dm) ASK ida support to export this function
+  // graph->create_orthogonal_layout();
+
+  // TODO(dm) If called from command line, the graph is not rendered
+  // TODO(dm) ASK Idasupport for a solution
+  graph->create_tree_layout();
+
+  bool graph_layout = true;
+  if (graph == nullptr || !graph->empty()) {
+    QLOGW << "Cannot export graph";
+    graph_layout = false;
+  }
+
+  assert(!graph_layout || flow_chart.node_qty() == graph->node_qty());
+
+  // Add the blocks
+  for (int i = 0; i < flow_chart.node_qty(); ++i) {
+    const qbasic_block_t& block = flow_chart.blocks[i];
+    const point_t& node_point = graph->nodes[i].center();
+
+    // Sanity checks. Never trust IDA
+    assert(!block.empty() && block.start_ea != BADADDR &&
+           block.end_ea != BADADDR);
+
+    // Push block and position
+    Block tmp_block(block.start_ea, block.end_ea,
+                    RetrieveBlockType(flow_chart.calc_block_type(i)));
+    Position pos{PositionType::CENTER, node_point.x, node_point.y};
+    this->blocks.push_back({std::move(tmp_block), std::move(pos)});
+  }
+
+  // Add the edges. By construction, IDA flowchart indices are the same as
+  // ours
+  for (int i = 0; i < flow_chart.node_qty(); ++i) {
+    const auto& succ = flow_chart.blocks[i].succ;
+    for (int j : succ) {
+      this->edges.emplace_back(GetEdgeType(succ.size(), this->blocks[i].first,
+                                           this->blocks[j].first),
+                               i, j);
+    }
   }
 
   // If exporting decompiled code is enabled export function decompiled code
   if (Settings::GetInstance().ExportDecompiledCode()) {
     ExportDecompiledFunction(func_p);
   }
+
+  // std::vector<ea_t> code_refs;
+  // GetCodeRefFrom(code_refs, range.start_ea);
 }
 
 void Function::ExportDecompiledFunction(func_t* func_p) {
@@ -164,133 +307,51 @@ void Function::ExportDecompiledFunction(func_t* func_p) {
   cfuncptr_t cfunc = decompile_func(func_p, &hf);
   qstring decompiled_s;
   qstring_printer_t qp(cfunc, decompiled_s, false);
-  
-  // Error codes are documented in: https://cpp.docs.hex-rays.com/group___m_e_r_r__.html#ga124713999eb84ddba531f5c2e9eedcab
+
+  // Error codes are documented in:
+  // https://cpp.docs.hex-rays.com/group___m_e_r_r__.html#ga124713999eb84ddba531f5c2e9eedcab
   if (hf.code == MERR_OK && cfunc != nullptr) {
-      
-      // Print the decompiled code into qstring
-      cfunc->print_func(qp);
-      
-      // Store the decompiled code into protobuf string
-      this->decompiled_code = decompiled_s.c_str();
-  }
-  else if (hf.code == MERR_LICENSE) {
-      QLOGI << "Hex-Rays license not available, cannot export "
-                "decompiled code. Disable export.";
-      Settings::GetInstance().SetExportDecompiledCode(false);
-  }
-  else if (hf.code == MERR_EXTERN) {
+    // Print the decompiled code into qstring
+    cfunc->print_func(qp);
+
+    // Store the decompiled code into protobuf string
+    this->decompiled_code = decompiled_s.c_str();
+  } else if (hf.code == MERR_LICENSE) {
+    QLOGI << "Hex-Rays license not available, cannot export "
+             "decompiled code. Disable export.";
+    Settings::GetInstance().SetExportDecompiledCode(false);
+  } else if (hf.code == MERR_EXTERN) {
     // do not print anything as extern functions do not have a body
-  }
-  else {
-      QLOGI << absl::StrFormat("Decompilation failed for function %s at "
-                                "address 0x%a (%s)",
-                                this->name, this->start_addr, hf.desc().c_str());
+  } else {
+    QLOGI << absl::StrFormat(
+        "Decompilation failed for function %s at "
+        "address 0x%a (%s)",
+        this->name, this->start_addr, hf.desc().c_str());
   }
 #else
-  assert(false && "This code should not be reachable, check the preprocessor directives");
+  assert(
+      false &&
+      "This code should not be reachable, check the preprocessor directives");
 #endif
 }
 
-void ExportImportedFunctions(const ImportManager& import_manager,
-                             std::vector<Function>& func_list,
-                             const FuncChunkCollection& chunks) {
-  for (auto const& [address, import] : import_manager.imports) {
-    auto chunk = chunks.GetElement(address, true);
-    assert(chunk != nullptr && "An imported function must have a chunk!");
-    func_list.emplace_back(address, import.name, chunk);
-  }
-}
+std::pair<std::vector<Function>, std::vector<std::pair<ea_t, ea_t>>>
+ExportFunctions() {
+  bool export_instructions = Settings::GetInstance().ExportInstructions();
 
-static void ExportFunctionGraph(Function& function, func_t* ida_func,
-                                const qflow_chart_t& flow_chart) {
-#if IDA_SDK_VERSION < 850
-  mutable_graph_t* graph = create_disasm_graph(ida_func->start_ea);
-  graph->create_tree_layout();
-
-  // TODO(dm) ASK ida support to export this function
-  // graph->create_orthogonal_layout();
-
-  // TODO(dm) If called from command line, the graph is not rendered
-  // TODO(dm) ASK Idasupport for a solution
-  /*
-  if (graph->empty() || flow_chart.blocks.size() != graph->size()) {
-      goto next;
-  }
-  */
-
-  if (graph != nullptr && !graph->empty()) {
-    for (int node_idx = 0; node_idx != graph->node_qty(); ++node_idx) {
-      rect_t node = graph->nodes[node_idx];
-
-      ea_t node_ea = flow_chart.blocks[node_idx].start_ea;
-      if (node_ea == BADADDR) {
-        QLOGE << "Node addr is not set";
-        continue;
-      }
-
-      assert(node_ea - function.start_addr >= 0 &&
-             "Negative offset for function chunk");
-      function.node_position.insert(
-          {Position{CENTER, node.center().x, node.center().y},
-           ChunkLocalization(node_ea,
-                             function.chunks_index.at(
-                                 get_func_chunknum(ida_func, node_ea)))});
-    }
-  }
-#else
-  interactive_graph_t* graph = create_disasm_graph(ida_func->start_ea);
-  graph->create_tree_layout();
-
-  // TODO(dm) ASK ida support to export this function
-  // graph->create_orthogonal_layout();
-
-  // TODO(dm) If called from command line, the graph is not rendered
-  // TODO(dm) ASK Idasupport for a solution
-  /*
-  if (graph->empty() || flow_chart.blocks.size() != graph->size()) {
-      goto next;
-  }
-  */
-
-  if (graph != nullptr && !graph->empty()) {
-    for (int node_idx = 0; node_idx != graph->node_qty(); ++node_idx) {
-      rect_t node = graph->nodes[node_idx];
-
-      ea_t node_ea = flow_chart.blocks[node_idx].start_ea;
-      if (node_ea == BADADDR) {
-        QLOGE << "Node addr is not set";
-        continue;
-      }
-
-      assert(node_ea - function.start_addr >= 0 &&
-             "Negative offset for function chunk");
-      function.node_position.insert(
-          {Position{CENTER, node.center().x, node.center().y},
-           ChunkLocalization(node_ea,
-                             function.chunks_index.at(
-                                 get_func_chunknum(ida_func, node_ea)))});
-    }
-  }
-#endif
-}
-
-void ExportFunctions(std::vector<Function>& func_list,
-                     FuncChunkCollection& chunks,
-                     ImportManager& import_manager) {
   /* Allocate enough space from the start */
-  func_list.reserve(get_func_qty());
+  std::vector<Function> functions;
+  functions.reserve(get_func_qty());
+  std::vector<std::pair<ea_t, ea_t>> chunks;
 
   Comments& comments = Comments::GetInstance();
-
-  /* Sort collection to improve performance */
-  chunks.Sort();
+  const ImportManager& import_manager = ImportManager::GetInstance();
 
   /**
    * We want to iterate over every function in the binary.
-   * However, in some cases, the first function is at address 0 which is also
-   * the min_ea. Thus, we first check if there is a function at min_ea and if
-   * not, we get the next one.
+   * However, in some cases, the first function is at address 0 which is
+   * also the min_ea. Thus, we first check if there is a function at
+   * min_ea and if not, we get the next one.
    */
   ea_t begin_addr = inf_get_min_ea();
   func_t* func = get_func(begin_addr);
@@ -300,152 +361,44 @@ void ExportFunctions(std::vector<Function>& func_list,
 
   bool has_exported_imports = false;
   for (; func != nullptr; func = get_next_func(func->start_ea)) {
-    if (!is_func_entry(func))
+    assert(is_func_entry(func) &&
+           "Impossible! Found a func_t that is not an entry");
+
+    // Do not export imported functions right now.
+    // We find them while iterating with get_next_func on ELF binaries but
+    // not on PEs
+    if (import_manager.IsImport(func->start_ea))
       continue;
 
-    auto function = Function(func);
+    functions.emplace_back(func);
 
-    qflow_chart_t flow_chart("", func, func->start_ea, func->end_ea, FC_NOEXT);
-
-    if (function.func_type == TYPE_NONE) {
-      if (flow_chart.blocks.empty()) {
-        function.func_type = TYPE_IMPORTED;
-      } else {
-        function.func_type = TYPE_NORMAL;
-      }
+    // TODO
+    if (export_instructions) {
+      // Export basic blocks with instructions and operands
+    } else {
+      // Export only basic blocks
     }
 
     // Export also comments
-    GetFunctionComments(comments, func, std::make_shared<Function>(function));
+    // GetFunctionComments(comments, func,
+    // std::make_shared<Function>(function));
 
-    // We search the chunk for the head !
-    std::shared_ptr<FuncChunk> chunk = chunks.GetElement(func->start_ea, true);
-    if (chunk == nullptr) {
-      QLOGE << "Unable to retrieve chunk for the head";
-      continue;
-    }
-
-    assert(get_func_chunknum(func, func->start_ea) == 0 &&
-           "Head must be 0 index");
-
-    function.chunks_index[0] = chunk;
-
-    // Iterate through the tails
-    func_tail_iterator_t fti(func);
-    for (bool ok = fti.first(); ok; ok = fti.next()) {
-      const range_t& range = fti.chunk();
-      std::shared_ptr<FuncChunk> tail = chunks.GetElement(range.start_ea, true);
-      if (tail == nullptr) {
-        QLOGE << "Unable to find the chunk";
-        continue;
-      }
-
-      int chunk_idx = get_func_chunknum(func, range.start_ea);
-      function.chunks_index[chunk_idx] = tail;
-
-      std::vector<ea_t> code_refs;
-      GetCodeRefFrom(code_refs, range.start_ea);
-
-      for (const auto ref : code_refs) {
-        int source_idx = get_func_chunknum(func, ref);
-        if (source_idx != -1) {
-          function.edges.push_back(
-              CreateChunkEdge(TYPE_UNCONDITIONAL, chunks.GetElement(ref, false),
-                              ref, tail, range.start_ea));
-        }
-      }
-    }
-
-    // If we have a thunk, it may be hard afterwards to detect the target
-    // of the thunk function, so get it from here.
-    // For most architecture, the call will already be identified to the
-    // last instruction of the thunk (e.g. for ARM64, x86). However, in
-    // ARM, we may have the pattern of ADD in PC. So we add the call here.
-    // It will be deduplicated when the references will be sorted afterwards.
-    if (function.func_type == TYPE_THUNK) {
-      ea_t indirect_jump = BADADDR;
-      ea_t target = calc_thunk_func_target(func, &indirect_jump);
-      if (indirect_jump == BADADDR) {
-        const std::shared_ptr<Block> block = chunk->blocks.back();
-        ReferenceHolder::GetInstance().emplace_back(
-            InstructionInstance(chunk, block, block->instructions.size() - 1),
-            target, REF_CALL);
-      }
-    }
-
-    ExportFunctionGraph(function, func, flow_chart);
-
-    /**
-     * Check if the imports function are already exported
-     * This is the case for ELF file but not PE
-     */
-    if (import_manager.IsImport(function.start_addr)) {
-      function.func_type = TYPE_IMPORTED;
-      has_exported_imports = true;
-    }
-
-    func_list.push_back(function);
+    // Push the head chunk and the tails chunks
+    chunks.push_back({func->start_ea, func->end_ea});
+    for (int i = 0; i < func->tailqty; ++i)
+      chunks.push_back({func->tails[i].start_ea, func->tails[i].end_ea});
   }
 
-  if (not has_exported_imports) {
-    ExportImportedFunctions(import_manager, func_list, chunks);
+  // Export imported functions
+  for (auto const& [address, import] : import_manager.imports) {
+    functions.emplace_back(address, import.name);
+    chunks.emplace_back(address, get_item_size(address));
   }
 
-  // We need to update every chunk edge and node position to retrieve the block
-  // pointed So far, we have a tuple {chunk_idx, addr} and we need to transform
-  // to {chunk_idx, block_idx}
-  for (Function& function_ : func_list) {
-    for (ChunkEdge& chunk_edge : function_.edges) {
-      auto source_block_idx =
-          chunk_edge.source.chunk->BlockIdxFromAddr(chunk_edge.source.addr);
-      auto destination_block_idx =
-          chunk_edge.destination.chunk->BlockIdxFromAddr(
-              chunk_edge.destination.addr);
+  // Chunks must be sorted
+  std::sort(chunks.begin(), chunks.end());
 
-      if (source_block_idx != std::nullopt &&
-          destination_block_idx != std::nullopt) {
-        chunk_edge.source.block_idx = source_block_idx.value();
-        chunk_edge.destination.block_idx = destination_block_idx.value();
-      } else {
-        QLOGE << "Unable to resolve Chunk";
-      }
-    }
-
-    for (auto& [position, chunk_localisation] : function_.node_position) {
-      if (auto block_idx = chunk_localisation.chunk->BlockIdxFromAddr(
-              chunk_localisation.addr)) {
-        chunk_localisation.block_idx = block_idx.value();
-      }
-    }
-  }
+  return {std::move(functions), std::move(chunks)};
 }
 
-void FuncChunkCollection::Sort() {
-  if (!sorted) {
-    std::sort(this->chunks_.begin(), this->chunks_.end(),
-              [](const std::shared_ptr<FuncChunk>& c,
-                 const std::shared_ptr<FuncChunk>& d) -> bool {
-                return c->start_addr < d->start_addr;
-              });
-    sorted = true;
-  }
-}
-
-std::shared_ptr<FuncChunk> FuncChunkCollection::GetElement(
-    ea_t addr, bool head_address) const {
-  assert(sorted && "The collection must be sorted before using this method");
-  auto it =
-      std::lower_bound(this->chunks_.begin(), this->chunks_.end(), addr,
-                       [](const std::shared_ptr<FuncChunk>& f,
-                          ea_t val) -> bool { return f->end_addr <= val; });
-
-  if (it == this->chunks_.end() || not(*it)->InChunk(addr)) {
-    return nullptr;
-  }
-
-  if (head_address && it->get()->start_addr != addr) {
-    return nullptr;
-  }
-  return *it;
-}
 }  // namespace quokka

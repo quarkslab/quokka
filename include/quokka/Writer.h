@@ -23,17 +23,23 @@
 #include <cassert>
 #include <cstdint>
 #include <stdexcept>
+#include <utility>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
 
 #include "absl/container/btree_set.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/strings/string_view.h"
 
+#include "FileMetadata.h"
 #include "Localization.h"
 #include "Logger.h"
 #include "ProtoWrapper.h"
+#include "Segment.h"
+#include "Settings.h"
 #include "Util.h"
 #include "Windows.h"
 
@@ -69,7 +75,7 @@ enum CallingConvention : short;
 enum Compiler : short;
 enum HashType : short;
 enum Endianness : short;
-enum StructureType : short;
+// enum StructureType : short;
 enum SegmentType : short;
 enum BlockType : short;
 enum FunctionType : short;
@@ -78,43 +84,44 @@ enum ReferenceType : short;
 enum State : short;
 enum ExporterMode : short;
 
-/**
- * Convert a function type to the proto associated type
- * @param func_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Function::FunctionType ToProtoFuncType(FunctionType func_type);
+// /**
+//  * Convert a function type to the proto associated type
+//  * @param func_type Type to convert
+//  * @return Converted type
+//  */
+// quokka::Quokka::Function::FunctionType ToProtoFuncType(FunctionType
+// func_type);
 
-/**
- * Convert a function type to the proto associated type
- * @param position_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Function::Position::PositionType ToProtoPositionType(
-    PositionType position_type);
+// /**
+//  * Convert a function type to the proto associated type
+//  * @param position_type Type to convert
+//  * @return Converted type
+//  */
+// quokka::Quokka::Function::Position::PositionType ToProtoPositionType(
+//     PositionType position_type);
 
-/**
- * Convert a function type to the proto associated type
- * @param ref_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Reference::ReferenceType ToProtoReferenceType(
-    ReferenceType ref_type);
+// /**
+//  * Convert a function type to the proto associated type
+//  * @param ref_type Type to convert
+//  * @return Converted type
+//  */
+// quokka::Quokka::Reference::ReferenceType ToProtoReferenceType(
+//     ReferenceType ref_type);
 
-/**
- * Convert a function type to the proto associated type
- * @param data_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::DataType ToProtoDataType(DataType data_type);
+// /**
+//  * Convert a function type to the proto associated type
+//  * @param data_type Type to convert
+//  * @return Converted type
+//  */
+// quokka::Quokka::DataType ToProtoDataType(DataType data_type);
 
-/**
- * Convert a function type to the proto associated type
- * @param comment_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Comment::CommentType ToProtoCommentType(
-    CommentType comment_type);
+// /**
+//  * Convert a function type to the proto associated type
+//  * @param comment_type Type to convert
+//  * @return Converted type
+//  */
+// quokka::Quokka::Comment::CommentType ToProtoCommentType(
+//     CommentType comment_type);
 
 /**
  * Convert a function type to the proto associated type
@@ -159,13 +166,13 @@ quokka::Quokka::Meta::CallingConvention ToProtoCallingConvention(
  */
 quokka::Quokka::Meta::Hash::HashType ToProtoHashType(HashType hash_type);
 
-/**
- * Convert a function type to the proto associated type
- * @param struct_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Structure::StructureType ToProtoStructType(
-    StructureType struct_type);
+// /**
+//  * Convert a function type to the proto associated type
+//  * @param struct_type Type to convert
+//  * @return Converted type
+//  */
+// quokka::Quokka::Structure::StructureType ToProtoStructType(
+//     StructureType struct_type);
 
 /**
  * Convert a function type to the proto associated type
@@ -181,46 +188,46 @@ quokka::Quokka::Layout::LayoutType GetLayoutTypeByState(State state);
  */
 quokka::Quokka::Segment::Type ToProtoSegmentType(SegmentType type);
 
-/**
- * Write the mnemonics
- *
- * @param proto Main protobuf
- * @param mnemonics Mnemonics bucket
- */
-void WriteMnemonic(quokka::Quokka* proto, BucketNew<Mnemonic>& mnemonics);
+// /**
+//  * Write the mnemonics
+//  *
+//  * @param proto Main protobuf
+//  * @param mnemonics Mnemonics bucket
+//  */
+// void WriteMnemonic(quokka::Quokka* proto, BucketNew<Mnemonic>& mnemonics);
 
-/**
- * Write the operand strings
- * @param proto Main protobuf
- * @param operand_strings Operand strings bucket
- */
-void WriteOperandStrings(quokka::Quokka* proto,
-                         BucketNew<OperandString>& operand_strings);
+// /**
+//  * Write the operand strings
+//  * @param proto Main protobuf
+//  * @param operand_strings Operand strings bucket
+//  */
+// void WriteOperandStrings(quokka::Quokka* proto,
+//                          BucketNew<OperandString>& operand_strings);
 
-/**
- * Write operands
- *
- * @param proto Protobuf main object
- * @param operands Operands bucket
- */
-void WriteOperands(quokka::Quokka* proto, BucketNew<Operand>& operands);
+// /**
+//  * Write operands
+//  *
+//  * @param proto Protobuf main object
+//  * @param operands Operands bucket
+//  */
+// void WriteOperands(quokka::Quokka* proto, BucketNew<Operand>& operands);
 
-/**
- * Write instructions
- *
- * @param proto Protobuf main object
- * @param instructions
- */
-void WriteInstructions(quokka::Quokka* proto,
-                       BucketNew<Instruction>& instructions);
+// /**
+//  * Write instructions
+//  *
+//  * @param proto Protobuf main object
+//  * @param instructions
+//  */
+// void WriteInstructions(quokka::Quokka* proto,
+//                        BucketNew<Instruction>& instructions);
 
-/**
- * Convert a block type type to the proto associated type
- * @param block_type Type to convert
- * @return
- */
-quokka::Quokka::FunctionChunk::Block::BlockType ToProtoBlockType(
-    BlockType block_type);
+// /**
+//  * Convert a block type type to the proto associated type
+//  * @param block_type Type to convert
+//  * @return
+//  */
+// quokka::Quokka::FunctionChunk::Block::BlockType ToProtoBlockType(
+//     BlockType block_type);
 
 /**
  * Convert a mode to the proto associated type
@@ -229,93 +236,94 @@ quokka::Quokka::FunctionChunk::Block::BlockType ToProtoBlockType(
  */
 quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode);
 
-/**
- * Write blocks
- *
- * @param proto_chunk Current protobuf object for FunctionChunk
- * @param block Block to write
- * @param base_addr Base address (@see get_imagebase)
- */
-void WriteBlock(quokka::Quokka::FunctionChunk* proto_chunk,
-                const std::shared_ptr<Block>& block, ea_t base_addr);
+// /**
+//  * Write blocks
+//  *
+//  * @param proto_chunk Current protobuf object for FunctionChunk
+//  * @param block Block to write
+//  * @param base_addr Base address (@see get_imagebase)
+//  */
+// void WriteBlock(quokka::Quokka::FunctionChunk* proto_chunk,
+//                 const std::shared_ptr<Block>& block, ea_t base_addr);
 
-/**
- * Write Block identifier
- *
- * @param proto_block_id Protobuf object to the block identifier
- * @param block_idx Block index
- * @param chunk_idx Chunk index (-1 if not set)
- */
-void WriteBlockIdentifier(quokka::Quokka::BlockIdentifier* proto_block_id,
-                          int block_idx, int chunk_idx);
+// /**
+//  * Write Block identifier
+//  *
+//  * @param proto_block_id Protobuf object to the block identifier
+//  * @param block_idx Block index
+//  * @param chunk_idx Chunk index (-1 if not set)
+//  */
+// void WriteBlockIdentifier(quokka::Quokka::BlockIdentifier* proto_block_id,
+//                           int block_idx, int chunk_idx);
 
-/**
- * Write inner edges (edges within a chunk)
- *
- * @param proto_chunk Protobuf object to the chunk
- * @param edge_list List of edges
- */
-void WriteInnerEdges(quokka::Quokka::FunctionChunk* proto_chunk,
-                     const std::vector<Edge>& edge_list);
+// /**
+//  * Write inner edges (edges within a chunk)
+//  *
+//  * @param proto_chunk Protobuf object to the chunk
+//  * @param edge_list List of edges
+//  */
+// void WriteInnerEdges(quokka::Quokka::FunctionChunk* proto_chunk,
+//                      const std::vector<Edge>& edge_list);
 
-/**
- * Write the function chunks
- *
- * @param proto Protobuf main object
- * @param chunks_list Chunks collection
- */
-void WriteFuncChunk(quokka::Quokka* proto, FuncChunkCollection& chunks_list);
+// /**
+//  * Write the function chunks
+//  *
+//  * @param proto Protobuf main object
+//  * @param chunks_list Chunks collection
+//  */
+// void WriteFuncChunk(quokka::Quokka* proto, FuncChunkCollection& chunks_list);
 
-/**
- * Write positions
- *
- * @param proto_position Protobuf object position
- * @param position Position to write
- */
-void WritePosition(quokka::Quokka::Function::Position* proto_position,
-                   const Position& position);
+// /**
+//  * Write positions
+//  *
+//  * @param proto_position Protobuf object position
+//  * @param position Position to write
+//  */
+// void WritePosition(quokka::Quokka::Function::Position* proto_position,
+//                    const Position& position);
 
-/**
- * Write the functions
- *
- * @param proto Protobuf main object
- * @param func_list Function collections
- * @param chunk_map Chunks collection
- */
-void WriteFunctions(quokka::Quokka* proto, std::vector<Function>& func_list,
-                    const FuncChunkCollection& chunk_map);
+// /**
+//  * Write the functions
+//  *
+//  * @param proto Protobuf main object
+//  * @param func_list Function collections
+//  * @param chunk_map Chunks collection
+//  */
+// void WriteFunctions(quokka::Quokka* proto, std::vector<Function>& func_list,
+//                     const FuncChunkCollection& chunk_map);
 
-/**
- * Write location element
- *
- * @param proto_location Protobuf object location
- * @param location Location to write
- */
-void WriteLocation(quokka::Quokka::Location* proto_location,
-                   const Location& location);
+// /**
+//  * Write location element
+//  *
+//  * @param proto_location Protobuf object location
+//  * @param location Location to write
+//  */
+// void WriteLocation(quokka::Quokka::Location* proto_location,
+//                    const Location& location);
 
-/**
- * Write the references
- *
- * @param proto Protobuf main object
- * @param ref_holder References collection
- */
-void WriteReferences(quokka::Quokka* proto, const ReferenceHolder& ref_holder);
+// /**
+//  * Write the references
+//  *
+//  * @param proto Protobuf main object
+//  * @param ref_holder References collection
+//  */
+// void WriteReferences(quokka::Quokka* proto, const ReferenceHolder&
+// ref_holder);
 
-/**
- * Write data
- *
- * @param proto Protobuf main object
- * @param data_bucket Data bucket
- */
-void WriteData(quokka::Quokka* proto, BucketNew<Data>& data_bucket);
+// /**
+//  * Write data
+//  *
+//  * @param proto Protobuf main object
+//  * @param data_bucket Data bucket
+//  */
+// void WriteData(quokka::Quokka* proto, BucketNew<Data>& data_bucket);
 
-/**
- * Write comments
- * @param proto Protobuf main object
- * @param comments Comments collection
- */
-void WriteComments(quokka::Quokka* proto, Comments* comments);
+// /**
+//  * Write comments
+//  * @param proto Protobuf main object
+//  * @param comments Comments collection
+//  */
+// void WriteComments(quokka::Quokka* proto, Comments* comments);
 
 /**
  * Write metadata
@@ -325,13 +333,13 @@ void WriteComments(quokka::Quokka* proto, Comments* comments);
  */
 void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata);
 
-/**
- * Write the structure
- *
- * @param proto Protobuf main object
- * @param structures Structures collection
- */
-void WriteStructures(quokka::Quokka* proto, Structures& structures);
+// /**
+//  * Write the structure
+//  *
+//  * @param proto Protobuf main object
+//  * @param structures Structures collection
+//  */
+// void WriteStructures(quokka::Quokka* proto, Structures& structures);
 
 /**
  * Write the exporter metadata
@@ -344,9 +352,8 @@ void WriteExporterMeta(quokka::Quokka* proto);
  * Write the segments
  *
  * @param proto Protobuf main object
- * @param segments Segments collections
  */
-void WriteSegments(quokka::Quokka* proto, const std::vector<Segment>& segments);
+void WriteSegments(quokka::Quokka* proto);
 
 /**
  * Write the layouts

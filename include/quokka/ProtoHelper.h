@@ -28,13 +28,11 @@ namespace quokka {
  * quokka::ProtoHelper
  * ---------------------------------------------
  * Helper for deduplication purposes
- *
- * @see quokka::BucketNew
  */
 class ProtoHelper {
  public:
-  uint32_t ref_count = 0;  ///< Ref counter
-  int proto_index = 0;     ///< Index in the protobuf file
+  mutable uint32_t ref_count = 0;  ///< Ref counter
+  mutable int proto_index = 0;     ///< Index in the protobuf file
 };
 
 }  // namespace quokka

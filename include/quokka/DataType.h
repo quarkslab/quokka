@@ -33,12 +33,17 @@
 #include "Compatibility.h"
 // clang-format on
 #include <pro.h>
-#include <enum.hpp>
 #include <typeinf.hpp>
 
 #include "ProtoHelper.h"  // Kept for ProtoHelper
 #include "ProtoWrapper.h"
 #include "Util.h"
+
+// #if IDA_SDK_VERSION < 850
+// #include "api_v8/DataType_v8.h"
+// #else
+// #include "api_v9/DataType_v9.h"
+// #endif
 
 namespace quokka {
 
@@ -246,14 +251,14 @@ class CompositeTypes {
  * Base class representing a enum defined in the program.
  */
 class EnumType : public ProtoHelper {
- public:
-  EnumType(std::string&& n, enum_t t)
-      : name(std::forward<std::string>(n)), type_id(t) {}
+  //  public:
+  //   EnumType(std::string&& n, enum_t t)
+  //       : name(std::forward<std::string>(n)), type_id(t) {}
 
-  std::string name;  ///< Name of the enum
-  enum_t type_id;    ///< IDA type ID
-  std::vector<std::pair<std::string, int64_t>>
-      values;  ///< Internal values of the enum as pairs (name, value)
+  //   std::string name;  ///< Name of the enum
+  //   enum_t type_id;    ///< IDA type ID
+  //   std::vector<std::pair<std::string, int64_t>>
+  //       values;  ///< Internal values of the enum as pairs (name, value)
 };
 
 /**
@@ -264,60 +269,60 @@ class EnumType : public ProtoHelper {
  *
  * Use a singleton pattern and act like a std::vector.
  */
-class Enums {
- private:
-  using ElementT = std::shared_ptr<EnumType>;
-  std::vector<ElementT> enums_;  ///< Internal list
+// class Enums {
+//  private:
+//   using ElementT = std::shared_ptr<EnumType>;
+//   std::vector<ElementT> enums_;  ///< Internal list
 
-  explicit Enums() = default;  ///< Private constructor
+//   explicit Enums() = default;  ///< Private constructor
 
- public:
-  using iterator = std::vector<ElementT>::iterator;
-  using const_iterator = std::vector<ElementT>::const_iterator;
+//  public:
+//   using iterator = std::vector<ElementT>::iterator;
+//   using const_iterator = std::vector<ElementT>::const_iterator;
 
-  /**
-   * Return the instance of the `Enums` class.
-   * Used for the singleton pattern.
-   * @return `Enums`
-   */
-  static Enums& GetInstance() {
-    static Enums instance;
-    return instance;
-  }
+//   /**
+//    * Return the instance of the `Enums` class.
+//    * Used for the singleton pattern.
+//    * @return `Enums`
+//    */
+//   static Enums& GetInstance() {
+//     static Enums instance;
+//     return instance;
+//   }
 
-  /**
-   * Delete constructors for singleton pattern
-   */
-  Enums(Enums const&) = delete;
-  void operator=(Enums const&) = delete;
+//   /**
+//    * Delete constructors for singleton pattern
+//    */
+//   Enums(Enums const&) = delete;
+//   void operator=(Enums const&) = delete;
 
-  /**
-   * Creates the EnumType object and pushes into the collection.
-   *
-   * @tparam Args Arguments to be forwarded to the EnumType constructor
-   * @param args Arguments of the EnumType constructor
-   * @return A reference to the newly added object
-   */
-  template <typename... ArgsT>
-  constexpr ElementT& emplace_back(ArgsT&&... args) {
-    return enums_.emplace_back(
-        std::make_shared<EnumType>(std::forward<ArgsT>(args)...));
-  }
+//   /**
+//    * Creates the EnumType object and pushes into the collection.
+//    *
+//    * @tparam Args Arguments to be forwarded to the EnumType constructor
+//    * @param args Arguments of the EnumType constructor
+//    * @return A reference to the newly added object
+//    */
+//   template <typename... ArgsT>
+//   constexpr ElementT& emplace_back(ArgsT&&... args) {
+//     return enums_.emplace_back(
+//         std::make_shared<EnumType>(std::forward<ArgsT>(args)...));
+//   }
 
-  /**
-   * Proxy for the std::vector::size()
-   * @return Size of the container
-   */
-  [[nodiscard]] std::size_t size() const { return enums_.size(); }
+//   /**
+//    * Proxy for the std::vector::size()
+//    * @return Size of the container
+//    */
+//   [[nodiscard]] std::size_t size() const { return enums_.size(); }
 
-  /**
-   * Proxy iterators
-   */
-  iterator begin() { return enums_.begin(); }
-  iterator end() { return enums_.end(); }
-  [[nodiscard]] const_iterator begin() const { return enums_.cbegin(); }
-  [[nodiscard]] const_iterator end() const { return enums_.cend(); }
-};
+//   /**
+//    * Proxy iterators
+//    */
+//   iterator begin() { return enums_.begin(); }
+//   iterator end() { return enums_.end(); }
+//   [[nodiscard]] const_iterator begin() const { return enums_.cbegin(); }
+//   [[nodiscard]] const_iterator end() const { return enums_.cend(); }
+// };
 
 /**
  * Export and write the composite data types of the program.

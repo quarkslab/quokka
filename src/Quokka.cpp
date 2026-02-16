@@ -16,7 +16,6 @@
 
 #include "quokka/FileMetadata.h"
 #include "quokka/Layout.h"
-#include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 #include "quokka/Version.h"
@@ -37,14 +36,40 @@ int ExportBinary(const std::string& filename) {
   Timer timer(absl::Now());
 
   // Always start by meta !
+  replace_wait_box("quokka: exporting meta information");
+  QLOGI << "Starting to export meta information...";
   WriteExporterMeta(&quokka_protobuf);
   ExportMeta(&quokka_protobuf);
+  QLOGI << absl::StrFormat(
+      "meta information exported successfully (took: %.2f)",
+      timer.ElapsedSeconds(absl::Now()));
 
-  ExportSegments(&quokka_protobuf);
-  ExportEnumAndStructures(&quokka_protobuf);
+  // Export segments but don't write them yet. Segments have to outlive all the
+  // other objects
+  replace_wait_box("quokka: exporting segments and data types");
+  QLOGI << "Starting to export segments and data types...";
+  ExportSegments();
+  // ExportEnumAndStructures(&quokka_protobuf);
+  QLOGI << absl::StrFormat(
+      "Segments and data types exported successfully (took: %.2f)",
+      timer.ElapsedSeconds(absl::Now()));
 
-  replace_wait_box("quokka: exporting layout");
-  ExportLayout(&quokka_protobuf);
+  // Export functions
+  replace_wait_box("quokka: exporting functions");
+  QLOGI << "Starting to export functions...";
+  auto [functions, ranges] = ExportFunctions();
+  QLOGI << absl::StrFormat("%d functions exported successfully (took: %.2f)",
+                           functions.size(), timer.ElapsedSeconds(absl::Now()));
+
+  // Write on the protobuf
+  QLOGI << "Populating the protobuf message...";
+  // write functions
+  QLOGI << absl::StrFormat("Protobuf message populated (took: %.2f)",
+                           timer.ElapsedSeconds(absl::Now()));
+
+  // Export layout and remaining data through linear scanning
+  replace_wait_box("quokka: linear scan in progress");
+  ExportLinearScan(&quokka_protobuf, ranges);
 
   replace_wait_box("quokka: writing on the wire");
   std::string outfile = filename;
@@ -266,7 +291,7 @@ bool idaapi PluginRun(size_t) {
       "Quokka Plugin (@Quarkslab)",
       "\nExport the current binary ?\n",
       "<#Light mode#Choose a mode##LIGHT:R>",
-      "<#Self contained mode#SELF_CONTAINED:R>",
+      "<#Self contained mode#SELF_CONTAINED:R>>",
 #ifdef HAS_HEXRAYS
       "<#Requires hex-rays (slows down export)#Export Decompiled:C>>"
 #endif

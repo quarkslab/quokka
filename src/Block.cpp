@@ -14,7 +14,7 @@
 
 #include "quokka/Block.h"
 
-#include "quokka/Instruction.h"
+// #include "quokka/Instruction.h"
 
 namespace quokka {
 
@@ -40,14 +40,14 @@ BlockType RetrieveBlockType(fc_block_type_t block_type) {
   assert(false && "Invalid block type");
 }
 
-std::optional<int> Block::GetInstIndex(ea_t addr) const {
-  auto iterator = address_to_index.find(addr);
-  if (iterator != address_to_index.end()) {
-    return iterator->second;
-  }
+// std::optional<int> Block::GetInstIndex(ea_t addr) const {
+//   auto iterator = address_to_index.find(addr);
+//   if (iterator != address_to_index.end()) {
+//     return iterator->second;
+//   }
 
-  return std::nullopt;
-}
+//   return std::nullopt;
+// }
 
 void Block::Resize(ea_t endaddr, bool force) {
   if (this->is_fake or force) {
@@ -59,15 +59,16 @@ void Block::Resize(ea_t endaddr, bool force) {
   }
 }
 
-bool Block::IsBetween(ea_t addr) const {
-  return addr >= start_addr && addr < end_addr;
-}
+// bool Block::IsBetween(ea_t addr) const {
+//   return addr >= start_addr && addr < end_addr;
+// }
 
-void Block::AppendInstruction(const std::shared_ptr<Instruction>& instruction) {
-  address_to_index.try_emplace(current_address,
-                               static_cast<int>(instructions.size()));
-  this->instructions.push_back(instruction);
-  current_address += static_cast<ea_t>(instruction->inst_size);
-}
+// void Block::AppendInstruction(const std::shared_ptr<Instruction>&
+// instruction) {
+//   address_to_index.try_emplace(current_address,
+//                                static_cast<int>(instructions.size()));
+//   this->instructions.push_back(instruction);
+//   current_address += static_cast<ea_t>(instruction->inst_size);
+// }
 
 }  // namespace quokka

@@ -27,19 +27,22 @@
 #include <cassert>
 #include <vector>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
 #include <gdl.hpp>
 #include <ida.hpp>
 
 #include "absl/container/flat_hash_map.h"
 
+#include "Instruction.h"
 #include "Logger.h"
 #include "Windows.h"
 
 namespace quokka {
 
-class Instruction;
+// class Instruction;
 
 enum BlockType : short {
   BTYPE_NORMAL = 0,

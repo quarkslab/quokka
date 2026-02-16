@@ -13,18 +13,30 @@
 // limitations under the License.
 
 #include "quokka/Layout.h"
+#include <cstddef>
+#include <stdexcept>
+#include <utility>
 
+#include "absl/container/btree_map.h"
+#include "absl/strings/str_format.h"
+#include "absl/time/clock.h"
+#include "pro.h"
 #include "quokka/Block.h"
 #include "quokka/Comment.h"
 #include "quokka/Data.h"
+#include "quokka/DataType.h"
+// #include "quokka/Function.h"
 #include "quokka/Function.h"
 #include "quokka/Imports.h"
 #include "quokka/Instruction.h"
-#include "quokka/Reference.h"
+// #include "quokka/Reference.h"
+#include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Writer.h"
 
 namespace quokka {
+
+constexpr const bool LOCAL_TRACE = false;
 
 State GetState(ea_t address) {
   flags_t flags = get_flags(address);
@@ -39,12 +51,8 @@ State GetState(ea_t address) {
   return UNK;
 }
 
-HeadIterator::HeadIterator(ea_t start_ea, ea_t max_ea,
-                           FuncChunkCollection& func_chunks)
-    : func_chunks(func_chunks), next_ea(BADADDR) {
-  this->current_ea = start_ea;
-  this->max_ea = max_ea;
-
+HeadIterator::HeadIterator(ea_t start_ea, ea_t max_ea)
+    : current_ea(start_ea), max_ea(max_ea) {
   /* Initialize the next heads */
   InitAddresses(start_ea);
 
@@ -57,9 +65,18 @@ HeadIterator::HeadIterator(ea_t start_ea, ea_t max_ea,
   this->StartLayout(this->current_ea, this->state);
 }
 
+void HeadIterator::UpdateNextEa() {
+  this->next_ea = std::min(this->next_head_addr, this->next_unk_addr);
+
+  // Check we did not reached the end of the program
+  if (this->next_ea == BADADDR)
+    this->next_ea = this->max_ea;
+}
+
 void HeadIterator::InitAddresses(ea_t address) {
   this->next_unk_addr = next_unknown(address, this->max_ea);
   this->next_head_addr = next_head(address, this->max_ea);
+  this->UpdateNextEa();
 
   this->SetNextChunk(address, false);
 }
@@ -93,22 +110,41 @@ void HeadIterator::StartLayout(ea_t start_addr, State current_state,
   this->current_layout = Layout(current_state, start_addr, size);
 }
 
-void HeadIterator::NextAddressAndState() {
-  this->next_state = TBD;
+void HeadIterator::AddLayoutSize(size_t size /* = 0 */) {
+  assert(this->current_ea == BADADDR);  // should never happen
 
-  // Get the next head
-  this->next_ea = std::min(this->next_head_addr, this->next_unk_addr);
+  if (this->state == GAP) {
+    assert(this->current_layout.size == 0 && "Problem with gap size");
+
+    // The size of "gap" head is always 1, so to go faster, we skip through
+    // these useless heads
+    this->current_layout.size =
+        (size ? size : this->next_ea - this->current_ea);
+  } else {
+    this->current_layout.size += (size ? size : this->item_size);
+  }
+}
+
+void HeadIterator::RotateLayout(State state, ea_t addr, ea_t size) {
+  this->layouts.push_back(
+      std::exchange(this->current_layout, Layout(state, addr, size)));
+}
+
+void HeadIterator::Iterate() {
+  State next_state = TBD;
 
   /* Warning:  Order of the tests matters ! */
 
   // First, we test if it's the end
-  if (this->state == FINISH || this->next_ea == BADADDR) {
-    this->next_state = FINISH;
+  if (this->state == FINISH || this->next_ea == this->max_ea) {
+    next_state = FINISH;
 
     // Second, we test if we have a GAP
   } else if (this->current_layout.start + this->current_layout.size !=
              this->next_ea) {
-    this->next_state = GAP;
+    assert(this->current_layout.start + this->current_layout.size <
+           this->next_ea);
+    next_state = GAP;
 
     // Reset next_ea to the start of the "GAP"
     this->next_ea = this->current_layout.start + this->current_layout.size;
@@ -125,17 +161,18 @@ void HeadIterator::NextAddressAndState() {
 
     // In the case of false decoding, we want to restart code as soon as
     // possible
-    if (this->false_decoding) {
-      size_t ins_size = create_insn(this->next_ea);
-      if (ins_size > 0) {
-        this->next_state = CODE;
-        this->false_decoding = false;
-        this->next_unk_addr =
-            next_unknown(this->next_ea + ins_size, this->max_ea);
-      } else {
-        this->next_state = UNK;
-      }
-    }
+    // TODO check
+    // if (this->false_decoding) {
+    //   size_t ins_size = create_insn(this->next_ea);
+    //   if (ins_size > 0) {
+    //     this->next_state = CODE;
+    //     this->false_decoding = false;
+    //     this->next_unk_addr =
+    //         next_unknown(this->next_ea + ins_size, this->max_ea);
+    //   } else {
+    //     this->next_state = UNK;
+    //   }
+    // }
 
     // An error somewhere ?
   } else {
@@ -143,41 +180,24 @@ void HeadIterator::NextAddressAndState() {
   }
 
   // If we did not determine the type of the next state yet, compute it.
-  if (this->next_state == TBD) {
-    this->next_state = GetState(this->next_ea);
+  if (next_state == TBD)
+    next_state = GetState(this->next_ea);
+  assert(next_state != TBD && "Error during computation of next state");
+
+  // Save layout and start a new one unless the state is preserved
+  if (this->state != next_state) {
+    this->RotateLayout(next_state, this->next_ea, 0);
   }
-  assert(this->next_state != TBD && "Error during computation of next state");
-}
 
-void HeadIterator::AddLayoutSize() {
-  if (this->current_ea != BADADDR) {
-    if (this->state == GAP) {
-      assert(this->current_layout.size == 0 && "Problem with gap size");
-
-      // The size of "gap" head is always 1, so to go faster, we skip through
-      // these useless heads
-      ea_t next_head = std::min(this->next_head_addr, this->next_unk_addr);
-      if (next_head ==
-          BADADDR) {  // Check we did not reached the end of the program
-        next_head = this->max_ea;
-      }
-
-      this->current_layout.size = next_head - this->current_ea;
-    } else {
-      this->current_layout.size += this->item_size;
-    }
-  }
-}
-
-void HeadIterator::SaveLayout() {
-  this->layouts.push_back(this->current_layout);
-}
-
-void HeadIterator::Iterate() {
-  this->state = this->next_state;
+  // Update the state
+  this->state = next_state;
   this->current_ea = this->next_ea;
-
+  this->UpdateNextEa();
   this->item_size = uint64_t(get_item_size(this->current_ea));
+
+  // Update the next chunk address if we already passed it
+  if (this->next_chunk_addr < this->current_ea)
+    this->SetNextChunk(this->current_ea);
 
   /* Reset instruction */
   if (this->state != CODE) {
@@ -185,59 +205,38 @@ void HeadIterator::Iterate() {
   }
 }
 
-bool HeadIterator::IsChunkHead() const {
-  return this->state == CODE && this->current_ea == this->next_chunk_addr;
-}
-
 bool HeadIterator::IsChunkTail() const {
-  if (this->state == CODE && this->current_chunk != nullptr) {
-    return this->next_ea == this->next_chunk_addr ||
-           // The next addr is already a known chunk
-           // We know the end of the chunk
-           (!this->current_chunk->fake_chunk &&
-            this->current_chunk->end_addr ==
-                this->current_ea + this->item_size);
-  }
-  return false;
+  return this->state == CODE &&              // Must be in the code section
+         this->current_chunk.has_value() &&  // Chunk is valid
+         (this->next_ea == this->next_chunk_addr ||  // Next ea is a valid chunk
+          this->current_chunk->end_addr ==
+              this->current_ea +
+                  this->item_size  // We are at the advertised end of the chunk
+         );
 }
 
-std::shared_ptr<FuncChunk> HeadIterator::CreateNewChunk() {
-  if (this->current_chunk != nullptr) {
-    this->current_chunk->Resize(BADADDR);
-  }
+void HeadIterator::CreateNewChunk() {
+  if (this->current_chunk.has_value())
+    throw std::runtime_error(
+        "Trying to create a new chunk while there is still an active one");
 
-  this->current_chunk =
-      this->func_chunks.Insert(this->current_ea, this->next_func_chunk);
-
-  // Finally, prepare the next chunk head
-  this->SetNextChunk(this->current_ea);
-
-  return this->current_chunk;
-}
-
-bool HeadIterator::IsBlockHead() const {
-  return this->state == CODE &&               // We need to be in code state
-         this->current_chunk != nullptr &&    // To have a chunk
-         !this->current_chunk->fake_chunk &&  // But to *not* have a fake chunk
-         this->current_chunk->block_heads.find(this->current_ea) !=
-             this->current_chunk->block_heads
-                 .end();  // And to check if the head is in the head list
+  this->current_chunk.emplace(this->next_func_chunk);
 }
 
 bool HeadIterator::IsBlockTail() const {
-  if (this->state == CODE && this->current_block != nullptr &&
-      this->current_instruction != nullptr) {
-    /* Most of the time, we trust IDA to give block boundaries. However, for
-     * alignment directives IDA considers either DATA or NOP instructions
-     * and is not consistent */
-    return this->next_state != CODE ||
-           this->current_instruction->is_block_end || IsChunkTail();
-  }
-  return false;
+  /* Most of the time, we trust IDA to give block boundaries. However, for
+   * alignment directives IDA considers either DATA or NOP instructions
+   * and is not consistent */
+  return this->state == CODE &&             // Must be in the code section
+         this->current_block != nullptr &&  // There is an active current block
+         (GetState(this->current_ea + this->item_size) !=
+              CODE ||             // Next address is not code
+          this->IsChunkTail() ||  // This is a chunk tail
+          true                    // TODO add end of block
+         );
 }
 
 std::shared_ptr<Block> HeadIterator::CreateNewBlock() {
-  // size_t block_idx = this->current_chunk->block_heads.at(this->current_ea);
   ea_t end_ea = this->current_chunk->block_ends[this->current_ea];
 
   assert(end_ea != 0x0 && end_ea != BADADDR && "Problem with end address");
@@ -255,64 +254,76 @@ std::shared_ptr<Block> HeadIterator::CreateNewBlock() {
 }
 
 std::shared_ptr<Block> HeadIterator::CreateFakeBlock() {
-  this->blocks.emplace_front(std::make_shared<Block>(this->current_ea));
-  this->current_block = this->blocks.front();
+  // this->blocks.emplace_front(std::make_shared<Block>(this->current_ea));
+  // this->current_block = this->blocks.front();
 
-  auto result = this->current_chunk->block_heads.find(this->current_ea);
-  if (result == this->current_chunk->block_heads.end()) {
-    this->current_chunk->block_heads.emplace(this->current_ea);
-  }
+  // auto result = this->current_chunk->block_heads.find(this->current_ea);
+  // if (result == this->current_chunk->block_heads.end()) {
+  //   this->current_chunk->block_heads.emplace(this->current_ea);
+  // }
 
-  this->current_chunk->blocks.push_back(this->current_block);
+  // this->current_chunk->blocks.push_back(this->current_block);
 
-  return this->current_block;
+  // return this->current_block;
 }
 
-std::shared_ptr<FuncChunk> HeadIterator::CreateFakeChunk() {
-  this->current_chunk = this->func_chunks.Insert(this->current_ea);
+// std::shared_ptr<FuncChunk> HeadIterator::CreateFakeChunk() {
+//   this->current_chunk = this->func_chunks.Insert(this->current_ea);
 
-  if (get_fileregion_offset(this->current_ea) == -1) {
-    this->current_chunk->in_file = false;
-  }
+//   if (get_fileregion_offset(this->current_ea) == -1) {
+//     this->current_chunk->in_file = false;
+//   }
 
-  return this->current_chunk;
-}
+//   return this->current_chunk;
+// }
 
 std::shared_ptr<Instruction> HeadIterator::CreateNewInst() {
-  insn_t instruction;
-  int decoded_size = decode_insn(&instruction, this->current_ea);
-  if (decoded_size != 0) {
-    this->current_instruction = this->instruction_bucket.emplace(
-        instruction, this->operand_bucket, this->mnemonic_bucket,
-        this->operand_string_bucket);
+  // insn_t instruction;
+  // int decoded_size = decode_insn(&instruction, this->current_ea);
+  // if (decoded_size != 0) {
+  //   this->current_instruction = this->instruction_bucket.emplace(
+  //       instruction, this->operand_bucket, this->mnemonic_bucket,
+  //       this->operand_string_bucket);
 
-  } else {
-    this->current_instruction = nullptr;
-    this->false_decoding = true;
+  // } else {
+  //   this->current_instruction = nullptr;
+  //   this->false_decoding = true;
 
-    if (not del_items(this->current_ea, DELIT_SIMPLE, this->item_size)) {
-      QLOGE << "Unable to delete falsy instruction, layout may be incomplete";
-    }
+  //   if (not del_items(this->current_ea, DELIT_SIMPLE, this->item_size)) {
+  //     QLOGE << "Unable to delete falsy instruction, layout may be
+  //     incomplete";
+  //   }
 
-    return nullptr;
-  }
+  //   return nullptr;
+  // }
 
-  // Orphaned instructions : create a fake chunk and a fake block
-  if (this->current_chunk == nullptr) {
-    this->CreateFakeChunk();
-  }
+  // // Orphaned instructions : create a fake chunk and a fake block
+  // if (this->current_chunk == nullptr) {
+  //   this->CreateFakeChunk();
+  // }
 
-  if (this->current_block == nullptr) {
-    this->CreateFakeBlock();
-  } else {
-    this->current_instruction->is_block_end =
-        is_basic_block_end(instruction, false);
-  }
+  // if (this->current_block == nullptr) {
+  //   this->CreateFakeBlock();
+  // } else {
+  //   this->current_instruction->is_block_end =
+  //       is_basic_block_end(instruction, false);
+  // }
 
-  this->current_block->AppendInstruction(this->current_instruction);
+  // this->current_block->AppendInstruction(this->current_instruction);
   return this->current_instruction;
 }
-bool HeadIterator::IsInstHead() const { return this->state == CODE; }
+
+void HeadIterator::DebugPrint() const {
+  QLOGD << "HeadIterator";
+  QLOGD << absl::StrFormat("\tstate: %s", to_string(this->state));
+  QLOGD << absl::StrFormat("\tcurrent_ea: 0x%08x", this->current_ea);
+  QLOGD << absl::StrFormat("\tmax_ea: 0x%08x", this->max_ea);
+  QLOGD << absl::StrFormat("\titem_size: 0x%x", this->item_size);
+  QLOGD << absl::StrFormat("\tnext_head_addr: 0x%08x", this->next_head_addr);
+  QLOGD << absl::StrFormat("\tnext_unk_addr: 0x%08x", this->next_unk_addr);
+  QLOGD << absl::StrFormat("\tnext_chunk_addr: 0x%08x", this->next_chunk_addr);
+  QLOGD << absl::StrFormat("\tnext_ea: 0x%08x\n", this->next_ea);
+}
 
 void MergeLayouts(std::deque<Layout>& layouts) {
   std::deque<Layout> merged_layouts;
@@ -338,113 +349,109 @@ void MergeLayouts(std::deque<Layout>& layouts) {
   layouts = merged_layouts;
 }
 
-int ExportLayout(quokka::Quokka* proto) {
-  FuncChunkCollection func_chunks;
-  HeadIterator head_iterator(inf_get_min_ea(), inf_get_max_ea(), func_chunks);
-
-  Timer timer(absl::Now());
-  QLOGI << "Start to export Layout";
-
+void HeadIterator::Scan(
+    bool export_instructions,
+    const std::vector<std::pair<ea_t, ea_t>>& exclude_ranges) {
+  const ImportManager& import_manager = ImportManager::GetInstance();
   int inst_count = 0;
 
-  /* Get the import range */
-  ImportManager import_manager = ImportManager();
+  Timer timer(absl::Now());
+  QLOGI << "Starting the linear scan";
 
-  bool export_instructions = Settings::GetInstance().ExportInstructions();
+  auto range_it = exclude_ranges.cbegin();
+  auto is_excluded = [&](ea_t addr) -> bool {
+    while (range_it != exclude_ranges.end() && range_it->second <= addr)
+      ++range_it;
+    return (range_it != exclude_ranges.end() && range_it->first <= addr &&
+            addr < range_it->second);
+  };
 
   while (true) {
-    /* We need to compute this now because next_state is used later*/
-    head_iterator.AddLayoutSize();
-    head_iterator.NextAddressAndState();
+    if constexpr (LOCAL_TRACE)
+      this->DebugPrint();
 
-    if (head_iterator.state == FINISH) {
-      if (head_iterator.current_chunk != nullptr)
-        head_iterator.current_chunk->Resize(BADADDR);
-      QLOGI << absl::StrFormat("End export layout in %.2fs",
+    // Skip addresses in the excluded ranges (they have been already exported).
+    // We still have to take into account the skipped range for the layout
+    if (is_excluded(this->current_ea)) {
+      this->AddLayoutSize(range_it->second - range_it->first);
+      goto iterate;
+    }
+
+    this->AddLayoutSize();
+
+    if (this->state == FINISH) {
+      // Last chunk should have already been finalized
+      QLOGI << absl::StrFormat("Linear scan terminated in %.2fs",
                                timer.ElapsedSeconds(absl::Now()));
       break;
-    } else if (head_iterator.state == CODE) {
-      if (head_iterator.IsChunkHead()) {
-        head_iterator.CreateNewChunk();
+
+    } else if (this->state == CODE) {
+      assert(!import_manager.InImport(this->current_ea) &&
+             "Imported functions should have already been exported and be part "
+             "of the excluded ranges");
+
+      // Export the orphaned instructions
+      if (export_instructions) {
+        // this->CreateNewInst();
+
+        //     if (head_iterator.current_instruction != nullptr) {
+        //       ++inst_count;
+
+        //       int instruction_index =
+        //           int(head_iterator.current_block->instructions.size()) -
+        //           1;
+
+        //       GetComments(head_iterator.current_ea,
+        //                   head_iterator.current_block->instructions.back());
+
+        //       ExportCodeReference(head_iterator.current_ea,
+        //                           head_iterator.current_chunk,
+        //                           head_iterator.current_block,
+        //                           instruction_index,
+        //                           head_iterator.data_list);
+        //     } else {
+        //       // We failed the decoding of the instruction, so it's
+        //       probably not
+        //           // code
+
+        //           // Resize block + chunk
+        //           head_iterator.current_block->Resize(head_iterator.current_ea,
+        //                                               true);
+        //       head_iterator.current_chunk->Resize(head_iterator.current_ea);
+
+        //       head_iterator.current_block = nullptr;
+        //       head_iterator.current_chunk = nullptr;
+
+        //       head_iterator.current_layout.size -= head_iterator.item_size;
+        //       head_iterator.SaveLayout();
+
+        //       head_iterator.state = UNK;
+        //       head_iterator.item_size =
+        //       get_item_size(head_iterator.current_ea);
+        //       head_iterator.StartLayout(head_iterator.current_ea,
+        //                                 head_iterator.state,
+        //                                 head_iterator.item_size);
+
+        //       head_iterator.InitAddresses(head_iterator.current_ea);
+        //       head_iterator.NextAddressAndState();
+        //     }
+        //     // We don't want to create Fake* when dealing with imports
       }
 
-      if (head_iterator.IsBlockHead() and
-          not import_manager.InImport(head_iterator.current_ea)) {
-        head_iterator.CreateNewBlock();
-      }
+    } else if (this->state == DATA) {
+      // In PE, the imports are listed as DATA
+      assert(!import_manager.InImport(this->current_ea) &&
+             "Found an imported function in the DATA section that is not part "
+             "of the excluded ranges");
 
-      if (head_iterator.IsInstHead()) {
-        /* We want to only export instructions when not in the import table
-         * This behavior change between PE and ELF but we want consistency.
-         * */
-        if (export_instructions &&
-            !import_manager.InImport(head_iterator.current_ea)) {
-          head_iterator.CreateNewInst();
+      const Data& data =
+          this->data_list.insert(Data::Make(this->current_ea, this->item_size));
 
-          if (head_iterator.current_instruction != nullptr) {
-            ++inst_count;
+      // uint32_t ref_count =
+      //     ExportDataReferences(head_iterator.current_ea, data);
+      // data.ref_count += ref_count;
 
-            int instruction_index =
-                int(head_iterator.current_block->instructions.size()) - 1;
-
-            GetComments(head_iterator.current_ea,
-                        head_iterator.current_block->instructions.back());
-
-            ExportCodeReference(head_iterator.current_ea,
-                                head_iterator.current_chunk,
-                                head_iterator.current_block, instruction_index,
-                                head_iterator.data_list);
-          } else {
-            // We failed the decoding of the instruction, so it's probably not
-            // code
-
-            // Resize block + chunk
-            head_iterator.current_block->Resize(head_iterator.current_ea, true);
-            head_iterator.current_chunk->Resize(head_iterator.current_ea);
-
-            head_iterator.current_block = nullptr;
-            head_iterator.current_chunk = nullptr;
-
-            head_iterator.current_layout.size -= head_iterator.item_size;
-            head_iterator.SaveLayout();
-
-            head_iterator.state = UNK;
-            head_iterator.item_size = get_item_size(head_iterator.current_ea);
-            head_iterator.StartLayout(head_iterator.current_ea,
-                                      head_iterator.state,
-                                      head_iterator.item_size);
-
-            head_iterator.InitAddresses(head_iterator.current_ea);
-            head_iterator.NextAddressAndState();
-          }
-          // We don't want to create Fake* when dealing with imports
-        } else if (not import_manager.InImport(head_iterator.current_ea)) {
-          if (head_iterator.current_chunk == nullptr) {
-            head_iterator.CreateFakeChunk();
-          }
-          if (head_iterator.current_block == nullptr) {
-            head_iterator.CreateFakeBlock();
-          }
-        }
-      }
-
-    } else if (head_iterator.state == DATA) {
-      if (not import_manager.InImport(head_iterator.current_ea)) {
-        /*
-         * In PE, the imports are listed as DATA.
-         * We want instead to have them as empty chunks (and funcs)
-         * */
-
-        DataType data_type = GetDataType(get_flags(head_iterator.current_ea));
-
-        std::shared_ptr<Data> data = head_iterator.data_list.emplace(
-            head_iterator.current_ea, data_type, head_iterator.item_size);
-        uint32_t ref_count =
-            ExportDataReferences(head_iterator.current_ea, data);
-        data->ref_count += ref_count;
-      }
-
-    } else if (head_iterator.state == UNK_WITH_XREF) {
+    } else if (this->state == UNK_WITH_XREF) {
       /* IDA being IDA, some unknown part in the code have data ref attached
        * to them.
        *
@@ -452,123 +459,120 @@ int ExportLayout(quokka::Quokka* proto) {
        * unknown part of the code.
        * */
 
-      ExportUnkReferences(head_iterator.current_ea, head_iterator.data_list);
+      // ExportUnkReferences(head_iterator.current_ea, head_iterator.data_list);
     }
 
-    if (head_iterator.IsBlockTail()) {
-      head_iterator.current_block->Resize(head_iterator.current_ea +
-                                          head_iterator.item_size);
-      head_iterator.current_block = nullptr;
-    }
-
-    if (head_iterator.IsChunkTail()) {
-      head_iterator.current_chunk->Resize(head_iterator.current_ea +
-                                          head_iterator.item_size);
-      head_iterator.current_chunk = nullptr;
-    }
-
-    if (head_iterator.state != head_iterator.next_state) {
-      head_iterator.SaveLayout();
-      if (head_iterator.next_state != FINISH) {
-        head_iterator.StartLayout(head_iterator.next_ea,
-                                  head_iterator.next_state);
-      }
-    }
-
-    head_iterator.Iterate();
+  iterate:  // Iterate on the next head
+    this->Iterate();
   }
 
   QLOGD << absl::StrFormat("Found %d instructions", inst_count);
+}
 
-  timer.Reset();
+int ExportLinearScan(quokka::Quokka* proto,
+                     const std::vector<std::pair<ea_t, ea_t>>& exclude_ranges) {
+  bool export_instructions = Settings::GetInstance().ExportInstructions();
+
+  HeadIterator head_iterator(inf_get_min_ea(), inf_get_max_ea());
+
+  head_iterator.Scan(export_instructions, std::move(exclude_ranges));
+
+  Timer timer(absl::Now());
+
+  QLOGI << "Starting to write segments...";
+  WriteSegments(proto);
+  QLOGI << absl::StrFormat("Segments written successfully (took: %.2fs)",
+                           timer.ElapsedSeconds(absl::Now()));
 
   QLOGI << "Start to write layout.";
   MergeLayouts(head_iterator.layouts);
   WriteLayout(proto, head_iterator.layouts);
   head_iterator.layouts = {};
 
-  if (export_instructions) {
-    QLOGI << "Start to write mnemonic.";
-    WriteMnemonic(proto, head_iterator.mnemonic_bucket);
-    QLOGI << absl::StrFormat("Finished to write mnemonics (took: %.2fs)",
-                             timer.ElapsedSeconds(absl::Now()));
+  // if (export_instructions) {
+  //   QLOGI << "Start to write mnemonic.";
+  //   WriteMnemonic(proto, head_iterator.mnemonic_bucket);
+  //   QLOGI << absl::StrFormat("Finished to write mnemonics (took: %.2fs)",
+  //                            timer.ElapsedSeconds(absl::Now()));
 
-    timer.Reset();
-    QLOGI << "Start to write operand strings.";
-    WriteOperandStrings(proto, head_iterator.operand_string_bucket);
-    QLOGI << absl::StrFormat("Finished to write operand_strings (took: %.2fs)",
-                             timer.ElapsedSeconds(absl::Now()));
+  //   timer.Reset();
+  //   QLOGI << "Start to write operand strings.";
+  //   WriteOperandStrings(proto, head_iterator.operand_string_bucket);
+  //   QLOGI << absl::StrFormat("Finished to write operand_strings (took:
+  //   %.2fs)",
+  //                            timer.ElapsedSeconds(absl::Now()));
 
-    timer.Reset();
-    QLOGI << "Start to write operands";
-    WriteOperands(proto, head_iterator.operand_bucket);
-    QLOGI << absl::StrFormat("Finished to write operands (took: %.2fs)",
-                             timer.ElapsedSeconds(absl::Now()));
+  //   timer.Reset();
+  //   QLOGI << "Start to write operands";
+  //   WriteOperands(proto, head_iterator.operand_bucket);
+  //   QLOGI << absl::StrFormat("Finished to write operands (took: %.2fs)",
+  //                            timer.ElapsedSeconds(absl::Now()));
 
-    timer.Reset();
-    QLOGI << "Start to write instructions";
-    WriteInstructions(proto, head_iterator.instruction_bucket);
-    QLOGI << absl::StrFormat("Finished to write instructions (took: %.2fs)",
-                             timer.ElapsedSeconds(absl::Now()));
+  //   timer.Reset();
+  //   QLOGI << "Start to write instructions";
+  //   WriteInstructions(proto, head_iterator.instruction_bucket);
+  //   QLOGI << absl::StrFormat("Finished to write instructions (took:
+  //   %.2fs)",
+  //                            timer.ElapsedSeconds(absl::Now()));
 
-    head_iterator.mnemonic_bucket.clear();
-    head_iterator.operand_bucket.clear();
-  }
+  //   head_iterator.mnemonic_bucket.clear();
+  //   head_iterator.operand_bucket.clear();
+  // }
 
-  {
-    QLOGD << "Start to sort chunks";
-    ResolveEdges(head_iterator.func_chunks, ReferenceHolder::GetInstance());
-    Timer sort_timer(absl::Now());
-    head_iterator.func_chunks.Sort();
-    QLOGD << absl::StrFormat("Chunks sorted (took %.2fs)",
-                             sort_timer.ElapsedSeconds(absl::Now()));
-  }
+  // {
+  //   QLOGD << "Start to sort chunks";
+  //   ResolveEdges(head_iterator.func_chunks,
+  //   ReferenceHolder::GetInstance()); Timer sort_timer(absl::Now());
+  //   head_iterator.func_chunks.Sort();
+  //   QLOGD << absl::StrFormat("Chunks sorted (took %.2fs)",
+  //                            sort_timer.ElapsedSeconds(absl::Now()));
+  // }
 
-  QLOGI << "Start to write func chunks";
-  timer.Reset();
-  import_manager.AddMissingChunks(head_iterator.func_chunks);
-  WriteFuncChunk(proto, head_iterator.func_chunks);
+  // QLOGI << "Start to write func chunks";
+  // timer.Reset();
+  // import_manager.AddMissingChunks(head_iterator.func_chunks);
+  // WriteFuncChunk(proto, head_iterator.func_chunks);
 
-  QLOGI << absl::StrFormat("Finished to write func_chunks (took: %.2fs)",
-                           timer.ElapsedSeconds(absl::Now()));
+  // QLOGI << absl::StrFormat("Finished to write func_chunks (took: %.2fs)",
+  //                          timer.ElapsedSeconds(absl::Now()));
 
-  {
-    QLOGI << "Start to export and write functions";
-    Timer func_timer(absl::Now());
-    std::vector<Function> func_list;
+  // {
+  //   QLOGI << "Start to export and write functions";
+  //   Timer func_timer(absl::Now());
+  //   std::vector<Function> func_list;
 
-    ExportFunctions(func_list, head_iterator.func_chunks, import_manager);
-    WriteFunctions(proto, func_list, head_iterator.func_chunks);
+  //   ExportFunctions(func_list, head_iterator.func_chunks, import_manager);
+  //   WriteFunctions(proto, func_list, head_iterator.func_chunks);
 
-    QLOGI << absl::StrFormat(
-        "Finished to export/write functions (took : %.2fs)",
-        func_timer.ElapsedSeconds(absl::Now()));
-  }
+  //   QLOGI << absl::StrFormat(
+  //       "Finished to export/write functions (took : %.2fs)",
+  //       func_timer.ElapsedSeconds(absl::Now()));
+  // }
 
-  {
-    QLOGI << "Start to transform references";
-    Timer sort_timer(absl::Now());
+  // {
+  //   QLOGI << "Start to transform references";
+  //   Timer sort_timer(absl::Now());
 
-    ReferenceHolder::GetInstance().RemoveMissingAddr(
-        head_iterator.func_chunks, head_iterator.instruction_bucket,
-        head_iterator.data_list, Structures::GetInstance());
+  //   ReferenceHolder::GetInstance().RemoveMissingAddr(
+  //       head_iterator.func_chunks, head_iterator.instruction_bucket,
+  //       head_iterator.data_list, Structures::GetInstance());
 
-    QLOGD << absl::StrFormat("Removing took %.2fs",
-                             sort_timer.ElapsedSeconds(absl::Now()));
-  }
+  //   QLOGD << absl::StrFormat("Removing took %.2fs",
+  //                            sort_timer.ElapsedSeconds(absl::Now()));
+  // }
 
-  QLOGI << "Start to write data, comments and references";
-  timer.Reset();
-  WriteData(proto, head_iterator.data_list);
+  // QLOGI << "Start to write data, comments and references";
+  // timer.Reset();
+  // WriteData(proto, head_iterator.data_list);
 
-  WriteComments(proto, head_iterator.comments);
+  // WriteComments(proto, head_iterator.comments);
 
-  /* WRITE AFTER FUNCTIONS */
-  WriteReferences(proto, ReferenceHolder::GetInstance());
+  // /* WRITE AFTER FUNCTIONS */
+  // WriteReferences(proto, ReferenceHolder::GetInstance());
 
-  QLOGI << absl::StrFormat(
-      "Finished to write data comments and references (took : %.2fs)",
-      timer.ElapsedSeconds(absl::Now()));
+  // QLOGI << absl::StrFormat(
+  //     "Finished to write data comments and references (took : %.2fs)",
+  //     timer.ElapsedSeconds(absl::Now()));
 
   return eOk;
 }

@@ -15,11 +15,11 @@
 #ifndef QUOKKA_IMPORTS_H
 #define QUOKKA_IMPORTS_H
 
-#include "Compatibility.h"
 #include <pro.h>
 #include <nalt.hpp>
 #include <utility>
 #include <vector>
+#include "Compatibility.h"
 
 #include <absl/container/flat_hash_map.h>
 
@@ -52,7 +52,7 @@ struct Range {
     return start <= value and value < end;
   }
 
-  explicit Range(ea_t start_, ea_t end_) : start(start_), end(end_){};
+  explicit Range(ea_t start_, ea_t end_) : start(start_), end(end_) {};
 };
 
 class ImportManager {
@@ -63,6 +63,8 @@ class ImportManager {
   std::vector<Range> ranges;
   // absl::btree_set<Range> ranges;
 
+  ImportManager();
+
  public:
   /**
    * Imports list
@@ -70,9 +72,22 @@ class ImportManager {
   absl::flat_hash_map<ea_t, Import> imports;
 
   /**
-   * Constructor
+   * Return the instance of the `ImportManager` class.
+   * Used for the singleton pattern.
+   * @return `ImportManager`
    */
-  explicit ImportManager();
+  static ImportManager& GetInstance() {
+    static ImportManager instance;
+    return instance;
+  }
+
+  /**
+   * Deleted constructors for singleton pattern
+   */
+  ImportManager(ImportManager const&) = delete;
+  ImportManager(ImportManager&&) = delete;
+  void operator=(ImportManager const&) = delete;
+  void operator=(ImportManager&&) = delete;
 
   /**
    * Check if the address is in the import range
@@ -103,7 +118,7 @@ class ImportManager {
    * In PE format, the imports are considered as data so no chunk is created.
    * @param chunks Collection of chunks
    */
-  void AddMissingChunks(FuncChunkCollection& chunks);
+  // void AddMissingChunks(FuncChunkCollection& chunks);
 };
 
 }  // namespace quokka

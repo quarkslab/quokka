@@ -14,7 +14,7 @@
 
 #include "quokka/Imports.h"
 
-#include "quokka/Function.h"
+// #include "quokka/Function.h"
 #include "quokka/Util.h"
 
 namespace quokka {
@@ -60,21 +60,21 @@ void ImportManager::AddImport(ea_t address, std::string name, uint64_t ord) {
   this->imports.try_emplace(address, Import(std::move(name), ord));
 }
 
-void ImportManager::AddMissingChunks(FuncChunkCollection& chunks) {
-  chunks.Sort();
+// void ImportManager::AddMissingChunks(FuncChunkCollection& chunks) {
+//   chunks.Sort();
 
-  // First, list the chunks that need to be added
-  std::vector<ea_t> addresses;
-  for (const auto& [address, _] : this->imports) {
-    if (chunks.GetElement(address, true) == nullptr) {
-      addresses.emplace_back(address);
-    }
-  }
+//   // First, list the chunks that need to be added
+//   std::vector<ea_t> addresses;
+//   for (const auto& [address, _] : this->imports) {
+//     if (chunks.GetElement(address, true) == nullptr) {
+//       addresses.emplace_back(address);
+//     }
+//   }
 
-  // Secondly, add them. This must be done in two steps as the GetElement expect
-  // the ChunkCollection to be sorted.
-  for (const auto& address : addresses) {
-    chunks.Insert(address, /* is_import */ true);
-  }
-}
+//   // Secondly, add them. This must be done in two steps as the GetElement expect
+//   // the ChunkCollection to be sorted.
+//   for (const auto& address : addresses) {
+//     chunks.Insert(address, /* is_import */ true);
+//   }
+// }
 }  // namespace quokka
