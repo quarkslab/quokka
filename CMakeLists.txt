@@ -33,7 +33,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif ()
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_PREFIX ${quokka_BINARY_DIR})
@@ -142,6 +142,12 @@ elseif(WIN32)
 endif()
 
 if (NOT NO_BUILD)
+    set(GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated/include")
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/quokka/Version.h.in"
+        "${GENERATED_INCLUDE_DIR}/quokka/Version.h"
+        @ONLY
+    )
 
     if (ENABLE_SANITIZER)
         add_compile_options(-fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls)
@@ -164,6 +170,7 @@ if (NOT NO_BUILD)
             GIT_TAG v30.2
     )
     set(protobuf_BUILD_TESTS OFF CACHE INTERNAL "")
+    set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
     set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
     set(protobuf_BUILD_PROTOBUF_BINARIES ON CACHE BOOL "" FORCE)
     set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
