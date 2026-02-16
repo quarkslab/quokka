@@ -148,7 +148,7 @@ quokka::Quokka::Meta::Compiler ToProtoCompiler(Compiler compiler_type);
  * @param cc Type to convert
  * @return Converted type
  */
-quokka::Quokka::Meta::CallingConvention ToProtoCallingConvention(
+quokka::Quokka::CallingConvention ToProtoCallingConvention(
     CallingConvention cc);
 
 /**

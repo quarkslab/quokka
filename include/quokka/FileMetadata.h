@@ -104,6 +104,9 @@ enum CallingConvention : short {
   CC_PASCAL,
   CC_FASTCALL,
   CC_THISCALL,
+  CC_SWIFT,
+  CC_GOLANG,
+  CC_GOSTK,
 };
 
 /**
@@ -180,12 +183,6 @@ class Metadata {
    * Retrieve the input filename (without path)
    */
   inline void SetFileName();
-
-  /**
-   * Detect compiler using `inf_get_cc_id`
-   * Conservative detection, if IDA is unsure, will set `COMPILER_UNK`
-   */
-  inline void SetCompiler();
 
   /**
    * Detect calling convention using `inf_get_cc_cm`

@@ -49,6 +49,7 @@ from quokka.types import (
     Optional,
     Type,
     Union,
+    CallingConvention
 )
 from quokka.exc import QuokkaError
 
@@ -142,6 +143,7 @@ class Program(dict):
         self.endianness: Endianness = Endianness.from_proto(self.proto.meta.endianess)
 
         self.decompiled_activated: bool = self.proto.meta.decompilation_activated
+        self.calling_convention: CallingConvention = CallingConvention.from_proto(self.proto.meta.calling_convention)
 
         self.chunks: Dict[int, Union[quokka.Chunk, quokka.SuperChunk]] = {}
 

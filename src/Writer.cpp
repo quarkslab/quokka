@@ -532,23 +532,29 @@ quokka::Quokka::Meta::Compiler ToProtoCompiler(Compiler compiler_type) {
   }
 }
 
-quokka::Quokka::Meta::CallingConvention ToProtoCallingConvention(
+quokka::Quokka::CallingConvention ToProtoCallingConvention(
     CallingConvention cc) {
   switch (cc) {
     case CC_CDECL:
-      return quokka::Quokka::Meta::CC_CDECL;
+      return quokka::Quokka::CC_CDECL;
     case CC_ELLIPSIS:
-      return quokka::Quokka::Meta::CC_ELLIPSIS;
+      return quokka::Quokka::CC_ELLIPSIS;
     case CC_STDCALL:
-      return quokka::Quokka::Meta::CC_STDCALL;
+      return quokka::Quokka::CC_STDCALL;
     case CC_PASCAL:
-      return quokka::Quokka::Meta::CC_PASCAL;
+      return quokka::Quokka::CC_PASCAL;
     case CC_FASTCALL:
-      return quokka::Quokka::Meta::CC_FASTCALL;
+      return quokka::Quokka::CC_FASTCALL;
     case CC_THISCALL:
-      return quokka::Quokka::Meta::CC_THISCALL;
+      return quokka::Quokka::CC_THISCALL;
+    case CC_SWIFT:
+      return quokka::Quokka::CC_SWIFT;
+    case CC_GOLANG:
+      return quokka::Quokka::CC_GOLANG;
+    case CC_GOSTK:
+      return quokka::Quokka::CC_GOSTK;
     default:
-      return quokka::Quokka::Meta::CC_UNK;
+      return quokka::Quokka::CC_UNK;
   }
 }
 

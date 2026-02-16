@@ -99,12 +99,15 @@ def get_isa(
     mapping = {
         quokka.pb.Quokka.Meta.PROC_INTEL: ArchEnum.X86,
         quokka.pb.Quokka.Meta.PROC_ARM: ArchEnum.ARM,
+        # quokka.pb.Quokka.Meta.PROC_DALVIK: # Currenlty not supported by capstone
         quokka.pb.Quokka.Meta.PROC_PPC: ArchEnum.PPC,
         quokka.pb.Quokka.Meta.PROC_MIPS: ArchEnum.MIPS,
     }
 
     return mapping.get(proto_isa, ArchEnum.UNKNOWN)
 
+
+def get_cc(proto_cc: "quokka.pb.Quokka.CallingConvention") -> quokka.CallingConvention:
 
 def convert_address_size(
     proto_address_size: "quokka.pb.Quokka.AddressSizeValue",
