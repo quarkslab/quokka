@@ -208,7 +208,7 @@ int ExportMeta(quokka::Quokka* proto) {
   metadata.SetDecompilationActivated(Settings::GetInstance().ExportDecompiledCode());
 
   WriteMetadata(proto, metadata);
-  QLOG_INFO << absl::StrFormat("FileMetadata exported (took %.2fs)",
+  QLOG_INFO << absl::StrFormat("FileMetadata exported (took: %.2fs)",
                                timer.ElapsedSeconds(absl::Now()));
 
   return eOk;

@@ -41,8 +41,8 @@ int ExportBinary(const std::string& filename) {
   WriteExporterMeta(&quokka_protobuf);
   ExportMeta(&quokka_protobuf);
   QLOGI << absl::StrFormat(
-      "meta information exported successfully (took: %.2f)",
-      timer.ElapsedSeconds(absl::Now()));
+      "meta information exported successfully (took: %.2fs)",
+      timer.ElapsedSecondsAndReset());
 
   // Export segments but don't write them yet. Segments have to outlive all the
   // other objects
@@ -51,21 +51,21 @@ int ExportBinary(const std::string& filename) {
   ExportSegments();
   // ExportEnumAndStructures(&quokka_protobuf);
   QLOGI << absl::StrFormat(
-      "Segments and data types exported successfully (took: %.2f)",
-      timer.ElapsedSeconds(absl::Now()));
+      "Segments and data types exported successfully (took: %.2fs)",
+      timer.ElapsedSecondsAndReset());
 
   // Export functions
   replace_wait_box("quokka: exporting functions");
   QLOGI << "Starting to export functions...";
   auto [functions, ranges] = ExportFunctions();
-  QLOGI << absl::StrFormat("%d functions exported successfully (took: %.2f)",
-                           functions.size(), timer.ElapsedSeconds(absl::Now()));
+  QLOGI << absl::StrFormat("%d functions exported successfully (took: %.2fs)",
+                           functions.size(), timer.ElapsedSecondsAndReset());
 
   // Write on the protobuf
-  QLOGI << "Populating the protobuf message...";
-  // write functions
-  QLOGI << absl::StrFormat("Protobuf message populated (took: %.2f)",
-                           timer.ElapsedSeconds(absl::Now()));
+  QLOGI << "Writing functions in the protobuf message...";
+  WriteFunctions(&quokka_protobuf, std::move(functions));
+  QLOGI << absl::StrFormat("Protobuf message populated (took: %.2fs)",
+                           timer.ElapsedSecondsAndReset());
 
   // Export layout and remaining data through linear scanning
   replace_wait_box("quokka: linear scan in progress");
@@ -87,7 +87,7 @@ int ExportBinary(const std::string& filename) {
   }
 
   QLOG_INFO << absl::StrFormat("File %s is written", outfile);
-  QLOG_INFO << absl::StrFormat("quokka finished (took %.2fs)",
+  QLOG_INFO << absl::StrFormat("quokka finished (took: %.2fs)",
                                timer.ElapsedSeconds(absl::Now()));
 
   // Clean everything

@@ -98,6 +98,12 @@ class Timer {
     stop = absl::InfiniteFuture();
   }
 
+  double ElapsedSecondsAndReset() {
+    auto seconds = this->ElapsedSeconds(absl::Now());
+    this->Reset();
+    return seconds;
+  }
+
   /**
    * Compute the duration between stop and start
    * @return Measured time

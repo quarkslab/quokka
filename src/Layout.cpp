@@ -444,7 +444,7 @@ void HeadIterator::Scan(
     this->Iterate();
   }
 
-  QLOGD << absl::StrFormat("Found %d instructions", inst_count);
+  QLOGD << absl::StrFormat("Found %d orphaned instructions", inst_count);
 }
 
 int ExportLinearScan(quokka::Quokka* proto,
@@ -514,18 +514,7 @@ int ExportLinearScan(quokka::Quokka* proto,
   // QLOGI << absl::StrFormat("Finished to write func_chunks (took: %.2fs)",
   //                          timer.ElapsedSeconds(absl::Now()));
 
-  // {
-  //   QLOGI << "Start to export and write functions";
-  //   Timer func_timer(absl::Now());
-  //   std::vector<Function> func_list;
 
-  //   ExportFunctions(func_list, head_iterator.func_chunks, import_manager);
-  //   WriteFunctions(proto, func_list, head_iterator.func_chunks);
-
-  //   QLOGI << absl::StrFormat(
-  //       "Finished to export/write functions (took : %.2fs)",
-  //       func_timer.ElapsedSeconds(absl::Now()));
-  // }
 
   // {
   //   QLOGI << "Start to transform references";

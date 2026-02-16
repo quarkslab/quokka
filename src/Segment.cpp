@@ -136,7 +136,7 @@ int ExportSegments() {
     seg = get_next_seg(seg->start_ea);
   }
 
-  QLOG_INFO << absl::StrFormat("Segments exported (took %.2fs)",
+  QLOG_INFO << absl::StrFormat("Segments exported (took: %.2fs)",
                                timer.ElapsedSeconds(absl::Now()));
 
   segments.freeze();  // Freezing guarantees stable pointers

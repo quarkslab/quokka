@@ -258,8 +258,9 @@ void Function::ExportBody(func_t* func_p) {
   graph->create_tree_layout();
 
   bool graph_layout = true;
-  if (graph == nullptr || !graph->empty()) {
-    QLOGW << "Cannot export graph";
+  if (graph == nullptr || graph->empty()) {
+    QLOGW << absl::StrFormat(
+        "Cannot export graph for function at address 0x%08x", this->start_addr);
     graph_layout = false;
   }
 
