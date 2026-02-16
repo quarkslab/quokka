@@ -392,7 +392,7 @@ ExportFunctions() {
   // Export imported functions
   for (auto const& [address, import] : import_manager.imports) {
     functions.emplace_back(address, import.name);
-    chunks.emplace_back(address, get_item_size(address));
+    chunks.emplace_back(address, address + get_item_size(address));
   }
 
   // Chunks must be sorted
