@@ -27,6 +27,7 @@
 #include <ranges>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -37,18 +38,33 @@
 #include <pro.h>
 #include <bytes.hpp>
 #include <idp.hpp>
+#include <kernwin.hpp>
 #include <name.hpp>
 #include <ua.hpp>
 
 #include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
 
+#include "Logger.h"
 #include "ProtoHelper.h"
 #include "Windows.h"
 
 namespace quokka {
+
+// two steps needed to force preprocessor to expand macro arguments
+#define QK_CONCAT2(a, b) a##b
+#define QK_CONCAT(a, b) QK_CONCAT2(a, b)
+
+#define SCOPED_STEP(start_msg, done_msg)                        \
+  [[maybe_unused]] auto QK_CONCAT(_scoped_step_, __COUNTER__) = \
+      scoped_step((start_msg), (done_msg))
+
+#define SCOPED_BOX_STEP(wait_box_msg, start_msg, done_msg)      \
+  [[maybe_unused]] auto QK_CONCAT(_scoped_step_, __COUNTER__) = \
+      scoped_step((start_msg), (done_msg), (wait_box_msg))
 
 // Concept for checking that type T is one of the std::variant types not
 // considering cv qualifiers
@@ -265,6 +281,58 @@ class RefCounter {
  private:
   std::weak_ptr<T> ptr_;
 };
+
+template <std::invocable F>
+class scope_exit_guard {
+ public:
+  explicit scope_exit_guard(F&& f) noexcept(
+      std::is_nothrow_move_constructible_v<F>)
+      : f_(std::forward<F>(f)) {}
+
+  scope_exit_guard(scope_exit_guard&& other) noexcept(
+      std::is_nothrow_move_constructible_v<F>)
+      : f_(std::move(other.f_)), active_(std::exchange(other.active_, false)) {}
+
+  scope_exit_guard(const scope_exit_guard&) = delete;
+  scope_exit_guard& operator=(const scope_exit_guard&) = delete;
+  scope_exit_guard& operator=(scope_exit_guard&&) = delete;
+
+  void release() noexcept { active_ = false; }
+
+  ~scope_exit_guard() noexcept {
+    if (!active_)
+      return;
+    try {
+      f_();
+    } catch (...) {  // never throw from dtors
+    }
+  }
+
+ private:
+  F f_;
+  bool active_ = true;
+};
+
+[[nodiscard]] inline auto scoped_step(
+    std::string_view start_msg, std::string_view done_msg,
+    std::optional<std::string_view> wait_box = std::nullopt) {
+  Timer timer(absl::Now());
+
+  if (wait_box && !wait_box->empty()) {
+    replace_wait_box("%.*s", static_cast<int>(wait_box->size()),
+                     wait_box->data());
+  }
+  QLOGI << start_msg;
+
+  // Own strings so passing temporaries is always safe.
+  std::string done = std::string(done_msg);
+
+  return scope_exit_guard(
+      [timer = std::move(timer), done = std::move(done)]() mutable noexcept {
+        const auto secs = timer.ElapsedSeconds(absl::Now());
+        QLOGI << absl::StrFormat("%s (took: %.2fs)", done, secs);
+      });
+}
 
 /**
  * Syntax sugar for iterating over a collection of std::variant
