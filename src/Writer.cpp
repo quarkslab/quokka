@@ -14,6 +14,7 @@
 
 #include "quokka/Writer.h"
 
+#include "quokka.pb.h"
 #include "quokka/Block.h"
 // #include "quokka/Comment.h"
 // #include "quokka/Data.h"
@@ -48,6 +49,23 @@ static quokka::Quokka::Function::FunctionType ToProtoFuncType(
       return quokka::Quokka::Function::TYPE_THUNK;
     default:
       return quokka::Quokka::Function::TYPE_INVALID;
+  }
+}
+
+static quokka::Quokka::Function::Edge::EdgeType ToProtoEdgeType(
+    EdgeType edge_type) {
+  switch (edge_type) {
+    case TYPE_TRUE:
+      return quokka::Quokka::Function::Edge::TYPE_TRUE;
+    case TYPE_FALSE:
+      return quokka::Quokka::Function::Edge::TYPE_FALSE;
+    case TYPE_SWITCH:
+      return quokka::Quokka::Function::Edge::TYPE_DYNAMIC;
+    case TYPE_UNCONDITIONAL:
+      return quokka::Quokka::Function::Edge::TYPE_UNCONDITIONAL;
+    default:
+      QLOGE << "Edge type is not correct";
+      return quokka::Quokka::Function::Edge::TYPE_UNCONDITIONAL;
   }
 }
 
@@ -165,22 +183,6 @@ static quokka::Quokka::Function::FunctionType ToProtoFuncType(
 //   }
 // }
 
-// quokka::Quokka::Edge::EdgeType ToProtoEdgeType(EdgeType edge_type) {
-//   switch (edge_type) {
-//     case TYPE_TRUE:
-//       return quokka::Quokka::Edge::TYPE_TRUE;
-//     case TYPE_FALSE:
-//       return quokka::Quokka::Edge::TYPE_FALSE;
-//     case TYPE_SWITCH:
-//       return quokka::Quokka::Edge::TYPE_SWITCH;
-//     case TYPE_UNCONDITIONAL:
-//       return quokka::Quokka::Edge::TYPE_UNCONDITIONAL;
-//     default:
-//       QLOGE << "Edge type is not correct";
-//       return quokka::Quokka::Edge::TYPE_UNCONDITIONAL;
-//   }
-// }
-
 // void WriteBlockIdentifier(quokka::Quokka::BlockIdentifier* proto_block_id,
 //                           int block_idx, int chunk_idx) {
 //   proto_block_id->set_block_id(uint32_t(block_idx));
@@ -271,38 +273,48 @@ void WriteFunctions(quokka::Quokka* proto,
       proto_func->set_decompiled_code(function.decompiled_code);
 
     assert(function.segment != nullptr);
+    assert(function.segment->start_addr <= function.start_addr &&
+           function.start_addr < function.segment->end_addr);
     proto_func->set_segment_index(function.segment->proto_index);
-    // assert(function.start_addr - base_addr >= 0 &&
-    //        "Function address offset is negative");
-    //   proto_func->set_offset(function.start_addr - base_addr);
+    proto_func->set_segment_offset(function.start_addr -
+                                   function.segment->start_addr);
+
+    if (function.file_offset >= 0)
+      proto_func->set_file_offset(function.file_offset);
+    else
+      proto_func->set_no_offset(true);
 
     proto_func->set_function_type(ToProtoFuncType(function.func_type));
 
-    //   proto_func->mutable_function_chunks_index()->Reserve(
-    //       static_cast<int>(function.chunks_index.size()));
-    //   for (const auto& [ida_idx, chunk_p] : function.chunks_index) {
-    //     proto_func->add_function_chunks_index(chunk_p->proto_index);
-    //   }
+    // Reserve capacity
+    int blocks_size = static_cast<int>(function.blocks.size());
+    proto_func->mutable_blocks()->Reserve(blocks_size);
+    proto_func->mutable_block_positions()->Reserve(blocks_size);
+    proto_func->mutable_edges()->Reserve(function.edges.size());
 
-    //   for (const auto& chunk_edge : function.edges) {
-    //     quokka::Quokka::Edge* proto_edge = proto_func->add_chunk_edges();
-    //     WriteBlockIdentifier(proto_edge->mutable_source(),
-    //                          chunk_edge.source.block_idx,
-    //                          chunk_edge.source.chunk->proto_index);
-    //     WriteBlockIdentifier(proto_edge->mutable_destination(),
-    //                          chunk_edge.destination.block_idx,
-    //                          chunk_edge.destination.chunk->proto_index);
-    //     proto_edge->set_edge_type(ToProtoEdgeType(chunk_edge.edge_type));
-    //   }
+    // Add blocks and positions
+    int i = 0;
+    for (const auto& [block, position] : function.blocks) {
+      quokka::Quokka::Block* proto_block = proto_func->add_blocks();
+      proto_block->set_segment_index(0);  // TODO
 
-    //   for (const auto& node_pair : function.node_position) {
-    //     quokka::Quokka::Function::BlockPosition* block_position =
-    //         proto_func->add_block_positions();
-    //     WriteBlockIdentifier(block_position->mutable_block_id(),
-    //                          node_pair.second.block_idx,
-    //                          node_pair.second.chunk->proto_index);
-    //     WritePosition(block_position->mutable_position(), node_pair.first);
-    //   }
+      auto* proto_blockpos = proto_func->add_block_positions();
+      proto_blockpos->set_block_id(i);
+      auto* proto_pos = proto_blockpos->mutable_position();
+      proto_pos->set_x(position.x);
+      proto_pos->set_y(position.y);
+      proto_pos->set_position_type(position.pos_type);
+      ++i;
+    }
+
+    // Add edges
+    for (const auto& edge : function.edges) {
+      auto* proto_edge = proto_func->add_edges();
+      proto_edge->set_edge_type(ToProtoEdgeType(edge.edge_type));
+      proto_edge->set_source(edge.source_idx);
+      proto_edge->set_destination(edge.destination_idx);
+      proto_edge->set_user_defined(false);
+    }
   }
 }
 
