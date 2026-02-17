@@ -95,14 +95,5 @@
 //   return !(rhs == *this);
 // }
 
-// inline bool is_thumb_ea(ea_t ea) {
-//   if (GetProcessor()->id != PLFM_ARM) {
-//     return false;
-//   }
-
-//   // 20 is the segment used for ARM to store thumb mode
-//   sel_t t = get_sreg(ea, 20);
-//   return t != BADSEL && t != 0;
-// }
 
 // }  // namespace quokka
