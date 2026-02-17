@@ -16,10 +16,10 @@
 #include <stdexcept>
 
 // clang-format off: Compatibility.h must come before ida headers
-#include "bytes.hpp"
 #include "quokka/Compatibility.h"
 // clang-format on
 #include <pro.h>
+#include <bytes.hpp>
 
 #include "absl/strings/str_format.h"
 
@@ -29,6 +29,7 @@
 #include "quokka/Function.h"
 #include "quokka/Imports.h"
 // #include "quokka/Reference.h"
+#include "quokka.pb.h"
 #include "quokka/Logger.h"
 #include "quokka/Segment.h"
 #include "quokka/Settings.h"
@@ -278,7 +279,8 @@ void Function::ExportBody(func_t* func_p) {
     // Push block and position
     Block tmp_block(block.start_ea, block.end_ea,
                     RetrieveBlockType(flow_chart.calc_block_type(i)));
-    Position pos{PositionType::CENTER, node_point.x, node_point.y};
+    Position pos{Quokka_Function_Position_PositionType_CENTER, node_point.x,
+                 node_point.y};
     this->blocks.push_back({std::move(tmp_block), std::move(pos)});
   }
 

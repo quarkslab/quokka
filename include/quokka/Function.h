@@ -46,6 +46,7 @@
 #include "ProtoHelper.h"
 #include "Segment.h"
 #include "Windows.h"
+#include "quokka.pb.h"
 
 namespace quokka {
 
@@ -195,9 +196,9 @@ enum PositionType : short { CENTER = 0, TOP_LEFT };
  * same layout.
  */
 struct Position {
-  PositionType pos_type;  ///< Where is the origin
-  int64 x;                ///< X point
-  int64 y;                ///< Y point
+  Quokka::Function::Position::PositionType pos_type;  ///< Where is the origin
+  int64 x;                                            ///< X point
+  int64 y;                                            ///< Y point
 
   auto operator<=>(const Position&) const = default;
 };
