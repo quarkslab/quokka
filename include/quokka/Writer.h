@@ -206,30 +206,12 @@ quokka::Quokka::Segment::Type ToProtoSegmentType(SegmentType type);
 // void WriteInstructions(quokka::Quokka* proto,
 //                        BucketNew<Instruction>& instructions);
 
-// /**
-//  * Convert a block type type to the proto associated type
-//  * @param block_type Type to convert
-//  * @return
-//  */
-// quokka::Quokka::FunctionChunk::Block::BlockType ToProtoBlockType(
-//     BlockType block_type);
-
 /**
  * Convert a mode to the proto associated type
  * @param mode Type to convert
  * @return
  */
 quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode);
-
-// /**
-//  * Write blocks
-//  *
-//  * @param proto_chunk Current protobuf object for FunctionChunk
-//  * @param block Block to write
-//  * @param base_addr Base address (@see get_imagebase)
-//  */
-// void WriteBlock(quokka::Quokka::FunctionChunk* proto_chunk,
-//                 const std::shared_ptr<Block>& block, ea_t base_addr);
 
 // /**
 //  * Write Block identifier

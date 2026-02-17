@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "quokka/Writer.h"
+#include <cassert>
 
 #include "quokka.pb.h"
 #include "quokka/Block.h"
@@ -21,6 +22,7 @@
 #include "quokka/FileMetadata.h"
 // #include "quokka/Function.h"
 // #include "quokka/Instruction.h"
+#include "quokka/Function.h"
 #include "quokka/Layout.h"
 // #include "quokka/Localization.h"
 // #include "quokka/Reference.h"
@@ -66,6 +68,84 @@ static quokka::Quokka::Function::Edge::EdgeType ToProtoEdgeType(
     default:
       QLOGE << "Edge type is not correct";
       return quokka::Quokka::Function::Edge::TYPE_UNCONDITIONAL;
+  }
+}
+
+/**
+ * Convert a block type type to the proto associated type
+ * @param block_type Type to convert
+ * @return the protobuf converted BlockType
+ */
+static quokka::Quokka::Block::BlockType ToProtoBlockType(BlockType block_type) {
+  switch (block_type) {
+    case BTYPE_NORMAL:
+      return quokka::Quokka::Block::BLOCK_TYPE_NORMAL;
+    case BTYPE_INDJUMP:
+      return quokka::Quokka::Block::BLOCK_TYPE_INDJUMP;
+    case BTYPE_RET:
+      return quokka::Quokka::Block::BLOCK_TYPE_RET;
+    case BTYPE_NORET:
+      return quokka::Quokka::Block::BLOCK_TYPE_NORET;
+    case BTYPE_CNDRET:
+      return quokka::Quokka::Block::BLOCK_TYPE_CNDRET;
+    case BTYPE_ENORET:
+      return quokka::Quokka::Block::BLOCK_TYPE_ENORET;
+    case BTYPE_EXTERN:
+      return quokka::Quokka::Block::BLOCK_TYPE_EXTERN;
+    case BTYPE_ERROR:
+      return quokka::Quokka::Block::BLOCK_TYPE_ERROR;
+    default:
+      assert(false && "Mismatch between BlockType enum");
+  }
+}
+
+/**
+ * Write a block
+ *
+ * @param proto_func Current protobuf object for Function
+ * @param block Block to write
+ * @param position Optional position of the block
+ * @param idx Index (in the function) of the block
+ */
+static void WriteBlock(Quokka::Function* proto_func, const Block& block,
+                       const std::optional<Position>& position, size_t idx) {
+  // Get it once and forget it. It will not change throughout the execution
+  static bool is_light_mode = Settings::GetInstance().GetMode() == MODE_LIGHT;
+
+  assert(block.segment != nullptr &&
+         block.segment->start_addr <= block.start_addr &&
+         block.start_addr < block.segment->end_addr &&
+         block.end_addr <= block.segment->end_addr);
+
+  quokka::Quokka::Block* proto_block = proto_func->add_blocks();
+  proto_block->set_segment_index(block.segment->proto_index);
+  proto_block->set_segment_offset(block.start_addr - block.segment->start_addr);
+  if (block.file_offset >= 0)
+    proto_block->set_file_offset(block.file_offset);
+  else
+    proto_block->set_no_offset(true);
+  proto_block->set_block_type(ToProtoBlockType(block.block_type));
+  proto_block->set_size(block.end_addr - block.start_addr);
+  proto_block->set_is_thumb(block.is_thumb);
+
+  if (is_light_mode) {
+    proto_block->set_n_instr(block.instr_count);
+  } else {
+    assert(false && "Not implemented yet. TODO");
+    // proto_block->mutable_instructions_index()->Reserve(
+    //     static_cast<int>(block->instructions.size()));
+    // for (auto const& instruction : block->instructions) {
+    //   proto_block->add_instructions_index(instruction->proto_index);
+    // }
+  }
+
+  if (position.has_value()) {
+    auto* proto_blockpos = proto_func->add_block_positions();
+    proto_blockpos->set_block_id(idx);
+    auto* proto_pos = proto_blockpos->mutable_position();
+    proto_pos->set_x(position->x);
+    proto_pos->set_y(position->y);
+    proto_pos->set_position_type(position->pos_type);
   }
 }
 
@@ -131,54 +211,6 @@ static quokka::Quokka::Function::Edge::EdgeType ToProtoEdgeType(
 
 //     for (auto& operand_string : instruction->operand_strings) {
 //       proto_inst->add_operand_strings(operand_string->proto_index);
-//     }
-//   }
-// }
-
-// quokka::Quokka::FunctionChunk::Block::BlockType ToProtoBlockType(
-//     BlockType block_type) {
-//   switch (block_type) {
-//     case BTYPE_NORMAL:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_NORMAL;
-//     case BTYPE_INDJUMP:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_INDJUMP;
-//     case BTYPE_RET:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_RET;
-//     case BTYPE_NORET:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_NORET;
-//     case BTYPE_CNDRET:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_CNDRET;
-//     case BTYPE_ENORET:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_ENORET;
-//     case BTYPE_EXTERN:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_EXTERN;
-//     case BTYPE_ERROR:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_ERROR;
-//     case BTYPE_FAKE:
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_FAKE;
-//     default:
-//       QLOGE << "Block type is not correct";
-//       return quokka::Quokka::FunctionChunk::Block::BLOCK_TYPE_FAKE;
-//   }
-// }
-
-// void WriteBlock(quokka::Quokka::FunctionChunk* proto_chunk,
-//                 const std::shared_ptr<Block>& block, ea_t base_addr) {
-//   quokka::Quokka::FunctionChunk::Block* proto_block =
-//   proto_chunk->add_blocks();
-
-//   uint64_t offset = block->start_addr - proto_chunk->offset_start() -
-//   base_addr; assert(offset >= 0 && "Problem with block offset");
-
-//   proto_block->set_offset_start(uint64_t(offset));
-//   proto_block->set_is_fake(block->is_fake);
-//   proto_block->set_block_type(ToProtoBlockType(block->block_type));
-
-//   if (Settings::GetInstance().ExportInstructions()) {
-//     proto_block->mutable_instructions_index()->Reserve(
-//         static_cast<int>(block->instructions.size()));
-//     for (auto const& instruction : block->instructions) {
-//       proto_block->add_instructions_index(instruction->proto_index);
 //     }
 //   }
 // }
@@ -260,8 +292,6 @@ static quokka::Quokka::Function::Edge::EdgeType ToProtoEdgeType(
 
 void WriteFunctions(quokka::Quokka* proto,
                     const std::vector<Function>& functions) {
-  // uint64_t base_addr = proto->meta().base_addr();
-
   proto->mutable_functions()->Reserve(static_cast<int>(functions.size()));
   for (const auto& function : functions) {
     quokka::Quokka::Function* proto_func = proto->add_functions();
@@ -295,15 +325,7 @@ void WriteFunctions(quokka::Quokka* proto,
     // Add blocks and positions
     int i = 0;
     for (const auto& [block, position] : function.blocks) {
-      quokka::Quokka::Block* proto_block = proto_func->add_blocks();
-      proto_block->set_segment_index(0);  // TODO
-
-      auto* proto_blockpos = proto_func->add_block_positions();
-      proto_blockpos->set_block_id(i);
-      auto* proto_pos = proto_blockpos->mutable_position();
-      proto_pos->set_x(position.x);
-      proto_pos->set_y(position.y);
-      proto_pos->set_position_type(position.pos_type);
+      WriteBlock(proto_func, block, position, i);
       ++i;
     }
 
@@ -344,7 +366,8 @@ void WriteFunctions(quokka::Quokka* proto,
 //     quokka::Quokka::Location::InstructionIdentifier* proto_inst =
 //         proto_location->mutable_instruction_position();
 
-//     auto block_idx = inst_instance.chunk_->GetBlockIdx(inst_instance.block_);
+//     auto block_idx =
+//     inst_instance.chunk_->GetBlockIdx(inst_instance.block_);
 //     proto_inst->set_block_idx(block_idx.value_or(-1));
 //     proto_inst->set_instruction_idx(inst_instance.instruction_index);
 //     proto_inst->set_func_chunk_idx(inst_instance.chunk_->proto_index);
@@ -410,7 +433,8 @@ void WriteFunctions(quokka::Quokka* proto,
 
 //     proto_ref->set_reference_type(ToProtoReferenceType(reference.type));
 //     WriteLocation(proto_ref->mutable_source(), reference.source_);
-//     WriteLocation(proto_ref->mutable_destination(), reference.destination_);
+//     WriteLocation(proto_ref->mutable_destination(),
+//     reference.destination_);
 //   }
 // }
 
@@ -448,8 +472,8 @@ void WriteFunctions(quokka::Quokka* proto,
 
 //   absl::flat_hash_map<std::string, int> string_map;
 
-//   // Set an empty string in the first offset to differentiate between values
-//   set
+//   // Set an empty string in the first offset to differentiate between
+//   values set
 //   // and non set.
 //   proto->add_string_table("");
 
