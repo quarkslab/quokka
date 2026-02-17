@@ -127,7 +127,6 @@ message Quokka {
       BLOCK_TYPE_ENORET = 5;
       BLOCK_TYPE_EXTERN = 6;
       BLOCK_TYPE_ERROR = 7;
-      BLOCK_TYPE_FAKE = 8;
     }
 
     uint32 segment_index = 1;
@@ -145,6 +144,11 @@ message Quokka {
 
     // Whether the first instruction of the BB is in thumb mode
     bool is_thumb = 8;
+
+    // Used only in light mode. Number of instructions as detected by the
+    // current backend. This is useful to detect a mismatch between the runtime
+    // disassembler and the backend one
+    uint32 n_instr = 9;
   }
 
   message Function {
