@@ -38,6 +38,7 @@
 
 #include "Instruction.h"
 #include "Logger.h"
+#include "Segment.h"
 #include "Windows.h"
 
 namespace quokka {
@@ -53,7 +54,6 @@ enum BlockType : short {
   BTYPE_ENORET,
   BTYPE_EXTERN,
   BTYPE_ERROR,
-  BTYPE_FAKE,
 };
 
 /**
@@ -70,10 +70,17 @@ BlockType RetrieveBlockType(fc_block_type_t block_type);
  * Representation of a basic block.
  */
 class Block {
+ private:
+  void ExportInstructions();
+
  public:
   ea_t start_addr;  ///< Start address
   ea_t end_addr;    ///< End address (may be equal to `BADADDR`)
   BlockType block_type;
+  const Segment* segment;  ///< The segment in which the block lives
+  int64 file_offset;  ///< File offset of the function, if <0 then there is none
+  size_t instr_count = 0;  ///< How many instructions. Useful for light mode
+  bool is_thumb;           ///< Is it a ARM thumb block
 
   /**
    * List of instructions. Container of all instructions referenced in
@@ -82,30 +89,13 @@ class Block {
    */
   std::vector<std::shared_ptr<Instruction>> instructions;
 
-  bool is_fake = false;  ///< Boolean for fake blocks
-
   /**
    * Construct Block
    *
    * @param addr Start address of the block
    * @param eaddr End address of the block
    */
-  Block(ea_t addr, ea_t eaddr, BlockType block_type)
-      : start_addr(addr), end_addr(eaddr), block_type(block_type) {
-    current_address = start_addr;
-  }
-
-  /**
-   * Construct a fake block
-   * @param addr Start address
-   */
-  explicit Block(ea_t addr)
-      : start_addr(addr),
-        end_addr(BADADDR),
-        block_type(BTYPE_FAKE),
-        is_fake(true) {
-    current_address = start_addr;
-  }
+  Block(ea_t addr, ea_t eaddr, BlockType block_type);
 
   /**
    * Check if `addr` belongs to the block
