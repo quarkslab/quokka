@@ -25,8 +25,9 @@
 #include <utility>
 #include <vector>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
-
+// clang-format on
 #include <ida.hpp>
 #include <idp.hpp>
 #include <lines.hpp>
@@ -38,6 +39,7 @@
 #include "absl/hash/hash.h"
 #include "absl/strings/str_format.h"
 
+#include "Bucket.h"
 #include "Logger.h"
 #include "ProtoHelper.h"
 #include "Util.h"
@@ -222,6 +224,39 @@ class Instruction : public ProtoHelper {
   //    */
   //   bool operator==(const Instruction& rhs) const;
   //   bool operator!=(const Instruction& rhs) const;
+};
+
+/**
+ * ---------------------------------------------
+ * quokka::Instructions
+ * ---------------------------------------------
+ * Map-like collection of instructions that stores them like {address ->
+ * Instruction}.
+ *
+ * @note No two instructions should share the same starting address, this should
+ * hold even in heavily obfuscated binaries
+ */
+class Instructions final : public MapBucket<ea_t, Instruction> {
+ private:
+  explicit Instructions() = default;
+
+ public:
+  using MapBucket<ea_t, Instruction>::MapBucket;
+
+  /**
+   * Return the instance of the `Instructions` class.
+   * Used for the singleton pattern.
+   * @return `Instructions`
+   */
+  static Instructions& GetInstance() {
+    static Instructions instance;
+    return instance;
+  }
+
+  Instructions(Instructions const&) = delete;
+  void operator=(Instructions const&) = delete;
+  Instructions(Instructions&&) = delete;
+  void operator=(Instructions&&) = delete;
 };
 
 // /**
