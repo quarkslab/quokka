@@ -15,6 +15,7 @@
 #include "quokka/Quokka.h"
 
 #include "quokka/FileMetadata.h"
+#include "quokka/Function.h"
 #include "quokka/Layout.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
@@ -36,41 +37,48 @@ int ExportBinary(const std::string& filename) {
   Timer timer(absl::Now());
 
   // Always start by meta !
-  replace_wait_box("quokka: exporting meta information");
-  QLOGI << "Starting to export meta information...";
-  WriteExporterMeta(&quokka_protobuf);
-  ExportMeta(&quokka_protobuf);
-  QLOGI << absl::StrFormat(
-      "meta information exported successfully (took: %.2fs)",
-      timer.ElapsedSecondsAndReset());
+  {
+    SCOPED_BOX_STEP("quokka: exporting meta information",
+                    "Starting to export meta information...",
+                    "meta information exported successfully");
+    WriteExporterMeta(&quokka_protobuf);
+    ExportMeta(&quokka_protobuf);
+  }
 
-  // Export segments but don't write them yet. Segments have to outlive all the
-  // other objects
-  replace_wait_box("quokka: exporting segments and data types");
-  QLOGI << "Starting to export segments and data types...";
-  ExportSegments();
-  // ExportEnumAndStructures(&quokka_protobuf);
-  QLOGI << absl::StrFormat(
-      "Segments and data types exported successfully (took: %.2fs)",
-      timer.ElapsedSecondsAndReset());
+  // Export segments but don't write them yet. Segments have to outlive all
+  // the other objects
+  {
+    SCOPED_BOX_STEP("quokka: exporting segments and data types",
+                    "Starting to export segments and data types...",
+                    "Segments and data types exported successfully");
+    ExportSegments();
+    // ExportEnumAndStructures(&quokka_protobuf);
+  }
 
   // Export functions
-  replace_wait_box("quokka: exporting functions");
-  QLOGI << "Starting to export functions...";
-  auto [functions, ranges] = ExportFunctions();
-  QLOGI << absl::StrFormat("%d functions exported successfully (took: %.2fs)",
-                           functions.size(), timer.ElapsedSecondsAndReset());
+  decltype(ExportFunctions()) funcs_and_ranges;
+  {
+    Timer timer(absl::Now());
+    replace_wait_box("quokka: exporting functions");
+    QLOGI << "Starting to export functions...";
+    funcs_and_ranges = ExportFunctions();
+    const auto& [functions, ranges] = funcs_and_ranges;
+    QLOGI << absl::StrFormat("%d functions exported successfully (took: %.2fs)",
+                             functions.size(),
+                             timer.ElapsedSeconds(absl::Now()));
+  }
+  auto [functions, ranges] = std::move(funcs_and_ranges);
 
   // Export layout and remaining data through linear scanning
   replace_wait_box("quokka: linear scan in progress");
   ExportLinearScan(&quokka_protobuf, std::move(ranges));
 
   // Write on the protobuf
-  timer.Reset();
-  QLOGI << "Writing functions in the protobuf message...";
-  WriteFunctions(&quokka_protobuf, std::move(functions));
-  QLOGI << absl::StrFormat("Protobuf message populated (took: %.2fs)",
-                           timer.ElapsedSecondsAndReset());
+  {
+    SCOPED_STEP("Writing functions in the protobuf message...",
+                "Protobuf message populated");
+    WriteFunctions(&quokka_protobuf, std::move(functions));
+  }
 
   replace_wait_box("quokka: writing on the wire");
   std::string outfile = filename;
