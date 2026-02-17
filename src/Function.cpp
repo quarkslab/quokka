@@ -270,18 +270,22 @@ void Function::ExportBody(func_t* func_p) {
   // Add the blocks
   for (int i = 0; i < flow_chart.node_qty(); ++i) {
     const qbasic_block_t& block = flow_chart.blocks[i];
-    const point_t& node_point = graph->nodes[i].center();
 
     // Sanity checks. Never trust IDA
     assert(!block.empty() && block.start_ea != BADADDR &&
-           block.end_ea != BADADDR);
+           block.end_ea != BADADDR && block.start_ea < block.end_ea);
 
     // Push block and position
     Block tmp_block(block.start_ea, block.end_ea,
                     RetrieveBlockType(flow_chart.calc_block_type(i)));
-    Position pos{Quokka_Function_Position_PositionType_CENTER, node_point.x,
-                 node_point.y};
-    this->blocks.push_back({std::move(tmp_block), std::move(pos)});
+    if (graph_layout) {
+      const point_t& node_point = graph->nodes[i].center();
+      Position pos{Quokka_Function_Position_PositionType_CENTER, node_point.x,
+                   node_point.y};
+      this->blocks.push_back({std::move(tmp_block), std::move(pos)});
+    } else {
+      this->blocks.push_back({std::move(tmp_block), {}});
+    }
   }
 
   // Add the edges. By construction, IDA flowchart indices are the same as

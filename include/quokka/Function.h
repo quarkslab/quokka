@@ -20,6 +20,7 @@
 #ifndef QUOKKA_FUNCTION_H
 #define QUOKKA_FUNCTION_H
 
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -356,14 +357,14 @@ class Function {
   std::string mangled_name;  ///< Function mangled name (not empty only if
                              ///< different than the standard one)
   FunctionType func_type;    ///< Function type
-  const Segment* segment;    // The segment where the function lives
-  int64 file_offset;  // File offset of the function, if <0 then there is none
+  const Segment* segment;    ///< The segment where the function lives
+  int64 file_offset;  ///< File offset of the function, if <0 then there is none
   std::string decompiled_code;  ///< Decompiled code (if any)
 
   /**
    * Collection of pairs {basic block, position in the graph view}
    */
-  std::vector<std::pair<Block, Position>> blocks;
+  std::vector<std::pair<Block, std::optional<Position>>> blocks;
 
   /**
    * List of edges between blocks
