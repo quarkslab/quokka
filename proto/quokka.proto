@@ -106,6 +106,8 @@ message Quokka {
       string other = 5;  // TODO umbrella value for whatever operand
     }
 
+    uint32 operand_string_index = 7;
+
     // Optionally encodes disassembler specific data
     optional bytes specific_info = 6;
   }
@@ -129,23 +131,30 @@ message Quokka {
       BLOCK_TYPE_ERROR = 7;
     }
 
+    message InstructionXref {
+      uint32 instr_bb_idx = 1;
+      repeated uint64 xref_to = 2;
+      repeated uint64 xref_from = 3;
+    }
+
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
-    
+
     int64 file_offset = 3;
-    
+
     BlockType block_type = 4;
 
     repeated uint64 instruction_index = 5;  // field empty in LIGHT mode
+    repeated InstructionXref instructions_xref = 6;
 
-    uint32 size = 6;  // The size in terms of bytes
+    uint32 size = 7;  // The size in terms of bytes
     // Whether the first instruction of the BB is in thumb mode
-    bool is_thumb = 7;
+    bool is_thumb = 8;
 
     // Used only in light mode. Number of instructions as detected by the
     // current backend. This is useful to detect a mismatch between the runtime
     // disassembler and the backend one
-    uint32 n_instr = 8;
+    uint32 n_instr = 9;
   }
 
   message Function {
@@ -190,8 +199,9 @@ message Quokka {
 
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
-    int64 file_offset = 3; // absolute from file begining (-1 if does not exists)
-    
+    int64 file_offset =
+        3;  // absolute from file begining (-1 if does not exists)
+
     repeated Block blocks = 4;
     repeated Edge edges = 5;
 
@@ -255,9 +265,11 @@ message Quokka {
     optional uint32 type_index = 5;
 
     int32 size = 6;  // 0 if has no size | -1 if variable size
-    
+
     string name = 7;
     bool not_initialized = 8;
+    repeated uint64 xref_to = 9;
+    repeated uint64 xref_from = 10;
   }
 
   message CompositeType {
@@ -267,6 +279,7 @@ message Quokka {
       DataType type = 3;
       optional uint32 type_index = 4;  // Only if the type is composite or enum
       uint32 size = 5;
+      repeated uint64 xref_from = 6;
     }
 
     enum CompositeSubType {
@@ -279,15 +292,21 @@ message Quokka {
     CompositeSubType type = 2;
     uint32 size = 3;
     repeated Member members = 4;
+    // TODO check to see if ida export this. Possibly remove it
+    repeated uint64 xref_from = 5;
   }
 
   message EnumType {
     message EnumValue {
       string name = 1;
       int64 value = 2;
+      repeated uint64 xref_from = 3;
     }
     string name = 1;
     repeated EnumValue values = 2;
+    // TODO add a base DataType
+    // TODO check to see if ida export this. Possibly remove it
+    repeated uint64 xref_from = 3;
   }
 
   message CompositeDataTypeIdentifier {
@@ -393,10 +412,21 @@ message Quokka {
     Type type = 5;
     AddressSize address_size = 6;
 
-    // File offset of the start address of the segment
-    oneof offset_type {
-      uint64 file_offset = 7;
-      bool no_offset = 8;
+    // File offset of the start address of the segment. -1 if no offset
+    int64 file_offset = 7;
+  }
+
+  message OrphanedInstruction {
+    message LightInstruction {
+      uint32 segment_idx = 1;
+      uint32 segment_offset = 2;
+      int32 file_offset = 3;
+      uint32 size = 4;
+    }
+
+    oneof orphan_type {
+      uint32 instruction_index = 1;
+      LightInstruction instruction = 2;
     }
   }
 
@@ -422,5 +452,7 @@ message Quokka {
 
   repeated Segment segments = 15;
 
-  repeated Block orphaned_blocks = 16;
+  repeated OrphanedInstruction orphaned_instructions = 16;
+
+  repeated string operand_strings = 17;
 }
