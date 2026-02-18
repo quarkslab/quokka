@@ -299,13 +299,12 @@ void WriteFunctions(quokka::Quokka* proto,
  */
 void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata);
 
-// /**
-//  * Write the structure
-//  *
-//  * @param proto Protobuf main object
-//  * @param structures Structures collection
-//  */
-// void WriteStructures(quokka::Quokka* proto, Structures& structures);
+/**
+ * Write the composite types
+ *
+ * @param proto Protobuf main object
+ */
+void WriteCompositeTypes(quokka::Quokka* proto);
 
 /**
  * Write the exporter metadata

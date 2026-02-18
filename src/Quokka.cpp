@@ -52,7 +52,8 @@ int ExportBinary(const std::string& filename) {
                     "Starting to export segments and data types...",
                     "Segments and data types exported successfully");
     ExportSegments();
-    // ExportEnumAndStructures(&quokka_protobuf);
+    ExportCompositeDataTypes();
+    WriteCompositeTypes(&quokka_protobuf);
   }
 
   // Export functions

@@ -14,11 +14,14 @@
 
 #include "quokka/Writer.h"
 #include <cassert>
+#include <type_traits>
+#include <variant>
 
 #include "quokka.pb.h"
 #include "quokka/Block.h"
 // #include "quokka/Comment.h"
 // #include "quokka/Data.h"
+#include "quokka/DataType.h"
 #include "quokka/FileMetadata.h"
 // #include "quokka/Function.h"
 // #include "quokka/Instruction.h"
@@ -96,6 +99,35 @@ static quokka::Quokka::Block::BlockType ToProtoBlockType(BlockType block_type) {
       return quokka::Quokka::Block::BLOCK_TYPE_ERROR;
     default:
       assert(false && "Mismatch between BlockType enum");
+  }
+}
+
+static quokka::Quokka::DataType ToProtoDataType(DataType data_type) {
+  switch (data_type) {
+    case TYPE_B:
+      return quokka::Quokka::TYPE_B;
+    case TYPE_W:
+      return quokka::Quokka::TYPE_W;
+    case TYPE_DW:
+      return quokka::Quokka::TYPE_DW;
+    case TYPE_QW:
+      return quokka::Quokka::TYPE_QW;
+    case TYPE_OW:
+      return quokka::Quokka::TYPE_OW;
+    case TYPE_FLOAT:
+      return quokka::Quokka::TYPE_FLOAT;
+    case TYPE_DOUBLE:
+      return quokka::Quokka::TYPE_DOUBLE;
+    case TYPE_ASCII:
+      return quokka::Quokka::TYPE_ASCII;
+    case TYPE_STRUCT:
+      return quokka::Quokka::TYPE_STRUCT;
+    case TYPE_ALIGN:
+      return quokka::Quokka::TYPE_ALIGN;
+    case TYPE_POINTER:
+      return quokka::Quokka::TYPE_POINTER;
+    default:
+      return quokka::Quokka::TYPE_UNK;
   }
 }
 
@@ -430,36 +462,6 @@ void WriteFunctions(quokka::Quokka* proto,
 //     reference.destination_);
 //   }
 // }
-
-// quokka::Quokka::DataType ToProtoDataType(DataType data_type) {
-//   switch (data_type) {
-//     case TYPE_B:
-//       return quokka::Quokka::TYPE_B;
-//     case TYPE_W:
-//       return quokka::Quokka::TYPE_W;
-//     case TYPE_DW:
-//       return quokka::Quokka::TYPE_DW;
-//     case TYPE_QW:
-//       return quokka::Quokka::TYPE_QW;
-//     case TYPE_OW:
-//       return quokka::Quokka::TYPE_OW;
-//     case TYPE_FLOAT:
-//       return quokka::Quokka::TYPE_FLOAT;
-//     case TYPE_DOUBLE:
-//       return quokka::Quokka::TYPE_DOUBLE;
-//     case TYPE_ASCII:
-//       return quokka::Quokka::TYPE_ASCII;
-//     case TYPE_STRUCT:
-//       return quokka::Quokka::TYPE_STRUCT;
-//     case TYPE_ALIGN:
-//       return quokka::Quokka::TYPE_ALIGN;
-//     case TYPE_POINTER:
-//       return quokka::Quokka::TYPE_POINTER;
-//     default:
-//       return quokka::Quokka::TYPE_UNK;
-//   }
-// }
-
 // void WriteData(quokka::Quokka* proto, BucketNew<Data>& data_bucket) {
 //   proto->mutable_data()->Reserve(static_cast<int>(data_bucket.size()));
 
@@ -645,31 +647,63 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
 //   }
 // }
 
-// void WriteStructures(quokka::Quokka* proto, Structures& structures) {
-//   proto->mutable_structs()->Reserve(structures.size());
-//   quokka::Quokka::Structure* proto_struct;
-//   quokka::Quokka::Structure::Member* proto_member;
+void WriteCompositeTypes(quokka::Quokka* proto) {
+  CompositeTypes& composite_types = CompositeTypes::GetInstance();
 
-//   for (auto& structure : structures) {
-//     structure->proto_index = proto->structs_size();
-//     proto_struct = proto->add_structs();
-//     proto_struct->set_name(structure->name);
-//     proto_struct->set_type(ToProtoStructType(structure->type));
-//     proto_struct->set_size(structure->size);
-//     proto_struct->set_variable_size(structure->has_variable_size);
-//     proto_struct->mutable_members()->Reserve(structure->members.size());
+  auto write_composite_type = [&proto]<typename T>(T& composite) {
+    composite.proto_index = proto->composite_types_size();
 
-//     for (auto& member : structure->members) {
-//       member->proto_index = proto_struct->members_size();
-//       proto_member = proto_struct->add_members();
-//       proto_member->set_offset(member->offset);
-//       proto_member->set_type(ToProtoDataType(member->type));
-//       proto_member->set_name(member->name);
-//       proto_member->set_size(member->size);
-//       proto_member->set_value(member->value);
-//     }
-//   }
-// }
+    Quokka::CompositeType* proto_composite_type = proto->add_composite_types();
+    proto_composite_type->set_name(composite.name);
+    proto_composite_type->set_type(CompositeSubTypeToProto<T>());
+    proto_composite_type->set_size(composite.size);
+  };
+
+  auto write_members = [](auto& composite,
+                          Quokka::CompositeType* proto_composite_type) {
+    // Reserve the space
+    proto_composite_type->mutable_members()->Reserve(composite.members.size());
+
+    for (const auto& member : composite.members) {
+      member.proto_index = proto_composite_type->members_size();
+
+      Quokka::CompositeType::Member* proto_member =
+          proto_composite_type->add_members();
+      proto_member->set_offset(member.offset);
+      proto_member->set_name(member.name);
+      proto_member->set_type(ToProtoDataType(member.type));
+      proto_member->set_size(member.size);
+
+      // Optional type_index
+      if (member.composite_type_ptr.has_value()) {
+        std::visit(
+            [&proto_member](auto& comp_ref) {
+              proto_member->set_type_index(comp_ref.proto_index);
+            },
+            **member.composite_type_ptr);
+      }
+    }
+  };
+
+  proto->mutable_composite_types()->Reserve(composite_types.size());
+
+  // First write all the composite types without members
+  for (const auto& composite_type : composite_types)
+    std::visit(write_composite_type, *composite_type);
+
+  // Finally write all the members
+  uint32_t i = 0;
+  for (const auto& composite_type : composite_types) {
+    Quokka::CompositeType* proto_composite_type =
+        proto->mutable_composite_types(i);
+    std::visit(
+        [&proto_composite_type, &write_members](auto& composite) {
+          write_members(composite, proto_composite_type);
+        },
+        *composite_type);
+    ++i;
+  }
+}
 
 quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode) {
   switch (mode) {

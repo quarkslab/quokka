@@ -238,10 +238,8 @@ class CompositeTypes {
    */
   iterator begin() { return composite_types_.begin(); }
   iterator end() { return composite_types_.end(); }
-  [[nodiscard]] const_iterator begin() const {
-    return composite_types_.cbegin();
-  }
-  [[nodiscard]] const_iterator end() const { return composite_types_.cend(); }
+  const_iterator begin() const { return composite_types_.cbegin(); }
+  const_iterator end() const { return composite_types_.cend(); }
 };
 
 /**
@@ -324,15 +322,24 @@ class EnumType : public ProtoHelper {
 //   [[nodiscard]] const_iterator end() const { return enums_.cend(); }
 // };
 
+template <typename T>
+constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
+  using U = std::remove_cvref_t<T>;
+  if constexpr (std::is_same_v<U, UnionType>)
+    return Quokka_CompositeType_CompositeSubType_TYPE_UNION;
+  else if constexpr (std::is_same_v<U, StructureType>)
+    return Quokka_CompositeType_CompositeSubType_TYPE_STRUCT;
+  else
+    return Quokka_CompositeType_CompositeSubType_TYPE_UNK;
+}
+
 /**
- * Export and write the composite data types of the program.
+ * Export the composite data types of the program.
  *
  * Will populate the `CompositeTypes` singleton container.
  * This is usually fast because not many structures are defined in a program.
- *
- * @param proto A pointer to the main protobuf object.
  */
-void ExportCompositeDataTypes(Quokka* proto);
+void ExportCompositeDataTypes();
 
 /**
  * Export all the enums defined in the program
