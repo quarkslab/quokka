@@ -119,9 +119,6 @@ const Segment& GetSegment(ea_t addr) {
 }
 
 int ExportSegments() {
-  Timer timer(absl::Now());
-  QLOG_INFO << "Start to export segments";
-
   Segments& segments = Segments::GetInstance();
 
   segment_t* seg = get_first_seg();
@@ -135,9 +132,6 @@ int ExportSegments() {
 
     seg = get_next_seg(seg->start_ea);
   }
-
-  QLOG_INFO << absl::StrFormat("Segments exported (took: %.2fs)",
-                               timer.ElapsedSeconds(absl::Now()));
 
   segments.Freeze();  // Freezing guarantees stable pointers
 
