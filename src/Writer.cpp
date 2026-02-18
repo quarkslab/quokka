@@ -633,20 +633,6 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
   proto_meta->set_decompilation_activated(metadata.decompilation_activated);
 }
 
-// quokka::Quokka::Structure::StructureType ToProtoStructType(
-//     StructureType struct_type) {
-//   switch (struct_type) {
-//     case STRUCT_ENUM:
-//       return quokka::Quokka::Structure::TYPE_ENUM;
-//     case STRUCT_STRUCT:
-//       return quokka::Quokka::Structure::TYPE_STRUCT;
-//     case STRUCT_UNION:
-//       return quokka::Quokka::Structure::TYPE_UNION;
-//     default:
-//       return quokka::Quokka::Structure::TYPE_UNK;
-//   }
-// }
-
 void WriteCompositeTypes(quokka::Quokka* proto) {
   CompositeTypes& composite_types = CompositeTypes::GetInstance();
 
