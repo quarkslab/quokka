@@ -120,10 +120,7 @@ static void WriteBlock(Quokka::Function* proto_func, const Block& block,
   quokka::Quokka::Block* proto_block = proto_func->add_blocks();
   proto_block->set_segment_index(block.segment->proto_index);
   proto_block->set_segment_offset(block.start_addr - block.segment->start_addr);
-  if (block.file_offset >= 0)
-    proto_block->set_file_offset(block.file_offset);
-  else
-    proto_block->set_no_offset(true);
+  proto_block->set_file_offset(block.file_offset);
   proto_block->set_block_type(ToProtoBlockType(block.block_type));
   proto_block->set_size(block.end_addr - block.start_addr);
   proto_block->set_is_thumb(block.is_thumb);
@@ -309,11 +306,7 @@ void WriteFunctions(quokka::Quokka* proto,
     proto_func->set_segment_offset(function.start_addr -
                                    function.segment->start_addr);
 
-    if (function.file_offset >= 0)
-      proto_func->set_file_offset(function.file_offset);
-    else
-      proto_func->set_no_offset(true);
-
+    proto_func->set_file_offset(function.file_offset);
     proto_func->set_function_type(ToProtoFuncType(function.func_type));
 
     // Reserve capacity
@@ -736,12 +729,7 @@ void WriteSegments(quokka::Quokka* proto) {
 
     proto_seg->set_address_size(ToProtoAddressSize(segment.address_size));
     proto_seg->set_type(ToProtoSegmentType(segment.type));
-
-    if (segment.file_offset >= 0) {
-      proto_seg->set_file_offset(segment.file_offset);
-    } else {
-      proto_seg->set_no_offset(true);
-    }
+    proto_seg->set_file_offset(segment.file_offset);
   }
 }
 
