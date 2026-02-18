@@ -81,7 +81,6 @@ class Program(dict):
         address_size: Default pointer size
         arch: Program architecture
         endianness: Program endianness
-        chunks: A mapping of chunks
         executable: An object to manage the binary file
         references: The reference manager
         data_holder: The data manager
@@ -150,25 +149,15 @@ class Program(dict):
 
         self.calling_convention: CallingConvention = CallingConvention.from_proto(self.proto.meta.calling_convention)
 
-        self.chunks: Dict[int, Union[quokka.Chunk, quokka.SuperChunk]] = {}
-
         self.executable = quokka.Executable(exec_path, self.endianness)
         self.references = quokka.References(self)
         self.data_holder = quokka.DataHolder(self.proto, self)
 
-        # Chunks
-        for chunk_index, _ in enumerate(self.proto.function_chunks):
-            chunk = quokka.Chunk(chunk_index, program=self)
-
-            if chunk.fake:
-                chunk = quokka.analysis.split_chunk(chunk)
-
-            self.chunks[chunk_index] = chunk
-
         # Functions
+        # self.functions: Dict[int, quokka.Function] = {}
         self.fun_names: Dict[str, quokka.Function] = {}
-        for func in self.proto.functions:
-            function = quokka.Function(func, self)
+        for func_index, func in enumerate(self.proto.functions):
+            function = quokka.Function(func_index, func, self)
             self[function.start] = function
             if function.name not in self.fun_names:
                 self.fun_names[function.name] = function
@@ -202,23 +191,16 @@ class Program(dict):
     def call_graph(self) -> networkx.DiGraph:
         """Compute the Call Graph of the binary
 
-        Every node in the call graph is a chunk (and not a function).
+        Every node in the call graph is a function.
 
         :return: A Call Graph (a networkx DiGraph)
         """
         call_graph: "networkx.DiGraph" = networkx.DiGraph()
 
-        chunk: Union[quokka.Chunk, quokka.SuperChunk]
-        for chunk in self.chunks.values():
-            if isinstance(chunk, quokka.Chunk):
-                call_graph.add_node(chunk.start)
-                call_graph.add_edges_from(product((chunk.start,), chunk.calls))
-            else:  # Super Chunks
-                for small_chunk in chunk.starts.values():
-                    call_graph.add_edges_from(
-                        product((small_chunk,), small_chunk.calls)
-                    )
-
+        for function in self.values():
+            call_graph.add_node(function.start)
+            call_graph.add_edges_from(product((function.start,), function.calls))
+            
         return call_graph
 
     @cached_property
@@ -243,6 +225,32 @@ class Program(dict):
         ]
         return structures
 
+    @cached_property
+    def memory(self) -> "quokka.Memory":
+        """Memory representation of the program.
+
+        Allows getting layout of the program especially if addressses are flagged
+        as code or data.
+
+        Returns:
+            A `quokka.Memory` instance to access the program memory.
+        """
+        # TODO(rd): Parse the memory layout
+        raise NotImplementedError("Memory is not implemented yet")
+
+    @cached_property
+    def orphaned_blocks(self) -> Iterable[quokka.Block]:
+        """Orphaned blocks
+
+        Orphaned blocks are blocks that are not attached to any function. They can be
+        useful to analyze code that is not in functions (e.g. hand-written assembly or
+        jump tables).
+
+        Returns:
+            A list of orphaned blocks.
+        """
+        raise NotImplementedError("Orphaned blocks loading is not implemented yet")
+
     @property
     def strings(self) -> Iterable[str]:
         """Program strings
@@ -265,8 +273,6 @@ class Program(dict):
 
         Note: the address must be the head of the instruction.
 
-        TODO(dm): Improve the algorithm because the chunks are sorted (use bisect)
-
         Arguments:
             address: AddressT: Address to query
 
@@ -276,10 +282,10 @@ class Program(dict):
         Raises:
             IndexError: When no instruction is found at this address
         """
-        for chunk in self.chunks.values():
-            if chunk.in_chunk(address):
+        for function in self.values():
+            if function.in_function(address):
                 try:
-                    return chunk.get_instruction(address)
+                    return function.get_instruction(address)
                 except IndexError:
                     pass
 
@@ -335,127 +341,6 @@ class Program(dict):
                 return segment
 
         raise KeyError(f"No segment has been found for address {address:#x}")
-
-    @cached_property
-    def func_chunk_index(self) -> Dict[Index, List[quokka.Function]]:
-        """Returns the list of functions attached to a chunk.
-
-        This method allows to find all the functions using a specific chunk.
-        However, it is mostly an internal method and should not be directly used by a
-        user. Instead, use `get_function_by_chunk`.
-
-        Returns:
-            A mapping of ChunkIndex to a list of Function.
-        """
-        func_chunk_index = collections.defaultdict(list)
-        for function in self.values():
-            for chunk_proto_index in function.index_to_address:
-                func_chunk_index[chunk_proto_index].append(function)
-
-        return func_chunk_index
-
-    def get_function_by_chunk(self, chunk: quokka.Chunk) -> List[quokka.Function]:
-        """Retrieves all the functions where `chunk` belongs.
-
-        Arguments:
-            chunk: Chunk to search for
-
-        Returns:
-            A list of corresponding functions
-
-        Raises:
-            IndexError: When no function is found for the chunk.
-
-        """
-        functions = self.func_chunk_index[chunk.proto_index]
-        if not functions:
-            raise IndexError(
-                "No function has been found for the chunk. "
-                "This is probably a Quokka bug and should be reported."
-            )
-
-        return functions
-
-    def get_first_function_by_chunk(
-        self, chunk: quokka.Chunk
-    ) -> Optional[quokka.Function]:
-        """Return the first function found when searching for a chunk.
-
-        Arguments:
-            chunk: Chunk belonging to the function
-
-        Returns:
-          A function in which `chunk` belongs
-
-        Raises:
-            FunctionMissingError: No function has been found for the chunk
-        """
-        try:
-            return self.get_function_by_chunk(chunk)[0]
-        except IndexError:
-            raise quokka.FunctionMissingError("Missing function from chunk")
-
-    def get_chunk(
-        self, chunk_index: Index, block_index: Optional[Index] = None
-    ) -> quokka.Chunk:
-        """Get a `Chunk`
-
-        If the candidate Chunk is a SuperChunk, this method will resolve it to find the
-        appropriate chunk (given a block index).
-
-        Arguments:
-            chunk_index: Chunk index
-            block_index: Used to resolve SuperChunks
-
-        Returns:
-            A Chunk matching the criteria
-
-        Raises:
-            ChunkMissingError: When no chunk has been found
-        """
-        chunk = self.chunks.get(chunk_index, None)
-        if isinstance(chunk, quokka.Chunk):
-            return chunk
-
-        if isinstance(chunk, quokka.SuperChunk):
-            if block_index is None:
-                raise quokka.ChunkMissingError(
-                    "Unable to find the chunk requested because its a super chunk"
-                )
-
-            return chunk.get_chunk_by_index(chunk_index, block_index)
-
-        raise quokka.ChunkMissingError("Unable to find the chunk, index unknown")
-
-    def iter_chunk(
-        self, chunk_types: Optional[List[FunctionType]] = None
-    ) -> Iterator[quokka.Chunk]:
-        """Iterate over all the chunks in the program.
-
-        If a `SuperChunk` is found, it will split it and return individual chunks.
-        By default, it iterates over all the chunks, even extern functions.
-
-        Arguments:
-            chunk_types: Allow list of chunk types. By default, it retrieves every
-                chunk.
-
-        Yields:
-            All the chunks in the program.
-        """
-
-        if chunk_types is None:
-            chunk_types = list(FunctionType)
-
-        chunk: quokka.Chunk
-        for chunk in self.chunks.values():
-            if isinstance(chunk, quokka.SuperChunk):
-                inner_chunk: quokka.Chunk
-                for inner_chunk in chunk.values():
-                    if inner_chunk.chunk_type in chunk_types:
-                        yield inner_chunk
-            else:
-                if chunk.chunk_type in chunk_types:
-                    yield chunk
 
     def read_bytes(self, v_addr: AddressT, size: int) -> bytes:
         """Read raw bytes from a virtual address

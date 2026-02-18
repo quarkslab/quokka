@@ -21,9 +21,9 @@ itself.
 
 from quokka.version import __version__
 
+import quokka.quokka_pb2 as pb
 import quokka.analysis
 import quokka.backends
-import quokka.quokka_pb2 as pb
 
 from quokka.addresser import Addresser
 
@@ -34,7 +34,6 @@ from quokka.data import Data, DataHolder
 from quokka.exc import (
     QuokkaError,
     NotInFileError,
-    ChunkMissingError,
     FunctionMissingError,
     ThunkMissingError,
     InstructionError,
@@ -46,9 +45,7 @@ from quokka.executable import Executable
 
 from quokka.function import (
     dereference_thunk,
-    get_degrees,
-    Chunk,
-    SuperChunk,
+    resolve_effective_degrees,
     Function,
 )
 
@@ -83,7 +80,6 @@ __all__ = [
     # From exc.py
     "QuokkaError",
     "NotInFileError",
-    "ChunkMissingError",
     "FunctionMissingError",
     "ThunkMissingError",
     "InstructionError",
@@ -93,9 +89,7 @@ __all__ = [
     "Executable",
     # From functions.py
     "dereference_thunk",
-    "get_degrees",
-    "Chunk",
-    "SuperChunk",
+    "resolve_effective_degrees",
     "Function",
     # From instructions;py
     "Operand",

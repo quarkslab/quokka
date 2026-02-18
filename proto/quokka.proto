@@ -131,24 +131,21 @@ message Quokka {
 
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
-    oneof offset_type {
-      uint64 file_offset = 3;
-      bool no_offset = 4;
-    }
-    BlockType block_type = 5;
+    
+    int64 file_offset = 3;
+    
+    BlockType block_type = 4;
 
-    // TODO optimize for more than 4 billions 1 byte instructions?
-    repeated uint64 instruction_index = 6;
+    repeated uint64 instruction_index = 5;  // field empty in LIGHT mode
 
-    uint32 size = 7;  // The size in terms of bytes
-
+    uint32 size = 6;  // The size in terms of bytes
     // Whether the first instruction of the BB is in thumb mode
-    bool is_thumb = 8;
+    bool is_thumb = 7;
 
     // Used only in light mode. Number of instructions as detected by the
     // current backend. This is useful to detect a mismatch between the runtime
     // disassembler and the backend one
-    uint32 n_instr = 9;
+    uint32 n_instr = 8;
   }
 
   message Function {
@@ -193,27 +190,24 @@ message Quokka {
 
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
-    oneof offset_type {
-      uint64 file_offset = 3;
-      bool no_offset = 4;
-    }
+    int64 file_offset = 3; // absolute from file begining (-1 if does not exists)
+    
+    repeated Block blocks = 4;
+    repeated Edge edges = 5;
 
-    repeated Block blocks = 5;
-    repeated Edge edges = 6;
+    FunctionType function_type = 6;
+    string name = 7;
 
-    FunctionType function_type = 7;
-    string name = 8;
-
-    repeated BlockPosition block_positions = 9;
+    repeated BlockPosition block_positions = 8;
 
     // Optional mangled name, it is non-null only if different from `name`
-    string mangled_name = 10;
+    string mangled_name = 9;
 
     // Calling convention of the function
-    optional CallingConvention calling_convention = 11;
+    optional CallingConvention calling_convention = 10;
 
     // Optional decompiled code as a string
-    string decompiled_code = 12;
+    string decompiled_code = 11;
   }
 
   message Layout {
@@ -254,22 +248,16 @@ message Quokka {
   message Data {
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
-    oneof offset_type {
-      uint64 file_offset = 3;
-      bool no_offset = 4;
-    }
-    DataType type = 5;
+    int64 file_offset = 3;
+    DataType type = 4;
     // In case the type is composite or enum and there is a custom type
     // exported, this variable is referencing it
-    optional uint32 type_index = 6;
+    optional uint32 type_index = 5;
 
-    oneof DataSize {
-      uint32 size = 7;
-      bool no_size = 8;
-    }
-
-    string name = 9;
-    bool not_initialized = 10;
+    int32 size = 6;  // 0 if has no size | -1 if variable size
+    
+    string name = 7;
+    bool not_initialized = 8;
   }
 
   message CompositeType {

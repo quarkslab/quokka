@@ -54,14 +54,13 @@ class Block(MutableMapping):
     Arguments:
         block_idx: Index in the protobuf file of the block
         start_address: Starting address of the block
-        chunk: Parent chunk (e.g. function) of the block.
+        function: Parent function of the block.
 
     Attributes:
         proto_index: Index inside the protobuf
-        parent: A reference to the parent Chunk
+        parent: A reference to the parent Function
         program: A reference to the parent Program
         start: Start address
-        fake: Is it a fake block (e.g. belongs to a fake chunk)
         type: Block type
         address_to_index: A mapping of addresses to instruction indexes
         end: End address
@@ -73,23 +72,25 @@ class Block(MutableMapping):
         self,
         block_idx: Index,
         start_address: AddressT,
-        chunk: quokka.Chunk,
+        function: quokka.Function,
     ):
         """Constructor"""
         self.proto_index: Index = block_idx
-        self.parent: quokka.Chunk = chunk
-        self.program: quokka.Program = chunk.program
+        self.parent: quokka.Function = function
 
-        block: "quokka.pb.Quokka.FunctionChunk.Block"
-        block = self.program.proto.function_chunks[chunk.proto_index].blocks[block_idx]
+        block = function.proto.blocks[block_idx]
 
         self.start: int = start_address
-        self.fake: bool = block.is_fake
         self.type: BlockType = BlockType.from_proto(block.block_type)
+
+        self.file_offset = block.file_offset
+
+        self.is_thumb = block.is_thumb
 
         self.address_to_index: Dict[AddressT, Index] = {}
         self._raw_dict: Dict[AddressT, Index] = {}
 
+        # TODO (Robin): 
         current_address: AddressT = self.start
         for instruction_index, instruction_proto_index in enumerate(
             block.instructions_index
@@ -104,6 +105,11 @@ class Block(MutableMapping):
 
         self.comments: Dict[AddressT, str] = {}
         self.references: Dict[str, List[int]] = {"src": [], "dst": []}
+
+    @property
+    def program(self) -> quokka.Program:
+        """Return the parent program"""
+        return self.parent.program
 
     def __setitem__(self, k: AddressT, v: Index) -> None:
         """Update the instructions mapping"""
@@ -129,7 +135,7 @@ class Block(MutableMapping):
         strings: Set[str] = set()
 
         for reference in self.program.references.resolve_block_references(
-            self.parent.proto_index,
+            self.parent.proto_index, # function protobuf index
             self.proto_index,
             ReferenceType.DATA,
             towards=True,
@@ -147,8 +153,8 @@ class Block(MutableMapping):
         """Retrieve an instruction at `address`."""
         item = self._raw_dict.__getitem__(address)
         return quokka.Instruction(
-            proto_index=item,
-            inst_index=self.address_to_index[address],
+            proto_index=item,  # instruction protobuf index
+            inst_index=self.address_to_index[address],  # index in the block
             address=address,
             block=self,
         )
@@ -177,6 +183,7 @@ class Block(MutableMapping):
         This number is the number of instruction * the size of an instruction for
         architecture with fixed length instructions (e.g. ARM).
         """
+        # TODO: Check Riccardo we have a field in protobuf for size
         return self.end - self.start
 
     @cached_property
@@ -231,15 +238,13 @@ class Block(MutableMapping):
         All bytes for the block are read at once in the file but the result is not
         cached.
         """
-        try:
-            file_offset: int = self.program.addresser.file(self.start)
-        except quokka.NotInFileError:
+        if self.file_offset is None:
             logger.warning("Trying to get the bytes for a block not in file.")
             return b""
 
-        # Read all block at once
+        # Read the whole block at once
         block_bytes = self.program.executable.read_bytes(
-            offset=file_offset,
+            offset=self.file_offset,
             size=self.size,
         )
 

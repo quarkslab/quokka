@@ -26,10 +26,6 @@ class NotInFileError(QuokkaError):
     """Raised when trying to read a string outside the file"""
 
 
-class ChunkMissingError(QuokkaError):
-    """Raised when a chunk has not been found"""
-
-
 class FunctionMissingError(QuokkaError):
     """Raised when a function has not been found"""
 

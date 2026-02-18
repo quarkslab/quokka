@@ -82,6 +82,7 @@ class QuokkaArch:
     compared_mnemonics: List[str]
     stack_pointer: RegType
     inst_pointer: RegType
+    regs: IntEnum
 
 
 class ArchX86(QuokkaArch):  # type: ignore

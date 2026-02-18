@@ -108,6 +108,7 @@ def get_isa(
 
 
 def get_cc(proto_cc: "quokka.pb.Quokka.CallingConvention") -> quokka.CallingConvention:
+    raise NotImplementedError("Calling convention parsing is not implemented yet.")
 
 def convert_address_size(
     proto_address_size: "quokka.pb.Quokka.AddressSizeValue",
