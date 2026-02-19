@@ -53,7 +53,8 @@ int ExportBinary(const std::string& filename) {
                     "Segments and data types exported successfully");
     ExportSegments();
     ExportCompositeDataTypes();
-    WriteCompositeTypes(&quokka_protobuf);
+    ExportEnums();
+    WriteTypes(&quokka_protobuf);
   }
 
   // Export functions

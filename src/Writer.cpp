@@ -102,32 +102,42 @@ static quokka::Quokka::Block::BlockType ToProtoBlockType(BlockType block_type) {
   }
 }
 
-static quokka::Quokka::DataType ToProtoDataType(DataType data_type) {
+static size_t ToProtoDataType(DataType data_type) {
+  // Use the underlying protobuf enum value as it is guaranteed that the first
+  // elements of the `types` array are always the primitive types, ordered in
+  // the same way as they are declared in the protobuf enum.
+  // TODO one day use a more generic way of handling this
   switch (data_type) {
     case TYPE_B:
-      return quokka::Quokka::TYPE_B;
+      return Quokka::DataType::Quokka_DataType_TYPE_B;
     case TYPE_W:
-      return quokka::Quokka::TYPE_W;
+      return Quokka::DataType::Quokka_DataType_TYPE_W;
     case TYPE_DW:
-      return quokka::Quokka::TYPE_DW;
+      return Quokka::DataType::Quokka_DataType_TYPE_DW;
     case TYPE_QW:
-      return quokka::Quokka::TYPE_QW;
+      return Quokka::DataType::Quokka_DataType_TYPE_QW;
     case TYPE_OW:
-      return quokka::Quokka::TYPE_OW;
+      return Quokka::DataType::Quokka_DataType_TYPE_OW;
     case TYPE_FLOAT:
-      return quokka::Quokka::TYPE_FLOAT;
+      return Quokka::DataType::Quokka_DataType_TYPE_FLOAT;
     case TYPE_DOUBLE:
-      return quokka::Quokka::TYPE_DOUBLE;
+      return Quokka::DataType::Quokka_DataType_TYPE_DOUBLE;
     case TYPE_ASCII:
-      return quokka::Quokka::TYPE_ASCII;
+      return Quokka::DataType::Quokka_DataType_TYPE_ASCII;
     case TYPE_STRUCT:
-      return quokka::Quokka::TYPE_STRUCT;
+      return Quokka::DataType::Quokka_DataType_TYPE_STRUCT;
+    case TYPE_UNION:
+      return Quokka::DataType::Quokka_DataType_TYPE_UNION;
+    case TYPE_ENUM:
+      return Quokka::DataType::Quokka_DataType_TYPE_ENUM;
     case TYPE_ALIGN:
-      return quokka::Quokka::TYPE_ALIGN;
+      return Quokka::DataType::Quokka_DataType_TYPE_ALIGN;
     case TYPE_POINTER:
-      return quokka::Quokka::TYPE_POINTER;
+      return Quokka::DataType::Quokka_DataType_TYPE_POINTER;
+    case TYPE_ARRAY:
+      return Quokka::DataType::Quokka_DataType_TYPE_ARRAY;
     default:
-      return quokka::Quokka::TYPE_UNK;
+      return Quokka::DataType::Quokka_DataType_TYPE_UNK;
   }
 }
 
@@ -175,6 +185,82 @@ static void WriteBlock(Quokka::Function* proto_func, const Block& block,
     proto_pos->set_x(position->x);
     proto_pos->set_y(position->y);
     proto_pos->set_position_type(position->pos_type);
+  }
+}
+
+static void WriteCompositeTypes(quokka::Quokka* proto) {
+  CompositeTypes& composite_types = CompositeTypes::GetInstance();
+
+  auto write_composite_type = [&proto]<typename T>(T& composite) {
+    composite.proto_index = proto->types_size();
+
+    Quokka::CompositeType* proto_composite_type =
+        proto->add_types()->mutable_composite_type();
+    proto_composite_type->set_name(composite.name);
+    proto_composite_type->set_type(CompositeSubTypeToProto<T>());
+    proto_composite_type->set_size(composite.size);
+  };
+
+  auto write_members = [](auto& composite,
+                          Quokka::CompositeType* proto_composite_type) {
+    // Reserve the space
+    proto_composite_type->mutable_members()->Reserve(composite.members.size());
+
+    for (const auto& member : composite.members) {
+      member.proto_index = proto_composite_type->members_size();
+
+      Quokka::CompositeType::Member* proto_member =
+          proto_composite_type->add_members();
+      proto_member->set_offset(member.offset);
+      proto_member->set_name(member.name);
+      // If it is composite
+      if (member.composite_type_ptr.has_value()) {
+        std::visit(
+            [&proto_member](auto& comp_ref) {
+              proto_member->set_type_index(comp_ref.proto_index);
+            },
+            **member.composite_type_ptr);
+      } else {
+        proto_member->set_type_index(ToProtoDataType(member.type));
+      }
+      proto_member->set_size(member.size);
+    }
+  };
+
+  // `types` might have already been partially populated
+  uint32_t i = proto->types_size();
+
+  // First write all the composite types without members
+  for (const auto& composite_type : composite_types)
+    std::visit(write_composite_type, *composite_type);
+
+  // Finally write all the members
+  for (const auto& composite_type : composite_types) {
+    Quokka::CompositeType* proto_composite_type =
+        proto->mutable_types(i)->mutable_composite_type();
+    std::visit(
+        [&proto_composite_type, &write_members](auto& composite) {
+          write_members(composite, proto_composite_type);
+        },
+        *composite_type);
+    ++i;
+  }
+}
+
+static void WriteEnums(quokka::Quokka* proto) {
+  // Start by sorting the bucket
+  Enums::GetInstance().Sort();
+  const Enums& enums = Enums::GetInstance();
+
+  for (const auto& enum_type : enums.GetSortedView()) {
+    Quokka::EnumType* proto_enum = proto->add_types()->mutable_enum_type();
+    proto_enum->set_name(enum_type.name);
+    proto_enum->mutable_values()->Reserve(enum_type.values.size());
+    for (const auto& enum_value : enum_type.values) {
+      Quokka::EnumType::EnumValue* proto_value = proto_enum->add_values();
+      proto_value->set_name(enum_value.first);
+      proto_value->set_value(enum_value.second);
+    }
   }
 }
 
@@ -633,62 +719,31 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
   proto_meta->set_decompilation_activated(metadata.decompilation_activated);
 }
 
-void WriteCompositeTypes(quokka::Quokka* proto) {
-  CompositeTypes& composite_types = CompositeTypes::GetInstance();
+void WriteTypes(quokka::Quokka* proto) {
+  // Try to reserve the right amount from the start
+  proto->mutable_types()->Reserve(15 + CompositeTypes::GetInstance().size() +
+                                  Enums::GetInstance().size());
 
-  auto write_composite_type = [&proto]<typename T>(T& composite) {
-    composite.proto_index = proto->composite_types_size();
+  // Start by writing the primitive types
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_UNK);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_B);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_W);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_DW);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_QW);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_OW);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_FLOAT);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_DOUBLE);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ASCII);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_STRUCT);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ALIGN);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_POINTER);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ENUM);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_UNION);
+  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ARRAY);
 
-    Quokka::CompositeType* proto_composite_type = proto->add_composite_types();
-    proto_composite_type->set_name(composite.name);
-    proto_composite_type->set_type(CompositeSubTypeToProto<T>());
-    proto_composite_type->set_size(composite.size);
-  };
-
-  auto write_members = [](auto& composite,
-                          Quokka::CompositeType* proto_composite_type) {
-    // Reserve the space
-    proto_composite_type->mutable_members()->Reserve(composite.members.size());
-
-    for (const auto& member : composite.members) {
-      member.proto_index = proto_composite_type->members_size();
-
-      Quokka::CompositeType::Member* proto_member =
-          proto_composite_type->add_members();
-      proto_member->set_offset(member.offset);
-      proto_member->set_name(member.name);
-      proto_member->set_type(ToProtoDataType(member.type));
-      proto_member->set_size(member.size);
-
-      // Optional type_index
-      if (member.composite_type_ptr.has_value()) {
-        std::visit(
-            [&proto_member](auto& comp_ref) {
-              proto_member->set_type_index(comp_ref.proto_index);
-            },
-            **member.composite_type_ptr);
-      }
-    }
-  };
-
-  proto->mutable_composite_types()->Reserve(composite_types.size());
-
-  // First write all the composite types without members
-  for (const auto& composite_type : composite_types)
-    std::visit(write_composite_type, *composite_type);
-
-  // Finally write all the members
-  uint32_t i = 0;
-  for (const auto& composite_type : composite_types) {
-    Quokka::CompositeType* proto_composite_type =
-        proto->mutable_composite_types(i);
-    std::visit(
-        [&proto_composite_type, &write_members](auto& composite) {
-          write_members(composite, proto_composite_type);
-        },
-        *composite_type);
-    ++i;
-  }
+  // The order matters! The last ones should be structs and unions
+  WriteEnums(proto);
+  WriteCompositeTypes(proto);
 }
 
 quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode) {
