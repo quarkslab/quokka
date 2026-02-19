@@ -324,12 +324,9 @@ message Quokka {
     }
   }
 
-  message EnumIdentifier {
-    uint32 enum_index = 1;
-    // oneof MemberIndex {
-    uint32 member_index = 2;
-    // bool no_member = 3;  // Identify the whole data type
-    // }
+  message DataTypeIdentifier {
+    uint32 type_index = 1;
+    int32 member_index = 2;  // If -1 it identifies the whole data type
   }
 
   message DataIdentifier {
@@ -377,21 +374,11 @@ message Quokka {
       REF_UNK = 2;
     }
 
-    // message Location {
-    //   oneof Type {
-    //     InstructionIdentifier instruction_id = 1;
-    //     DataIdentifier data_index = 2;
-    //     // Works only for composite data types
-    //     CompositeDataTypeIdentifier data_type_index = 3;
-    //   }
-    // }
-
     message Location {
       oneof Type {
         uint64 address = 1;
-        // Works only for composite data types
-        CompositeDataTypeIdentifier composite_identifier = 2;
-        EnumIdentifier enum_identifier = 3;
+        // Only data types, not data itself
+        DataTypeIdentifier data_type_identifier = 2;
       }
     }
 
