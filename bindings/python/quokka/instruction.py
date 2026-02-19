@@ -35,10 +35,10 @@ from quokka.types import (
     Optional,
     ReferenceTarget,
     ReferenceType,
+    AccessMode,
     Sequence,
     Union,
-    OperandType,
-    ExporterMode
+    OperandType
 )
 
 if TYPE_CHECKING:
@@ -96,6 +96,16 @@ class Operand(ABC):
         """
         pass
 
+    @property
+    @abstractmethod
+    def access(self) -> AccessMode:
+        """Returns the operand access mode
+
+        Returns:
+            The operand access mode
+        """
+        pass
+
 
 
 class OperandFull(Operand):
@@ -137,9 +147,19 @@ class OperandFull(Operand):
             return self.program.proto.register_table[self.proto.register_index]
         return ""
 
+    @property
+    def access(self) -> AccessMode:
+        match self.proto.access:
+            case 1:
+                return AccessMode.READ
+            case 2:
+                return AccessMode.WRITE
+            case 3:
+                return AccessMode.READ | AccessMode.WRITE
+        assert False, f"Unknown access mode {self.proto.access}"
+
     def __str__(self) -> str:
-        # FIXME: There is no way to retrieve it at the moment
-        return f"TODO"
+        return self.program.proto.operand_strings[self.proto.operand_string_index]
 
 class OperandLight(Operand):
     """Operand implementation for light mode using Capstone
@@ -185,6 +205,17 @@ class OperandLight(Operand):
                 return self.cs_op.mem  #  atm: capstone.x86.X86OpMem, ...
             case OperandType.OTHER:
                 return None
+
+    @property
+    def access(self) -> AccessMode:
+        match self.cs_op.access:
+            case 1:
+                return AccessMode.READ
+            case 2:
+                return AccessMode.WRITE
+            case 3:
+                return AccessMode.READ | AccessMode.WRITE
+        assert False, f"Unknown access mode {self.cs_op.access}"
 
     @property
     def register(self) -> str:
@@ -233,6 +264,7 @@ class Instruction:
         inst_index: int,
         address: AddressT,
         block: quokka.Block,
+        backend_inst: Optional[capstone.CsInsn] = None,
     ):
         self.parent: quokka.Block = block
 
@@ -240,6 +272,7 @@ class Instruction:
             self._proto = self.program.proto.instructions[proto_index]
         elif self.program.mode == ExporterMode.LIGHT:
             self._proto = None
+            self._cs_inst = backend_inst
 
         self.inst_tuple = (block.parent.proto_index, block.proto_index, inst_index)
 

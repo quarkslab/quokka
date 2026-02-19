@@ -108,6 +108,8 @@ message Quokka {
 
     uint32 operand_string_index = 7;
 
+    uint32 access = 4;  // (R=1, W=2, RW=3)
+
     // Optionally encodes disassembler specific data
     optional bytes specific_info = 6;
   }
@@ -133,8 +135,7 @@ message Quokka {
 
     message InstructionXref {
       uint32 instr_bb_idx = 1;
-      repeated uint64 xref_to = 2;
-      repeated uint64 xref_from = 3;
+      uint64 xref_index = 2;
     }
 
     uint32 segment_index = 1;
@@ -145,11 +146,12 @@ message Quokka {
     BlockType block_type = 4;
 
     repeated uint64 instruction_index = 5;  // field empty in LIGHT mode
-    repeated InstructionXref instructions_xref = 6;
+    repeated InstructionXref instructions_xref_to = 6;
+    repeated InstructionXref instructions_xref_from = 7;
 
-    uint32 size = 7;  // The size in terms of bytes
+    uint32 size = 8;  // The size in terms of bytes
     // Whether the first instruction of the BB is in thumb mode
-    bool is_thumb = 8;
+    bool is_thumb = 9;
 
     // Used only in light mode. Number of instructions as detected by the
     // current backend. This is useful to detect a mismatch between the runtime
@@ -317,6 +319,14 @@ message Quokka {
     }
   }
 
+  message EnumIdentifier {
+    uint32 enum_index = 1;
+    // oneof MemberIndex {
+      uint32 member_index = 2;
+      // bool no_member = 3;  // Identify the whole data type
+    // }
+  }
+
   message DataIdentifier {
     uint32 data_index = 1;
     // Optionally, if the data is composite, a list of member indices is
@@ -362,27 +372,29 @@ message Quokka {
       REF_UNK = 2;
     }
 
-    // TODO merge Origin and Target into a single Location?
-    message ReferenceOrigin {
+    // message Location {
+    //   oneof Type {
+    //     InstructionIdentifier instruction_id = 1;
+    //     DataIdentifier data_index = 2;
+    //     // Works only for composite data types
+    //     CompositeDataTypeIdentifier data_type_index = 3;
+    //   }
+    // }
+    
+    message Location {
       oneof Type {
-        InstructionIdentifier instruction_id = 1;
-        DataIdentifier data_index = 2;
+        uint64 address = 1;
+        // Works only for composite data types
+        CompositeDataTypeIdentifier composite_identifier = 2;
+        EnumIdentifier enum_identifier = 3;
       }
     }
 
-    message ReferenceTarget {
-      oneof Type {
-        InstructionIdentifier instruction_id = 1;
-        DataIdentifier data_index = 2;
-        // Works only for composite data types
-        CompositeDataTypeIdentifier data_type_index = 3;
-      }
-    }
 
     // The location that reference (for ex: an instruction)
-    ReferenceOrigin source = 1;
+    Location source = 1;
     // The location that is referenced (for ex: data)
-    ReferenceTarget destination = 2;
+    Location destination = 2;
     ReferenceType reference_type = 3;
   }
 
@@ -408,7 +420,7 @@ message Quokka {
     string name = 1;
     uint64 virtual_addr = 2;
     uint64 size = 3;
-    uint32 permissions = 4;
+    uint32 permissions = 4;  // Linux style permissions (R=4, W=2, X=1)
     Type type = 5;
     AddressSize address_size = 6;
 

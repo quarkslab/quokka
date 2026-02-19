@@ -26,6 +26,7 @@ from quokka.types import (
     BlockType,
     DataType,
     Dict,
+    ExporterMode,
     Index,
     Iterator,
     List,
@@ -82,29 +83,41 @@ class Block(MutableMapping):
 
         self.start: int = start_address
         self.type: BlockType = BlockType.from_proto(block.block_type)
+        self.size: int = block.size
 
         self.file_offset = block.file_offset
 
         self.is_thumb = block.is_thumb
 
         self.address_to_index: Dict[AddressT, Index] = {}
-        self._raw_dict: Dict[AddressT, Index] = {}
+        self._raw_dict: Dict[AddressT, quokka.Instruction] = {}
 
-        # TODO (Robin): 
-        current_address: AddressT = self.start
-        for instruction_index, instruction_proto_index in enumerate(
-            block.instructions_index
-        ):
-            self.address_to_index[current_address] = instruction_index
-            self._raw_dict[current_address] = instruction_proto_index
-            current_address += self.program.proto.instructions[
-                instruction_proto_index
-            ].size
+        if self.program.mode == ExporterMode.FULL:
+            current_address: AddressT = self.start
+            for inst_idx, inst_pb_idx in enumerate(block.instructions_index):
+                ins =  quokka.Instruction(inst_pb_idx, inst_idx, current_address, self)
+                self._raw_dict[current_address] = ins
+                current_address += ins.size
 
-        self.end: int = current_address
+        elif self.program.mode == ExporterMode.LIGHT:
+            insts = quokka.backends.capstone.capstone_decode_block(self)
+            if len(insts) != block.n_instr:
+                logger.warning(
+                    f"Decoded {len(insts)} instructions for block at 0x{self.start:x} but expected {block.n_instr}."
+                )
+            for i, inst in enumerate(insts):  
+                ins = quokka.Instruction(-1, i, inst.address, self, backend_inst=inst)
+                self._raw_dict[ins.address] = ins
+        else:
+            assert False, "Unknown exporter mode"
 
         self.comments: Dict[AddressT, str] = {}
         self.references: Dict[str, List[int]] = {"src": [], "dst": []}
+
+    @property
+    def address(self) -> AddressT:
+        """Direct accessor of the block address"""
+        return self.start
 
     @property
     def program(self) -> quokka.Program:
@@ -151,13 +164,7 @@ class Block(MutableMapping):
 
     def __getitem__(self, address: AddressT) -> quokka.Instruction:
         """Retrieve an instruction at `address`."""
-        item = self._raw_dict.__getitem__(address)
-        return quokka.Instruction(
-            proto_index=item,  # instruction protobuf index
-            inst_index=self.address_to_index[address],  # index in the block
-            address=address,
-            block=self,
-        )
+        return self._raw_dict.__getitem__(address)
 
     def __len__(self) -> int:
         """Number of instruction in the block"""
@@ -177,14 +184,13 @@ class Block(MutableMapping):
         return data_references
 
     @property
-    def size(self) -> int:
+    def end(self) -> int:
         """Size of the block.
 
         This number is the number of instruction * the size of an instruction for
         architecture with fixed length instructions (e.g. ARM).
         """
-        # TODO: Check Riccardo we have a field in protobuf for size
-        return self.end - self.start
+        return self.start + self.size
 
     @cached_property
     def constants(self) -> List[int]:
