@@ -51,7 +51,7 @@ static void ExportCompositeMembers(
   for (const udm_t& udm : udt) {
     uint64_t size = udm.size;
     if (udm.type.is_varmember()) {
-      QLOGE << absl::StrFormat(
+      QLOGD << absl::StrFormat(
           "Found variable member `%s` that has variable size! Forcing size of "
           "0.",
           ConvertIdaString(udm.name));
@@ -125,12 +125,6 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
   qstring name;
   tif.get_type_name(&name);
 
-  if (tif.is_varstruct()) {
-    QLOGE << "Found composite type `" << ConvertIdaString(name)
-          << "` that has variable size! Ignoring it.";
-    return;
-  }
-
   CompositeTypes& composite_types = CompositeTypes::GetInstance();
   size_t size = tif.is_forward_decl() ? 0 : tif.get_size();
 
@@ -146,6 +140,25 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
   //   STRUCT_STRUCT);
 
   //   GetCompositeTypeComment(composite_types.back());
+}
+
+/**
+ * Export the enum members of enumeration.
+ *
+ * @param enumeration The EnumType object
+ * @param enum_tif Ida enum type info
+ */
+static void ExportEnumMembers(EnumType& enumeration, const tinfo_t& enum_tif) {
+  enum_type_data_t edt;
+  enum_tif.get_enum_details(&edt);
+
+  for (const edm_t& edm : edt) {
+    enumeration.values.push_back({ConvertIdaString(edm.name), edm.value});
+
+    /* Retrieve comments */
+    // GetEnumMemberComment_v9(member, edm);
+    // ExportStructureMemberReference(edm.get_tid(), member, STRUCT_ENUM);
+  }
 }
 
 void ExportCompositeDataTypes() {
@@ -175,6 +188,35 @@ void ExportCompositeDataTypes() {
             ExportCompositeMembers(composite_type_ptr, tif);
         },
         *composite_type_ptr);
+  }
+}
+
+void ExportEnums() {
+  auto& enums = Enums::GetInstance();
+
+  for (uint32_t ordinal = 1; ordinal < get_ordinal_limit(); ++ordinal) {
+    tinfo_t tif;
+    if (!tif.get_numbered_type(ordinal, BTF_ENUM))
+      continue;
+    if (tif.is_forward_decl())  // Skip forward decls
+      continue;
+
+    qstring enum_name;
+    tif.get_type_name(&enum_name);
+
+    EnumType enum_type(ConvertIdaString(enum_name));
+
+    // Export the values (aka members)
+    if (tif.get_realtype() != (BTMT_SIZE0 | BT_UNK) && !tif.is_empty_enum())
+      ExportEnumMembers(enum_type, tif);
+
+    // TODO References
+    // ExportStructureReference(ea_t(ida_enum), structure, STRUCT_STRUCT);
+
+    // Check for comment for the enum
+    // GetEnumComment(enum_type);
+
+    enums.insert(std::move(enum_type));
   }
 }
 

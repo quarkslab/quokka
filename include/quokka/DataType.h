@@ -35,6 +35,7 @@
 #include <pro.h>
 #include <typeinf.hpp>
 
+#include "Bucket.h"
 #include "ProtoHelper.h"  // Kept for ProtoHelper
 #include "ProtoWrapper.h"
 #include "Util.h"
@@ -247,16 +248,31 @@ class CompositeTypes {
  * quokka::EnumType
  * -----------------------------------------------------------------------------
  * Base class representing a enum defined in the program.
+ * @note Two EnumType are considered equal if they have the same name
  */
 class EnumType : public ProtoHelper {
-  //  public:
-  //   EnumType(std::string&& n, enum_t t)
-  //       : name(std::forward<std::string>(n)), type_id(t) {}
+ public:
+  EnumType(std::string n) : name(std::move(n)) {}
 
-  //   std::string name;  ///< Name of the enum
-  //   enum_t type_id;    ///< IDA type ID
-  //   std::vector<std::pair<std::string, int64_t>>
-  //       values;  ///< Internal values of the enum as pairs (name, value)
+  std::string name;  ///< Name of the enum
+  std::vector<std::pair<std::string, int64_t>>
+      values;  ///< Internal values of the enum as pairs (name, value)
+
+  bool operator==(const EnumType& o) const noexcept {
+    return this->name == o.name;
+  }
+
+  /**
+   * Hash implementation of the object using absl::Hash
+   * @tparam H Hash
+   * @param h Hash value
+   * @param m EnumType object
+   * @return An hash value for the object
+   */
+  template <typename H>
+  friend H AbslHashValue(H h, const EnumType& m) {
+    return H::combine(std::move(h), m.name);
+  }
 };
 
 /**
@@ -265,62 +281,33 @@ class EnumType : public ProtoHelper {
  * -----------------------------------------------------------------------------
  * Container for all the enum types in the program.
  *
- * Use a singleton pattern and act like a std::vector.
+ * Use a singleton pattern and act like a set.
  */
-// class Enums {
-//  private:
-//   using ElementT = std::shared_ptr<EnumType>;
-//   std::vector<ElementT> enums_;  ///< Internal list
+class Enums : public SetBucket<EnumType> {
+ private:
+  explicit Enums() = default;  ///< Private constructor
 
-//   explicit Enums() = default;  ///< Private constructor
+ public:
+  using SetBucket<EnumType>::SetBucket;
 
-//  public:
-//   using iterator = std::vector<ElementT>::iterator;
-//   using const_iterator = std::vector<ElementT>::const_iterator;
+  /**
+   * Return the instance of the `Enums` class.
+   * Used for the singleton pattern.
+   * @return `Enums`
+   */
+  static Enums& GetInstance() {
+    static Enums instance;
+    return instance;
+  }
 
-//   /**
-//    * Return the instance of the `Enums` class.
-//    * Used for the singleton pattern.
-//    * @return `Enums`
-//    */
-//   static Enums& GetInstance() {
-//     static Enums instance;
-//     return instance;
-//   }
-
-//   /**
-//    * Delete constructors for singleton pattern
-//    */
-//   Enums(Enums const&) = delete;
-//   void operator=(Enums const&) = delete;
-
-//   /**
-//    * Creates the EnumType object and pushes into the collection.
-//    *
-//    * @tparam Args Arguments to be forwarded to the EnumType constructor
-//    * @param args Arguments of the EnumType constructor
-//    * @return A reference to the newly added object
-//    */
-//   template <typename... ArgsT>
-//   constexpr ElementT& emplace_back(ArgsT&&... args) {
-//     return enums_.emplace_back(
-//         std::make_shared<EnumType>(std::forward<ArgsT>(args)...));
-//   }
-
-//   /**
-//    * Proxy for the std::vector::size()
-//    * @return Size of the container
-//    */
-//   [[nodiscard]] std::size_t size() const { return enums_.size(); }
-
-//   /**
-//    * Proxy iterators
-//    */
-//   iterator begin() { return enums_.begin(); }
-//   iterator end() { return enums_.end(); }
-//   [[nodiscard]] const_iterator begin() const { return enums_.cbegin(); }
-//   [[nodiscard]] const_iterator end() const { return enums_.cend(); }
-// };
+  /**
+   * Delete constructors for singleton pattern
+   */
+  Enums(Enums const&) = delete;
+  Enums(Enums&&) = delete;
+  void operator=(Enums const&) = delete;
+  void operator=(Enums&&) = delete;
+};
 
 template <typename T>
 constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
@@ -330,7 +317,7 @@ constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
   else if constexpr (std::is_same_v<U, StructureType>)
     return Quokka_CompositeType_CompositeSubType_TYPE_STRUCT;
   else
-    return Quokka_CompositeType_CompositeSubType_TYPE_UNK;
+    static_assert(false, "Mismatch between the CompositeSubTypes");
 }
 
 /**
@@ -343,10 +330,8 @@ void ExportCompositeDataTypes();
 
 /**
  * Export all the enums defined in the program
- *
- * @param structure_list Structures container
  */
-void ExportEnums(Quokka* proto);
+void ExportEnums();
 
 }  // namespace quokka
 
