@@ -14,13 +14,15 @@
 
 #include "quokka/Writer.h"
 #include <cassert>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 
 #include "quokka.pb.h"
 #include "quokka/Block.h"
+#include "quokka/Bucket.h"
 // #include "quokka/Comment.h"
-// #include "quokka/Data.h"
+#include "quokka/Data.h"
 #include "quokka/DataType.h"
 #include "quokka/FileMetadata.h"
 // #include "quokka/Function.h"
@@ -548,43 +550,51 @@ void WriteFunctions(quokka::Quokka* proto,
 //     reference.destination_);
 //   }
 // }
-// void WriteData(quokka::Quokka* proto, BucketNew<Data>& data_bucket) {
-//   proto->mutable_data()->Reserve(static_cast<int>(data_bucket.size()));
 
-//   absl::flat_hash_map<std::string, int> string_map;
+void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket) {
+  data_bucket.Sort();
+  proto->mutable_data()->Reserve(static_cast<int>(data_bucket.size()));
 
-//   // Set an empty string in the first offset to differentiate between
-//   values set
-//   // and non set.
-//   proto->add_string_table("");
+  auto set_type = []<typename T>(const T& type, Quokka::Data* proto_data) {
+    using U = std::remove_cvref_t<T>;
+    if constexpr (std::is_same_v<U, RefCounter<EnumType>>) {
+      proto_data->set_type_index(type->proto_index);
+    } else {
+      std::visit(
+          [&](const auto& inner_type) {
+            proto_data->set_type_index(inner_type.proto_index);
+          },
+          *type);
+    }
+  };
 
-//   uint64_t base_addr = proto->meta().base_addr();
+  for (const auto& data : data_bucket.GetSortedView()) {
+    data.proto_index = proto->data_size();
 
-//   quokka::Quokka::Data* proto_data;
-//   for (const auto& [ref_count, data] : data_bucket.SortByFrequency()) {
-//     data->proto_index = proto->data_size();
+    // Sanity checks
+    assert(data.segment != nullptr && data.segment->start_addr <= data.addr &&
+           data.addr < data.segment->end_addr);
 
-//     proto_data = proto->add_data();
-//     proto_data->set_offset(uint64_t(data->addr) - base_addr);
-//     proto_data->set_type(ToProtoDataType(data->data_type));
-//     proto_data->set_not_initialized(not data->IsInitialized());
+    Quokka::Data* proto_data = proto->add_data();
+    proto_data->set_segment_index(data.segment->proto_index);
+    proto_data->set_segment_offset(data.addr - data.segment->start_addr);
+    // proto_data->set_file_offset(data.file_offset); TODO
+    const auto& ref_type = data.GetReferenceType();
+    if (ref_type.has_value()) {
+      std::visit([&proto_data,
+                  &set_type](const auto& obj) { set_type(obj, proto_data); },
+                 *ref_type);
+    } else {
+      proto_data->set_type_index(ToProtoDataType(data.type));
+    }
+    proto_data->set_size(data.size);
+    proto_data->set_not_initialized(not data.IsInitialized());
 
-//     if (data->HasVariableSize()) {
-//       proto_data->set_size(uint32_t(data->size));
-//     } else {
-//       proto_data->set_no_size(true);
-//     }
-
-//     absl::string_view name = data->GetName();
-//     if (not name.empty()) {
-//       auto it = string_map.try_emplace(name, proto->string_table_size());
-//       if (it.second) {
-//         proto->add_string_table(it.first->first);
-//       }
-//       proto_data->set_name_index(it.first->second);
-//     }
-//   }
-// }
+    std::string_view name = data.GetName();
+    if (not name.empty())
+      proto_data->set_name(name);
+  }
+}
 
 // quokka::Quokka::Comment::CommentType ToProtoCommentType(
 //     CommentType comment_type) {

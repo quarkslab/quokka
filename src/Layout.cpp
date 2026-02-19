@@ -498,25 +498,6 @@ int ExportLinearScan(quokka::Quokka* proto,
   // }
 
   // {
-  //   QLOGD << "Start to sort chunks";
-  //   ResolveEdges(head_iterator.func_chunks,
-  //   ReferenceHolder::GetInstance()); Timer sort_timer(absl::Now());
-  //   head_iterator.func_chunks.Sort();
-  //   QLOGD << absl::StrFormat("Chunks sorted (took %.2fs)",
-  //                            sort_timer.ElapsedSeconds(absl::Now()));
-  // }
-
-  // QLOGI << "Start to write func chunks";
-  // timer.Reset();
-  // import_manager.AddMissingChunks(head_iterator.func_chunks);
-  // WriteFuncChunk(proto, head_iterator.func_chunks);
-
-  // QLOGI << absl::StrFormat("Finished to write func_chunks (took: %.2fs)",
-  //                          timer.ElapsedSeconds(absl::Now()));
-
-
-
-  // {
   //   QLOGI << "Start to transform references";
   //   Timer sort_timer(absl::Now());
 
@@ -528,18 +509,15 @@ int ExportLinearScan(quokka::Quokka* proto,
   //                            sort_timer.ElapsedSeconds(absl::Now()));
   // }
 
-  // QLOGI << "Start to write data, comments and references";
-  // timer.Reset();
-  // WriteData(proto, head_iterator.data_list);
+  {
+    SCOPED_STEP("Starting to write data, comments and references...",
+                "Data, comments and references exported successfully");
+    WriteData(proto, head_iterator.data_list);
+    // WriteComments(proto, head_iterator.comments);
 
-  // WriteComments(proto, head_iterator.comments);
-
-  // /* WRITE AFTER FUNCTIONS */
-  // WriteReferences(proto, ReferenceHolder::GetInstance());
-
-  // QLOGI << absl::StrFormat(
-  //     "Finished to write data comments and references (took : %.2fs)",
-  //     timer.ElapsedSeconds(absl::Now()));
+    // /* WRITE AFTER FUNCTIONS */
+    // WriteReferences(proto, ReferenceHolder::GetInstance());
+  }
 
   return eOk;
 }

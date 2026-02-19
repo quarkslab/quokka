@@ -58,7 +58,7 @@ bool Data::IsInitialized() const {
   return has_value(get_full_flags(this->addr));
 }
 
-Data Data::Make(ea_t addr, uint64_t size) {
+Data Data::Make(ea_t addr, uint32_t size) {
   DataType data_type;
   tinfo_t tinf;
   // Try to obtain the tinfo descriptor
@@ -81,7 +81,7 @@ Data Data::Make(ea_t addr, uint64_t size) {
       segments.get_exact(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea);
   assert(addr >= segment.start_addr && addr < segment.end_addr);
 
-  Data data(addr - segment.start_addr, data_type, size, &segment);
+  Data data(addr, data_type, size, &segment);
 
   const CompositeTypes& composite_types = CompositeTypes::GetInstance();
 

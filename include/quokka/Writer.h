@@ -34,6 +34,8 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/strings/string_view.h"
 
+#include "Bucket.h"
+#include "Data.h"
 #include "FileMetadata.h"
 #include "Localization.h"
 #include "Logger.h"
@@ -51,7 +53,6 @@ struct Position;
 class Mnemonic;
 class OperandString;
 class Instruction;
-class Data;
 class Structure;
 struct StructureMember;
 class Function;
@@ -276,13 +277,13 @@ void WriteFunctions(quokka::Quokka* proto,
 // void WriteReferences(quokka::Quokka* proto, const ReferenceHolder&
 // ref_holder);
 
-// /**
-//  * Write data
-//  *
-//  * @param proto Protobuf main object
-//  * @param data_bucket Data bucket
-//  */
-// void WriteData(quokka::Quokka* proto, BucketNew<Data>& data_bucket);
+/**
+ * Write data
+ *
+ * @param proto Protobuf main object
+ * @param data_bucket Data bucket
+ */
+void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket);
 
 // /**
 //  * Write comments

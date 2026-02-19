@@ -101,7 +101,7 @@ class Data : public ProtoHelper {
  public:
   ea_t addr = BADADDR;       ///< Address attached to the data
   DataType type = TYPE_UNK;  ///< Data type
-  uint64_t size;  ///< Size of the data (not always redundant for certain types)
+  uint32_t size;  ///< Size of the data (not always redundant for certain types)
   const Segment* segment;  ///< IDA segment. It has to outlive Data
 
   /**
@@ -111,7 +111,7 @@ class Data : public ProtoHelper {
    * @param size The size of the data object
    * @return The newly built Data object
    */
-  static Data Make(ea_t addr, uint64_t size);
+  static Data Make(ea_t addr, uint32_t size);
 
   /**
    * Accessor for the name
@@ -137,7 +137,9 @@ class Data : public ProtoHelper {
     this->SetReferenceTypeImpl(RefCounter<L>(type));
   }
 
-  const std::optional<RefTypeT>& GetReferenceType() { return this->ref_type; }
+  const std::optional<RefTypeT>& GetReferenceType() const {
+    return this->ref_type;
+  }
 
   /**
    * Equality operator
