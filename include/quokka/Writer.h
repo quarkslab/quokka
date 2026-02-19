@@ -300,11 +300,11 @@ void WriteFunctions(quokka::Quokka* proto,
 void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata);
 
 /**
- * Write the composite types
+ * Write all the exported types (composite, enums, primitive)
  *
  * @param proto Protobuf main object
  */
-void WriteCompositeTypes(quokka::Quokka* proto);
+void WriteTypes(quokka::Quokka* proto);
 
 /**
  * Write the exporter metadata
