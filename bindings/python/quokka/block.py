@@ -58,7 +58,7 @@ class Block(MutableMapping):
         function: Parent function of the block.
 
     Attributes:
-        proto_index: Index inside the protobuf
+        proto: Protobuf object
         parent: A reference to the parent Function
         program: A reference to the parent Program
         start: Start address
@@ -76,32 +76,31 @@ class Block(MutableMapping):
         function: quokka.Function,
     ):
         """Constructor"""
-        self.proto_index: Index = block_idx
+        self._proto_index: Index = block_idx
         self.parent: quokka.Function = function
 
-        block = function.proto.blocks[block_idx]
+        self.proto = function.proto.blocks[block_idx]
 
         self.start: int = start_address
-        self.type: BlockType = BlockType.from_proto(block.block_type)
-        self.size: int = block.size
+        self.type: BlockType = BlockType.from_proto(self.proto.block_type)
+        self.size: int = self.proto.size
+        self.file_offset = self.proto.file_offset
 
-        self.file_offset = block.file_offset
-
-        self.is_thumb = block.is_thumb
+        self.is_thumb = self.proto.is_thumb
 
         self.address_to_index: Dict[AddressT, Index] = {}
         self._raw_dict: Dict[AddressT, quokka.Instruction] = {}
 
         if self.program.mode == ExporterMode.FULL:
             current_address: AddressT = self.start
-            for inst_idx, inst_pb_idx in enumerate(block.instructions_index):
+            for inst_idx, inst_pb_idx in enumerate(self.proto.instructions_index):
                 ins =  quokka.Instruction(inst_pb_idx, inst_idx, current_address, self)
                 self._raw_dict[current_address] = ins
                 current_address += ins.size
 
         elif self.program.mode == ExporterMode.LIGHT:
             insts = quokka.backends.capstone.capstone_decode_block(self)
-            if len(insts) != block.n_instr:
+            if len(insts) != self.proto.n_instr:
                 logger.warning(
                     f"Decoded {len(insts)} instructions for block at 0x{self.start:x} but expected {block.n_instr}."
                 )
@@ -149,7 +148,7 @@ class Block(MutableMapping):
 
         for reference in self.program.references.resolve_block_references(
             self.parent.proto_index, # function protobuf index
-            self.proto_index,
+            self._proto_index,
             ReferenceType.DATA,
             towards=True,
         ):
@@ -221,7 +220,7 @@ class Block(MutableMapping):
         TODO(dm):
             Check this
         """
-        return self.proto_index
+        return self._proto_index
 
     def successors(self) -> Iterator[AddressT]:
         """(Addresses of the) Successors of the current block."""

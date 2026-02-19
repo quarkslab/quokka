@@ -48,6 +48,9 @@ LocationValueType = Union[
 
 RegType = enum.IntEnum
 
+Type = Any
+ReferenceType = AddressT | Any
+
 class AccessMode(enum.IntFlag):
     """Register access mode"""
 
@@ -221,22 +224,20 @@ class OperandType(enum.Enum):
 class ReferenceType(enum.Enum):
     """Reference Type"""
 
-    CALL = enum.auto()
+    CODE = enum.auto()
     DATA = enum.auto()
-    ENUM = enum.auto()
-    STRUC = enum.auto()
+    SYMBOL = enum.auto()
     UNKNOWN = enum.auto()
 
     @staticmethod
     def from_proto(
-        reference_type: "quokka.pb.Quokka.Reference.ReferenceTypeValue",
+        reference_type: "quokka.pb.Quokka.Reference.ReferenceType",
     ) -> "ReferenceType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Reference.REF_CALL: ReferenceType.CALL,
+            quokka.pb.Quokka.Reference.REF_CODE: ReferenceType.CODE,
             quokka.pb.Quokka.Reference.REF_DATA: ReferenceType.DATA,
-            quokka.pb.Quokka.Reference.REF_ENUM: ReferenceType.ENUM,
-            quokka.pb.Quokka.Reference.REF_STRUC: ReferenceType.STRUC,
+            quokka.pb.Quokka.Reference.REF_SYMBOL: ReferenceType.SYMBOL,
         }
 
         return mapping.get(reference_type, ReferenceType.UNKNOWN)

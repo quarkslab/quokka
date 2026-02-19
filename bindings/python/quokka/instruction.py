@@ -40,6 +40,7 @@ from quokka.types import (
     Union,
     OperandType
 )
+from quokka.reference import TypeReference
 
 if TYPE_CHECKING:
     import pypcode
@@ -65,6 +66,7 @@ class Operand(ABC):
     def __init__(self, program: quokka.Program):
         """Constructor"""
         self.program: quokka.Program = program
+        self.xrefs: Any = {}
 
     @property
     @abstractmethod
@@ -160,6 +162,7 @@ class OperandFull(Operand):
 
     def __str__(self) -> str:
         return self.program.proto.operand_strings[self.proto.operand_string_index]
+
 
 class OperandLight(Operand):
     """Operand implementation for light mode using Capstone
@@ -274,7 +277,12 @@ class Instruction:
             self._proto = None
             self._cs_inst = backend_inst
 
-        self.inst_tuple = (block.parent.proto_index, block.proto_index, inst_index)
+        # self.inst_tuple = (block.parent.proto_index, block.proto_index, inst_index)
+
+        # Retrieve xrefs (for the instruction)
+        self._xrefs_from = [self.program.proto.references[x.xref_index] for x in block.proto.instructions_xref_from if x.instr_bb_idx == inst_index]
+        self._xrefs_to = [self.program.proto.references[x.xref_index] for x in block.proto.instructions_xref_to if x.instr_bb_idx == inst_index]
+
 
         #: Instruction index in the parent block
         self.index: int = inst_index
@@ -363,35 +371,42 @@ class Instruction:
         return None
 
     @property
-    def references(self) -> Dict[ReferenceType, List[ReferenceTarget]]:
-        """Returns all the references towards the instruction"""
-
-        ref = defaultdict(list)
-        for reference in self.program.references.resolve_inst_instance(
-            self.inst_tuple, towards=True
-        ):
-            ref[reference.type].append(reference.source)
-        return ref
-
-    @property
-    def data_references(self) -> List[ReferenceTarget]:
+    def data_refs_to(self) -> List[AddressT]:
         """Returns all data reference to this instruction"""
-        return self.references[ReferenceType.DATA]
+        # If querying refs_to get the source address
+        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_DATA]
 
     @property
-    def struct_references(self) -> List[ReferenceTarget]:
-        """Returns all struct reference to this instruction"""
-        return self.references[ReferenceType.STRUC]
+    def data_refs_from(self) -> List[AddressT]:
+        """Returns all data reference from this instruction"""
+        # If querying refs_from get the destination address
+        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_DATA]
 
     @property
-    def enum_references(self) -> List[ReferenceTarget]:
-        """Returns all enum reference to this instruction"""
-        return self.references[ReferenceType.ENUM]
+    def code_refs_from(self) -> List[AddressT]:
+        """Returns all code reference from this instruction"""
+        # If querying refs_from get the destination address
+        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_CODE]
 
     @property
-    def call_references(self) -> List[ReferenceTarget]:
+    def code_refs_to(self) -> List[AddressT]:
+        """Returns all code reference to this instruction"""
+        # If querying refs_to get the source address
+        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_CODE]
+
+    @property
+    def type_refs_from(self) -> List[TypeReference]:
+        """Returns all type reference from this instruction"""
+        # Get protobuf type ids
+        type_ids = [xref.destination.data_type_identifier for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_SYMBOL]
+        # Resolve type ids to actual types
+        return [self.program.get_type(type_id) for type_id in type_ids]
+    
+    @property
+    def call_references(self) -> List[AddressT]:
         """Returns all call reference to this instruction"""
-        return self.references[ReferenceType.CALL]
+        # Check if the reference address points to a function head
+        return [addr for addr in self.code_refs_from if addr in self.program]
 
     @property
     def operands(self) -> list[Operand]:
@@ -406,41 +421,68 @@ class Instruction:
         elif self.program.mode == ExporterMode.FULL:
             for op_idx in self.proto.operand_index:
                 op = self.program.proto.operands[op_idx]
+                operands.append(OperandFull(self.program, op))
         else:
             assert False
 
+        self._resolve_xrefs_on_operands(operands)
+
         return operands
+
+    def _resolve_xrefs_on_operands(self, operands: list[Operand]) -> None:
+        """Resolve xrefs on the instruction operands and update them accordingly
+
+        Arguments:
+            operands: List of operands to update with xref information
+        """
+        mem_ops = [x for x in operands if x.type == OperandType.MEMORY]
+        imm_ops = [x for x in operands if x.type == OperandType.IMMEDIATE]
+
+        for dxref in (x for x in self._xrefs_from if x.reference_type == quokka.pb.Quokka.Reference.REF_DATA):
+            # If there is only one memory operand assign data ref to it
+            if len(operands) == 1:  # Only one operand, assign the data ref to it
+                operands[0].xrefs[ReferenceType.DATA] = dxref
+            elif len(mem_ops) == 1:  # Only one memory operand, assign the data ref to it
+                mem_ops[0].xrefs[ReferenceType.DATA] = dxref
+            elif len(imm_ops) == 1:  # Only one immediate operand, assign the data ref to it
+                imm_ops[0].xrefs[ReferenceType.DATA] = dxref
+            else:
+                logger.warning(f"{self.address:#x} inst {str(self)} can't assign data refs")
+        
+        for cxref in (x for x in self._xrefs_from if x.reference_type == quokka.pb.Quokka.Reference.REF_CODE):
+            # If there is only one memory operand assign code ref to it
+            if len(operands) == 1:  # Only one operand, assign the code ref to it
+                operands[0].xrefs[ReferenceType.CODE] = cxref
+            elif len(mem_ops) == 1:  # Only one memory operand, assign the code ref to it
+                mem_ops[0].xrefs[ReferenceType.CODE] = cxref
+            elif len(imm_ops) == 1:  # Only one immediate operand, assign the code ref to it
+                imm_ops[0].xrefs[ReferenceType.CODE] = cxref
+            else:
+                logger.warning(f"{self.address:#x} inst {str(self)} can't assign code refs")
+
 
     @cached_property
     def call_target(self) -> quokka.Function:
-        """Find the call target of an instruction if any exists"""
-        call_target = False
+        """Find the call target of an instruction if any exists.
+        Does not resolve thunk functions.
+        
+        Raises FunctionMissingError if the call target is not
+        found.
+        """
+        call_targets = self.call_references
 
-        candidates = set()
-        for reference in self.program.references.resolve_inst_instance(
-            self.inst_tuple, ReferenceType.CALL, towards=False
-        ):
-            # FIX: in Quokka a bug existed where the call target could be data
-            if isinstance(reference.destination, tuple):
-                candidates.add(reference.destination[0])  # A function
-            elif isinstance(reference.destination, quokka.Function):
-                candidates.add(reference.destination)
-
-        try:
-            call_target = candidates.pop()
-        except KeyError:
-            pass
-
-        if candidates:
-            logger.warning(
-                f"We found multiple candidate targets for 0x{self.address:x}"
-            )
-
-        return call_target
+        if not call_targets:
+            raise quokka.FunctionMissingError(f"No call reference found for instruction at 0x{self.address:x}")
+        elif len(call_targets) > 1:
+            logger.warning(f"Multiple call references found for instruction at 0x{self.address:x}, taking the first one")
+            raise quokka.FunctionMissingError(f"Multiple call references found for instruction at 0x{self.address:x}")
+        else:  # Only on call reference, take it
+            return self.program[call_targets[0]]
 
     @property
     def has_call(self) -> bool:
-        """Check if the instruction has a call target"""
+        """Check if the instruction has a call target (namely
+        code refs on a function entrypoint)"""
         return self.call_target is not False
 
     @cached_property

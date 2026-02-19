@@ -371,7 +371,8 @@ message Quokka {
     enum ReferenceType {
       REF_CODE = 0;
       REF_DATA = 1;
-      REF_UNK = 2;
+      REF_SYMBOL = 2;
+      REF_UNK = 3;
     }
 
     message Location {

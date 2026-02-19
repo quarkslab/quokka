@@ -27,6 +27,7 @@ import logging
 import os
 import pathlib
 from typing import TYPE_CHECKING
+from enum import IntEnum
 
 import capstone
 import networkx
@@ -35,7 +36,7 @@ import idascript
 import quokka
 import quokka.analysis
 import quokka.backends
-
+from quokka.enums import EnumT
 from quokka.types import (
     AddressT,
     Dict,
@@ -50,7 +51,8 @@ from quokka.types import (
     Optional,
     Type,
     Union,
-    CallingConvention
+    CallingConvention,
+    DataType
 )
 from quokka.exc import QuokkaError
 
@@ -150,7 +152,7 @@ class Program(dict):
         self.calling_convention: CallingConvention = CallingConvention.from_proto(self.proto.meta.calling_convention)
 
         self.executable = quokka.Executable(exec_path, self.endianness)
-        self.references = quokka.References(self)
+        # self.references = quokka.References(self)
         self.data_holder = quokka.DataHolder(self.proto, self)
 
         # Functions
@@ -167,6 +169,10 @@ class Program(dict):
                 else:
                     if function.type == FunctionType.NORMAL:
                         self.fun_names[function.name] = function
+
+        # Types
+        self._enums: dict[int, IntEnum] = {}
+        self._structures: dict[int, quokka.Structure] = {}
 
     def __hash__(self) -> int:
         """Hash of the Program (use the hash from the exported file)"""
@@ -211,7 +217,7 @@ class Program(dict):
         return get_pypcode_context(self.arch, self.endianness)
 
     @cached_property
-    def structures(self) -> List[quokka.Structure]:
+    def structures(self) -> dict[Index, quokka.Structure]:
         """Structures accessor
 
         Allows to retrieve the different structures of a program (as defined by the
@@ -220,10 +226,69 @@ class Program(dict):
         Returns:
             A list of structures
         """
-        structures = [
-            quokka.Structure(structure, self) for structure in self.proto.structs
-        ]
-        return structures
+        compo_iterator = (x.composite_type for x in self.proto.types if x.WhichOneOf("OneofType") == "composite_type")
+        struct_iterator = (x for x in compo_iterator if x.type == quokka.pb.Quokka.CompositeType.CompositeSubType.TYPE_STRUCT)
+        return {i: quokka.Structure(st, self) for i, st in struct_iterator}
+
+    @cached_property
+    def enums(self) -> dict[Index, EnumT]:
+        """Enums accessor
+
+        Allows to retrieve the different enums of a program (as defined by the
+        disassembler).
+
+        Returns:
+            A list of enums
+        """
+        enums_iterator = (x.enum_type for x in self.proto.types if x.WhichOneOf("OneofType") == "enum_type")
+        return {i: EnumT(en, self) for i, en in enums_iterator}
+
+    def get_struct_member(self, struct_index: Index, member_index: Index) -> quokka.StructureMember:
+        """Get a structure member by its index
+
+        Arguments:
+            struct_index: Index of the structure in the proto
+            member_index: Index of the member in the structure (starting from 0)
+
+        Returns:
+            The corresponding structure member
+
+        Raises:
+            KeyError: When the structure or the member is not found
+        """
+        try:
+            struct = self.structures[struct_index]
+        except IndexError as exc:
+            raise KeyError(f"No structure with index {struct_index}") from exc
+
+        try:
+            return struct[member_index]
+        except IndexError as exc:
+            raise KeyError(
+                f"No member with index {member_index} in structure {struct_index}"
+            ) from exc
+
+    def get_type(self, type_index: Index) -> Type:
+        """Get a type by its index
+
+        Arguments:
+            type_index: Index of the type in the proto
+
+        Returns:
+            The corresponding type
+
+        Raises:
+            KeyError: When the type is not found
+        """
+        pb_type = self.proto.types[type_index]
+        if pb_type.WhichOneOf("OneofType") == "enum_type":
+            return self.enums[type_index]
+        elif pb_type.WhichOneOf("OneofType") == "composite_type":
+            return self.structures[type_index]
+        elif pb_type.WhichOneOf("OneofType") == "primitive_type":
+            return DataType.from_proto(pb_type.primitive_type)
+        else:
+            assert False, "Unknown type"
 
     @cached_property
     def memory(self) -> "quokka.Memory":

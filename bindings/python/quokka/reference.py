@@ -47,6 +47,10 @@ from quokka.types import (
     Tuple,
     Union,
 )
+from quokka.enums import EnumT
+from quokka.structure import Structure, StructureMember
+
+TypeReference = Union[Structure, StructureMember, EnumT]
 
 
 class Reference:
