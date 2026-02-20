@@ -13,19 +13,22 @@
 // limitations under the License.
 
 #include "quokka/Layout.h"
+
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
 
-#include "absl/container/btree_map.h"
+// clang-format off: Compatibility.h must come before ida headers
+#include "quokka/Compatibility.h"
+// clang-format on
+#include "pro.h"
+
 #include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
-#include "pro.h"
+
 #include "quokka/Block.h"
-#include "quokka/Comment.h"
+// #include "quokka/Comment.h"
 #include "quokka/Data.h"
-#include "quokka/DataType.h"
-// #include "quokka/Function.h"
 #include "quokka/Function.h"
 #include "quokka/Imports.h"
 #include "quokka/Instruction.h"
@@ -57,8 +60,6 @@ HeadIterator::HeadIterator(ea_t start_ea, ea_t max_ea)
 
   /* Init item size*/
   this->item_size = uint64_t(get_item_size(this->current_ea));
-
-  this->comments = &Comments::GetInstance();
 
   this->state = GetState(this->current_ea);
   this->StartLayout(this->current_ea, this->state);

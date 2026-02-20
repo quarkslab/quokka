@@ -24,8 +24,7 @@
 #include "absl/strings/str_format.h"
 
 #include "quokka/Block.h"
-#include "quokka/Comment.h"
-#include "quokka/DataType.h"
+// #include "quokka/Comment.h"
 #include "quokka/Function.h"
 #include "quokka/Imports.h"
 // #include "quokka/Reference.h"
@@ -351,7 +350,7 @@ ExportFunctions() {
   functions.reserve(get_func_qty());
   std::vector<std::pair<ea_t, ea_t>> chunks;
 
-  Comments& comments = Comments::GetInstance();
+  // Comments& comments = Comments::GetInstance();
   const ImportManager& import_manager = ImportManager::GetInstance();
 
   /**

@@ -31,11 +31,11 @@
 #include "quokka/DataType.h"
 #include "quokka/Segment.h"
 
-#if IDA_SDK_VERSION < 850
-#include "api_v8/Data.cpp"
-#else
-#include "api_v9/Data.cpp"
-#endif
+// #if IDA_SDK_VERSION < 850
+// #include "api_v8/Data.cpp"
+// #else
+// #include "api_v9/Data.cpp"
+// #endif
 
 namespace quokka {
 

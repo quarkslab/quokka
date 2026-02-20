@@ -23,6 +23,7 @@
 
 #include "quokka/Block.h"
 #include "quokka/Instruction.h"
+#include "quokka/Reference.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 
@@ -122,6 +123,8 @@ void Block::ExportInstructions() {
       //                              static_cast<int>(instructions.size()));
       // this->instructions.push_back(instruction);
     }
+
+    ExportCodeReference(current_ea);
 
     ++this->instr_count;
     current_ea += static_cast<ea_t>(decoded_size);

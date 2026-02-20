@@ -227,11 +227,9 @@ class HeadIterator {
   // of operands BucketNew<OperandString> operand_string_bucket;    ///< Bucket
   // of op strings BucketNew<Mnemonic> mnemonic_bucket;               ///<
   // Bucket of mnemonic
-  SetBucket<Data> data_list;        ///< Bucket of data
+  SetBucket<Data> data_list;  ///< Bucket of data
 
   std::forward_list<std::shared_ptr<Block>> blocks;  ///< List of blocks
-
-  Comments* comments;  ///< Collection for comments
 
   /**
    * Constructor
