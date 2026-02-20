@@ -150,16 +150,17 @@ class CompositeTypeMember : public ProtoHelper {
  * Use a singleton pattern and act like a std::vector.
  */
 class CompositeTypes {
- private:
+ public:
   using ElementT = std::shared_ptr<CompositeConcreteType>;
+  using iterator = std::vector<ElementT>::iterator;
+  using const_iterator = std::vector<ElementT>::const_iterator;
+
+ private:
   std::vector<ElementT> composite_types_;  ///< Internal list
 
   explicit CompositeTypes() = default;  ///< Private constructor
 
  public:
-  using iterator = std::vector<ElementT>::iterator;
-  using const_iterator = std::vector<ElementT>::const_iterator;
-
   /**
    * Return the instance of the `CompositeTypes` class.
    * Used for the singleton pattern.
