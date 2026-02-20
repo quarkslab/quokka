@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -25,6 +26,7 @@
 #include "absl/strings/str_format.h"
 
 #include "quokka/DataType.h"
+#include "quokka/Reference.h"
 #include "quokka/Util.h"
 
 namespace quokka {
@@ -77,7 +79,7 @@ static void ExportCompositeMembers(
 
       // Ask the CompositeTypes manager to give us the relevant struct/union
       const auto& composite_types = CompositeTypes::GetInstance();
-      const auto& it = composite_types.get_by_name(base_type_name);
+      const auto& it = composite_types.get_by_id(udm.type.get_tid());
 
       if (it == composite_types.end()) {
         QLOGE << absl::StrFormat(
@@ -92,19 +94,13 @@ static void ExportCompositeMembers(
     /* TODO Retrieve comments */
     std::visit(
         [&](auto& composite) {
+          ExportSymbolReference(&composite, tif.get_tid(), member_idx);
           //   GetStructureMemberComment(composite_type_ptr,
           //                             composite.members.size(),
           //                             ida_member->id);
           //   GetStructureMemberComment_v9(structure_member, udm);
         },
         composite_type);
-
-    // TODO references
-    //   ExportStructureMemberReference(ea_t(ida_member->id),
-    //                                  structure->members.back(),
-    //                                  STRUCT_STRUCT);
-    // ExportStructureMemberReference(ea_t(struct_tif.get_udm_tid(member_idx)),
-    //                                structure_member, STRUCT_STRUCT);
 
     ++member_idx;
   }
@@ -128,37 +124,22 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
   CompositeTypes& composite_types = CompositeTypes::GetInstance();
   size_t size = tif.is_forward_decl() ? 0 : tif.get_size();
 
+  CompositeTypes::ElementT type;
   if (tif.is_union())
-    composite_types.emplace_back<UnionType>(ConvertIdaString(name),
-                                            tif.get_tid(), size);
+    type = composite_types.emplace_back<UnionType>(ConvertIdaString(name),
+                                                   tif.get_tid(), size);
   else
-    composite_types.emplace_back<StructureType>(ConvertIdaString(name),
-                                                tif.get_tid(), size);
+    type = composite_types.emplace_back<StructureType>(ConvertIdaString(name),
+                                                       tif.get_tid(), size);
 
-  // TODO references & comments
-  //   ExportStructureReference(ea_t(structure->addr), structure,
-  //   STRUCT_STRUCT);
+  std::visit(
+      [&tif](const auto& x) {
+        ExportSymbolReference(&x, tif.get_tid(), reference::WHOLE_TYPE);
+      },
+      *type);
 
+  // TODO comments
   //   GetCompositeTypeComment(composite_types.back());
-}
-
-/**
- * Export the enum members of enumeration.
- *
- * @param enumeration The EnumType object
- * @param enum_tif Ida enum type info
- */
-static void ExportEnumMembers(EnumType& enumeration, const tinfo_t& enum_tif) {
-  enum_type_data_t edt;
-  enum_tif.get_enum_details(&edt);
-
-  for (const edm_t& edm : edt) {
-    enumeration.values.push_back({ConvertIdaString(edm.name), edm.value});
-
-    /* Retrieve comments */
-    // GetEnumMemberComment_v9(member, edm);
-    // ExportStructureMemberReference(edm.get_tid(), member, STRUCT_ENUM);
-  }
 }
 
 void ExportCompositeDataTypes() {
@@ -203,20 +184,36 @@ void ExportEnums() {
 
     qstring enum_name;
     tif.get_type_name(&enum_name);
+    enum_type_data_t edt;
+    tif.get_enum_details(&edt);
+    bool has_members =
+        tif.get_realtype() != (BTMT_SIZE0 | BT_UNK) && !tif.is_empty_enum();
 
     EnumType enum_type(ConvertIdaString(enum_name));
 
     // Export the values (aka members)
-    if (tif.get_realtype() != (BTMT_SIZE0 | BT_UNK) && !tif.is_empty_enum())
-      ExportEnumMembers(enum_type, tif);
+    if (has_members) {
+      for (const edm_t& edm : edt) {
+        enum_type.values.push_back({ConvertIdaString(edm.name), edm.value});
+        /* Retrieve comments */
+        // GetEnumMemberComment_v9(member, edm);
+      }
+    }
 
-    // TODO References
-    // ExportStructureReference(ea_t(ida_enum), structure, STRUCT_STRUCT);
+    const EnumType& new_obj = enums.insert(std::move(enum_type));
 
+    // References
+    ExportSymbolReference(&new_obj, tif.get_tid(), reference::WHOLE_TYPE);
+    if (has_members) {
+      for (size_t i = 0; const edm_t& edm : edt) {
+        ExportSymbolReference(&new_obj, edm.get_tid(), i);
+        ++i;
+      }
+    }
+
+    // TODO comments
     // Check for comment for the enum
     // GetEnumComment(enum_type);
-
-    enums.insert(std::move(enum_type));
   }
 }
 
