@@ -66,7 +66,7 @@ enum SegmentType : short {
  * ---------------------------------------------
  * Represents a segment
  */
-struct Segment : ProtoHelper {
+struct Segment : public ProtoHelper {
   std::string name;  ///< Name of the segment
 
   ea_t start_addr;  ///< Start address
@@ -159,7 +159,7 @@ class Segments final : public MultiMapBucket<sel_t, Segment> {
   bool contains(const sel_t sel, const ea_t start, const ea_t end) const {
     auto [first, last] = storage->bucket.equal_range(sel);
     return std::any_of(first, last, [&](const auto& pair) {
-      return pair.second.start_addr == start && pair.second.end_addr == end;
+      return pair.second->start_addr == start && pair.second->end_addr == end;
     });
   }
 

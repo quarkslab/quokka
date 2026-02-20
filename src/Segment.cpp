@@ -84,7 +84,7 @@ const Segment& Segments::get_exact(sel_t sel, ea_t start, ea_t end) const {
 
   // The iterator with filtering
   auto check_range = [&](const auto& pair) {
-    return pair.second.start_addr == start && pair.second.end_addr == end;
+    return pair.second->start_addr == start && pair.second->end_addr == end;
   };
   auto it = std::ranges::find_if(first, last, check_range);
 
@@ -98,7 +98,7 @@ const Segment& Segments::get_exact(sel_t sel, ea_t start, ea_t end) const {
   assert(std::ranges::find_if(std::next(it), last, check_range) == last &&
          "Found multiple Segments with the same [sel, start, end]");
 
-  return it->second;
+  return *it->second;
 }
 
 const Segment& GetSegment(ea_t addr) {

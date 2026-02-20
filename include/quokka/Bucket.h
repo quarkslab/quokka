@@ -80,25 +80,61 @@ struct CommonStorage {
 
 template <std::derived_from<ProtoHelper> P>
 struct SetStorage : public CommonStorage<P> {
-  absl::flat_hash_set<P> bucket;  ///< The bucket with the elements
+  struct BucketHash {
+    using is_transparent = void;
 
-  auto bucket_values() const { return std::views::all(bucket); }
+    size_t operator()(const std::unique_ptr<P>& p) const {
+      return absl::HashOf(*p);
+    }
+    size_t operator()(const P& p) const { return absl::HashOf(p); }
+  };
+
+  struct BucketEq {
+    using is_transparent = void;
+
+    bool operator()(const std::unique_ptr<P>& a,
+                    const std::unique_ptr<P>& b) const {
+      return *a == *b;
+    }
+    bool operator()(const std::unique_ptr<P>& a, const P& b) const {
+      return *a == b;
+    }
+    bool operator()(const P& a, const std::unique_ptr<P>& b) const {
+      return a == *b;
+    }
+  };
+
+  absl::flat_hash_set<std::unique_ptr<P>, BucketHash, BucketEq> bucket;
+
+  auto bucket_values() const {
+    return bucket |
+           std::views::transform(
+               [](const std::unique_ptr<P>& p) -> const P& { return *p; });
+  }
 };
 
 template <typename K, std::derived_from<ProtoHelper> P,
           typename Compare = std::less<K>>
 struct MapStorage : public CommonStorage<P> {
-  absl::btree_map<K, P, Compare> bucket;  ///< The bucket with the elements
+  absl::btree_map<K, std::unique_ptr<P>, Compare> bucket;
 
-  auto bucket_values() const { return bucket | std::views::values; }
+  auto bucket_values() const {
+    return bucket | std::views::values |
+           std::views::transform(
+               [](const std::unique_ptr<P>& p) -> const P& { return *p; });
+  }
 };
 
 template <typename K, std::derived_from<ProtoHelper> P,
           typename Compare = std::less<K>>
 struct MultiMapStorage : public CommonStorage<P> {
-  absl::btree_multimap<K, P, Compare> bucket;  ///< The bucket with the elements
+  absl::btree_multimap<K, std::unique_ptr<P>, Compare> bucket;
 
-  auto bucket_values() const { return bucket | std::views::values; }
+  auto bucket_values() const {
+    return bucket | std::views::values |
+           std::views::transform(
+               [](const std::unique_ptr<P>& p) -> const P& { return *p; });
+  }
 };
 
 }  // namespace detail
@@ -122,7 +158,8 @@ concept StorageLike = requires(const StorageT& storage) {
   requires std::same_as<std::remove_cvref_t<decltype(storage.sorted_view)>,
                         std::vector<const T*>>;
   requires std::convertible_to<
-      std::ranges::range_reference_t<decltype(storage.bucket_values())>, T>;
+      std::ranges::range_reference_t<decltype(storage.bucket_values())>,
+      const T&>;
 };
 
 template <std::derived_from<ProtoHelper> P, StorageLike<P> StorageT>
@@ -204,6 +241,8 @@ class CommonSortableBucket {
  * once and everytime a new element already existing is added, the reference
  * count is incremented.
  *
+ * @note It ensures pointer stability
+ *
  * @tparam P A descendant of ProtoHelper type
  */
 template <std::derived_from<ProtoHelper> P>
@@ -223,10 +262,10 @@ class SetBucket : public CommonSortableBucket<P, detail::SetStorage<P>> {
   const P& emplace(Args&&... args) {
     if (this->frozen)
       throw std::logic_error("Cannot insert new elements in a frozen bucket");
-    auto [it, result] =
-        this->storage->bucket.emplace(std::forward<Args>(args)...);
-    it->ref_count++;
-    return *it;
+    auto [it, result] = this->storage->bucket.insert(
+        std::make_unique<P>(std::forward<Args>(args)...));
+    (*it)->ref_count++;
+    return **it;
   }
 
   /**
@@ -239,9 +278,10 @@ class SetBucket : public CommonSortableBucket<P, detail::SetStorage<P>> {
   const P& insert(P obj) {
     if (this->frozen)
       throw std::logic_error("Cannot insert new elements in a frozen bucket");
-    auto [it, result] = this->storage->bucket.insert(std::move(obj));
-    it->ref_count++;
-    return *it;
+    auto [it, result] =
+        this->storage->bucket.insert(std::make_unique<P>(std::move(obj)));
+    (*it)->ref_count++;
+    return **it;
   }
 
   /**
@@ -269,6 +309,8 @@ class SetBucket : public CommonSortableBucket<P, detail::SetStorage<P>> {
  * count is incremented. This variant uses a key-value map to store the elements
  * and offers an API to binary search a key.
  *
+ * @note It ensures pointer stability
+ *
  * @tparam P A descendant of ProtoHelper type
  */
 template <typename K, std::derived_from<ProtoHelper> P,
@@ -295,15 +337,15 @@ class MapBucket
     // Search if it's already in the bucket
     if (auto search = this->storage->bucket.find(key);
         search != this->storage->bucket.end()) {
-      ++search->second.ref_count;
-      return search->second;
+      ++search->second->ref_count;
+      return *search->second;
     }
 
     // Otherwise insert it
-    auto [it, ok] =
-        this->storage->bucket.emplace(key, std::forward<Args>(args)...);
-    it->second.ref_count++;
-    return it->second;
+    auto [it, ok] = this->storage->bucket.insert(
+        key, std::make_unique<P>(std::forward<Args>(args)...));
+    it->second->ref_count++;
+    return *it->second;
   }
 
   /**
@@ -319,7 +361,7 @@ class MapBucket
   const P& operator[](const K& key) const {
     if (!this->contains(key))
       throw std::out_of_range("Key not in the collection");
-    return this->storage->bucket.at(key);
+    return *this->storage->bucket.at(key);
   }
 };
 
@@ -334,6 +376,8 @@ class MapBucket
  * count is incremented. This variant uses a key-value map to store the elements
  * and offers an API to binary search a key.
  *
+ * @note It ensures pointer stability
+ *
  * @tparam P A descendant of ProtoHelper type
  */
 template <typename K, std::equality_comparable P,
@@ -343,8 +387,6 @@ template <typename K, std::equality_comparable P,
 class MultiMapBucket
     : public CommonSortableBucket<P, detail::MultiMapStorage<K, P, Compare>> {
  public:
-  using const_iterator =
-      decltype(detail::MultiMapStorage<K, P, Compare>::bucket)::const_iterator;
   /**
    * Add P to the bucket
    *
@@ -361,19 +403,20 @@ class MultiMapBucket
       throw std::logic_error("Cannot insert new elements in a frozen bucket");
 
     // Build the new object and search if it's already in the bucket
-    P new_obj(std::forward<Args>(args)...);
+    std::unique_ptr<P> new_ptr =
+        std::make_unique<P>(std::forward<Args>(args)...);
     for (auto it = this->storage->bucket.find(key);
          it != this->storage->bucket.end(); ++it) {
-      if (it->second == new_obj) {
-        ++it->second.ref_count;
-        return it->second;
+      if (*it->second == *new_ptr) {
+        ++it->second->ref_count;
+        return *it->second;
       }
     }
 
     // Otherwise insert it
-    auto it = this->storage->bucket.insert({key, std::move(new_obj)});
-    it->second.ref_count++;
-    return it->second;
+    auto it = this->storage->bucket.insert({key, std::move(new_ptr)});
+    it->second->ref_count++;
+    return *it->second;
   }
 
   /**
@@ -384,13 +427,6 @@ class MultiMapBucket
    */
   bool contains(const K& key) const {
     return this->storage->bucket.contains(key);
-  }
-
-  const_iterator begin() const { return this->storage->bucket.begin(); }
-  const_iterator end() const { return this->storage->bucket.end(); }
-
-  const_iterator find(const K& key) const {
-    return this->storage->bucket.find(key);
   }
 };
 
