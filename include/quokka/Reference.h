@@ -20,48 +20,48 @@
 #ifndef QUOKKA_REFERENCE_H
 #define QUOKKA_REFERENCE_H
 
+// #include <memory>
 #include <cstdint>
-#include <memory>
 #include <utility>
 #include <variant>
-#include <vector>
+// #include <vector>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
-#include <bytes.hpp>
-#include <funcs.hpp>
-#include <ida.hpp>
-#include <xref.hpp>
+#include <typeinf.hpp>
+// #include <bytes.hpp>
+// #include <funcs.hpp>
+// #include <ida.hpp>
+// #include <xref.hpp>
 
-#include "absl/hash/hash.h"
+// #include "absl/hash/hash.h"
 
-#include "Localization.h"  //Kept for Location
-#include "Util.h"          //Kept for BucketNew
-#include "Windows.h"
+// #include "Localization.h"  //Kept for Location
+// #include "Util.h"          //Kept for BucketNew
+// #include "Windows.h"
+#include "Bucket.h"
+#include "Data.h"
+#include "DataType.h"
+#include "ProtoHelper.h"
+#include "quokka.pb.h"
 
 namespace quokka {
 
-class Block;
-class Data;
-class Structures;
-class Structure;
-enum StructureType : short;
-struct StructureMember;
-class FuncChunkCollection;
-class Instruction;
-class FuncChunk;
+namespace reference {
+inline constexpr int32_t WHOLE_TYPE = -1;
+}
 
-/**
- * Reference type
- */
-enum ReferenceType : short {
-  REF_FLOW = 0,
-  REF_CALL,  ///< Code reference
-  REF_DATA,
-  REF_ENUM,
-  REF_STRUC,    ///< Data reference
-  REF_INVALID,  ///< Invalid
-};
+// class Block;
+// class Data;
+// class Structures;
+// class Structure;
+// enum StructureType : short;
+// struct StructureMember;
+// class FuncChunkCollection;
+// class Instruction;
+// class FuncChunk;
 
 /**
  * ---------------------------------------------
@@ -72,21 +72,31 @@ enum ReferenceType : short {
  * A reference is a link between two elements
  * They have a direction (source to destination)
  */
-struct Reference {
-  Location source_;       ///< Source of the reference
-  Location destination_;  ///< Destination
-  ReferenceType type;     ///< Type of reference
+class Reference : public ProtoHelper {
+ public:
+  // Either an address or a pair {Type*, member_index/-1 if no member}.
+  using Location = std::variant<ea_t, std::pair<const ProtoHelper*, int32_t>>;
+  using ReferenceType = Quokka::Reference::ReferenceType;
+
+  Location source;       ///< Source of the reference
+  Location destination;  ///< Destination
+  ReferenceType type;    ///< Type of reference
 
   /**
    * Constructor
-   * @param source Source
-   * @param destination Destination
-   * @param ref_type Reference type
+   * @param source_ Source
+   * @param destination_ Destination
+   * @param type_ Reference type
    */
-  Reference(Location source, Location destination, ReferenceType ref_type)
-      : source_(std::move(source)),
-        destination_(std::move(destination)),
-        type(ref_type){};
+  Reference(Location source_, Location destination_, ReferenceType type_)
+      : source(std::move(source_)),
+        destination(std::move(destination_)),
+        type(type_) {}
+
+  bool operator==(const Reference& other) const noexcept {
+    return source == other.source && destination == other.destination &&
+           type == other.type;
+  }
 
   /**
    * Hash implementation of the object using absl::Hash
@@ -97,59 +107,39 @@ struct Reference {
    */
   template <typename H>
   friend H AbslHashValue(H h, const Reference& m) {
-    return H::combine(std::move(h), m.source_, m.destination_, m.type);
+    return H::combine(std::move(h), m.source, m.destination, m.type);
   }
 };
 
 /**
  * ---------------------------------------------
- * quokka::ReferenceHolder
+ * quokka::References
  * ---------------------------------------------
  * Collection holding every reference found in the binary
  */
-class ReferenceHolder {
+class References : public SetBucket<Reference> {
  private:
-  /**
-   * Private constructor
-   */
-  explicit ReferenceHolder() = default;
-
-  /**
-   * Map between address and data pointers
-   */
-  absl::flat_hash_map<ea_t, std::shared_ptr<Data>> data_addresses = {};
-
-  /**
-   * References collection
-   */
-  std::vector<Reference> references = {};
+  explicit References() = default;
 
  public:
+  using SetBucket<Reference>::SetBucket;
+
   /**
    * Singleton pattern
-   * @return ReferenceHolder instance
+   * @return References instance
    */
-  static ReferenceHolder& GetInstance() {
-    static ReferenceHolder instance;
+  static References& GetInstance() {
+    static References instance;
     return instance;
   }
 
   /**
-   * Deleted methods for singleton pattern
+   * Delete methods for singleton pattern
    */
-  ReferenceHolder(ReferenceHolder const&) = delete;  // Don't implement
-  void operator=(ReferenceHolder const&) = delete;   // Don't implement
-
-  /**
-   * Emplace a reference to the list of references
-   * @tparam Args Arguments
-   * @param args Arguments
-   * @return A reference
-   */
-  template <typename... Args>
-  Reference& emplace_back(Args&&... args) {
-    return this->references.emplace_back(std::forward<Args>(args)...);
-  }
+  References(References const&) = delete;
+  References(References&&) = delete;
+  void operator=(References const&) = delete;
+  void operator=(References&&) = delete;
 
   /**
    * Convert an address for a data to a Location element
@@ -161,7 +151,7 @@ class ReferenceHolder {
    * @param data_bucket Data bucket
    * @return
    */
-  Location ResolveData(ea_t addr, const BucketNew<Data>& data_bucket);
+  // Location ResolveData(ea_t addr, const BucketNew<Data>& data_bucket);
 
   /**
    * Resolve the location
@@ -177,11 +167,11 @@ class ReferenceHolder {
    * @param data_bucket Data bucket
    * @return A location which does not holds an address anymore
    */
-  Location ResolveLocation(Location location,
-                           const BucketNew<Instruction>& instructions,
-                           ea_t max_ea, const Structures& structures,
-                           const FuncChunkCollection& chunks,
-                           const BucketNew<Data>& data_bucket);
+  // Location ResolveLocation(Location location,
+  //                          const BucketNew<Instruction>& instructions,
+  //                          ea_t max_ea, const Structures& structures,
+  //                          const FuncChunkCollection& chunks,
+  //                          const BucketNew<Data>& data_bucket);
 
   /**
    * Iterate through the references, resolve them and remove every invalid
@@ -197,161 +187,132 @@ class ReferenceHolder {
    * @param data_bucket Data bucket
    * @param structures Structures collection
    */
-  void RemoveMissingAddr(const FuncChunkCollection& chunks,
-                         const BucketNew<Instruction>& instructions,
-                         const BucketNew<Data>& data_bucket,
-                         const Structures& structures);
-
-  /**
-   * Proxy for size
-   * @return size of the references
-   */
-  [[nodiscard]] std::size_t size() const { return references.size(); }
-
-  /* Iterators proxy */
-  using iterator = std::vector<Reference>::iterator;
-  using const_iterator = std::vector<Reference>::const_iterator;
-  iterator begin() { return references.begin(); }
-  iterator end() { return references.end(); }
-  [[nodiscard]] const_iterator begin() const { return references.begin(); }
-  [[nodiscard]] const_iterator end() const { return references.end(); }
+  // void RemoveMissingAddr(const FuncChunkCollection& chunks,
+  //                        const BucketNew<Instruction>& instructions,
+  //                        const BucketNew<Data>& data_bucket,
+  //                        const Structures& structures);
 };
 
-/**
- * Resolve edges in chunks or in-between
- *
- * This is a bit more tricky than expected. We have first to check if the
- * block exists (e.g to be in blocks, not in block_heads) to have an inner
- * edge. Otherwise, the choice we made was wrong and the reference is a
- * in fact a *CALL*. So we need to transfer them to the ReferenceHolder.
- *
- * @param chunks Chunks collections
- * @param reference_holder Reference collections
- */
-void ResolveEdges(const FuncChunkCollection& chunks,
-                  ReferenceHolder& reference_holder);
+// /**
+//  * Resolve edges in chunks or in-between
+//  *
+//  * This is a bit more tricky than expected. We have first to check if the
+//  * block exists (e.g to be in blocks, not in block_heads) to have an inner
+//  * edge. Otherwise, the choice we made was wrong and the reference is a
+//  * in fact a *CALL*. So we need to transfer them to the ReferenceHolder.
+//  *
+//  * @param chunks Chunks collections
+//  * @param reference_holder Reference collections
+//  */
+// void ResolveEdges(const FuncChunkCollection& chunks,
+//                   ReferenceHolder& reference_holder);
+
+// /**
+//  * Export the flow graph at `current_ea`
+//  *
+//  * This is a bit tricky because it is hard to distinguish normal flow and
+//  * unconditional jumps
+//  *
+//  * @param current_ea Address
+//  * @param current_chunk Chunks collection
+//  * @param flow_refs List of flow references
+//  */
+// void ExportFlowGraph(ea_t current_ea,
+//                      const std::shared_ptr<FuncChunk>& current_chunk,
+//                      const std::vector<ea_t>& flow_refs);
+
+// /**
+//  * Export all code references coming from current_ea
+//  *
+//  * @param current_ea Address
+//  * @param current_chunk Chunks collections
+//  * @param block_p Current block
+//  * @param inst_idx Current instruction index
+//  * @param data_bucket Data bucket
+//  */
+// void ExportCodeReference(ea_t current_ea,
+//                          const std::shared_ptr<FuncChunk>& current_chunk,
+//                          const std::shared_ptr<Block>& block_p, int inst_idx,
+//                          BucketNew<Data>& data_bucket);
 
 /**
- * Export the flow graph at `current_ea`
+ * Export all the references to the provided data
  *
- * This is a bit tricky because it is hard to distinguish normal flow and
- * unconditional jumps
- *
- * @param current_ea Address
- * @param current_chunk Chunks collection
- * @param flow_refs List of flow references
+ * @param data Data object
  */
-void ExportFlowGraph(ea_t current_ea,
-                     const std::shared_ptr<FuncChunk>& current_chunk,
-                     const std::vector<ea_t>& flow_refs);
+void ExportDataReferences(const Data& data);
+
+// /**
+//  * Export all the references towards the unknown at current_ea
+//  *
+//  * This is a special case from DataReferences has the data does not really
+//  * exist but will be put in the DataBucket if we find some references towards
+//  * it (the resulting data will be of size 1 and type UNKNOWN).
+//  *
+//  * @param current_ea Address
+//  * @param data_bucket Data holder
+//  */
+// void ExportUnkReferences(ea_t current_ea, BucketNew<Data>& data_bucket);
+
+// /**
+//  * Try to resolve `addr` as a structure Location
+//  *
+//  * @param addr Address
+//  * @param structures Structure collections
+//  * @return Either a Structure, StructureMember or BADADDR
+//  */
+// Location ResolveStructure(ea_t addr, const Structures& structures);
+
+// /**
+//  * Try to resolve addr as a Instruction Instance Location
+//  *
+//  * @note `addr` must be less than BADADDR (otherwise it's a structure
+//  Location)
+//  *
+//  * @param addr Address
+//  * @param chunks Chunks collection
+//  * @param instructions Instruction bucket
+//  * @return BADADDR or InstructionInstance
+//  */
+// Location ResolveAddr(ea_t addr, const FuncChunkCollection& chunks,
+//                      const BucketNew<Instruction>& instructions);
 
 /**
- * Export all code references coming from current_ea
+ * Export all references towards a enum
  *
- * @param current_ea Address
- * @param current_chunk Chunks collections
- * @param block_p Current block
- * @param inst_idx Current instruction index
- * @param data_bucket Data bucket
+ * @param type The type for which to export the references
+ * @param enum_tid Ida type ID
  */
-void ExportCodeReference(ea_t current_ea,
-                         const std::shared_ptr<FuncChunk>& current_chunk,
-                         const std::shared_ptr<Block>& block_p, int inst_idx,
-                         BucketNew<Data>& data_bucket);
+void ExportSymbolReference(const ProtoHelper* type, const tid_t& tid,
+                           int32_t index);
 
-/**
- * Export all the references towards the data at `current_ea`
- *
- * @param current_ea Address
- * @param data Data
- * @return The number of references found towards this data
- */
-uint32_t ExportDataReferences(ea_t current_ea,
-                              const std::shared_ptr<Data>& data);
+// /**
+//  * Compute the type of the code reference
+//  *
+//  * @param ref_type Type of reference (fl_ )
+//  * @param target Target of the reference
+//  * @param chunk Chunk from the current source
+//  * @return A reference type
+//  */
+// ReferenceType GetCodeRefType(uchar ref_type, ea_t target,
+//                              const std::shared_ptr<FuncChunk>& chunk);
 
-/**
- * Export all the references towards the unknown at current_ea
- *
- * This is a special case from DataReferences has the data does not really
- * exist but will be put in the DataBucket if we find some references towards
- * it (the resulting data will be of size 1 and type UNKNOWN).
- *
- * @param current_ea Address
- * @param data_bucket Data holder
- */
-void ExportUnkReferences(ea_t current_ea, BucketNew<Data>& data_bucket);
+// /**
+//  * Compute the type of the data reference
+//  *
+//  * @param ref_type Type of reference (dr_)
+//  * @param target Target of the reference
+//  * @return Reference type
+//  */
+// ReferenceType GetDataRefType(uchar ref_type, ea_t target);
 
-/**
- * Try to resolve `addr` as a structure Location
- *
- * @param addr Address
- * @param structures Structure collections
- * @return Either a Structure, StructureMember or BADADDR
- */
-Location ResolveStructure(ea_t addr, const Structures& structures);
-
-/**
- * Try to resolve addr as a Instruction Instance Location
- *
- * @note `addr` must be less than BADADDR (otherwise it's a structure Location)
- *
- * @param addr Address
- * @param chunks Chunks collection
- * @param instructions Instruction bucket
- * @return BADADDR or InstructionInstance
- */
-Location ResolveAddr(ea_t addr, const FuncChunkCollection& chunks,
-                     const BucketNew<Instruction>& instructions);
-
-/**
- * Export all references towards this structure
- *
- * @param sid Structure id (actually an address)
- * @param structure Structure
- * @param struct_type Type of structure
- */
-void ExportStructureReference(ea_t sid,
-                              const std::shared_ptr<Structure>& structure,
-                              StructureType struct_type);
-
-/**
- * Export all references towards a structure member
- *
- * @param sid Structure id (actually an address)
- * @param member StructureMember
- * @param struct_type Type of structure
- */
-void ExportStructureMemberReference(
-    ea_t sid, const std::shared_ptr<StructureMember>& member,
-    StructureType struct_type);
-
-/**
- * Compute the type of the code reference
- *
- * @param ref_type Type of reference (fl_ )
- * @param target Target of the reference
- * @param chunk Chunk from the current source
- * @return A reference type
- */
-ReferenceType GetCodeRefType(uchar ref_type, ea_t target,
-                             const std::shared_ptr<FuncChunk>& chunk);
-
-/**
- * Compute the type of the data reference
- *
- * @param ref_type Type of reference (dr_)
- * @param target Target of the reference
- * @return Reference type
- */
-ReferenceType GetDataRefType(uchar ref_type, ea_t target);
-
-/**
- * Get the code reference from the start address
- *
- * @param code_refs (Out) A list of references
- * @param start_addr Starting address
- */
-void GetCodeRefFrom(std::vector<ea_t>& code_refs, ea_t start_addr);
+// /**
+//  * Get the code reference from the start address
+//  *
+//  * @param code_refs (Out) A list of references
+//  * @param start_addr Starting address
+//  */
+// void GetCodeRefFrom(std::vector<ea_t>& code_refs, ea_t start_addr);
 
 }  // namespace quokka
 #endif  // QUOKKA_REFERENCE_H
