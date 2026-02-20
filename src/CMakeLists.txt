@@ -23,7 +23,7 @@ add_ida_library(quokka_shared STATIC ${VAR_NOEA32}
         "Imports.cpp"
         # "Instruction.cpp"
         "Layout.cpp"
-        # "Reference.cpp"
+        "Reference.cpp"
         "Segment.cpp"
         "Util.cpp"
         "Writer.cpp")

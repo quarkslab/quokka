@@ -52,8 +52,8 @@ int ExportBinary(const std::string& filename) {
                     "Starting to export segments and data types...",
                     "Segments and data types exported successfully");
     ExportSegments();
+    ExportEnums();  // First enums
     ExportCompositeDataTypes();
-    ExportEnums();
     WriteTypes(&quokka_protobuf);
   }
 
@@ -74,6 +74,12 @@ int ExportBinary(const std::string& filename) {
   // Export layout and remaining data through linear scanning
   replace_wait_box("quokka: linear scan in progress");
   ExportLinearScan(&quokka_protobuf, std::move(ranges));
+
+  {
+    SCOPED_STEP("Writing references in the protobuf message...",
+                "References written successfully");
+    WriteReferences(&quokka_protobuf);
+  }
 
   // Write on the protobuf
   {

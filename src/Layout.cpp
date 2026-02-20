@@ -29,8 +29,7 @@
 #include "quokka/Function.h"
 #include "quokka/Imports.h"
 #include "quokka/Instruction.h"
-// #include "quokka/Reference.h"
-#include "quokka/Segment.h"
+#include "quokka/Reference.h"
 #include "quokka/Settings.h"
 #include "quokka/Writer.h"
 
@@ -425,9 +424,7 @@ void HeadIterator::Scan(
       const Data& data =
           this->data_list.insert(Data::Make(this->current_ea, this->item_size));
 
-      // uint32_t ref_count =
-      //     ExportDataReferences(head_iterator.current_ea, data);
-      // data.ref_count += ref_count;
+      ExportDataReferences(data);
 
     } else if (this->state == UNK_WITH_XREF) {
       /* IDA being IDA, some unknown part in the code have data ref attached
@@ -510,13 +507,10 @@ int ExportLinearScan(quokka::Quokka* proto,
   // }
 
   {
-    SCOPED_STEP("Starting to write data, comments and references...",
-                "Data, comments and references exported successfully");
+    SCOPED_STEP("Starting to write data and comments...",
+                "Data and comments written successfully");
     WriteData(proto, head_iterator.data_list);
     // WriteComments(proto, head_iterator.comments);
-
-    // /* WRITE AFTER FUNCTIONS */
-    // WriteReferences(proto, ReferenceHolder::GetInstance());
   }
 
   return eOk;
