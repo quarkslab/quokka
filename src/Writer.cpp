@@ -30,7 +30,7 @@
 #include "quokka/Function.h"
 #include "quokka/Layout.h"
 // #include "quokka/Localization.h"
-// #include "quokka/Reference.h"
+#include "quokka/Reference.h"
 #include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
@@ -266,6 +266,21 @@ static void WriteEnums(quokka::Quokka* proto) {
   }
 }
 
+static void WriteLocation(Quokka::Reference::Location* proto_location,
+                          const Reference::Location& location) {
+  std::visit(
+      [&]<typename T>(const T& loc) {
+        if constexpr (std::is_same<T, ea_t>()) {
+          proto_location->set_address(loc);
+        } else {
+          auto* data_type = proto_location->mutable_data_type_identifier();
+          data_type->set_type_index(loc.first->proto_index);
+          data_type->set_member_index(loc.second);
+        }
+      },
+      location);
+}
+
 // void WriteMnemonic(quokka::Quokka* proto, BucketNew<Mnemonic>& mnemonics) {
 //   proto->mutable_mnemonics()->Reserve(static_cast<int>(mnemonics.size()));
 //   for (const auto& [ref_count, mnemonic] : mnemonics.SortByFrequency()) {
@@ -453,103 +468,19 @@ void WriteFunctions(quokka::Quokka* proto,
   }
 }
 
-// quokka::Quokka::Reference::ReferenceType ToProtoReferenceType(
-//     ReferenceType ref_type) {
-//   switch (ref_type) {
-//     case REF_CALL:
-//       return quokka::Quokka::Reference::REF_CALL;
-//     case REF_ENUM:
-//       return quokka::Quokka::Reference::REF_ENUM;
-//     case REF_STRUC:
-//       return quokka::Quokka::Reference::REF_STRUC;
-//     case REF_DATA:
-//       return quokka::Quokka::Reference::REF_DATA;
-//     default:
-//       return quokka::Quokka::Reference::REF_UNK;
-//   }
-// }
+void WriteReferences(Quokka* proto) {
+  References::GetInstance().Sort();
+  const References& references = References::GetInstance();
 
-// void WriteLocation(quokka::Quokka::Location* proto_location,
-//                    const Location& location) {
-//   if (std::holds_alternative<ea_t>(location)) {
-//     QLOGE << "Not supposed to hold ea_t during writing time";
+  proto->mutable_references()->Reserve(references.size());
+  for (const auto& reference : references.GetSortedView()) {
+    Quokka::Reference* proto_ref = proto->add_references();
 
-//   } else if (std::holds_alternative<InstructionInstance>(location)) {
-//     const auto& inst_instance = std::get<InstructionInstance>(location);
-//     quokka::Quokka::Location::InstructionIdentifier* proto_inst =
-//         proto_location->mutable_instruction_position();
-
-//     auto block_idx =
-//     inst_instance.chunk_->GetBlockIdx(inst_instance.block_);
-//     proto_inst->set_block_idx(block_idx.value_or(-1));
-//     proto_inst->set_instruction_idx(inst_instance.instruction_index);
-//     proto_inst->set_func_chunk_idx(inst_instance.chunk_->proto_index);
-
-//   } else if (const auto
-//   data_ptr(std::get_if<std::shared_ptr<Data>>(&location));
-//              data_ptr) {
-//     proto_location->set_data_idx((*data_ptr)->proto_index);
-
-//   } else if (const auto struct_ptr(
-//                  std::get_if<std::shared_ptr<Structure>>(&location));
-//              struct_ptr) {
-//     quokka::Quokka::Location::StructurePosition* proto_struc =
-//         proto_location->mutable_struct_position();
-//     proto_struc->set_structure_idx(struct_ptr->get()->proto_index);
-//     proto_struc->set_no_member(true);
-
-//   } else if (const auto member_ptr(
-//                  std::get_if<std::shared_ptr<StructureMember>>(&location));
-//              member_ptr) {
-//     quokka::Quokka::Location::StructurePosition* proto_struc =
-//         proto_location->mutable_struct_position();
-
-//     if (auto parent = (*member_ptr)->parent.lock()) {
-//       proto_struc->set_structure_idx((*member_ptr)->parent.lock()->proto_index);
-//     } else {
-//       QLOGE << "Unable to acquire lock on parent";
-//       return;
-//     }
-
-//     proto_struc->set_member_idx(member_ptr->get()->proto_index);
-
-//   } else if (const auto func_ptr(
-//                  std::get_if<std::shared_ptr<Function>>(&location));
-//              func_ptr) {
-//     proto_location->set_function_idx((*func_ptr)->proto_index);
-
-//   } else if (const auto chunk_ptr(
-//                  std::get_if<std::shared_ptr<FuncChunk>>(&location));
-//              chunk_ptr) {
-//     proto_location->set_chunk_idx((*chunk_ptr)->proto_index);
-
-//   } else if (const auto inst_ptr(
-//                  std::get_if<std::shared_ptr<Instruction>>(&location));
-//              inst_ptr) {
-//     proto_location->set_inst_idx((*inst_ptr)->proto_index);
-//   } else {
-//     QLOGE << "ERROR WHILE WRITING Location";
-//   }
-// }
-
-// void WriteReferences(quokka::Quokka* proto, const ReferenceHolder&
-// ref_holder) {
-//   quokka::Quokka::Reference* proto_ref;
-//   proto->mutable_references()->Reserve(static_cast<int>(ref_holder.size()));
-//   for (const auto& reference : ref_holder) {
-//     if (std::holds_alternative<ea_t>(reference.source_) ||
-//         std::holds_alternative<ea_t>(reference.destination_)) {
-//       continue;
-//     }
-
-//     proto_ref = proto->add_references();
-
-//     proto_ref->set_reference_type(ToProtoReferenceType(reference.type));
-//     WriteLocation(proto_ref->mutable_source(), reference.source_);
-//     WriteLocation(proto_ref->mutable_destination(),
-//     reference.destination_);
-//   }
-// }
+    proto_ref->set_reference_type(reference.type);
+    WriteLocation(proto_ref->mutable_source(), reference.source);
+    WriteLocation(proto_ref->mutable_destination(), reference.destination);
+  }
+}
 
 void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket) {
   data_bucket.Sort();

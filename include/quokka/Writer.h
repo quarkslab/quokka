@@ -37,7 +37,7 @@
 #include "Bucket.h"
 #include "Data.h"
 #include "FileMetadata.h"
-#include "Localization.h"
+// #include "Localization.h"
 #include "Logger.h"
 #include "ProtoWrapper.h"
 #include "Segment.h"
@@ -81,7 +81,6 @@ enum SegmentType : short;
 enum BlockType : short;
 enum FunctionType : short;
 enum PositionType : short;
-enum ReferenceType : short;
 enum State : short;
 enum ExporterMode : short;
 
@@ -92,14 +91,6 @@ enum ExporterMode : short;
 //  */
 // quokka::Quokka::Function::Position::PositionType ToProtoPositionType(
 //     PositionType position_type);
-
-// /**
-//  * Convert a function type to the proto associated type
-//  * @param ref_type Type to convert
-//  * @return Converted type
-//  */
-// quokka::Quokka::Reference::ReferenceType ToProtoReferenceType(
-//     ReferenceType ref_type);
 
 // /**
 //  * Convert a function type to the proto associated type
@@ -259,23 +250,12 @@ quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode);
 void WriteFunctions(quokka::Quokka* proto,
                     const std::vector<Function>& functions);
 
-// /**
-//  * Write location element
-//  *
-//  * @param proto_location Protobuf object location
-//  * @param location Location to write
-//  */
-// void WriteLocation(quokka::Quokka::Location* proto_location,
-//                    const Location& location);
-
-// /**
-//  * Write the references
-//  *
-//  * @param proto Protobuf main object
-//  * @param ref_holder References collection
-//  */
-// void WriteReferences(quokka::Quokka* proto, const ReferenceHolder&
-// ref_holder);
+/**
+ * Write the references
+ *
+ * @param proto Protobuf main object
+ */
+void WriteReferences(quokka::Quokka* proto);
 
 /**
  * Write data
