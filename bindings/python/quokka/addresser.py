@@ -26,22 +26,19 @@ class Addresser:
 
     Arguments:
         program: A backref to the program
-        base_address: Program's base address
 
     Attributes:
         logger: A logger instance
         program: Program reference
-        base_address: Program base address
 
     """
 
-    def __init__(self, program: quokka.Program, base_address: AddressT):
+    def __init__(self, program: quokka.Program):
         """Constructor"""
         self.logger = logging.getLogger(__name__)
         self.program: quokka.Program = program
-        self.base_address: AddressT = base_address
 
-    def absolute(self, offset: int) -> AddressT:
+    def virtual_address(self, seg_id: int, seg_offset: int) -> AddressT:
         """Converts an offset in the file to an absolute address
 
         Arguments:
@@ -50,7 +47,7 @@ class Addresser:
         Returns:
             An absolute address
         """
-        return self.base_address + offset
+        return self.program.segments[seg_id].address + seg_offset
 
     def file(self, offset: int) -> int:
         """Converts a program offset to a file offset.

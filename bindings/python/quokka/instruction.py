@@ -27,7 +27,7 @@ import quokka
 from quokka.types import (
     AddressT,
     Any,
-    DataType,
+    BaseType,
     Dict,
     ExporterMode,
     Index,
@@ -365,7 +365,7 @@ class Instruction:
     def string(self) -> Optional[str]:
         """String used by the instruction (if any)"""
         for data in self.data_references:
-            if isinstance(data, quokka.data.Data) and data.type == DataType.ASCII:
+            if isinstance(data, quokka.data.Data) and data.type == BaseType.ASCII:
                 return data.value
 
         return None

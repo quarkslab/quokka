@@ -48,22 +48,27 @@ class Segment:
     ):
         """Constructor"""
         self.name: str = segment.name
-        self.start: AddressT = segment.start_addr
+        self.address: AddressT = segment.virtual_addr
         self.permissions: int = segment.permissions
         self.size: int = segment.size
         self.type: "SegmentType" = SegmentType.from_proto(segment.type)
 
         self.program: quokka.Program = program
 
-        self.file_offset: int = -1
+        self.file_offset: int = segment.file_offset  # -1 
         if segment.no_offset is False:
-            self.file_offset = segment.file_offset - self.start
+            self.file_offset = segment.file_offset - self.address
+
+    @property
+    def start(self) -> AddressT:
+        """Starting address of the segment"""
+        return self.address
 
     @property
     def end(self) -> AddressT:
         """End address of the segment"""
-        return self.start + self.size
-
+        return self.address + self.size
+    
     def writable(self) -> bool:
         """Is the segment writable?"""
         return self.permissions & 0x2 > 0

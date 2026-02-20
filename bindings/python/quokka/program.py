@@ -36,7 +36,10 @@ import idascript
 import quokka
 import quokka.analysis
 import quokka.backends
+import quokka.pb.Quokka as Pb # pyright: ignore[reportMissingImports]
+from quokka.data_type import ComplexType
 from quokka.enums import EnumT
+from quokka.data_type import ArrayType, PointerType
 from quokka.types import (
     AddressT,
     Dict,
@@ -52,7 +55,7 @@ from quokka.types import (
     Type,
     Union,
     CallingConvention,
-    DataType
+    BaseType
 )
 from quokka.exc import QuokkaError
 
@@ -101,7 +104,7 @@ class Program(dict):
         """Constructor"""
         super(dict, self).__init__()
 
-        self.proto: quokka.pb.Quokka = quokka.pb.Quokka()
+        self.proto: Pb = Pb()
         self.export_file: pathlib.Path = pathlib.Path(export_file)
         with open(self.export_file, "rb") as fd:
             self.proto.ParseFromString(fd.read())
@@ -131,8 +134,7 @@ class Program(dict):
             self.logger.error("Hash does not match with file.")
             raise quokka.QuokkaError("Hash mismatch")
 
-        self.base_address: AddressT = self.proto.meta.base_addr
-        self.addresser = quokka.Addresser(self, self.base_address)
+        self.addresser = quokka.Addresser(self)
 
         self.isa: quokka.analysis.ArchEnum = quokka.get_isa(self.proto.meta.isa)
         self.address_size: int = quokka.convert_address_size(
@@ -171,12 +173,16 @@ class Program(dict):
                         self.fun_names[function.name] = function
 
         # Types
-        self._enums: dict[int, IntEnum] = {}
-        self._structures: dict[int, quokka.Structure] = {}
+        self._types: dict[Index, BaseType | EnumT | ComplexType] = {}  # types as they are being loaded
 
     def __hash__(self) -> int:
         """Hash of the Program (use the hash from the exported file)"""
         return int(self.proto.meta.hash.hash_value, 16)
+
+    @property
+    def base_address(self) -> AddressT:
+        """Program base address"""
+        return min(segment.start for segment in self.segments.values())
 
     @property
     def name(self) -> str:
@@ -216,8 +222,8 @@ class Program(dict):
 
         return get_pypcode_context(self.arch, self.endianness)
 
-    @cached_property
-    def structures(self) -> dict[Index, quokka.Structure]:
+    @property
+    def structures(self) -> Iterable[quokka.Structure]:
         """Structures accessor
 
         Allows to retrieve the different structures of a program (as defined by the
@@ -226,12 +232,15 @@ class Program(dict):
         Returns:
             A list of structures
         """
-        compo_iterator = (x.composite_type for x in self.proto.types if x.WhichOneOf("OneofType") == "composite_type")
-        struct_iterator = (x for x in compo_iterator if x.type == quokka.pb.Quokka.CompositeType.CompositeSubType.TYPE_STRUCT)
-        return {i: quokka.Structure(st, self) for i, st in struct_iterator}
+        for i, t in enumerate(self.proto.types):
+            if t.WhichOneOf("OneofType") == "composite_type":
+                if t.composite_type.type == Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
+                    if i not in self._types:
+                        self._types[i] = quokka.Structure(t.composite_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, quokka.Structure))
 
     @cached_property
-    def enums(self) -> dict[Index, EnumT]:
+    def enums(self) -> Iterable[EnumT]:
         """Enums accessor
 
         Allows to retrieve the different enums of a program (as defined by the
@@ -240,8 +249,11 @@ class Program(dict):
         Returns:
             A list of enums
         """
-        enums_iterator = (x.enum_type for x in self.proto.types if x.WhichOneOf("OneofType") == "enum_type")
-        return {i: EnumT(en, self) for i, en in enums_iterator}
+        for i, t in enumerate(self.proto.types):
+            if t.WhichOneOf("OneofType") == "composite_type":
+                if i not in self._types:
+                    self._types[i] = EnumT(t.enum_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, EnumT))
 
     def get_struct_member(self, struct_index: Index, member_index: Index) -> quokka.StructureMember:
         """Get a structure member by its index
@@ -257,18 +269,13 @@ class Program(dict):
             KeyError: When the structure or the member is not found
         """
         try:
-            struct = self.structures[struct_index]
-        except IndexError as exc:
-            raise KeyError(f"No structure with index {struct_index}") from exc
-
-        try:
+            struct = self._types[struct_index]
+            assert isinstance(struct, quokka.Structure)
             return struct[member_index]
-        except IndexError as exc:
-            raise KeyError(
-                f"No member with index {member_index} in structure {struct_index}"
-            ) from exc
+        except KeyError as exc:
+            raise KeyError(f"No structure or member with index {struct_index}") from exc
 
-    def get_type(self, type_index: Index) -> Type:
+    def get_type(self, type_index: Index) -> BaseType | EnumT | ComplexType:
         """Get a type by its index
 
         Arguments:
@@ -280,15 +287,32 @@ class Program(dict):
         Raises:
             KeyError: When the type is not found
         """
-        pb_type = self.proto.types[type_index]
-        if pb_type.WhichOneOf("OneofType") == "enum_type":
-            return self.enums[type_index]
-        elif pb_type.WhichOneOf("OneofType") == "composite_type":
-            return self.structures[type_index]
-        elif pb_type.WhichOneOf("OneofType") == "primitive_type":
-            return DataType.from_proto(pb_type.primitive_type)
-        else:
-            assert False, "Unknown type"
+        try:
+            return self._types[type_index]
+        except KeyError:
+            # Unless fill the type from the protobuf
+            if type_index >= len(self.proto.types):
+                raise KeyError(f"No type with index {type_index}")
+            
+            pb_type = self.proto.types[type_index]
+            if pb_type.WhichOneOf("OneofType") == "enum_type":
+                self._types[type_index] = EnumT(pb_type.enum_type, self)
+            elif pb_type.WhichOneOf("OneofType") == "composite_type":
+                match pb_type.composite_type.type:
+                    case Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
+                        self._types[type_index] = quokka.Structure(pb_type.composite_type, self)
+                    case Pb.CompositeType.CompositeSubType.TYPE_UNION:
+                        self._types[type_index] = quokka.Union(pb_type.composite_type, self)
+                    case Pb.CompositeType.CompositeSubType.TYPE_ARRAY:
+                        self._types[type_index] = ArrayType(pb_type.composite_type, self)
+                    case Pb.CompositeType.CompositeSubType.TYPE_POINTER:
+                        self._types[type_index] = PointerType(pb_type.composite_type, self)
+            elif pb_type.WhichOneOf("OneofType") == "primitive_type":
+                self._types[type_index] = BaseType.from_proto(pb_type.primitive_type)
+            else:
+                assert False, "Unknown type"
+
+            return self._types[type_index]
 
     @cached_property
     def memory(self) -> "quokka.Memory":
@@ -329,9 +353,9 @@ class Program(dict):
         return self.proto.string_table[1:]
 
     @cached_property
-    def segments(self) -> List[quokka.Segment]:
+    def segments(self) -> dict[int, quokka.Segment]:
         """Returns the list of segments defined in the program."""
-        return [quokka.Segment(segment, self) for segment in self.proto.segments]
+        return {i: quokka.Segment(segment, self) for i, segment in enumerate(self.proto.segments)}
 
     def get_instruction(self, address: AddressT) -> quokka.Instruction:
         """Get an instruction by its address
@@ -401,7 +425,7 @@ class Program(dict):
         Raises:
             KeyError: When the segment is not found
         """
-        for segment in self.segments:
+        for _, segment in self.segments.items():
             if segment.in_segment(address):
                 return segment
 

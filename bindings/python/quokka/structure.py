@@ -17,13 +17,15 @@ from __future__ import annotations
 import weakref
 import quokka
 
+import quokka.pb.Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.types import (
-    DataType,
+    BaseType,
     Dict,
     List,
     Optional,
-    StructureType,
+    AddressT
 )
+from quokka.data_type import ComplexType
 
 
 class StructureMember:
@@ -45,28 +47,39 @@ class StructureMember:
 
     def __init__(
         self,
-        member: "quokka.pb.Quokka.Structure.Member",
+        member: "Pb.CompositeType.Member",
         structure: Structure,
     ) -> None:
         """Constructor"""
         self.name: str = member.name
-        self.type: DataType = DataType.from_proto(member.type)
+        self.type: BaseType = BaseType.from_proto(member.type)
         self.size: int = member.size
         self.value: Optional[int] = member.value if member.value != 0 else None
         self._structure: weakref.ref[Structure] = weakref.ref(structure)
+        self._xrefs_to = [structure._program.proto.references[x] for x in member.xref_to]
 
         self.comments: List[str] = []
 
     @property
-    def structure(self) -> Structure:
+    def parent(self) -> Structure:
         """Back reference to the parent structure"""
         return self._structure()
 
+    @property
+    def data_refs_to(self) -> list[AddressT]:
+        """Returns all data reference to this type"""
+        # Get protobuf type ids
+        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_DATA]
 
-class Structure(dict):
+    @property
+    def code_refs_to(self) -> list[AddressT]:
+        """Returns all code reference to this type"""
+        # Get protobuf type ids
+        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_CODE]
+
+
+class Structure(dict, ComplexType):
     """Structure
-
-    All IDA structure are merged inside this class (Enum, Structure, Union).
 
     Arguments:
         structure: Structure protobuf data
@@ -81,23 +94,30 @@ class Structure(dict):
         comments: Structure comments
     """
 
-    def __init__(
-        self,
-        structure: "quokka.pb.Quokka.Structure",
-        program: quokka.Program,
-    ) -> None:
+    def __init__(self, proto: "Pb.CompositeType", program: quokka.Program) -> None:
         """Constructor"""
-        super(dict, self).__init__()
-        self.program: quokka.Program = program
-        self.name: str = structure.name
-        self.size: Optional[int] = (
-            structure.size if structure.variable_size is False else 0
-        )
-        self.type = StructureType.from_proto(structure.type)
+        dict.__init__(self)
+        ComplexType.__init__(self, proto, program)
 
         self.index_to_offset: Dict[int, int] = {}
-        for index, member in enumerate(structure.members):
+        for index, member in enumerate(proto.members):
             self[member.offset] = StructureMember(member, self)
             self.index_to_offset[index] = member.offset
 
         self.comments: List[str] = []
+
+    def is_variable_size(self) -> bool:
+        """Is the structure of variable size?"""
+        return self.size <= 0
+
+
+class Union(Structure):
+    """Union
+
+    This class represents a union. It is a special case of structure where all members are at the same offset.
+
+     Arguments:
+        structure: Structure protobuf data
+        program: Program back reference
+    """
+    pass

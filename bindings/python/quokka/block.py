@@ -24,7 +24,7 @@ import quokka
 from quokka.types import (
     AddressT,
     BlockType,
-    DataType,
+    BaseType,
     Dict,
     ExporterMode,
     Index,
@@ -155,7 +155,7 @@ class Block(MutableMapping):
             reference_source = reference.source
             if (
                 isinstance(reference_source, quokka.data.Data)
-                and reference_source.type == DataType.ASCII
+                and reference_source.type == BaseType.ASCII
             ):
                 strings.add(reference_source.value)
 

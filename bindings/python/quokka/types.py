@@ -243,7 +243,7 @@ class ReferenceType(enum.Enum):
         return mapping.get(reference_type, ReferenceType.UNKNOWN)
 
 
-class DataType(enum.Enum):
+class BaseType(enum.Enum):
     """Data Type"""
 
     UNKNOWN = enum.auto()
@@ -260,23 +260,38 @@ class DataType(enum.Enum):
     POINTER = enum.auto()
 
     @staticmethod
-    def from_proto(data_type: "quokka.pb.Quokka.DataTypeValue") -> "DataType":
+    def from_proto(data_type: "quokka.pb.Quokka.DataType") -> "BaseType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.TYPE_B: DataType.BYTE,
-            quokka.pb.Quokka.TYPE_W: DataType.WORD,
-            quokka.pb.Quokka.TYPE_DW: DataType.DOUBLE_WORD,
-            quokka.pb.Quokka.TYPE_QW: DataType.QUAD_WORD,
-            quokka.pb.Quokka.TYPE_OW: DataType.OCTO_WORD,
-            quokka.pb.Quokka.TYPE_FLOAT: DataType.FLOAT,
-            quokka.pb.Quokka.TYPE_DOUBLE: DataType.DOUBLE,
-            quokka.pb.Quokka.TYPE_ASCII: DataType.ASCII,
-            quokka.pb.Quokka.TYPE_STRUCT: DataType.STRUCT,
-            quokka.pb.Quokka.TYPE_ALIGN: DataType.ALIGN,
-            quokka.pb.Quokka.TYPE_POINTER: DataType.POINTER,
+            quokka.pb.Quokka.TYPE_B: BaseType.BYTE,
+            quokka.pb.Quokka.TYPE_W: BaseType.WORD,
+            quokka.pb.Quokka.TYPE_DW: BaseType.DOUBLE_WORD,
+            quokka.pb.Quokka.TYPE_QW: BaseType.QUAD_WORD,
+            quokka.pb.Quokka.TYPE_OW: BaseType.OCTO_WORD,
+            quokka.pb.Quokka.TYPE_FLOAT: BaseType.FLOAT,
+            quokka.pb.Quokka.TYPE_DOUBLE: BaseType.DOUBLE,
+            quokka.pb.Quokka.TYPE_ASCII: BaseType.ASCII,
+            quokka.pb.Quokka.TYPE_STRUCT: BaseType.STRUCT,
+            quokka.pb.Quokka.TYPE_ALIGN: BaseType.ALIGN,
+            quokka.pb.Quokka.TYPE_POINTER: BaseType.POINTER,
         }
 
-        return mapping.get(data_type, DataType.UNKNOWN)
+        return mapping.get(data_type, BaseType.UNKNOWN)
+
+    @property
+    def size(self) -> int:
+        """Size of the data type in bytes"""
+        mapping = {
+            BaseType.BYTE: 1,
+            BaseType.WORD: 2,
+            BaseType.DOUBLE_WORD: 4,
+            BaseType.QUAD_WORD: 8,
+            BaseType.OCTO_WORD: 16,
+            BaseType.FLOAT: 4,
+            BaseType.DOUBLE: 8,
+        }
+
+        return mapping.get(self, 0)
 
 
 class SegmentType(enum.Enum):
@@ -309,26 +324,26 @@ class SegmentType(enum.Enum):
         return mapping.get(segment_type, SegmentType.UNKNOWN)
 
 
-class StructureType(enum.Enum):
-    """Structure Type"""
+# class StructureType(enum.Enum):
+#     """Structure Type"""
 
-    STRUCT = enum.auto()
-    ENUM = enum.auto()
-    UNION = enum.auto()
-    UNKNOWN = enum.auto()
+#     STRUCT = enum.auto()
+#     ENUM = enum.auto()
+#     UNION = enum.auto()
+#     UNKNOWN = enum.auto()
 
-    @staticmethod
-    def from_proto(
-        structure_type: "quokka.pb.Quokka.Structure.StructureTypeValue",
-    ) -> "StructureType":
-        """Convert the protobuf value into this enumeration"""
-        mapping = {
-            quokka.pb.Quokka.Structure.TYPE_STRUCT: StructureType.STRUCT,
-            quokka.pb.Quokka.Structure.TYPE_ENUM: StructureType.ENUM,
-            quokka.pb.Quokka.Structure.TYPE_UNION: StructureType.UNION,
-        }
+#     @staticmethod
+#     def from_proto(
+#         structure_type: "quokka.pb.Quokka.Structure.StructureTypeValue",
+#     ) -> "StructureType":
+#         """Convert the protobuf value into this enumeration"""
+#         mapping = {
+#             quokka.pb.Quokka.Structure.TYPE_STRUCT: StructureType.STRUCT,
+#             quokka.pb.Quokka.Structure.TYPE_ENUM: StructureType.ENUM,
+#             quokka.pb.Quokka.Structure.TYPE_UNION: StructureType.UNION,
+#         }
 
-        return mapping.get(structure_type, StructureType.UNKNOWN)
+#         return mapping.get(structure_type, StructureType.UNKNOWN)
 
 
 class ExporterMode(enum.IntEnum):

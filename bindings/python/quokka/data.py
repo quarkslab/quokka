@@ -21,16 +21,19 @@ from __future__ import annotations
 import logging
 
 import quokka
+import quokka.pb.Quokka # pyright: ignore[reportMissingImports]
 
 from quokka.types import (
     AddressT,
     Any,
-    DataType,
+    BaseType,
     Index,
     List,
     Mapping,
     Optional,
 )
+from quokka.reference import TypeReference
+
 
 logger = logging.getLogger(__name__)
 
@@ -60,78 +63,86 @@ class Data:
         self, proto_index: Index, data: "quokka.pb.Quokka.Data", program: quokka.Program
     ):
         """Constructor"""
-        self.proto_index: Index = proto_index
-        self.address: AddressT = program.addresser.absolute(data.offset)
-        self.type: "DataType" = DataType.from_proto(data.type)
+        self.proto: "quokka.pb.Quokka.Data" = program.proto.data[proto_index]
+        self.address: AddressT = program.addresser.virtual_address(data.segment_index, data.segment_offset)
         self.program: quokka.Program = program
+        self.file_offset: int = data.file_offset
 
         self.is_initialized: bool = not data.not_initialized
 
-        self.size: Optional[int] = (
-            data.size if data.WhichOneof("DataSize") != "no_size" else None
-        )
-        self._value: Optional[str] = (
-            self.program.proto.string_table[data.value_index]
-            if data.value_index > 0
-            else None
-        )
+        self.size: int = self.proto.size
+
         self.name: Optional[str] = (
             self.program.proto.string_table[data.name_index]
             if data.name_index > 0
             else None
         )
 
+        # Retrieve xrefs (for the data)
+        self._xrefs_from = [self.program.proto.references[x.xref_index] for x in self.proto.xref_from]
+        self._xrefs_to = [self.program.proto.references[x.xref_index] for x in self.proto.xref_to]
+
+
+
     def __eq__(self, other: Any) -> bool:
         """Check equality between two Data instances"""
-        return type(other) is type(self) and other.proto_index == self.proto_index
+        return id(self.proto) == id(other.proto)
 
     @property
-    def value(self) -> Any:
+    def value(self) -> Any|None:
         """Data value.
 
         The value is read in the program binary file.
         """
 
-        # Uninitialized memory
         if not self.is_initialized:
-            return None
+            return None  # Uninitialized memory has no value
+        if self.proto.file_offset <= 0:
+            return None  # Not mapped in the file
 
-        address = self.program.addresser.file(self.address)
+        return self.program.executable.read_type(self.file_offset, self.type)
 
-        if self.type in (
-            DataType.ALIGN,
-            DataType.POINTER,
-            DataType.STRUCT,
-            DataType.UNKNOWN,
-        ):
-            return self._value
-
-        if self.type == DataType.ASCII:
-            try:
-                return self.program.executable.read_data(
-                    address, self.type, size=self.size
-                )
-            except quokka.exc.NotInFileError:
-                logger.error("Try to read a string which is not in file")
-                return ""
-        else:
-            return self.program.executable.read_data(address, self.type)
+    def is_variable_size(self) -> bool:
+        """Is the data of variable size?"""
+        return self.size == -1
+    
+    @property
+    def type(self) -> TypeReference:
+        """Data type. Assume one exists for each data"""
+        return self.program.get_type(self.proto.type_index)
 
     @property
-    def references(self) -> List[quokka.Reference]:
-        """References to/from this data"""
-        return self.program.references.resolve_data(self.proto_index)
+    def data_refs_to(self) -> List[AddressT]:
+        """Returns all data reference to this instruction"""
+        # If querying refs_to get the source address
+        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_DATA]
 
     @property
-    def code_references(self) -> List[quokka.Reference]:
-        """Returns code referencing this Data"""
-        return [ref for ref in self.references if isinstance(ref.destination, tuple)]
+    def data_refs_from(self) -> List[AddressT]:
+        """Returns all data reference from this instruction"""
+        # If querying refs_from get the destination address
+        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_DATA]
 
     @property
-    def data_references(self) -> List[quokka.Reference]:
-        """Returns data references to/from this Data"""
-        return [ref for ref in self.references if isinstance(ref.destination, Data)]
+    def code_refs_from(self) -> List[AddressT]:
+        """Returns all code reference from this instruction"""
+        # If querying refs_from get the destination address
+        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_CODE]
 
+    @property
+    def code_refs_to(self) -> List[AddressT]:
+        """Returns all code reference to this instruction"""
+        # If querying refs_to get the source address
+        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_CODE]
+
+    @property
+    def type_refs_from(self) -> List[TypeReference]:
+        """Returns all type reference from this instruction"""
+        # Get protobuf type ids
+        type_ids = [xref.destination.data_type_identifier for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_SYMBOL]
+        # Resolve type ids to actual types
+        return [self.program.get_type(type_id) for type_id in type_ids]
+    
 
 class DataHolder(Mapping):
     """Data bucket

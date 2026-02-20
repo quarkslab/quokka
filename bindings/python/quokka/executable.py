@@ -14,10 +14,17 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import logging
 import pathlib
 import struct
+from typing import TYPE_CHECKING
 
-from quokka.types import DataType, Endianness, Literal, Optional, Union
+from quokka.types import BaseType, Endianness, Literal, Optional, Union
+from quokka.reference import TypeReference
+from quokka.structure import Structure
+
+if TYPE_CHECKING:
+    from quokka.enums import EnumT
 
 
 class Executable:
@@ -116,60 +123,60 @@ class Executable:
 
         return string
 
-    def read_data(
-        self, offset: int, data_type: DataType, size: Optional[int] = None
-    ) -> Union[int, float, str]:
-        """Read the data value.
+    def read_int(self, offset: int, size: int, signed: bool = False) -> int:
+        """Read an integer from the binary.
 
-        If the size is not specified, it is inferred from the data type.
+        Arguments:
+            offset: Integer file offset
+            size: Integer size in bytes"""
+        en = {Endianness.BIG_ENDIAN: "big", Endianness.LITTLE_ENDIAN: "little"}[self.endianness]
+        return int.from_bytes(self.read(offset, size), en, signed=signed) # type: ignore
+
+    def read_type(
+        self, offset: int, type: TypeReference) -> Union[int, float, str, bytes, EnumT]:
+        """Read the data value based on its type.
 
         Arguments:
             offset: Data file offset
             data_type: Data type
-            size: Read size
 
         Returns:
             The data value
         """
+        en = {Endianness.BIG_ENDIAN: ">", Endianness.LITTLE_ENDIAN: "<"}[self.endianness]
 
-        # Read an int of size `read_size`
-        def read_int(read_size: int) -> int:
-            """Read an integer from the binary"""
-            return int.from_bytes(self.read_bytes(offset, read_size), endianness)
-
-        endianness: Literal["big", "little"]
-        if self.endianness == Endianness.BIG_ENDIAN:
-            endianness = "big"
-            endianness_sign = ">"
+        if isinstance(type, BaseType):
+            match type:
+                case BaseType.FLOAT:
+                    return struct.unpack(f"{en}f", self.read_bytes(offset, 4))[0]
+                case BaseType.DOUBLE:
+                    return struct.unpack(f"{en}d", self.read_bytes(offset, 8))[0]
+                case _:
+                    return self.read_int(offset, type.size)
+        elif isinstance(type, Structure):
+            return self.read_struct(offset, type)
+        elif isinstance(type, EnumT):
+            return self.read_enum(offset, type)
         else:
-            endianness = "little"
-            endianness_sign = "<"
+            assert False, f"Unsupported type {type}"
 
-        if data_type == DataType.ASCII:
-            if size is None:
-                raise ValueError("No size specified when reading a DataType.ASCII")
-            return self.read_string(offset, size)
-        elif data_type == DataType.BYTE:
-            return read_int(1 if size is None else size)
-        elif data_type == DataType.WORD:
-            return read_int(2 if size is None else size)
-        elif data_type == DataType.DOUBLE_WORD:
-            return read_int(4 if size is None else size)
-        elif data_type == DataType.QUAD_WORD:
-            return read_int(8 if size is None else size)
-        elif data_type == DataType.OCTO_WORD:
-            return read_int(16 if size is None else size)
-        elif data_type == DataType.FLOAT:
-            s = 4 if size is None else size
-            return struct.unpack(f"{endianness_sign}f", self.read_bytes(offset, s))
-        elif data_type == DataType.DOUBLE:
-            s = 8 if size is None else size
-            return struct.unpack(f"{endianness_sign}d", self.read_bytes(offset, s))
-        else:
-            raise NotImplementedError(
-                f"Cannot read {data_type}. DataType not implemented."
-            )
+    def read_struct(self, offset: int, struct: Structure) -> bytes:
+        """Read a struct from the binary.
 
+        Arguments:
+            offset: Struct file offset
+            type: Struct type"""
+        if struct.is_variable_size():
+            logging.warning("Cannot read a variable size struct")
+            return b""
+        # FEATURE: Read a really structure instance
+        return self.read_bytes(offset, struct.size)
+
+    def read_enum(self, offset: int, enum: EnumT) -> EnumT:
+        # read the underyling enum type
+        value = self.read_type(offset, enum.base_type)  # type: ignore
+        return enum(value) # type: ignore
+    
     def read_bytes(self, offset: int, size: int) -> bytes:
         """Read one (or more) byte(s) in the file at `offset`.
 
