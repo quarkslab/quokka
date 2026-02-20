@@ -314,6 +314,7 @@ message Quokka {
     // TODO add a base DataType
     // TODO check to see if ida export this. Possibly remove it
     repeated uint64 xref_from = 3;
+    uint32 base_type = 4;
   }
 
   message CompositeDataTypeIdentifier {
