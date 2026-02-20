@@ -19,12 +19,8 @@ import pathlib
 import struct
 from typing import TYPE_CHECKING
 
-from quokka.types import BaseType, Endianness, Literal, Optional, Union
-from quokka.reference import TypeReference
-from quokka.structure import Structure
-
-if TYPE_CHECKING:
-    from quokka.enums import EnumT
+from quokka.types import Endianness
+from quokka.data_type import BaseType, EnumType, StructureType, TypeT, TypeValue
 
 
 class Executable:
@@ -49,7 +45,7 @@ class Executable:
         ValueError: If the file is not found
     """
 
-    def __init__(self, path: Union[str, pathlib.Path], endianness: Endianness):
+    def __init__(self, path: pathlib.Path|str, endianness: Endianness):
         """Constructor"""
         try:
             with open(path, "rb") as file:
@@ -82,7 +78,7 @@ class Executable:
         except IndexError as exc:
             raise ValueError(f"Content not found at offset {offset}") from exc
 
-    def read_string(self, offset: int, size: Optional[int] = None) -> str:
+    def read_string(self, offset: int, size: int|None = None) -> str:
         """Read a string in the file.
 
         If the size is not given, Quokka will try to read the string until the
@@ -132,8 +128,7 @@ class Executable:
         en = {Endianness.BIG_ENDIAN: "big", Endianness.LITTLE_ENDIAN: "little"}[self.endianness]
         return int.from_bytes(self.read(offset, size), en, signed=signed) # type: ignore
 
-    def read_type(
-        self, offset: int, type: TypeReference) -> Union[int, float, str, bytes, EnumT]:
+    def read_type_value(self, offset: int, type: TypeT) -> TypeValue:
         """Read the data value based on its type.
 
         Arguments:
@@ -153,14 +148,14 @@ class Executable:
                     return struct.unpack(f"{en}d", self.read_bytes(offset, 8))[0]
                 case _:
                     return self.read_int(offset, type.size)
-        elif isinstance(type, Structure):
+        elif isinstance(type, StructureType):
             return self.read_struct(offset, type)
-        elif isinstance(type, EnumT):
+        elif isinstance(type, EnumType):
             return self.read_enum(offset, type)
         else:
             assert False, f"Unsupported type {type}"
 
-    def read_struct(self, offset: int, struct: Structure) -> bytes:
+    def read_struct(self, offset: int, struct: StructureType) -> bytes:
         """Read a struct from the binary.
 
         Arguments:
@@ -172,9 +167,9 @@ class Executable:
         # FEATURE: Read a really structure instance
         return self.read_bytes(offset, struct.size)
 
-    def read_enum(self, offset: int, enum: EnumT) -> EnumT:
+    def read_enum(self, offset: int, enum: EnumType) -> EnumType:
         # read the underyling enum type
-        value = self.read_type(offset, enum.base_type)  # type: ignore
+        value = self.read_type_value(offset, enum.base_type)  # type: ignore
         return enum(value) # type: ignore
     
     def read_bytes(self, offset: int, size: int) -> bytes:

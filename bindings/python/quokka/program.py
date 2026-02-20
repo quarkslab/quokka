@@ -20,14 +20,11 @@ It deals with the most common abstraction, the Program.
 
 from __future__ import annotations
 
-import collections
 from functools import cached_property
 from itertools import product
 import logging
-import os
-import pathlib
-from typing import TYPE_CHECKING
-from enum import IntEnum
+from pathlib import Path
+from typing import TYPE_CHECKING, Type, Iterable
 
 import capstone
 import networkx
@@ -36,26 +33,26 @@ import idascript
 import quokka
 import quokka.analysis
 import quokka.backends
-import quokka.pb.Quokka as Pb # pyright: ignore[reportMissingImports]
-from quokka.data_type import ComplexType
-from quokka.enums import EnumT
-from quokka.data_type import ArrayType, PointerType
+from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
+from quokka.data_type import (
+    ComplexType,
+    StructureTypeMember,
+    BaseType,
+    ArrayType,
+    PointerType,
+    StructureType,
+    EnumType,
+    UnionType,
+    TypeT
+)
 from quokka.types import (
     AddressT,
-    Dict,
     Disassembler,
     Endianness,
     ExporterMode,
     FunctionType,
     Index,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Type,
-    Union,
-    CallingConvention,
-    BaseType
+    CallingConvention
 )
 from quokka.exc import QuokkaError
 
@@ -81,7 +78,6 @@ class Program(dict):
         export_file: The path to the export file (e.g. the .quokka)
         mode: Export mode (LIGHT, NORMAL or FULL)
         base_address: Program base address
-        addresser: Utility to convert the program offsets into file-offsets
         isa: Instruction set
         address_size: Default pointer size
         arch: Program architecture
@@ -98,14 +94,12 @@ class Program(dict):
 
     logger: logging.Logger = logging.getLogger(__name__)
 
-    def __init__(
-        self, export_file: Union[pathlib.Path, str], exec_path: Union[pathlib.Path, str]
-    ):
+    def __init__(self, export_file: Path|str, exec_path: Path|str):
         """Constructor"""
         super(dict, self).__init__()
 
-        self.proto: Pb = Pb()
-        self.export_file: pathlib.Path = pathlib.Path(export_file)
+        self.proto = Pb() # type: ignore
+        self.export_file: Path = Path(export_file)
         with open(self.export_file, "rb") as fd:
             self.proto.ParseFromString(fd.read())
 
@@ -130,11 +124,9 @@ class Program(dict):
             )
 
         # Check if the hashes matches between the export file and the exec
-        if not quokka.check_hash(self.proto.meta.hash, pathlib.Path(exec_path)):
+        if not quokka.check_hash(self.proto.meta.hash, Path(exec_path)):
             self.logger.error("Hash does not match with file.")
             raise quokka.QuokkaError("Hash mismatch")
-
-        self.addresser = quokka.Addresser(self)
 
         self.isa: quokka.analysis.ArchEnum = quokka.get_isa(self.proto.meta.isa)
         self.address_size: int = quokka.convert_address_size(
@@ -159,7 +151,7 @@ class Program(dict):
 
         # Functions
         # self.functions: Dict[int, quokka.Function] = {}
-        self.fun_names: Dict[str, quokka.Function] = {}
+        self.fun_names: dict[str, quokka.Function] = {}
         for func_index, func in enumerate(self.proto.functions):
             function = quokka.Function(func_index, func, self)
             self[function.start] = function
@@ -173,7 +165,7 @@ class Program(dict):
                         self.fun_names[function.name] = function
 
         # Types
-        self._types: dict[Index, BaseType | EnumT | ComplexType] = {}  # types as they are being loaded
+        self._types: dict[Index, TypeT] = {}  # types as they are being loaded
 
     def __hash__(self) -> int:
         """Hash of the Program (use the hash from the exported file)"""
@@ -215,6 +207,37 @@ class Program(dict):
             
         return call_graph
 
+    def virtual_address(self, seg_id: int, seg_offset: int) -> AddressT:
+        """Converts an offset in the file to an absolute address
+
+        Arguments:
+            seg_id: Segment ID
+            seg_offset: Byte offset in the segment
+
+        Returns:
+            An absolute address
+        """
+        return self.segments[seg_id].address + seg_offset
+
+    def address_to_offset(self, address: AddressT) -> int:
+        """Converts a program offset to a file offset.
+
+        Arguments:
+            address: A virtual address
+            
+        Returns:
+            A file offset
+        """
+        try:
+            segment = self.get_segment(address)
+        except KeyError as exc:
+            raise quokka.NotInFileError("Unable to find the segment") from exc
+
+        if segment.file_offset != -1:
+            return address - segment.address + segment.file_offset
+
+        raise quokka.NotInFileError("Unable to find the offset in the file")
+
     @cached_property
     def pypcode(self) -> pypcode.Context:
         """Generate the Pypcode context."""
@@ -223,7 +246,7 @@ class Program(dict):
         return get_pypcode_context(self.arch, self.endianness)
 
     @property
-    def structures(self) -> Iterable[quokka.Structure]:
+    def structures(self) -> Iterable[StructureType]:
         """Structures accessor
 
         Allows to retrieve the different structures of a program (as defined by the
@@ -236,11 +259,11 @@ class Program(dict):
             if t.WhichOneOf("OneofType") == "composite_type":
                 if t.composite_type.type == Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
                     if i not in self._types:
-                        self._types[i] = quokka.Structure(t.composite_type, self)
-        yield from (t for t in self._types.values() if isinstance(t, quokka.Structure))
+                        self._types[i] = StructureType(t.composite_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, StructureType))
 
     @cached_property
-    def enums(self) -> Iterable[EnumT]:
+    def enums(self) -> Iterable[EnumType]:
         """Enums accessor
 
         Allows to retrieve the different enums of a program (as defined by the
@@ -252,10 +275,10 @@ class Program(dict):
         for i, t in enumerate(self.proto.types):
             if t.WhichOneOf("OneofType") == "composite_type":
                 if i not in self._types:
-                    self._types[i] = EnumT(t.enum_type, self)
-        yield from (t for t in self._types.values() if isinstance(t, EnumT))
+                    self._types[i] = EnumType(t.enum_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, EnumType))
 
-    def get_struct_member(self, struct_index: Index, member_index: Index) -> quokka.StructureMember:
+    def get_struct_member(self, struct_index: Index, member_index: Index) -> StructureTypeMember:
         """Get a structure member by its index
 
         Arguments:
@@ -270,12 +293,29 @@ class Program(dict):
         """
         try:
             struct = self._types[struct_index]
-            assert isinstance(struct, quokka.Structure)
+            assert isinstance(struct, StructureType)
             return struct[member_index]
         except KeyError as exc:
             raise KeyError(f"No structure or member with index {struct_index}") from exc
 
-    def get_type(self, type_index: Index) -> BaseType | EnumT | ComplexType:
+    def get_item(self, addr: AddressT) -> quokka.Function | quokka.Instruction:
+        """Get a function, block or instruction by its address
+
+        Arguments:
+            addr: Address to query
+
+        Returns:
+            A function, block or instruction at the address
+
+        Raises:
+            KeyError: When no item is found at the address
+        """
+        try:
+            return self[addr]
+        except KeyError as exc:
+            raise KeyError(f"No item at address 0x{addr:x}") from exc
+
+    def get_type(self, type_index: Index) -> TypeT:
         """Get a type by its index
 
         Arguments:
@@ -296,13 +336,13 @@ class Program(dict):
             
             pb_type = self.proto.types[type_index]
             if pb_type.WhichOneOf("OneofType") == "enum_type":
-                self._types[type_index] = EnumT(pb_type.enum_type, self)
+                self._types[type_index] = EnumType(pb_type.enum_type, self)
             elif pb_type.WhichOneOf("OneofType") == "composite_type":
                 match pb_type.composite_type.type:
                     case Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
-                        self._types[type_index] = quokka.Structure(pb_type.composite_type, self)
+                        self._types[type_index] = StructureType(pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_UNION:
-                        self._types[type_index] = quokka.Union(pb_type.composite_type, self)
+                        self._types[type_index] = UnionType(pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_ARRAY:
                         self._types[type_index] = ArrayType(pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_POINTER:
@@ -314,18 +354,18 @@ class Program(dict):
 
             return self._types[type_index]
 
-    @cached_property
-    def memory(self) -> "quokka.Memory":
-        """Memory representation of the program.
+    # @cached_property
+    # def memory(self) -> "quokka.Memory":
+    #     """Memory representation of the program.
 
-        Allows getting layout of the program especially if addressses are flagged
-        as code or data.
+    #     Allows getting layout of the program especially if addressses are flagged
+    #     as code or data.
 
-        Returns:
-            A `quokka.Memory` instance to access the program memory.
-        """
-        # TODO(rd): Parse the memory layout
-        raise NotImplementedError("Memory is not implemented yet")
+    #     Returns:
+    #         A `quokka.Memory` instance to access the program memory.
+    #     """
+    #     # TODO(rd): Parse the memory layout
+    #     raise NotImplementedError("Memory is not implemented yet")
 
     @cached_property
     def orphaned_blocks(self) -> Iterable[quokka.Block]:
@@ -467,15 +507,15 @@ class Program(dict):
 
     @staticmethod
     def from_binary(
-        exec_path: Union[pathlib.Path, str],
-        output_file: Optional[Union[pathlib.Path, str]] = None,
-        database_file: Optional[Union[pathlib.Path, str]] = None,
+        exec_path: Path|str,
+        output_file: Path|str|None = None,
+        database_file: Path|str|None = None,
         decompiled: bool = False,
         debug: bool = False,
         override: bool = True,
-        timeout: Optional[int] = 0,
+        timeout: int|None = 0,
         mode: ExporterMode = ExporterMode.NORMAL,
-    ) -> Optional[Program]:
+    ) -> Program|None:
         """Generate an export file directly from the binary.
 
         This methods will export `exec_path` directly using Quokka IDA's plugin if
@@ -516,7 +556,7 @@ class Program(dict):
 
 
     @staticmethod
-    def open(export_file: pathlib.Path | str, exec_file: pathlib.Path | str) -> Program:
+    def open(export_file: Path|str, exec_file: Path|str) -> Program:
         """
         Open a BinExport file and return an instance of Program.
 
@@ -528,15 +568,15 @@ class Program(dict):
 
     @staticmethod
     def generate(
-        exec_path: Union[pathlib.Path, str],
-        output_file: Optional[Union[pathlib.Path, str]] = None,
-        database_file: Optional[Union[pathlib.Path, str]] = None,
+        exec_path: Path|str,
+        output_file: Path|str|None = None,
+        database_file: Path|str|None = None,
         decompiled: bool = False,
         debug: bool = False,
         override: bool = True,
-        timeout: Optional[int] = 600,
+        timeout: int|None = 600,
         mode: ExporterMode = ExporterMode.NORMAL,
-    ) -> pathlib.Path:
+    ) -> Path:
         """Generate an export file directly from the binary.
 
         This methods will export `exec_path` directly using Quokka IDA's plugin if
@@ -559,14 +599,14 @@ class Program(dict):
             FileNotFoundError: If the executable is not found
         """
 
-        exec_path = pathlib.Path(exec_path)
+        exec_path = Path(exec_path)
         if not exec_path.is_file():
             raise FileNotFoundError("Missing exec file")
 
         if output_file is None:
             output_file = exec_path.parent / f"{exec_path.name}.quokka"
         else:
-            output_file = pathlib.Path(output_file)
+            output_file = Path(output_file)
 
         if output_file.is_file() and not override:
             return output_file
@@ -575,7 +615,7 @@ class Program(dict):
         if database_file is None:
             database_file = exec_file.parent / f"{exec_file.name}.i64"
         else:
-            database_file = pathlib.Path(database_file)
+            database_file = Path(database_file)
 
         if not database_file.is_file():
             database_path = database_file.with_suffix("")

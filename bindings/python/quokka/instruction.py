@@ -21,26 +21,20 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import cached_property
 import capstone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Sequence
 
 import quokka
+from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.types import (
     AddressT,
     Any,
-    BaseType,
-    Dict,
     ExporterMode,
     Index,
-    List,
-    Optional,
-    ReferenceTarget,
     ReferenceType,
     AccessMode,
-    Sequence,
-    Union,
     OperandType
 )
-from quokka.reference import TypeReference
+from quokka.data_type import BaseType, TypeT
 
 if TYPE_CHECKING:
     import pypcode
@@ -116,7 +110,7 @@ class OperandFull(Operand):
     Uses the full protobuf data to provide operand values.
     """
 
-    def __init__(self, program: quokka.Program, proto: "quokka.pb.Quokka.Operand"):
+    def __init__(self, program: quokka.Program, proto: "Pb.Operand"):
         """Constructor
 
         Arguments:
@@ -203,7 +197,7 @@ class OperandLight(Operand):
             case OperandType.IMMEDIATE:
                 return self.cs_op.imm
             case OperandType.REGISTER:
-                return self.program.arch.regs(self.cs_op.reg)
+                return self.program.arch.regs(self.cs_op.reg) # type: ignore
             case OperandType.MEMORY:
                 return self.cs_op.mem  #  atm: capstone.x86.X86OpMem, ...
             case OperandType.OTHER:
@@ -228,7 +222,7 @@ class OperandLight(Operand):
             The operand register (empty string if not a register)
         """
         if self.type == OperandType.REGISTER:
-            return self.program.arch.regs(self.cs_op.reg).name
+            return self.program.arch.regs(self.cs_op.reg).name # type: ignore
         return ""
 
     def __str__(self) -> str:
@@ -267,7 +261,7 @@ class Instruction:
         inst_index: int,
         address: AddressT,
         block: quokka.Block,
-        backend_inst: Optional[capstone.CsInsn] = None,
+        backend_inst: capstone.CsInsn|None = None,
     ):
         self.parent: quokka.Block = block
 
@@ -292,7 +286,7 @@ class Instruction:
         self.address: AddressT = address
 
     @property
-    def proto(self) -> "quokka.pb.Quokka.Instruction":
+    def proto(self) -> "Pb.Instruction":
         """Return the instruction protobuf if in full mode"""
         assert self._proto is not None
         return self._proto
@@ -309,6 +303,8 @@ class Instruction:
             return self.proto.size
         elif self.program.mode == ExporterMode.LIGHT:
             return self.cs_inst.size
+        else:
+            assert False
 
     @property
     def is_thumb(self) -> bool:
@@ -317,6 +313,8 @@ class Instruction:
             return self.proto.is_thumb
         elif self.program.mode == ExporterMode.LIGHT:
             return self.parent.is_thumb
+        else:
+            assert False
 
     @cached_property
     def mnemonic(self) -> str:
@@ -361,52 +359,54 @@ class Instruction:
 
         return pypcode_decode_instruction(self)
 
-    @cached_property
-    def string(self) -> Optional[str]:
-        """String used by the instruction (if any)"""
-        for data in self.data_references:
-            if isinstance(data, quokka.data.Data) and data.type == BaseType.ASCII:
-                return data.value
-
-        return None
-
     @property
-    def data_refs_to(self) -> List[AddressT]:
+    def data_refs_to(self) -> list[AddressT]:
         """Returns all data reference to this instruction"""
         # If querying refs_to get the source address
-        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_DATA]
+        return [xref.source.address for xref in self._xrefs_to
+                if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property
-    def data_refs_from(self) -> List[AddressT]:
+    def data_refs_from(self) -> list[AddressT]:
         """Returns all data reference from this instruction"""
         # If querying refs_from get the destination address
-        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_DATA]
+        return [xref.destination.address for xref in self._xrefs_from
+                if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property
-    def code_refs_from(self) -> List[AddressT]:
+    def code_refs_from(self) -> list[AddressT]:
         """Returns all code reference from this instruction"""
         # If querying refs_from get the destination address
-        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_CODE]
+        return [xref.destination.address for xref in self._xrefs_from
+                if xref.reference_type == Pb.Reference.REF_CODE]
 
     @property
-    def code_refs_to(self) -> List[AddressT]:
+    def code_refs_to(self) -> list[AddressT]:
         """Returns all code reference to this instruction"""
         # If querying refs_to get the source address
-        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == quokka.pb.Quokka.Reference.REF_CODE]
+        return [xref.source.address for xref in self._xrefs_to
+                if xref.reference_type == Pb.Reference.REF_CODE]
 
     @property
-    def type_refs_from(self) -> List[TypeReference]:
+    def type_refs_from(self) -> list[TypeT]:
         """Returns all type reference from this instruction"""
         # Get protobuf type ids
-        type_ids = [xref.destination.data_type_identifier for xref in self._xrefs_from if xref.reference_type == quokka.pb.Quokka.Reference.REF_SYMBOL]
+        type_ids = [xref.destination.data_type_identifier for xref in self._xrefs_from
+                    if xref.reference_type == Pb.Reference.REF_SYMBOL]
         # Resolve type ids to actual types
         return [self.program.get_type(type_id) for type_id in type_ids]
     
     @property
-    def call_references(self) -> List[AddressT]:
+    def callees(self) -> list[AddressT]:
         """Returns all call reference to this instruction"""
         # Check if the reference address points to a function head
         return [addr for addr in self.code_refs_from if addr in self.program]
+
+    @property
+    def callers(self) -> list[AddressT]:
+        """Returns all call reference to this instruction"""
+        # Check if the reference address points to a function head
+        return [addr for addr in self.code_refs_to if addr in self.program]
 
     @property
     def operands(self) -> list[Operand]:
@@ -438,7 +438,7 @@ class Instruction:
         mem_ops = [x for x in operands if x.type == OperandType.MEMORY]
         imm_ops = [x for x in operands if x.type == OperandType.IMMEDIATE]
 
-        for dxref in (x for x in self._xrefs_from if x.reference_type == quokka.pb.Quokka.Reference.REF_DATA):
+        for dxref in (x for x in self._xrefs_from if x.reference_type == Pb.Reference.REF_DATA):
             # If there is only one memory operand assign data ref to it
             if len(operands) == 1:  # Only one operand, assign the data ref to it
                 operands[0].xrefs[ReferenceType.DATA] = dxref
@@ -449,7 +449,7 @@ class Instruction:
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign data refs")
         
-        for cxref in (x for x in self._xrefs_from if x.reference_type == quokka.pb.Quokka.Reference.REF_CODE):
+        for cxref in (x for x in self._xrefs_from if x.reference_type == Pb.Reference.REF_CODE):
             # If there is only one memory operand assign code ref to it
             if len(operands) == 1:  # Only one operand, assign the code ref to it
                 operands[0].xrefs[ReferenceType.CODE] = cxref
@@ -469,7 +469,7 @@ class Instruction:
         Raises FunctionMissingError if the call target is not
         found.
         """
-        call_targets = self.call_references
+        call_targets = self.callees
 
         if not call_targets:
             raise quokka.FunctionMissingError(f"No call reference found for instruction at 0x{self.address:x}")
@@ -486,7 +486,7 @@ class Instruction:
         return self.call_target is not False
 
     @cached_property
-    def constants(self) -> List[int]:
+    def constants(self) -> list[int]:
         """Fast accessor for instructions constant not using Capstone."""
         return [x.value for x in self.operands if x.type == OperandType.IMMEDIATE]
 
@@ -523,7 +523,7 @@ class Instruction:
             Bytes associated to the instruction
         """
         try:
-            file_offset = self.program.addresser.file(self.address)
+            file_offset = self.program.address_to_offset(self.address)
         except quokka.NotInFileError:
             return b""
 

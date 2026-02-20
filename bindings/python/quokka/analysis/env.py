@@ -16,8 +16,8 @@
 from __future__ import annotations
 import enum
 
+from typing import Type
 from quokka.analysis import ArchX64, ArchX86, ArchARM, ArchARM64
-from quokka.types import Type
 
 import quokka
 import quokka.analysis.calling_convention as cc

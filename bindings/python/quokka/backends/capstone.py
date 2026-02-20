@@ -19,7 +19,8 @@ import capstone
 import quokka
 import quokka.analysis
 
-from quokka.types import AddressT, Endianness, Type, Optional
+from typing import Type
+from quokka.types import AddressT, Endianness
 
 
 def get_capstone_context(
@@ -151,7 +152,7 @@ def capstone_decode_block(
 
 def capstone_decode_instruction(
     inst: quokka.Instruction,
-) -> Optional[capstone.CsInsn]:
+) -> capstone.CsInsn|None:
     """Decode an instruction with capstone
 
     Decode an instruction and retry for ARM to check if the Thumb mode was activated

@@ -15,10 +15,8 @@
 
 import quokka
 
-from quokka.types import (
-    AddressT,
-    SegmentType,
-)
+from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
+from quokka.types import AddressT, SegmentType
 
 
 class Segment:
@@ -41,11 +39,7 @@ class Segment:
 
     """
 
-    def __init__(
-        self,
-        segment: "quokka.pb.Quokka.Segment",
-        program: quokka.Program,
-    ):
+    def __init__(self, segment: "Pb.Segment", program: quokka.Program):
         """Constructor"""
         self.name: str = segment.name
         self.address: AddressT = segment.virtual_addr
@@ -56,8 +50,6 @@ class Segment:
         self.program: quokka.Program = program
 
         self.file_offset: int = segment.file_offset  # -1 
-        if segment.no_offset is False:
-            self.file_offset = segment.file_offset - self.address
 
     @property
     def start(self) -> AddressT:

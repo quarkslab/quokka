@@ -48,7 +48,7 @@ def print_usertable(bionic: quokka.Program):
     # Read other entries
     def read_userid(prog: quokka.Program, address: AddressT) -> int:
         return prog.executable.read_data(
-            prog.addresser.file(address), DataType.DOUBLE_WORD
+            prog.address_to_offset(address), DataType.DOUBLE_WORD
         )
 
     # Gather all components together

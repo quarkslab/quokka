@@ -18,21 +18,14 @@ from __future__ import annotations
 import logging
 import collections
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, MutableMapping
 
 import quokka
 from quokka.types import (
     AddressT,
     BlockType,
-    BaseType,
-    Dict,
     ExporterMode,
-    Index,
-    Iterator,
-    List,
-    MutableMapping,
-    ReferenceType,
-    Set,
+    Index
 )
 
 if TYPE_CHECKING:
@@ -88,8 +81,8 @@ class Block(MutableMapping):
 
         self.is_thumb = self.proto.is_thumb
 
-        self.address_to_index: Dict[AddressT, Index] = {}
-        self._raw_dict: Dict[AddressT, quokka.Instruction] = {}
+        self.address_to_index: dict[AddressT, Index] = {}
+        self._raw_dict: dict[AddressT, quokka.Instruction] = {}
 
         if self.program.mode == ExporterMode.FULL:
             current_address: AddressT = self.start
@@ -110,8 +103,8 @@ class Block(MutableMapping):
         else:
             assert False, "Unknown exporter mode"
 
-        self.comments: Dict[AddressT, str] = {}
-        self.references: Dict[str, List[int]] = {"src": [], "dst": []}
+        self.comments: dict[AddressT, str] = {}
+        self.references: dict[str, list[int]] = {"src": [], "dst": []}
 
     @property
     def address(self) -> AddressT:
@@ -123,9 +116,9 @@ class Block(MutableMapping):
         """Return the parent program"""
         return self.parent.program
 
-    def __setitem__(self, k: AddressT, v: Index) -> None:
+    def __setitem__(self, k: AddressT, ins: Instruction) -> None:
         """Update the instructions mapping"""
-        self._raw_dict.__setitem__(k, v)
+        self._raw_dict.__setitem__(k, ins)
 
     def __delitem__(self, v: AddressT) -> None:
         """Remove an instruction from the mapping"""
@@ -140,27 +133,6 @@ class Block(MutableMapping):
         """
         self.comments[addr] = value
 
-    @cached_property
-    def strings(self) -> List[str]:
-        """Compute the list of strings used in this block."""
-
-        strings: Set[str] = set()
-
-        for reference in self.program.references.resolve_block_references(
-            self.parent.proto_index, # function protobuf index
-            self._proto_index,
-            ReferenceType.DATA,
-            towards=True,
-        ):
-            reference_source = reference.source
-            if (
-                isinstance(reference_source, quokka.data.Data)
-                and reference_source.type == BaseType.ASCII
-            ):
-                strings.add(reference_source.value)
-
-        return list(strings)
-
     def __getitem__(self, address: AddressT) -> quokka.Instruction:
         """Retrieve an instruction at `address`."""
         return self._raw_dict.__getitem__(address)
@@ -174,15 +146,6 @@ class Block(MutableMapping):
         return iter(self._raw_dict)
 
     @property
-    def data_references(self):
-        """Return (and compute if needed) the data referenced by this block."""
-        data_references: List[quokka.Data] = []
-        for instruction in self.values():
-            data_references.extend(instruction.data_references)
-
-        return data_references
-
-    @property
     def end(self) -> int:
         """Size of the block.
 
@@ -192,9 +155,9 @@ class Block(MutableMapping):
         return self.start + self.size
 
     @cached_property
-    def constants(self) -> List[int]:
+    def constants(self) -> list[int]:
         """Constants used by the block"""
-        constants: List[int] = []
+        constants: list[int] = []
         for instruction in self.values():
             constants.extend(instruction.constants)
 
@@ -256,7 +219,7 @@ class Block(MutableMapping):
         return block_bytes
 
     @cached_property
-    def pcode_insts(self) -> List[pypcode.PcodeOp]:
+    def pcode_insts(self) -> list[pypcode.PcodeOp]:
         """Generate PCode instructions for the block
 
         This method will call the backend Pypcode and generate the instruction for the

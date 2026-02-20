@@ -21,6 +21,7 @@ from typing import Tuple, TYPE_CHECKING
 import networkx
 
 import quokka
+from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka import Block, FunctionMissingError
 from quokka.types import (
     AddressT,
@@ -61,7 +62,7 @@ def dereference_thunk(item: Function, caller: bool = False) -> Function:
         # Only try to reference function with in_degree == 1
         return function
 
-    reference = function.calls if caller is False else function.callers
+    reference = function.callees if caller is False else function.callers
 
     try:
         candidate = reference[0]
@@ -114,10 +115,10 @@ class Function(dict):
         func: Protobuf data
     """
 
-    def __init__(self, proto_index: Index, func: "quokka.pb.Quokka.Function", program: quokka.Program):
+    def __init__(self, proto_index: Index, func: "Pb.Function", program: quokka.Program):
         """Constructor"""
         super(dict, self).__init__()
-        self.start: int = program.addresser.absolute(func.offset)  # TODO(Robin): Use segment_index+offset
+        self.start: int = program.virtual_address(func.segment_index, func.segment_offset)
         self.name: str = func.name
         self.proto = func
         self.proto_index = proto_index
@@ -134,15 +135,20 @@ class Function(dict):
 
         # Fill the dict with block addresses and their corresponding index
         for block_index, block in enumerate(func.blocks):
-            block_address: int = self.start + block.offset_start  # TODO: Check with Riccardo
-            self[block_address] = block_index
+            block_address: int = program.virtual_address(block.segment_index, block.segment_offset)
+            self[block_address] = (block_index, block.size)
         self._index_to_address = {v: k for k, v in self.items()}
  
         self._data_references: list[quokka.Data] = []
 
+        # Continuous chunks of code in the function
+        block_ranges = sorted((x, x+y) for x, y in self.values())
+        self._chunks: list[tuple[AddressT, AddressT]] = self.coalesce_block_ranges(block_ranges)
+        
+
     def __getitem__(self, address: AddressT) -> Block:
         """Lazy loader for blocks within the function"""
-        block_index: Index = dict.__getitem__(self, address)
+        block_index, block_size = dict.__getitem__(self, address)
         return Block(block_index, address, self)
 
     @cached_property
@@ -179,19 +185,6 @@ class Function(dict):
 
         return constants
 
-    @property
-    def block_ranges(self) -> list[Tuple[AddressT, AddressT]]:
-        """Returns the sorted list of block ranges.
-
-        A block range is a tuple (block.start, block.end).
-        """
-        block_ranges = []
-        for block in self.values():
-            block_ranges.append((block.start, block.end))
-
-        block_ranges = sorted(block_ranges)
-        return block_ranges
-
     @cached_property
     def graph(self) -> "networkx.DiGraph":
         """Return the CFG of the function as DiGraph object"""
@@ -212,13 +205,13 @@ class Function(dict):
 
     def in_function(self, address: AddressT) -> bool:
         """Check if an address belongs to the function."""
-        if len(self.block_ranges) == 0:
+        if len(self._chunks) == 0:
             return False
 
-        if address < min(self.block_ranges)[0] or address > max(self.block_ranges)[1]:
+        if address < min(self._chunks)[0] or address > max(self._chunks)[1]:
             return False
 
-        for start, end in self.block_ranges:
+        for start, end in self._chunks:
             if start <= address < end:
                 return True
 
@@ -245,36 +238,27 @@ class Function(dict):
             return self.start + 1
 
     @property
-    def calls(self) -> list['Function']:
+    def callees(self) -> list['Function']:
         """Return the list of calls made by this function.
         The semantic of a "call" is to jump or call to the **starting** of a function.
         Beware that this might lead to different results than the program call graph.
 
         Note: The list is not deduplicated so a target may occur multiple time.
         """
-
-        calls = []
-        for inst_instance in self.program.references.resolve_calls(self, towards=False):
-            fun = (
-                inst_instance[0] if isinstance(inst_instance, tuple) else inst_instance
-            )
-            # Check that the address is the **starting** of a function
-            if fun.start in self.program:
-                calls.append(fun)
-
-        return calls
+        calls = set()
+        for inst in self.instructions:
+            calls.update(self.program[x] for x in inst.callees)
+        return list(calls)
 
     @property
     def callers(self) -> list['Function']:
         """Retrieve the function callers (the ones calling this function)"""
         callers = []
-        for inst_instance in self.program.references.resolve_calls(self, towards=True):
-            if isinstance(inst_instance, tuple):
-                callers.append(inst_instance[0])
-            else:
-                callers.append(inst_instance)
-
-        return callers
+        try:
+            ins = next(self.instructions)
+            return [self.program[x] for x in ins.callers]
+        except StopIteration:
+            return callers
 
     @property
     def instructions(self):
@@ -284,7 +268,7 @@ class Function(dict):
     @cached_property
     def out_degree(self) -> int:
         """Function out degree"""
-        return len(set(self.calls))
+        return len(set(self.callees))
 
     @cached_property
     def in_degree(self) -> int:
@@ -309,3 +293,26 @@ class Function(dict):
     def __repr__(self) -> str:
         """Function representation"""
         return self.__str__()
+
+    @staticmethod
+    def coalesce_block_ranges(block_ranges: list[tuple[int, int]]) -> list[tuple[AddressT, AddressT]]:
+        """Merge adjacent or overlapping block ranges into a reduced list.
+
+        Arguments:
+            block_ranges: Sorted list of (start, end) tuples.
+
+        Returns:
+            A list of merged (start, end) tuples.
+        """
+        if not block_ranges:
+            return []
+
+        merged = [block_ranges[0]]
+        for start, end in block_ranges[1:]:
+            prev_start, prev_end = merged[-1]
+            if start == prev_end:  # Adjacent
+                merged[-1] = (prev_start, end)  # keep current end
+            else:
+                merged.append((start, end))
+
+        return merged

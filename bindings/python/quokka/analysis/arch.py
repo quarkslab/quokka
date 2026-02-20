@@ -18,13 +18,13 @@ from enum import IntEnum, IntFlag
 
 import capstone
 
-from quokka.types import List, RegType
+from quokka.types import RegType
 from types import ModuleType
 
 
 def make_enums(
-    capstone_module: ModuleType, items: List[str], blacklist: List[str], flags_enums: List[str]
-) -> List:
+    capstone_module: ModuleType, items: list[str], blacklist: list[str], flags_enums: list[str]
+) -> list:
     """Make enums from capstone module
 
     Dynamically generate enums from capstone constants
@@ -79,7 +79,7 @@ class QuokkaArch:
     """Base class for a QuokkaArch"""
 
     address_size: int
-    compared_mnemonics: List[str]
+    compared_mnemonics: list[str]
     stack_pointer: RegType
     inst_pointer: RegType
     regs: IntEnum

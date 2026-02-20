@@ -22,10 +22,6 @@ itself.
 from quokka.version import __version__
 
 import quokka.quokka_pb2 as pb
-import quokka.analysis
-import quokka.backends
-
-from quokka.addresser import Addresser
 
 from quokka.block import Block
 
@@ -53,11 +49,17 @@ from quokka.instruction import Operand, Instruction
 
 from quokka.program import Program
 
-from quokka.reference import Reference, ReferencesLocation, References
-
 from quokka.segment import Segment
 
-from quokka.structure import Structure, StructureMember
+from quokka.data_type import (
+    BaseType,
+    ArrayType,
+    PointerType,
+    EnumType,
+    UnionType,
+    StructureType,
+    StructureTypeMember
+)
 
 from quokka.utils import (
     md5_file,
@@ -70,13 +72,20 @@ from quokka.utils import (
 )
 
 __all__ = [
-    # From addresser.py
-    "Addresser",
+    "pb",
     # From block.py
     "Block",
     # From data.py
     "Data",
     "DataHolder",
+    # From data_type.py
+    "BaseType",
+    "ArrayType",
+    "PointerType",
+    "EnumType",
+    "UnionType",
+    "StructureType",
+    "StructureTypeMember",
     # From exc.py
     "QuokkaError",
     "NotInFileError",
@@ -96,15 +105,8 @@ __all__ = [
     "Instruction",
     # From program.py
     "Program",
-    # From reference.py
-    "Reference",
-    "References",
-    "ReferencesLocation",
     # From segment.py
     "Segment",
-    # From structure.py
-    "Structure",
-    "StructureMember",
     # From utils.py
     "md5_file",
     "sha256_file",

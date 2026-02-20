@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 from quokka.analysis import ArchX86, ArchX64, ArchARM, ArchARM64
-from quokka.types import List, RegType
+from quokka.types import RegType
 
 
 # Inspired from https://github.com/angr/angr/blob/master/angr/calling_conventions.py
@@ -24,9 +24,9 @@ class CallingConvention:
     """Base class for a calling convention"""
 
     name: str
-    argument_registers: List[RegType]
-    floating_point_registers: List[RegType]
-    caller_saved_registers: List[RegType]
+    argument_registers: list[RegType]
+    floating_point_registers: list[RegType]
+    caller_saved_registers: list[RegType]
     callee_saved: bool = False
 
     return_value: RegType
@@ -37,8 +37,8 @@ class CCdecl(CallingConvention):
     """Cdecl calling convention"""
 
     name = "cdecl"
-    argument_registers: List[RegType] = []  # All arguments are on the stack
-    floating_point_registers: List[RegType] = []  # Same
+    argument_registers: list[RegType] = []  # All arguments are on the stack
+    floating_point_registers: list[RegType] = []  # Same
     caller_saved_registers = [
         ArchX86.regs.EAX,
         ArchX86.regs.ECX,
@@ -139,8 +139,8 @@ class ARMCC(CallingConvention):
         ArchARM.regs.R2,
         ArchARM.regs.R3,
     ]
-    floating_point_registers: List[RegType] = []  # TODO
-    caller_saved_registers: List[RegType] = []
+    floating_point_registers: list[RegType] = []  # TODO
+    caller_saved_registers: list[RegType] = []
     return_value = ArchARM.regs.R0
 
 
@@ -159,6 +159,6 @@ class ARM64CC(CallingConvention):
         ArchARM64.regs.X7,
     ]
 
-    floating_point_registers: List[RegType] = []  # TODO
-    caller_saved_registers: List[RegType] = []
+    floating_point_registers: list[RegType] = []  # TODO
+    caller_saved_registers: list[RegType] = []
     return_value = ArchARM64.regs.X0

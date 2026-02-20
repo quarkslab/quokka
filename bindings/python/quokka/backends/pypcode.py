@@ -22,7 +22,8 @@ import pypcode
 
 import quokka
 import quokka.analysis
-from quokka.types import Any, Dict, Endianness, List, Sequence, Type, Optional
+from typing import Type
+from quokka.types import Any, Endianness
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ def get_pypcode_context(
     Returns:
         A pypcode.Context instance
     """
-    names: Dict[Type[quokka.analysis.arch.QuokkaArch], str] = {
+    names: dict[Type[quokka.analysis.arch.QuokkaArch], str] = {
         quokka.analysis.ArchX64: "x86:LE:64:default",
         quokka.analysis.ArchX86: "x86:LE:32:default",
         quokka.analysis.ArchARM: "ARM:LE:32:v8",
@@ -125,7 +126,7 @@ def update_pypcode_context(program: quokka.Program, is_thumb: bool) -> pypcode.C
     return program.pypcode
 
 
-def pypcode_decode_block(block: quokka.Block) -> List[pypcode.PcodeOp]:
+def pypcode_decode_block(block: quokka.Block) -> list[pypcode.PcodeOp]:
     """Decode a block at once.
 
     This method decode a block of instructions using Pypcode context all at once.
@@ -139,13 +140,13 @@ def pypcode_decode_block(block: quokka.Block) -> List[pypcode.PcodeOp]:
     """
 
     # Fast guard, empty blocks do not have any Pcode operations
-    first_instruction: Optional[quokka.Instruction] = next(block.instructions, None)
+    first_instruction: quokka.Instruction|None = next(block.instructions, None)
     if first_instruction is None:
         return []
 
     # Retrieve the context from the instruction
     context: pypcode.Context = update_pypcode_context(
-        block.program, first_instruction.thumb
+        block.program, first_instruction.is_thumb
     )
 
     try:
@@ -168,7 +169,7 @@ def pypcode_decode_block(block: quokka.Block) -> List[pypcode.PcodeOp]:
 
 def pypcode_decode_instruction(
     inst: quokka.Instruction,
-) -> Sequence[pypcode.PcodeOp]:
+) -> list[pypcode.PcodeOp]:
     """Decode an instruction using Pypcode
 
     This will return the list of Pcode operations done for the instruction.
@@ -185,7 +186,7 @@ def pypcode_decode_instruction(
         A sequence of PcodeOp
     """
 
-    context: pypcode.Context = update_pypcode_context(inst.program, inst.thumb)
+    context: pypcode.Context = update_pypcode_context(inst.program, inst.is_thumb)
     try:
         translation = context.translate(
             inst.bytes,  # buf

@@ -18,25 +18,8 @@ from __future__ import annotations
 import enum
 
 import quokka
-from typing import (
-    Any,
-    DefaultDict,
-    Dict,
-    Generator,
-    Iterable,
-    Iterator,
-    List,
-    Literal,
-    Mapping,
-    MutableMapping,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
+from typing import Any, Tuple, TypeVar, Union
 
 AddressT = int
 Index = int
@@ -48,23 +31,12 @@ LocationValueType = Union[
 
 RegType = enum.IntEnum
 
-Type = Any
-ReferenceType = AddressT | Any
 
 class AccessMode(enum.IntFlag):
     """Register access mode"""
 
     READ = enum.auto()
     WRITE = enum.auto()
-
-ReferenceTarget = Union[
-    "quokka.structure.Structure",
-    "quokka.structure.StructureMember",
-    "quokka.data.Data",
-    "quokka.Instruction",
-    "quokka.Function",
-    Tuple["quokka.Function", "quokka.Block", Index],
-]
 
 
 class AddressSize(enum.Enum):
@@ -77,12 +49,12 @@ class AddressSize(enum.Enum):
 
     @staticmethod
     def from_proto(
-        address_size: "quokka.pb.Quokka.AddressSizeValue",
+        address_size: "Pb.AddressSizeValue",
     ) -> "AddressSize":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.ADDR_32: AddressSize.ADDRESS_32,
-            quokka.pb.Quokka.ADDR_64: AddressSize.ADDRESS_64,
+            Pb.ADDR_32: AddressSize.ADDRESS_32,
+            Pb.ADDR_64: AddressSize.ADDRESS_64,
         }
 
         return mapping.get(address_size, AddressSize.ADDRESS_UNK)
@@ -104,12 +76,12 @@ class Endianness(enum.Enum):
 
     @staticmethod
     def from_proto(
-        endianness: "quokka.pb.Quokka.Meta.EndianessValue",
+        endianness: "Pb.Meta.EndianessValue",
     ) -> Endianness:
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Meta.END_BE: Endianness.BIG_ENDIAN,
-            quokka.pb.Quokka.Meta.END_LE: Endianness.LITTLE_ENDIAN,
+            Pb.Meta.END_BE: Endianness.BIG_ENDIAN,
+            Pb.Meta.END_LE: Endianness.LITTLE_ENDIAN,
         }
 
         return mapping.get(endianness, Endianness.UNKNOWN)
@@ -125,14 +97,14 @@ class EdgeType(enum.Enum):
 
     @staticmethod
     def from_proto(
-        edge_type: "quokka.pb.Quokka.Edge.EdgeTypeValue",
+        edge_type: "Pb.Edge.EdgeTypeValue",
     ) -> "EdgeType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Edge.TYPE_UNCONDITIONAL: EdgeType.UNCONDITIONAL,
-            quokka.pb.Quokka.Edge.TYPE_TRUE: EdgeType.TRUE,
-            quokka.pb.Quokka.Edge.TYPE_FALSE: EdgeType.FALSE,
-            quokka.pb.Quokka.Edge.TYPE_SWITCH: EdgeType.SWITCH,
+            Pb.Edge.TYPE_UNCONDITIONAL: EdgeType.UNCONDITIONAL,
+            Pb.Edge.TYPE_TRUE: EdgeType.TRUE,
+            Pb.Edge.TYPE_FALSE: EdgeType.FALSE,
+            Pb.Edge.TYPE_SWITCH: EdgeType.SWITCH,
         }
 
         edge = mapping.get(edge_type)
@@ -154,14 +126,14 @@ class FunctionType(enum.Enum):
 
     @staticmethod
     def from_proto(
-        function_type: "quokka.pb.Quokka.Function.FunctionTypeValue",
+        function_type: "Pb.Function.FunctionTypeValue",
     ) -> "FunctionType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Function.TYPE_NORMAL: FunctionType.NORMAL,
-            quokka.pb.Quokka.Function.TYPE_IMPORTED: FunctionType.IMPORTED,
-            quokka.pb.Quokka.Function.TYPE_LIBRARY: FunctionType.LIBRARY,
-            quokka.pb.Quokka.Function.TYPE_THUNK: FunctionType.THUNK,
+            Pb.Function.TYPE_NORMAL: FunctionType.NORMAL,
+            Pb.Function.TYPE_IMPORTED: FunctionType.IMPORTED,
+            Pb.Function.TYPE_LIBRARY: FunctionType.LIBRARY,
+            Pb.Function.TYPE_THUNK: FunctionType.THUNK,
         }
 
         return mapping.get(function_type, FunctionType.INVALID)
@@ -182,19 +154,19 @@ class BlockType(enum.Enum):
 
     @staticmethod
     def from_proto(
-        block_type: "quokka.pb.Quokka.Block.BlockTypeValue",
+        block_type: "Pb.Block.BlockTypeValue",
     ) -> BlockType:
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Block.BLOCK_TYPE_NORMAL: BlockType.NORMAL,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_INDJUMP: BlockType.INDJUMP,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_RET: BlockType.RET,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_NORET: BlockType.NORET,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_CNDRET: BlockType.CNDRET,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_ENORET: BlockType.ENORET,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_EXTERN: BlockType.EXTERN,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_ERROR: BlockType.ERROR,
-            quokka.pb.Quokka.Block.BLOCK_TYPE_FAKE: BlockType.FAKE,
+            Pb.Block.BLOCK_TYPE_NORMAL: BlockType.NORMAL,
+            Pb.Block.BLOCK_TYPE_INDJUMP: BlockType.INDJUMP,
+            Pb.Block.BLOCK_TYPE_RET: BlockType.RET,
+            Pb.Block.BLOCK_TYPE_NORET: BlockType.NORET,
+            Pb.Block.BLOCK_TYPE_CNDRET: BlockType.CNDRET,
+            Pb.Block.BLOCK_TYPE_ENORET: BlockType.ENORET,
+            Pb.Block.BLOCK_TYPE_EXTERN: BlockType.EXTERN,
+            Pb.Block.BLOCK_TYPE_ERROR: BlockType.ERROR,
+            Pb.Block.BLOCK_TYPE_FAKE: BlockType.FAKE,
         }
 
         return mapping.get(block_type, BlockType.FAKE)
@@ -209,14 +181,14 @@ class OperandType(enum.Enum):
 
     @staticmethod
     def from_proto(
-        operand_type: "quokka.pb.Quokka.Operand.OperandType",
+        operand_type: "Pb.Operand.OperandType",
     ) -> "OperandType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Operand.OPERAND_REGISTER: OperandType.REGISTER,
-            quokka.pb.Quokka.Operand.OPERAND_IMMEDIATE: OperandType.IMMEDIATE,
-            quokka.pb.Quokka.Operand.OPERAND_MEMORY: OperandType.MEMORY,
-            quokka.pb.Quokka.Operand.OPERAND_OTHER: OperandType.OTHER,
+            Pb.Operand.OPERAND_REGISTER: OperandType.REGISTER,
+            Pb.Operand.OPERAND_IMMEDIATE: OperandType.IMMEDIATE,
+            Pb.Operand.OPERAND_MEMORY: OperandType.MEMORY,
+            Pb.Operand.OPERAND_OTHER: OperandType.OTHER,
         }
 
         return mapping.get(operand_type, OperandType.OTHER)
@@ -231,68 +203,16 @@ class ReferenceType(enum.Enum):
 
     @staticmethod
     def from_proto(
-        reference_type: "quokka.pb.Quokka.Reference.ReferenceType",
+        reference_type: "Pb.Reference.ReferenceType",
     ) -> "ReferenceType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Reference.REF_CODE: ReferenceType.CODE,
-            quokka.pb.Quokka.Reference.REF_DATA: ReferenceType.DATA,
-            quokka.pb.Quokka.Reference.REF_SYMBOL: ReferenceType.SYMBOL,
+            Pb.Reference.REF_CODE: ReferenceType.CODE,
+            Pb.Reference.REF_DATA: ReferenceType.DATA,
+            Pb.Reference.REF_SYMBOL: ReferenceType.SYMBOL,
         }
 
         return mapping.get(reference_type, ReferenceType.UNKNOWN)
-
-
-class BaseType(enum.Enum):
-    """Data Type"""
-
-    UNKNOWN = enum.auto()
-    BYTE = enum.auto()
-    WORD = enum.auto()
-    DOUBLE_WORD = enum.auto()
-    QUAD_WORD = enum.auto()
-    OCTO_WORD = enum.auto()
-    FLOAT = enum.auto()
-    DOUBLE = enum.auto()
-    ASCII = enum.auto()
-    STRUCT = enum.auto()
-    ALIGN = enum.auto()
-    POINTER = enum.auto()
-
-    @staticmethod
-    def from_proto(data_type: "quokka.pb.Quokka.DataType") -> "BaseType":
-        """Convert the protobuf value into this enumeration"""
-        mapping = {
-            quokka.pb.Quokka.TYPE_B: BaseType.BYTE,
-            quokka.pb.Quokka.TYPE_W: BaseType.WORD,
-            quokka.pb.Quokka.TYPE_DW: BaseType.DOUBLE_WORD,
-            quokka.pb.Quokka.TYPE_QW: BaseType.QUAD_WORD,
-            quokka.pb.Quokka.TYPE_OW: BaseType.OCTO_WORD,
-            quokka.pb.Quokka.TYPE_FLOAT: BaseType.FLOAT,
-            quokka.pb.Quokka.TYPE_DOUBLE: BaseType.DOUBLE,
-            quokka.pb.Quokka.TYPE_ASCII: BaseType.ASCII,
-            quokka.pb.Quokka.TYPE_STRUCT: BaseType.STRUCT,
-            quokka.pb.Quokka.TYPE_ALIGN: BaseType.ALIGN,
-            quokka.pb.Quokka.TYPE_POINTER: BaseType.POINTER,
-        }
-
-        return mapping.get(data_type, BaseType.UNKNOWN)
-
-    @property
-    def size(self) -> int:
-        """Size of the data type in bytes"""
-        mapping = {
-            BaseType.BYTE: 1,
-            BaseType.WORD: 2,
-            BaseType.DOUBLE_WORD: 4,
-            BaseType.QUAD_WORD: 8,
-            BaseType.OCTO_WORD: 16,
-            BaseType.FLOAT: 4,
-            BaseType.DOUBLE: 8,
-        }
-
-        return mapping.get(self, 0)
-
 
 class SegmentType(enum.Enum):
     """Segment Type"""
@@ -308,42 +228,21 @@ class SegmentType(enum.Enum):
 
     @staticmethod
     def from_proto(
-        segment_type: "quokka.pb.Quokka.Segment.TypeValue",
+        segment_type: "Pb.Segment.TypeValue",
     ) -> "SegmentType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Segment.SEGMENT_CODE: SegmentType.CODE,
-            quokka.pb.Quokka.Segment.SEGMENT_DATA: SegmentType.DATA,
-            quokka.pb.Quokka.Segment.SEGMENT_BSS: SegmentType.BSS,
-            quokka.pb.Quokka.Segment.SEGMENT_NULL: SegmentType.NULL,
-            quokka.pb.Quokka.Segment.SEGMENT_NORMAL: SegmentType.NORMAL,
-            quokka.pb.Quokka.Segment.SEGMENT_EXTERN: SegmentType.EXTERN,
-            quokka.pb.Quokka.Segment.SEGMENT_ABSOLUTE_SYMBOLS: SegmentType.ABSOLUTE_SYMBOLS,
+            Pb.Segment.SEGMENT_CODE: SegmentType.CODE,
+            Pb.Segment.SEGMENT_DATA: SegmentType.DATA,
+            Pb.Segment.SEGMENT_BSS: SegmentType.BSS,
+            Pb.Segment.SEGMENT_NULL: SegmentType.NULL,
+            Pb.Segment.SEGMENT_NORMAL: SegmentType.NORMAL,
+            Pb.Segment.SEGMENT_EXTERN: SegmentType.EXTERN,
+            Pb.Segment.SEGMENT_ABSOLUTE_SYMBOLS: SegmentType.ABSOLUTE_SYMBOLS,
         }
 
         return mapping.get(segment_type, SegmentType.UNKNOWN)
 
-
-# class StructureType(enum.Enum):
-#     """Structure Type"""
-
-#     STRUCT = enum.auto()
-#     ENUM = enum.auto()
-#     UNION = enum.auto()
-#     UNKNOWN = enum.auto()
-
-#     @staticmethod
-#     def from_proto(
-#         structure_type: "quokka.pb.Quokka.Structure.StructureTypeValue",
-#     ) -> "StructureType":
-#         """Convert the protobuf value into this enumeration"""
-#         mapping = {
-#             quokka.pb.Quokka.Structure.TYPE_STRUCT: StructureType.STRUCT,
-#             quokka.pb.Quokka.Structure.TYPE_ENUM: StructureType.ENUM,
-#             quokka.pb.Quokka.Structure.TYPE_UNION: StructureType.UNION,
-#         }
-
-#         return mapping.get(structure_type, StructureType.UNKNOWN)
 
 
 class ExporterMode(enum.IntEnum):
@@ -356,10 +255,10 @@ class ExporterMode(enum.IntEnum):
     FULL = enum.auto()
 
     @staticmethod
-    def from_proto(mode: "quokka.pb.Quokka.ExporterMeta.ModeValue") -> "ExporterMode":
+    def from_proto(mode: "Pb.ExporterMeta.ModeValue") -> "ExporterMode":
         mapping = {
-            quokka.pb.Quokka.ExporterMeta.MODE_LIGHT: ExporterMode.LIGHT,
-            quokka.pb.Quokka.ExporterMeta.MODE_SELF_CONTAINED: ExporterMode.FULL,
+            Pb.ExporterMeta.MODE_LIGHT: ExporterMode.LIGHT,
+            Pb.ExporterMeta.MODE_SELF_CONTAINED: ExporterMode.FULL,
         }
 
         return mapping[mode]
@@ -379,19 +278,20 @@ class CallingConvention(enum.Enum):
     GOSTK = enum.auto()
 
     @staticmethod
-    def from_proto(proto_cc: "quokka.pb.Quokka.CallingConvention") -> "CallingConvention":
+    def from_proto(proto_cc: "Pb.CallingConvention") -> "CallingConvention":
         """Convert the protobuf value into this enumeration"""
-        mapping = {
-            quokka.pb.Quokka.CC_CDECL: CallingConvention.CDECL,
-            quokka.pb.Quokka.CC_ELLIPSIS: CallingConvention.ELLIPSIS,
-            quokka.pb.Quokka.CC_STDCALL: CallingConvention.STDCALL,
-            quokka.pb.Quokka.CC_PASCAL: CallingConvention.PASCAL,
-            quokka.pb.Quokka.CC_FASTCALL: CallingConvention.FASTCALL,
-            quokka.pb.Quokka.CC_THISCALL: CallingConvention.THISCALL,
-            quokka.pb.Quokka.CC_SWIFT: CallingConvention.SWIFT,
-            quokka.pb.Quokka.CC_GOLANG: CallingConvention.GOLANG,
-            quokka.pb.Quokka.CC_GOSTK: CallingConvention.GOSTK,
+        return {
+            Pb.CC_CDECL: CallingConvention.CDECL,
+            Pb.CC_ELLIPSIS: CallingConvention.ELLIPSIS,
+            Pb.CC_STDCALL: CallingConvention.STDCALL,
+            Pb.CC_PASCAL: CallingConvention.PASCAL,
+            Pb.CC_FASTCALL: CallingConvention.FASTCALL,
+            Pb.CC_THISCALL: CallingConvention.THISCALL,
+            Pb.CC_SWIFT: CallingConvention.SWIFT,
+            Pb.CC_GOLANG: CallingConvention.GOLANG,
+            Pb.CC_GOSTK: CallingConvention.GOSTK,
         }[proto_cc]
+        
 
 class Disassembler(enum.Enum):
     """Disassembler"""
@@ -403,13 +303,13 @@ class Disassembler(enum.Enum):
 
     @staticmethod
     def from_proto(
-        proto_disass: "quokka.pb.Quokka.Meta.Backend.Disassembler",
+        proto_disass: "Pb.Meta.Backend.Disassembler",
     ) -> "Disassembler":
         """Convert the protobuf value into this enumeration"""
         mapping = {
-            quokka.pb.Quokka.Meta.Backend.Disassembler.DISASS_IDA: Disassembler.IDA,
-            quokka.pb.Quokka.Meta.Backend.Disassembler.DISASS_GHIDRA: Disassembler.GHIDRA,
-            quokka.pb.Quokka.Meta.Backend.Disassembler.DISASS_BINARY_NINJA: Disassembler.BINARY_NINJA,
+            Pb.Meta.Backend.Disassembler.DISASS_IDA: Disassembler.IDA,
+            Pb.Meta.Backend.Disassembler.DISASS_GHIDRA: Disassembler.GHIDRA,
+            Pb.Meta.Backend.Disassembler.DISASS_BINARY_NINJA: Disassembler.BINARY_NINJA,
         }
 
         return mapping.get(proto_disass, Disassembler.UNKNOWN)
