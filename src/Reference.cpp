@@ -28,12 +28,6 @@
 #include "quokka/ProtoHelper.h"
 // #include "quokka/Function.h"
 
-#if IDA_SDK_VERSION < 850
-#include "api_v8/Reference.cpp"
-#else
-#include "api_v9/Reference.cpp"
-#endif
-
 namespace quokka {
 
 // ReferenceType GetDataRefType(uchar ref_type, ea_t target) {
