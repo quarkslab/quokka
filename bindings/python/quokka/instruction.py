@@ -60,7 +60,27 @@ class Operand(ABC):
     def __init__(self, program: quokka.Program):
         """Constructor"""
         self.program: quokka.Program = program
-        self.xrefs: Any = {}
+        self._xrefs_from: dict[ReferenceType, list[AddressT|Index]] = {
+            ReferenceType.CODE: [],
+            ReferenceType.DATA: [],
+            ReferenceType.SYMBOL: [],
+        }
+
+    @property
+    def data_refs_from(self) -> list[AddressT]:
+        """Returns all data reference from this instruction"""
+        return [xref for xref in self._xrefs_from[ReferenceType.DATA]]
+
+    @property
+    def code_refs_from(self) -> list[AddressT]:
+        """Returns all code reference from this instruction"""
+        return [xref for xref in self._xrefs_from[ReferenceType.CODE]]
+
+    @property
+    def type_refs_from(self) -> list[TypeT]:
+        """Returns all type reference from this instruction"""
+        return [self.program.get_type(type_id) for type_id in 
+                self._xrefs_from[ReferenceType.SYMBOL]]
 
     @property
     @abstractmethod
@@ -212,7 +232,7 @@ class OperandLight(Operand):
                 return AccessMode.WRITE
             case 3:
                 return AccessMode.READ | AccessMode.WRITE
-        assert False, f"Unknown access mode {self.cs_op.access}"
+        return AccessMode(0)  # No access information available
 
     @property
     def register(self) -> str:
@@ -228,7 +248,9 @@ class OperandLight(Operand):
     def __str__(self) -> str:
         try:
             index = self._cs_inst.operands.index(self.cs_op)
-            return ",".split(self._cs_inst.op_str)[index]
+            return self._cs_inst.op_str.split(",")[index]
+        except IndexError:
+            return f"<UNK>"
         except ValueError:
             return f"<UNK>"
 
@@ -344,9 +366,8 @@ class Instruction:
             A Capstone instruction
 
         """
-        ins = quokka.backends.capstone_decode_instruction(self)
-        assert ins is not None, f"Capstone failed to decode instruction at 0x{self.address:x}"
-        return ins
+        assert self._cs_inst is not None, f"Capstone instruction not available for instruction at 0x{self.address:x}"
+        return self._cs_inst
 
     @cached_property
     def pcode_insts(self) -> Sequence[pypcode.PcodeOp]:
@@ -460,6 +481,16 @@ class Instruction:
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign code refs")
 
+        for sxref in (x for x in self._xrefs_from if x.reference_type == Pb.Reference.REF_SYMBOL):
+            # If there is only one memory operand assign symbol ref to it
+            if len(operands) == 1:  # Only one operand, assign the symbol ref to it
+                operands[0].xrefs[ReferenceType.SYMBOL] = sxref
+            elif len(mem_ops) == 1:  # Only one memory operand, assign the symbol ref to it
+                mem_ops[0].xrefs[ReferenceType.SYMBOL] = sxref
+            elif len(imm_ops) == 1:  # Only one immediate operand, assign the symbol ref to it
+                imm_ops[0].xrefs[ReferenceType.SYMBOL] = sxref
+            else:
+                logger.warning(f"{self.address:#x} inst {str(self)} can't assign symbol refs")
 
     @cached_property
     def call_target(self) -> quokka.Function:

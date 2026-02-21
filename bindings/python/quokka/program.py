@@ -203,7 +203,7 @@ class Program(dict):
 
         for function in self.values():
             call_graph.add_node(function.start)
-            call_graph.add_edges_from(product((function.start,), function.calls))
+            call_graph.add_edges_from(product((function.start,), function.callees))
             
         return call_graph
 
@@ -379,18 +379,6 @@ class Program(dict):
             A list of orphaned blocks.
         """
         raise NotImplementedError("Orphaned blocks loading is not implemented yet")
-
-    @property
-    def strings(self) -> Iterable[str]:
-        """Program strings
-
-        Retrieves all the strings used in the program.
-
-        Returns:
-            A list of strings.
-        """
-        # Do not use the empty string (the first one)
-        return self.proto.string_table[1:]
 
     @cached_property
     def segments(self) -> dict[int, quokka.Segment]:

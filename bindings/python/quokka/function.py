@@ -134,47 +134,51 @@ class Function(dict):
                 self.type = FunctionType.EXTERN
 
         # Fill the dict with block addresses and their corresponding index
-        for block_index, block in enumerate(func.blocks):
+        self._block_data: dict[AddressT, Tuple[Index, int]] = {}
+        for block_index, block in enumerate(func.blocks):  # iterate over the block protobuf objects
             block_address: int = program.virtual_address(block.segment_index, block.segment_offset)
-            self[block_address] = (block_index, block.size)
-        self._index_to_address = {v: k for k, v in self.items()}
+            self._block_data[block_address] = (block_index, block.size)
+        self._index_to_address = {v: k for k, v in self._block_data.items()}
  
         self._data_references: list[quokka.Data] = []
 
         # Continuous chunks of code in the function
-        block_ranges = sorted((x, x+y) for x, y in self.values())
+        block_ranges = sorted((addr, addr+size) for addr, (idx, size) in self._block_data.items())
         self._chunks: list[tuple[AddressT, AddressT]] = self.coalesce_block_ranges(block_ranges)
         
+        # TODO: Retrieving calling convention
 
     def __getitem__(self, address: AddressT) -> Block:
         """Lazy loader for blocks within the function"""
-        block_index, block_size = dict.__getitem__(self, address)
-        return Block(block_index, address, self)
+        if address not in self._block_data:
+            raise IndexError(f"Unable to find the block at 0x{address:x} in function {self.name}")
+        else:
+            if address in self:  # already loaded
+                return super().__getitem__(address)
+            else:
+                block_index, block_size = self._block_data[address]
+                block = Block(block_index, address, self)
+                super().__setitem__(address, block)
+                return block
 
-    @cached_property
-    def strings(self) -> list[str]:
-        """Return the strings used in the Function"""
+    def values(self):
+        """Return the blocks of the function"""
+        for address in self._block_data.keys():
+            yield self[address]
 
-        strings = set()
-        for block in self.values():
-            strings.update(block.strings)
-
-        return list(strings)
-
+    def keys(self):
+        """Return the block addresses of the function"""
+        return self._block_data.keys()
+    
+    def items(self):
+        """Return the block addresses and blocks of the function"""
+        for address in self._block_data.keys():
+            yield address, self[address]
 
     @cached_property
     def size(self) -> int:
         """Return the function size"""
         return self.end - self.start
-
-    @property
-    def data_references(self):
-        """Lists data references used in the function"""
-        data_references: list[quokka.Data] = []
-        for block in self.values():
-            data_references.extend(block.data_references)
-
-        return data_references
 
     @cached_property
     def constants(self) -> list[int]:

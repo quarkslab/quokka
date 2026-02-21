@@ -59,7 +59,6 @@ class Block(MutableMapping):
         address_to_index: A mapping of addresses to instruction indexes
         end: End address
         comments: List of comments attached to the block
-        references: References mapping attached to the block (TODO(dm): remove me?)
     """
 
     def __init__(
@@ -95,7 +94,7 @@ class Block(MutableMapping):
             insts = quokka.backends.capstone.capstone_decode_block(self)
             if len(insts) != self.proto.n_instr:
                 logger.warning(
-                    f"Decoded {len(insts)} instructions for block at 0x{self.start:x} but expected {block.n_instr}."
+                    f"Decoded {len(insts)} instructions for block at 0x{self.start:x} but expected {self.proto.n_instr}."
                 )
             for i, inst in enumerate(insts):  
                 ins = quokka.Instruction(-1, i, inst.address, self, backend_inst=inst)
@@ -104,7 +103,6 @@ class Block(MutableMapping):
             assert False, "Unknown exporter mode"
 
         self.comments: dict[AddressT, str] = {}
-        self.references: dict[str, list[int]] = {"src": [], "dst": []}
 
     @property
     def address(self) -> AddressT:

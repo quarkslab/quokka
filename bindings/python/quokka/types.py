@@ -150,7 +150,6 @@ class BlockType(enum.Enum):
     ENORET = enum.auto()
     EXTERN = enum.auto()
     ERROR = enum.auto()
-    FAKE = enum.auto()
 
     @staticmethod
     def from_proto(
@@ -166,10 +165,9 @@ class BlockType(enum.Enum):
             Pb.Block.BLOCK_TYPE_ENORET: BlockType.ENORET,
             Pb.Block.BLOCK_TYPE_EXTERN: BlockType.EXTERN,
             Pb.Block.BLOCK_TYPE_ERROR: BlockType.ERROR,
-            Pb.Block.BLOCK_TYPE_FAKE: BlockType.FAKE,
         }
 
-        return mapping.get(block_type, BlockType.FAKE)
+        return mapping.get(block_type, BlockType.NORMAL)
 
 class OperandType(enum.Enum):
     """Operand Type"""
