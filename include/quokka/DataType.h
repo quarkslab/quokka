@@ -41,6 +41,7 @@
 #include "Bucket.h"
 #include "ProtoHelper.h"  // Kept for ProtoHelper
 #include "ProtoWrapper.h"
+#include "Reference.h"
 #include "Util.h"
 
 // #if IDA_SDK_VERSION < 850
@@ -88,6 +89,7 @@ class CompositeType : public ProtoHelper {
   size_t size;       ///< Structure size
 
   std::vector<CompositeTypeMember> members;  ///< Members list
+  mutable std::vector<const Reference*> xref_to;
 };
 
 /**
@@ -254,6 +256,7 @@ class EnumType : public ProtoHelper {
   std::string name;  ///< Name of the enum
   std::vector<std::pair<std::string, int64_t>>
       values;  ///< Internal values of the enum as pairs (name, value)
+  mutable std::vector<const Reference*> xref_to;
 
   bool operator==(const EnumType& o) const noexcept {
     return this->name == o.name;

@@ -259,11 +259,19 @@ static void WriteEnums(quokka::Quokka* proto) {
   for (const auto& enum_type : enums.GetSortedView()) {
     Quokka::EnumType* proto_enum = proto->add_types()->mutable_enum_type();
     proto_enum->set_name(enum_type.name);
+
+    // Xref
+    for (const Reference* xref : enum_type.xref_to)
+      proto_enum->add_xref_to(xref->proto_index);
+
     proto_enum->mutable_values()->Reserve(enum_type.values.size());
     for (const auto& enum_value : enum_type.values) {
       Quokka::EnumType::EnumValue* proto_value = proto_enum->add_values();
-      proto_value->set_name(enum_value.first);
-      proto_value->set_value(enum_value.second);
+      proto_value->set_name(enum_value.name);
+      proto_value->set_value(enum_value.value);
+      // Xref
+      for (const Reference* xref : enum_value.xref_to)
+        proto_value->add_xref_to(xref->proto_index);
     }
   }
 }

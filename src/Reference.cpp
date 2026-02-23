@@ -122,16 +122,17 @@ void ExportDataReferences(const Data& data) {
 //   }
 // }
 
-void ExportSymbolReference(const ProtoHelper* type, const tid_t& tid,
-                           int32_t index) {
+void ExportSymbolReference(const ProtoHelper* type,
+                           std::vector<const Reference*>& xref_to,
+                           const tid_t& tid, int32_t index) {
   assert(type != nullptr);
   References& references = References::GetInstance();
 
   // Symbols only have TO references
   xrefblk_t xref;
   for (bool ok = xref.first_to(tid, XREF_EA); ok; ok = xref.next_to()) {
-    references.emplace(xref.from, std::make_pair(type, index),
-                       Quokka_Reference_ReferenceType_REF_SYMBOL);
+    xref_to.push_back(std::addressof(references.emplace(
+        xref.from, std::make_pair(type, index), reference::REF_SYMBOL)));
   }
 }
 

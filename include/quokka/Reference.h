@@ -37,7 +37,6 @@
 #include "absl/hash/hash.h"
 
 #include "Bucket.h"
-#include "DataType.h"
 #include "ProtoHelper.h"
 #include "quokka.pb.h"
 
@@ -218,8 +217,9 @@ struct Xref {
  * @param type The type for which to export the references
  * @param enum_tid Ida type ID
  */
-void ExportSymbolReference(const ProtoHelper* type, const tid_t& tid,
-                           int32_t index);
+void ExportSymbolReference(const ProtoHelper* type,
+                           std::vector<const Reference*>& xref_to,
+                           const tid_t& tid, int32_t index);
 
 // /**
 //  * Get the code reference from the start address

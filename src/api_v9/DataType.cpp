@@ -95,7 +95,8 @@ static void ExportCompositeMembers(
     /* TODO Retrieve comments */
     std::visit(
         [&](auto& composite) {
-          ExportSymbolReference(&composite, tif.get_tid(), member_idx);
+          ExportSymbolReference(&composite, composite.xref_to, tif.get_tid(),
+                                member_idx);
           //   GetStructureMemberComment(composite_type_ptr,
           //                             composite.members.size(),
           //                             ida_member->id);
@@ -135,7 +136,8 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
 
   std::visit(
       [&tif](const auto& x) {
-        ExportSymbolReference(&x, tif.get_tid(), reference::WHOLE_TYPE);
+        ExportSymbolReference(&x, x.xref_to, tif.get_tid(),
+                              reference::WHOLE_TYPE);
       },
       *type);
 
@@ -199,7 +201,8 @@ void ExportEnums() {
     // Export the values (aka members)
     if (has_members) {
       for (const edm_t& edm : edt) {
-        enum_type.values.push_back({ConvertIdaString(edm.name), edm.value});
+        enum_type.values.push_back(
+            {ConvertIdaString(edm.name), static_cast<int64_t>(edm.value)});
         /* Retrieve comments */
         // GetEnumMemberComment_v9(member, edm);
       }
@@ -208,10 +211,11 @@ void ExportEnums() {
     const EnumType& new_obj = enums.insert(std::move(enum_type));
 
     // References
-    ExportSymbolReference(&new_obj, tif.get_tid(), reference::WHOLE_TYPE);
+    ExportSymbolReference(&new_obj, new_obj.xref_to, tif.get_tid(),
+                          reference::WHOLE_TYPE);
     if (has_members) {
       for (size_t i = 0; const edm_t& edm : edt) {
-        ExportSymbolReference(&new_obj, edm.get_tid(), i);
+        ExportSymbolReference(&new_obj, new_obj.xref_to, edm.get_tid(), i);
         ++i;
       }
     }
