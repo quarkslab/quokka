@@ -239,7 +239,7 @@ message Quokka {
     LayoutType layout_type = 2;
   }
 
-  enum DataType {
+  enum BaseType {
     TYPE_UNK = 0;
     TYPE_B = 1;
     TYPE_W = 2;
@@ -248,13 +248,6 @@ message Quokka {
     TYPE_OW = 5;
     TYPE_FLOAT = 6;
     TYPE_DOUBLE = 7;
-    TYPE_ASCII = 8;   // has to go
-    TYPE_STRUCT = 9;  // composite
-    TYPE_UNION = 13;  // composite
-    TYPE_ENUM = 12;   // enum
-    TYPE_ALIGN = 10;
-    TYPE_POINTER = 11;
-    TYPE_ARRAY = 14;
   }
 
   // For the future
@@ -299,7 +292,7 @@ message Quokka {
     optional uint32 element_type_idx = 4;  // Only for pointer and array
     repeated Member members = 5;           // Only for union and struct
     // TODO check to see if ida export this. Possibly remove it
-    repeated uint64 xref_from = 6;
+    repeated uint64 xref_to = 6;
     string c_str = 7;
   }
 
@@ -307,13 +300,13 @@ message Quokka {
     message EnumValue {
       string name = 1;
       int64 value = 2;
-      repeated uint64 xref_from = 3;
+      repeated uint64 xref_to = 3;
     }
     string name = 1;
     repeated EnumValue values = 2;
     // TODO add a base DataType
     // TODO check to see if ida export this. Possibly remove it
-    repeated uint64 xref_from = 3;
+    repeated uint64 xref_to = 3;
     uint32 base_type = 4;
   }
 
