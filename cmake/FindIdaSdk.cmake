@@ -85,6 +85,16 @@ find_package_handle_standard_args(IdaSdk
   FAIL_MESSAGE "IDA SDK not found, try setting IdaSdk_ROOT_DIR"
 )
 
+# Check if the Hex-Rays decompiler header is available in the SDK.
+# hexrays.hpp was merged into the main SDK starting from IDA 8.5.
+if(EXISTS "${IdaSdk_INCLUDE_DIRS}/hexrays.hpp")
+  set(IdaSdk_HAS_HEXRAYS TRUE)
+  message(STATUS "IDA SDK: hexrays.hpp found")
+else()
+  set(IdaSdk_HAS_HEXRAYS FALSE)
+  message(STATUS "IDA SDK: hexrays.hpp not found, decompiler API unavailable")
+endif()
+
 # Define some platform specific variables for later use.
 set(_so "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 set(_so64 "64${CMAKE_SHARED_LIBRARY_SUFFIX}")  # An additional "64"
@@ -293,6 +303,11 @@ function(_ida_common_target_settings t ea64)
                                          USE_DANGEROUS_FUNCTIONS
                                          USE_STANDARD_FILE_FUNCTIONS)
   target_include_directories(${t} PUBLIC "${IdaSdk_INCLUDE_DIRS}")
+  if(IdaSdk_HAS_HEXRAYS)
+    target_compile_definitions(${t} PUBLIC HAS_HEXRAYS)
+  else()
+    target_compile_definitions(${t} PUBLIC NO_HEXRAYS)
+  endif()
 endfunction()
 
 macro(_ida_check_bitness)

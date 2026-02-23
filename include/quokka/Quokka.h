@@ -36,6 +36,9 @@
 #include <idp.hpp>
 #include <loader.hpp>
 #include <nalt.hpp>
+#ifdef HAS_HEXRAYS
+#include <hexrays.hpp>
+#endif
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/escaping.h"

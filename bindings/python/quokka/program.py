@@ -141,6 +141,8 @@ class Program(dict):
 
         self.endianness: Endianness = Endianness.from_proto(self.proto.meta.endianess)
 
+        self.decompiled_activated: bool = self.proto.meta.decompilation_activated
+
         self.chunks: Dict[int, Union[quokka.Chunk, quokka.SuperChunk]] = {}
 
         self.executable = quokka.Executable(exec_path, self.endianness)
@@ -487,9 +489,11 @@ class Program(dict):
         exec_path: Union[pathlib.Path, str],
         output_file: Optional[Union[pathlib.Path, str]] = None,
         database_file: Optional[Union[pathlib.Path, str]] = None,
+        decompiled: bool = False,
         debug: bool = False,
         override: bool = True,
         timeout: Optional[int] = 0,
+        mode: ExporterMode = ExporterMode.NORMAL,
     ) -> Optional[Program]:
         """Generate an export file directly from the binary.
 
@@ -500,8 +504,10 @@ class Program(dict):
             exec_path: Binary to export.
             output_file: Where to store the result (by default: near the executable)
             database_file: Where to store IDA database (by default: near the executable)
+            decompiled: Whether to export decompiled code (default: False)
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
+            mode: Export mode (LIGHT, NORMAL or FULL)
 
         Returns:
             A |`Program` instance or None if
@@ -513,16 +519,19 @@ class Program(dict):
         quokka_file = Program.generate(
             exec_path=exec_path,
             output_file=output_file,
+            database_file=database_file,
+            decompiled=decompiled,
             override=override,
             debug=debug,
             timeout=timeout,
+            mode=mode
         )
 
         # In theory if reach here export file exists otherwise an exception has been raised
         if quokka_file.exists():
             return Program.open(quokka_file, exec_path)
         else:
-            raise FileNotFoundError(f"Cannot open Quokka export it does not exists: {quokka_file}")
+            raise FileNotFoundError(f"Quokka generation failed, export file does not exist: {quokka_file}")
 
 
     @staticmethod
@@ -541,9 +550,11 @@ class Program(dict):
         exec_path: Union[pathlib.Path, str],
         output_file: Optional[Union[pathlib.Path, str]] = None,
         database_file: Optional[Union[pathlib.Path, str]] = None,
+        decompiled: bool = False,
         debug: bool = False,
         override: bool = True,
         timeout: Optional[int] = 600,
+        mode: ExporterMode = ExporterMode.NORMAL,
     ) -> pathlib.Path:
         """Generate an export file directly from the binary.
 
@@ -554,8 +565,10 @@ class Program(dict):
             exec_path: Binary to export.
             output_file: Where to store the result (by default: near the executable)
             database_file: Where to store IDA database (by default: near the executable)
+            decompiled: Whether to export decompiled code (default: False)
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
+            mode: Export mode (LIGHT, NORMAL or FULL)
 
         Returns:
             A |`Program` instance or None if
@@ -592,7 +605,11 @@ class Program(dict):
         ida = idascript.IDA(
             exec_path,
             script_file=None,
-            script_params=["QuokkaAuto:true", f"QuokkaFile:{output_file}"],
+            script_params=[
+                "QuokkaAuto:true",
+                f"QuokkaDecompiled:{str(decompiled).lower()}",
+                f"QuokkaMode:{mode.name}",
+                f"QuokkaFile:{output_file}"],
             database_path=database_path,
             timeout=timeout,
         )

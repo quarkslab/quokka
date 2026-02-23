@@ -78,10 +78,14 @@ ExporterMode GetModeFromArgument() {
   // Look for options on command line
   ExporterMode mode = ExporterMode::MODE_NORMAL;
   std::string quokka_mode = GetArgument("Mode", true);
-  if (quokka_mode == "LIGHT") {
+  if (quokka_mode == "NORMAL") {
+    mode = ExporterMode::MODE_NORMAL;
+  } else if (quokka_mode == "LIGHT") {
     mode = ExporterMode::MODE_LIGHT;
   } else if (quokka_mode == "FULL") {
     mode = ExporterMode::MODE_FULL;
+  } else {
+    QLOGW << "Unknown mode provided in argument, using default (NORMAL)";
   }
 
   return mode;
@@ -116,6 +120,19 @@ std::string GetArgument(const char* name, bool to_upper) {
   return "";
 }
 
+bool GetBoolArgument(const char* name, bool default_value) {
+  std::string option = GetArgument(name, true);
+  if (option.empty()) {
+    return default_value;
+  }
+  else {
+    std::transform(
+          option.begin(), option.end(), option.begin(),
+          [](unsigned char c) -> unsigned char { return std::toupper(c); });
+    return (option == "TRUE");
+  }
+}
+
 std::string GetOutputFileName() {
   std::string output_file = GetArgument("File");
   if (output_file.empty()) {
@@ -142,19 +159,41 @@ ssize_t idaapi UIHook(void* /* not used */, int event_id,
     return 0;
   }
 
-  const std::string auto_action = GetArgument("Auto");
-  if (auto_action.empty()) {
+  const bool auto_action = GetBoolArgument("Auto", false);
+  if (!auto_action) {
     return 0;
   }
 
   QLOGI << "Auto Export";
   auto_wait();
 
+  // Retrieve mode from argument
   Settings::GetInstance().SetMode(GetModeFromArgument());
+
+  // Retrieve if we need to export decompiled code
+  bool export_decompiled = GetBoolArgument("Decompiled", false);
+  if(export_decompiled){
+#ifdef HAS_HEXRAYS
+    if (init_hexrays_plugin()) {
+      QLOGI << "Hex-Rays plugin initialized. Decompilation: " << 
+                  (export_decompiled ? "enabled" : "disabled");
+      Settings::GetInstance().SetExportDecompiledCode(export_decompiled);
+    } else {
+      QLOGW << "Hex-Rays plugin not available, cannot export decompiled code";
+    }
+#else
+    QLOGW << "Quokka compiled without Hex-Rays support";
+    // Settings already false by default.
+#endif
+  }
+
   ExportBinary(GetOutputFileName());
 
   // TODO(dm) Set the flag only when we are loading from a database
   // Or set an option to see if we need to save the database
+#ifdef HAS_HEXRAYS
+  term_hexrays_plugin();
+#endif
 
   // set_database_flag(DBFL_KILL);
   qexit(0);
@@ -214,6 +253,9 @@ bool idaapi PluginRun(size_t) {
     error("You must open an IDB first\n");
   }
 
+  /*
+    Field documentation: https://cpp.docs.hex-rays.com/group___f_o_r_m___c.html#ga56bdea2f1808b588da54c343f42ebf41
+  */
   std::vector<std::string> form = {
       "STARTITEM 0",
       "BUTTON YES Export",
@@ -227,11 +269,15 @@ bool idaapi PluginRun(size_t) {
       "<#Light mode#Choose a mode##LIGHT:R>",
       "<#Normal mode#NORMAL:R>",
       "<#Full mode#FULL:R>>",
+#ifdef HAS_HEXRAYS
+      "<#Requires hex-rays (slows down export)#Export Decompiled:C>>"
+#endif
   };
 
   std::string dialog = absl::StrJoin(form, "\n");
   ushort mode_input = 1;
-  if (ask_form(dialog.c_str(), &mode_input) == ASKBTN_YES) {
+  ushort do_decompiled = 0;
+  if (ask_form(dialog.c_str(), &mode_input, &do_decompiled) == ASKBTN_YES) {
     // Check if the mode has been selected
     ExporterMode mode;
     switch (mode_input) {
@@ -249,6 +295,16 @@ bool idaapi PluginRun(size_t) {
     }
 
     Settings::GetInstance().SetMode(mode);
+
+    // Check if hex-rays plugin is available
+#ifdef HAS_HEXRAYS
+    if (init_hexrays_plugin()) {
+      QLOGI << "Hex-Rays plugin initialized";
+      Settings::GetInstance().SetExportDecompiledCode(do_decompiled != 0);
+    } else if (do_decompiled != 0) {
+      QLOGW << "Hex-Rays plugin not available, cannot export decompiled code";
+    }
+#endif
 
     std::string default_name = GetOutputFileName();
     const char* filename =
