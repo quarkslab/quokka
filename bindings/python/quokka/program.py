@@ -186,6 +186,11 @@ class Program(dict):
         """Returns the hash value of the binary (either sha256 or MD5)."""
         return self.proto.meta.hash.hash_value
 
+    @property
+    def headers(self) -> str:
+        """Returns C-style headers of the binary"""
+        return self.proto.headers
+
     @cached_property
     def capstone(self) -> capstone.Cs:
         """Compute a capstone context"""

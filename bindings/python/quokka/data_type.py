@@ -61,11 +61,16 @@ class ComplexType(object):
         self.name: str = proto.name
         # type is not used here
         self.size = proto.size if proto.HasField("size") else 0
-        self.c_str = proto.c_str if proto.HasField("c_str") else ""
+        self.c_str = proto.c_str
 
         # Xrefs attached to the type itself
         self._xrefs_to = [self._program.proto.references[x] for x in proto.xref_to]
     
+    @property
+    def comments(self) -> list[str]:
+        """Return the type comments"""
+        return self.proto.comments
+
     @property
     def data_refs_to(self) -> list['Data']:
         """Returns all data reference to this type"""
@@ -107,7 +112,10 @@ class EnumTypeMember(object):
         self._enum_type: weakref.ref[EnumType] = weakref.ref(enum_type)
         self._xrefs_to = [enum_type._program.proto.references[x] for x in member.xref_to]
 
-        self.comments: list[str] = []
+    @property
+    def comments(self) -> list[str]:
+        """Return the enum member comments"""
+        return self.proto.comments
 
     @property
     def parent(self) -> "EnumType":
@@ -140,7 +148,7 @@ class EnumType(ComplexType):
         self.size: int = program.get_type(proto.base_type).size
         self._members: dict[str, EnumTypeMember] = {member.name: EnumTypeMember(member, self) 
                                                     for member in proto.values}
-    
+
     def __getattr__(self, name):
         if name in self._members:
             return self._members[name]
@@ -148,11 +156,9 @@ class EnumType(ComplexType):
             return super().__getattribute__(name)
 
     @property
-    def c_str(self) -> str:
-        """C declaration of the type"""
-        return f"enum {self.name}\n{'{'}\n" + \
-               ",\n  ".join(f"  {member.name} = {member.value}" for member in self._members.values()) + \
-               "\n};"
+    def comments(self) -> list[str]:
+        """Return the enum comments"""
+        return self.proto.comments
 
 
 class ArrayType(ComplexType):
@@ -225,7 +231,10 @@ class StructureTypeMember(object):
         self._structure: weakref.ref[StructureType] = weakref.ref(structure)
         self._xrefs_to = [structure._program.proto.references[x] for x in member.xref_to]
 
-        self.comments: list[str] = []
+    @property
+    def comments(self) -> list[str]:
+        """Return the structure member comments"""
+        return self.proto.comments
 
     @property
     def type(self) -> BaseType | EnumType | ComplexType:

@@ -180,6 +180,11 @@ class Function(dict):
         """Return the function size"""
         return self.end - self.start
 
+    @property
+    def comments(self) -> list[str]:
+        """Return the function comments"""
+        return self.proto.comments
+
     @cached_property
     def constants(self) -> list[int]:
         """Lists constants used in the function"""

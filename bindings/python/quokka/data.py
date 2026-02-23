@@ -75,6 +75,11 @@ class Data:
         return id(self.proto) == id(other.proto)
 
     @property
+    def comments(self) -> list[str]:
+        """Return the data comments"""
+        return self.proto.comments
+
+    @property
     def value(self) -> TypeValue | None:
         """Data value.
 

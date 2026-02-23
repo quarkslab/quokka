@@ -21,7 +21,7 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import cached_property
 import capstone
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Iterable, Sequence
 
 import quokka
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
@@ -306,6 +306,13 @@ class Instruction:
         # TODO(dm) Sometimes, IDA merge two instruction in one
         #  (e.g. 0x1ab16 of d53a), deal with that
         self.address: AddressT = address
+
+    @property
+    def comments(self) -> Iterable[str]:
+        """Returns the instruction comments"""
+        for inst_c in self.parent.proto.instruction_comments:
+            if inst_c.instr_bb_idx == self.index:
+                yield from  inst_c.comments
 
     @property
     def proto(self) -> "Pb.Instruction":
