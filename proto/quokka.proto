@@ -138,6 +138,11 @@ message Quokka {
       uint64 xref_index = 2;
     }
 
+    message InstructionComment {
+      uint32 instr_bb_idx = 1;
+      repeated string comments = 2;
+    }
+
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
 
@@ -157,6 +162,8 @@ message Quokka {
     // current backend. This is useful to detect a mismatch between the runtime
     // disassembler and the backend one
     uint32 n_instr = 10;
+
+    repeated InstructionComment instruction_comments = 11;
   }
 
   message Function {
@@ -220,6 +227,8 @@ message Quokka {
 
     // Optional decompiled code as a string
     string decompiled_code = 11;
+    string prototype = 12;
+    repeated string comments = 13;
   }
 
   message Layout {
@@ -268,6 +277,7 @@ message Quokka {
     bool not_initialized = 7;
     repeated uint64 xref_to = 8;
     repeated uint64 xref_from = 9;
+    repeated string comments = 10;
   }
 
   message CompositeType {
@@ -277,6 +287,7 @@ message Quokka {
       uint32 type_index = 3;
       uint32 size = 4;
       repeated uint64 xref_to = 5;
+      repeated string comments = 6;
     }
 
     enum CompositeSubType {
@@ -294,6 +305,7 @@ message Quokka {
     // TODO check to see if ida export this. Possibly remove it
     repeated uint64 xref_to = 6;
     string c_str = 7;
+    repeated string comments = 8;
   }
 
   message EnumType {
@@ -301,6 +313,7 @@ message Quokka {
       string name = 1;
       int64 value = 2;
       repeated uint64 xref_to = 3;
+      repeated string comments = 4;
     }
     string name = 1;
     repeated EnumValue values = 2;
@@ -308,57 +321,13 @@ message Quokka {
     // TODO check to see if ida export this. Possibly remove it
     repeated uint64 xref_to = 3;
     uint32 base_type = 4;
-  }
-
-  message CompositeDataTypeIdentifier {
-    uint32 data_type_index = 1;
-    oneof MemberIndex {
-      uint32 member_index = 2;
-      bool no_member = 3;  // Identify the whole data type
-    }
+    string c_str = 5;
+    repeated string comments = 6;
   }
 
   message DataTypeIdentifier {
     uint32 type_index = 1;
     int32 member_index = 2;  // If -1 it identifies the whole data type
-  }
-
-  message DataIdentifier {
-    uint32 data_index = 1;
-    // Optionally, if the data is composite, a list of member indices is
-    // provided. For example to identify data `a.b.c.d` the indices [#b, #c, #d]
-    // will be stored in member_chain.
-    repeated uint32 member_chain = 2;
-  }
-
-  message InstructionIdentifier {
-    uint32 function_index = 1;
-    uint32 block_index = 2;
-    // Offset (in bytes) of the instruction within the basic block
-    // Especially useful in light mode
-    uint32 offset = 3;
-    // Index in the basic block, not in the global instruction table
-    // Useful only in self-contained mode
-    uint32 instruction_index = 4;
-  }
-
-  message Comment {
-    enum CommentType {
-      COMMENT_INSTRUCTION = 0;
-      COMMENT_FUNCTION = 1;
-      COMMENT_DATA = 2;
-      COMMENT_DATA_TYPE = 3;
-      COMMENT_INVALID = 4;
-    }
-
-    CommentType type = 1;
-    string content = 2;
-    oneof Location {
-      InstructionIdentifier instruction_id = 3;
-      uint32 function_index = 4;
-      DataIdentifier data_id = 5;
-      CompositeDataTypeIdentifier data_type_id = 6;
-    }
   }
 
   message Reference {
@@ -426,6 +395,7 @@ message Quokka {
       uint32 instruction_index = 1;
       LightInstruction instruction = 2;
     }
+    repeated string comments = 3;
   }
 
   message Type {
@@ -452,12 +422,9 @@ message Quokka {
   repeated string register_table = 10;
   repeated Operand operands = 11;
 
-  repeated string comment_table = 12;
-  repeated Comment comments = 13;
+  repeated Segment segments = 12;
 
-  repeated Segment segments = 14;
+  repeated OrphanedInstruction orphaned_instructions = 13;
 
-  repeated OrphanedInstruction orphaned_instructions = 15;
-
-  repeated string operand_strings = 16;
+  repeated string operand_strings = 14;
 }
