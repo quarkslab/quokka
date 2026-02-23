@@ -524,6 +524,21 @@ class Instruction:
         return self.call_target is not False
 
     @cached_property
+    def strings(self) -> list[str]:
+        """Fast accessor for instructions strings not using Capstone."""
+        strings = []
+        for data in self.data_refs_from:
+            if isinstance(data.type, quokka.ArrayType) and data.is_initialized:
+                if isinstance(data.type.element_type, BaseType.BYTE):  # anything that is an array of bytes is considered
+                    value = data.value
+                    if isinstance(value, bytes):
+                        try:
+                            strings.append(value.decode())
+                        except UnicodeDecodeError:
+                            continue
+        return strings
+
+    @cached_property
     def constants(self) -> list[int]:
         """Fast accessor for instructions constant not using Capstone."""
         return [x.value for x in self.operands if x.type == OperandType.IMMEDIATE]

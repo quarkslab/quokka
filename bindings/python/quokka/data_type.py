@@ -1,7 +1,7 @@
 
 import weakref
 from enum import IntEnum, auto, Enum
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Iterable, Type
 
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.types import AddressT
@@ -148,6 +148,15 @@ class EnumType(ComplexType):
         self.size: int = program.get_type(proto.base_type).size
         self._members: dict[str, EnumTypeMember] = {member.name: EnumTypeMember(member, self) 
                                                     for member in proto.values}
+
+    @property
+    def members(self) -> Iterable[EnumTypeMember]:
+        """Return the enum members as a mapping from member names to members"""
+        return iter(self)
+
+    def __iter__(self):
+        """Iterate over the enum members"""
+        return iter(self._members.values())
 
     def __getattr__(self, name):
         if name in self._members:

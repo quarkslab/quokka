@@ -186,6 +186,19 @@ class Function(dict):
         return self.proto.comments
 
     @cached_property
+    def strings(self) -> list[str]:
+        """Return the list of strings referenced by the function"""
+        strings = []
+        for block in self.values():
+            strings.extend(block.strings)
+        return strings
+
+    @property
+    def prototype(self) -> str:
+        """Return the function prototype if any"""
+        return self.proto.prototype
+
+    @cached_property
     def constants(self) -> list[int]:
         """Lists constants used in the function"""
         constants: list[int] = []

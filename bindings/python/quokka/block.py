@@ -161,6 +161,15 @@ class Block(MutableMapping):
 
         return constants
 
+    @cached_property
+    def strings(self) -> list[str]:
+        """Strings used by the block"""
+        strings: list[str] = []
+        for instruction in self.values():
+            strings.extend(instruction.strings)
+
+        return strings
+
     @property
     def instructions(self) -> Iterator[Instruction]:
         """Accessor of the block instructions"""
