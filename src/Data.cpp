@@ -21,6 +21,7 @@
 // clang-format on
 #include <pro.h>
 #include <bytes.hpp>
+#include <loader.hpp>
 #include <name.hpp>
 #include <segment.hpp>
 #include <typeinf.hpp>
@@ -81,7 +82,7 @@ Data Data::Make(ea_t addr, uint32_t size) {
       segments.get_exact(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea);
   assert(addr >= segment.start_addr && addr < segment.end_addr);
 
-  Data data(addr, data_type, size, &segment);
+  Data data(addr, data_type, size, get_fileregion_offset(addr), &segment);
 
   const CompositeTypes& composite_types = CompositeTypes::GetInstance();
 

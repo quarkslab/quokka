@@ -71,10 +71,16 @@ class Data : public ProtoHelper {
    * @param addr_ Address where the data has been found
    * @param data_type_ Type of the data
    * @param size_ Size of the data
+   * @param file_offset_ File offset of the data
    * @param segment_ IDA segment
    */
-  Data(ea_t addr_, DataType data_type_, uint64_t size_, const Segment* segment_)
-      : addr(addr_), type(data_type_), size(size_), segment(segment_) {
+  Data(ea_t addr_, DataType data_type_, uint64_t size_, int64_t file_offset_,
+       const Segment* segment_)
+      : addr(addr_),
+        type(data_type_),
+        size(size_),
+        file_offset(file_offset_),
+        segment(segment_) {
     if (HasName(false))
       this->SetName();
   }
@@ -103,6 +109,7 @@ class Data : public ProtoHelper {
   DataType type = TYPE_UNK;  ///< Data type
   uint32_t size;  ///< Size of the data (not always redundant for certain types)
   const Segment* segment;  ///< IDA segment. It has to outlive Data
+  int64 file_offset;       ///< File offset, if <0 then there is none
 
   /**
    * Static method to build a Data object

@@ -509,7 +509,7 @@ void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket) {
     Quokka::Data* proto_data = proto->add_data();
     proto_data->set_segment_index(data.segment->proto_index);
     proto_data->set_segment_offset(data.addr - data.segment->start_addr);
-    // proto_data->set_file_offset(data.file_offset); TODO
+    proto_data->set_file_offset(data.file_offset);
     const auto& ref_type = data.GetReferenceType();
     if (ref_type.has_value()) {
       std::visit([&proto_data,
