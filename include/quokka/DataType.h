@@ -242,6 +242,12 @@ class CompositeTypes {
   const_iterator end() const { return composite_types_.cend(); }
 };
 
+struct EnumValue {
+  std::string name;
+  int64_t value;
+  std::vector<const Reference*> xref_to;
+};
+
 /**
  * -----------------------------------------------------------------------------
  * quokka::EnumType
@@ -253,9 +259,8 @@ class EnumType : public ProtoHelper {
  public:
   EnumType(std::string n) : name(std::move(n)) {}
 
-  std::string name;  ///< Name of the enum
-  std::vector<std::pair<std::string, int64_t>>
-      values;  ///< Internal values of the enum as pairs (name, value)
+  std::string name;               ///< Name of the enum
+  std::vector<EnumValue> values;  ///< Internal values of the enum
   mutable std::vector<const Reference*> xref_to;
 
   bool operator==(const EnumType& o) const noexcept {
