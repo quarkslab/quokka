@@ -98,16 +98,16 @@ class Data:
         return self.program.get_type(self.proto.type_index)
 
     @property
-    def data_refs_to(self) -> list[AddressT]:
+    def data_refs_to(self) -> list['Data']:
         """Returns all data reference to this instruction"""
         # If querying refs_to get the source address
-        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == Pb.Reference.REF_DATA]
+        return [self.program.data_holder[xref.source.address] for xref in self._xrefs_to if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property
-    def data_refs_from(self) -> list[AddressT]:
+    def data_refs_from(self) -> list['Data']:
         """Returns all data reference from this instruction"""
         # If querying refs_from get the destination address
-        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == Pb.Reference.REF_DATA]
+        return [self.program.data_holder[xref.destination.address] for xref in self._xrefs_from if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property
     def code_refs_from(self) -> list[AddressT]:
@@ -137,15 +137,12 @@ class DataHolder(Mapping):
     only once.
 
     Attributes:
-        proto_data: The protobuf data themselves
+        proto: The protobuf data themselves
         program: A reference to the Program
 
     Arguments:
         proto: The protobuf data
         program: The program
-
-    TODO:
-        Type hinting for proto parameter (RepeatedCompositeFieldContainer)
     """
 
     def __init__(self, proto, program: quokka.Program):
@@ -155,8 +152,12 @@ class DataHolder(Mapping):
             proto: List of data in the protobuf
             program: Backref to the program
         """
-        self.proto_data = proto.data
+        self.proto = proto.data
         self.program: quokka.Program = program
+        self._addr_to_idx: dict[AddressT, Index] = {
+            program.virtual_address(data.segment_index, data.segment_offset): index 
+            for index, data in enumerate(proto.data)
+        }
 
     def __setitem__(self, key: Index, value: Data) -> None:
         """Set a data"""
@@ -166,43 +167,25 @@ class DataHolder(Mapping):
         """Remove a data from the bucket"""
         raise ValueError("Should not be accessed")
 
-    def __getitem__(self, key: Index) -> Data:
+    def __getitem__(self, address: AddressT) -> Data:
         """Get a data from the bucket.
 
         Arguments:
-            key: Data Index
-
+            address: Data address
         Returns:
             A Data
         """
-        return Data(key, self.proto_data[key], self.program)
-
-    def get_data(self, address: AddressT) -> Data:
-        """Find a data by address
-
-        Iterates over the data to find the one at a specified offset
-
-        Arguments:
-            address: Offset to query
-
-        Returns:
-            A Data
-
-        Raises:
-            ValueError: if no data is found
-        """
-
-        # We have to iterate over every data because they are not sorted by offset
-        for index, data_proto in enumerate(self.proto_data):
-            if data_proto.offset + self.program.base_address == address:
-                return self[index]
-
-        raise ValueError(f"No data at offset 0x{address:x}")
+        key = self._addr_to_idx.get(address)
+        if key is None:
+            raise ValueError(f"No data at address 0x{address:x}")
+        # Right now we create a new Data object each time, but we could cache them if needed
+        return Data(key, self.proto[key], self.program)
 
     def __len__(self) -> int:
         """Number of data in the program"""
-        return len(self.proto_data)
+        return len(self._addr_to_idx)
 
     def __iter__(self):
         """Do not allow the iteration over the data"""
-        raise ValueError("Should not be accessed")
+        for addr, idx in self._addr_to_idx.items():
+            yield self[addr]

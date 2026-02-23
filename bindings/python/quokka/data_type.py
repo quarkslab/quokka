@@ -3,12 +3,11 @@ import weakref
 from enum import IntEnum, auto, Enum
 from typing import TYPE_CHECKING, Type
 
-
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.types import AddressT
 
 if TYPE_CHECKING:
-    from quokka import Program
+    from quokka import Program, Data
 
 
 class BaseType(Enum):
@@ -22,10 +21,6 @@ class BaseType(Enum):
     OCTO_WORD = auto()
     FLOAT = auto()
     DOUBLE = auto()
-    ASCII = auto()
-    STRUCT = auto()
-    ALIGN = auto()
-    POINTER = auto()
 
     @staticmethod
     def from_proto(data_type: Pb.DataType) -> "BaseType":
@@ -38,10 +33,6 @@ class BaseType(Enum):
             Pb.TYPE_OW: BaseType.OCTO_WORD,
             Pb.TYPE_FLOAT: BaseType.FLOAT,
             Pb.TYPE_DOUBLE: BaseType.DOUBLE,
-            Pb.TYPE_ASCII: BaseType.ASCII,
-            Pb.TYPE_STRUCT: BaseType.STRUCT,
-            Pb.TYPE_ALIGN: BaseType.ALIGN,
-            Pb.TYPE_POINTER: BaseType.POINTER,
         }
 
         return mapping.get(data_type, BaseType.UNKNOWN)
@@ -63,23 +54,23 @@ class BaseType(Enum):
 
 
 class ComplexType(object):
-    def __init__(self, proto: Pb.CompositeType, program: "Program"):
+    def __init__(self, proto: Pb.CompositeType|Pb.EnumType, program: "Program"):
         self.proto = proto
         self._program = program
 
         self.name: str = proto.name
         # type is not used here
-        self.size = proto.size
-        self.c_str = proto.c_str
+        self.size = proto.size if proto.HasField("size") else 0
+        self.c_str = proto.c_str if proto.HasField("c_str") else ""
 
         # Xrefs attached to the type itself
-        self._xrefs_to = [self._program.proto.references[x] for x in proto.xref_from]
+        self._xrefs_to = [self._program.proto.references[x] for x in proto.xref_to]
     
     @property
-    def data_refs_to(self) -> list[AddressT]:
+    def data_refs_to(self) -> list['Data']:
         """Returns all data reference to this type"""
         # Get protobuf type ids
-        return [xref.source.address for xref in self._xrefs_to
+        return [self._program.data_holder[xref.source.address] for xref in self._xrefs_to
                 if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property
@@ -90,29 +81,78 @@ class ComplexType(object):
                 if xref.reference_type == Pb.Reference.REF_CODE]
 
 
-class EnumType(IntEnum):
+
+class EnumTypeMember(object):
+    """EnumTypeMember
+
+    This class represents enum members.
+
+    Arguments:
+        member: Protobuf data
+        enum_type: Reference to the parent enum type
+
+    Attributes:
+        name: Member name
+        size: Member size (if known)
+        value: Member value
+        comments: Member comments
+    """
+
+    def __init__(self, member: "Pb.EnumType.EnumValue", enum_type: "EnumType") -> None:
+        """Constructor"""
+        self.proto = member
+        self.name: str = member.name
+        self.value: int = member.value
+        self.size: int = enum_type.size
+        self._enum_type: weakref.ref[EnumType] = weakref.ref(enum_type)
+        self._xrefs_to = [enum_type._program.proto.references[x] for x in member.xref_to]
+
+        self.comments: list[str] = []
+
+    @property
+    def parent(self) -> "EnumType":
+        """Back reference to the parent enum"""
+        return self._enum_type() # type: ignore
+
+    @property
+    def data_refs_to(self) -> list['Data']:
+        """Returns all data reference to this type"""
+        # Get protobuf type ids
+        return [self.parent._program.data_holder[xref.source.address] for xref in self._xrefs_to 
+                if xref.reference_type == Pb.Reference.REF_DATA]
+
+    @property
+    def code_refs_to(self) -> list[AddressT]:
+        """Returns all code reference to this type"""
+        # Get protobuf type ids
+        return [xref.source.address for xref in self._xrefs_to 
+                if xref.reference_type == Pb.Reference.REF_CODE]
+
+
+
+class EnumType(ComplexType):
     """Base class for all enums in quokka"""
-
-    @staticmethod
-    def from_proto(proto: Pb.EnumType) -> Type["EnumType"]:
+    
+    def __init__(self, proto: Pb.EnumType, program: "Program") -> None:
         """Create an enum from a protobuf enum value"""
-        try:
-            enum_dict = {
-                enum_value.name: enum_value.value
-                for enum_value in proto.values
-            }
-            xrefs = {
-                enum_value.value: list(enum_value.xrefs)
-                for enum_value in proto.values
-            }
-            enum_class = IntEnum(proto.name, enum_dict)
-            # We attach extra attributes to the generated class
-            setattr(enum_class, "xrefs", xrefs)
-            setattr(enum_class, "base_type", proto.base_type)
-            return enum_class # type: ignore
+        super().__init__(proto, program)
+        self.name = proto.name
+        self.size: int = program.get_type(proto.base_type).size
+        self._members: dict[str, EnumTypeMember] = {member.name: EnumTypeMember(member, self) 
+                                                    for member in proto.values}
+    
+    def __getattr__(self, name):
+        if name in self._members:
+            return self._members[name]
+        else:
+            return super().__getattribute__(name)
 
-        except ValueError as exc:
-            raise ValueError(f"Invalid protobuf enum value for {proto.name}") from exc
+    @property
+    def c_str(self) -> str:
+        """C declaration of the type"""
+        return f"enum {self.name}\n{'{'}\n" + \
+               ",\n  ".join(f"  {member.name} = {member.value}" for member in self._members.values()) + \
+               "\n};"
 
 
 class ArrayType(ComplexType):
@@ -132,7 +172,7 @@ class ArrayType(ComplexType):
         super().__init__(proto, program)
     
     @property
-    def element_type(self) -> BaseType | EnumType | ComplexType:
+    def element_type(self) -> 'TypeT':
         """Return the type of the array elements"""
         return self._program.get_type(self.proto.element_type_idx)
 
@@ -154,7 +194,7 @@ class PointerType(ComplexType):
         super().__init__(proto, program)
     
     @property
-    def pointed_type(self) -> BaseType | EnumType | ComplexType:
+    def pointed_type(self) -> 'TypeT':
         """Return the type of the pointed element"""
         return self._program.get_type(self.proto.element_type_idx)
 
@@ -190,7 +230,7 @@ class StructureTypeMember(object):
     @property
     def type(self) -> BaseType | EnumType | ComplexType:
         """Return the type of the member"""
-        return self.parent._program.get_type(self.proto.type_idx)
+        return self.parent._program.get_type(self.proto.type_index)
 
     @property
     def parent(self) -> "StructureType":
@@ -198,10 +238,10 @@ class StructureTypeMember(object):
         return self._structure() # type: ignore
 
     @property
-    def data_refs_to(self) -> list[AddressT]:
+    def data_refs_to(self) -> list['Data']:
         """Returns all data reference to this type"""
         # Get protobuf type ids
-        return [xref.source.address for xref in self._xrefs_to 
+        return [self.parent._program.data_holder[xref.source.address] for xref in self._xrefs_to 
                 if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property

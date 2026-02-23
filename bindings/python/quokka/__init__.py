@@ -58,7 +58,8 @@ from quokka.data_type import (
     EnumType,
     UnionType,
     StructureType,
-    StructureTypeMember
+    StructureTypeMember,
+    TypeT
 )
 
 from quokka.utils import (
@@ -86,6 +87,7 @@ __all__ = [
     "UnionType",
     "StructureType",
     "StructureTypeMember",
+    "TypeT",
     # From exc.py
     "QuokkaError",
     "NotInFileError",

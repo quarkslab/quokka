@@ -207,6 +207,25 @@ class Program(dict):
             
         return call_graph
 
+    @property
+    def data(self) -> Iterable[quokka.Data]:
+        """Data in the program
+
+        Returns:
+            Iterable of data in the Program
+        """
+        return iter(self.data_holder)
+
+    @property
+    def types(self) -> Iterable[TypeT]:
+        """Types in the program
+
+        Returns:
+            Iterable of types in the Program
+        """
+        for i in range(len(self.proto.types)):
+            yield self.get_type(i)
+
     def virtual_address(self, seg_id: int, seg_offset: int) -> AddressT:
         """Converts an offset in the file to an absolute address
 
@@ -256,7 +275,7 @@ class Program(dict):
             A list of structures
         """
         for i, t in enumerate(self.proto.types):
-            if t.WhichOneOf("OneofType") == "composite_type":
+            if t.WhichOneof("OneofType") == "composite_type":
                 if t.composite_type.type == Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
                     if i not in self._types:
                         self._types[i] = StructureType(t.composite_type, self)
@@ -273,7 +292,7 @@ class Program(dict):
             A list of enums
         """
         for i, t in enumerate(self.proto.types):
-            if t.WhichOneOf("OneofType") == "composite_type":
+            if t.WhichOneof("OneofType") == "composite_type":
                 if i not in self._types:
                     self._types[i] = EnumType(t.enum_type, self)
         yield from (t for t in self._types.values() if isinstance(t, EnumType))
@@ -335,9 +354,9 @@ class Program(dict):
                 raise KeyError(f"No type with index {type_index}")
             
             pb_type = self.proto.types[type_index]
-            if pb_type.WhichOneOf("OneofType") == "enum_type":
-                self._types[type_index] = EnumType(pb_type.enum_type, self)
-            elif pb_type.WhichOneOf("OneofType") == "composite_type":
+            if pb_type.WhichOneof("OneofType") == "enum_type":
+                self._types[type_index] = EnumType.from_proto(pb_type.enum_type, self)
+            elif pb_type.WhichOneof("OneofType") == "composite_type":
                 match pb_type.composite_type.type:
                     case Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
                         self._types[type_index] = StructureType(pb_type.composite_type, self)
@@ -347,7 +366,7 @@ class Program(dict):
                         self._types[type_index] = ArrayType(pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_POINTER:
                         self._types[type_index] = PointerType(pb_type.composite_type, self)
-            elif pb_type.WhichOneOf("OneofType") == "primitive_type":
+            elif pb_type.WhichOneof("OneofType") == "primitive_type":
                 self._types[type_index] = BaseType.from_proto(pb_type.primitive_type)
             else:
                 assert False, "Unknown type"

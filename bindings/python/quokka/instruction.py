@@ -67,9 +67,9 @@ class Operand(ABC):
         }
 
     @property
-    def data_refs_from(self) -> list[AddressT]:
+    def data_refs_from(self) -> list[quokka.Data]:
         """Returns all data reference from this instruction"""
-        return [xref for xref in self._xrefs_from[ReferenceType.DATA]]
+        return [self.program.data_holder[xref] for xref in self._xrefs_from[ReferenceType.DATA]]
 
     @property
     def code_refs_from(self) -> list[AddressT]:
@@ -381,17 +381,17 @@ class Instruction:
         return pypcode_decode_instruction(self)
 
     @property
-    def data_refs_to(self) -> list[AddressT]:
+    def data_refs_to(self) -> list[quokka.Data]:
         """Returns all data reference to this instruction"""
         # If querying refs_to get the source address
-        return [xref.source.address for xref in self._xrefs_to
+        return [self.program.data_holder[xref.source.address] for xref in self._xrefs_to
                 if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property
-    def data_refs_from(self) -> list[AddressT]:
+    def data_refs_from(self) -> list[quokka.Data]:
         """Returns all data reference from this instruction"""
         # If querying refs_from get the destination address
-        return [xref.destination.address for xref in self._xrefs_from
+        return [self.program.data_holder[xref.destination.address] for xref in self._xrefs_from
                 if xref.reference_type == Pb.Reference.REF_DATA]
 
     @property
