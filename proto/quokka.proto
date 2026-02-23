@@ -402,7 +402,7 @@ message Quokka {
     oneof OneofType {
       EnumType enum_type = 1;
       CompositeType composite_type = 2;
-      DataType primitive_type = 3;
+      BaseType primitive_type = 3;
     }
   }
 
@@ -427,4 +427,6 @@ message Quokka {
   repeated OrphanedInstruction orphaned_instructions = 13;
 
   repeated string operand_strings = 14;
+
+  string headers = 15;
 }
