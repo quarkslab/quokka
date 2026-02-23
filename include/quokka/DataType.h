@@ -22,6 +22,7 @@
 #define QUOKKA_COMPOSITE_DATA_H
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -34,6 +35,8 @@
 // clang-format on
 #include <pro.h>
 #include <typeinf.hpp>
+
+#include "absl/container/flat_hash_map.h"
 
 #include "Bucket.h"
 #include "ProtoHelper.h"  // Kept for ProtoHelper
@@ -52,7 +55,7 @@ namespace quokka {
  * Type of data. This replicates the enumeration of IDA for data type but is
  * kept as a separate enum to better handle the translation to the protobuf.
  */
-enum DataType : short {
+enum BaseType : uint8_t {
   TYPE_UNK = 0,
   TYPE_B,
   TYPE_W,
@@ -61,17 +64,10 @@ enum DataType : short {
   TYPE_OW,
   TYPE_FLOAT,
   TYPE_DOUBLE,
-  TYPE_ASCII,
-  TYPE_STRUCT,
-  TYPE_ALIGN,
-  TYPE_POINTER,
-  TYPE_ENUM,
-  TYPE_UNION,
-  TYPE_ARRAY,
 };
 
-DataType GetDataType(const tinfo_t& flags);
-DataType GetDataType(flags_t flags);
+BaseType GetBaseType(const tinfo_t& flags);
+BaseType GetBaseType(flags_t flags);
 
 struct CompositeTypeMember;  // forward declaration
 
@@ -129,11 +125,11 @@ using CompositeConcreteType = std::variant<StructureType, UnionType>;
  */
 class CompositeTypeMember : public ProtoHelper {
  public:
-  CompositeTypeMember(ea_t o, std::string&& n, DataType t, asize_t sz);
+  CompositeTypeMember(ea_t o, std::string&& n, BaseType t, asize_t sz);
 
   ea_t offset;       ///< Field offset (IDA internal)
   std::string name;  ///< Name of the field
-  DataType type;     ///< Type of the value
+  BaseType type;     ///< Base type of the value
   std::optional<RefCounter<CompositeConcreteType>>
       composite_type_ptr;  ///< Pointer to the CompositeType if
                            ///< the member type is composite
@@ -320,6 +316,136 @@ constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
   else
     static_assert(false, "Mismatch between the CompositeSubTypes");
 }
+
+class DataTypes {
+ public:
+  using TypeT = std::variant<StructureType, UnionType, EnumType>;
+  using CollectionT = absl::flat_hash_map<tid_t, std::unique_ptr<TypeT>>;
+
+ private:
+  CollectionT collection;
+
+  template <bool IsConst>
+  class value_iterator {
+    template <bool>
+    friend class value_iterator;
+    friend class DataTypes;
+
+    using BaseIt =
+        std::conditional_t<IsConst, typename CollectionT::const_iterator,
+                           typename CollectionT::iterator>;
+
+   public:
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type =
+        typename std::iterator_traits<BaseIt>::difference_type;
+    using value_type = TypeT;
+    using reference = std::conditional_t<IsConst, const TypeT&, TypeT&>;
+    using pointer = std::conditional_t<IsConst, const TypeT*, TypeT*>;
+
+    value_iterator() = default;
+
+    // Allow conversion: iterator -> const_iterator
+    value_iterator(const value_iterator<false>& other)
+      requires IsConst
+        : it_(other.it_) {}
+
+    reference operator*() const {
+      assert(it_ != BaseIt{});  // optional sanity check
+      assert(it_->second && "null TypeT pointer in DataTypes::collection");
+      return *(it_->second);
+    }
+
+    pointer operator->() const {
+      assert(it_ != BaseIt{});  // optional sanity check
+      assert(it_->second && "null TypeT pointer in DataTypes::collection");
+      return it_->second.get();
+    }
+
+    value_iterator& operator++() {
+      ++it_;
+      return *this;
+    }
+
+    value_iterator operator++(int) {
+      value_iterator tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    friend bool operator==(const value_iterator& a, const value_iterator& b) {
+      return a.it_ == b.it_;
+    }
+
+    friend bool operator!=(const value_iterator& a, const value_iterator& b) {
+      return !(a == b);
+    }
+
+   private:
+    explicit value_iterator(BaseIt it) : it_(it) {}
+    BaseIt it_{};
+  };
+
+  explicit DataTypes() = default;  ///< Private constructor
+
+ public:
+  using iterator = value_iterator<false>;
+  using const_iterator = value_iterator<true>;
+
+  iterator begin() { return iterator{collection.begin()}; }
+  iterator end() { return iterator{collection.end()}; }
+
+  const_iterator begin() const { return const_iterator{collection.begin()}; }
+  const_iterator end() const { return const_iterator{collection.end()}; }
+
+  const_iterator cbegin() const { return const_iterator{collection.cbegin()}; }
+  const_iterator cend() const { return const_iterator{collection.cend()}; }
+
+  /**
+   * Return the instance of the `DataTypes` class.
+   * Used for the singleton pattern.
+   * @return `DataTypes`
+   */
+  static DataTypes& GetInstance() {
+    static DataTypes instance;
+    return instance;
+  }
+
+  /**
+   * Delete constructors for singleton pattern
+   */
+  DataTypes(DataTypes const&) = delete;
+  DataTypes(DataTypes&&) = delete;
+  void operator=(DataTypes const&) = delete;
+  void operator=(DataTypes&&) = delete;
+
+  /**
+   * Creates the object of type T and pushes into the collection.
+   *
+   * @tparam T The type of the object to store. Must be a type from
+   * TypeT
+   * @tparam Args Arguments to be forwarded to the T constructor
+   * @param tid The IDA tid of the type
+   * @param args Arguments of the T constructor
+   * @return A reference to the newly added object
+   */
+  template <IsOneOf<TypeT> T, typename... ArgsT>
+  TypeT& emplace_back(tid_t tid, ArgsT&&... args) {
+    return collection.emplace(
+        {tid, std::make_unique<TypeT>(T(std::forward<ArgsT>(args)...))});
+  }
+
+  /**
+   * Find the type corresponding to the specified tid.
+   * @return An iterator to the requested element. If no such element is found,
+   * past-the-end (see end()) iterator is returned.
+   */
+  const_iterator find_by_tid(tid_t tid) const {
+    return const_iterator{collection.find(tid)};
+  }
+
+  size_t size() const { return collection.size(); }
+};
 
 /**
  * Export the composite data types of the program.

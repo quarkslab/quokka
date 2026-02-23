@@ -43,6 +43,7 @@
 
 #include "DataType.h"
 #include "ProtoHelper.h"
+#include "Reference.h"
 #include "Segment.h"
 #include "Util.h"
 
@@ -74,10 +75,10 @@ class Data : public ProtoHelper {
    * @param file_offset_ File offset of the data
    * @param segment_ IDA segment
    */
-  Data(ea_t addr_, DataType data_type_, uint64_t size_, int64_t file_offset_,
+  Data(ea_t addr_, BaseType base_type_, uint64_t size_, int64_t file_offset_,
        const Segment* segment_)
       : addr(addr_),
-        type(data_type_),
+        type(base_type_),
         size(size_),
         file_offset(file_offset_),
         segment(segment_) {
@@ -106,10 +107,11 @@ class Data : public ProtoHelper {
 
  public:
   ea_t addr = BADADDR;       ///< Address attached to the data
-  DataType type = TYPE_UNK;  ///< Data type
+  BaseType type = TYPE_UNK;  ///< Data type
   uint32_t size;  ///< Size of the data (not always redundant for certain types)
   const Segment* segment;  ///< IDA segment. It has to outlive Data
   int64 file_offset;       ///< File offset, if <0 then there is none
+  mutable Xref xrefs;
 
   /**
    * Static method to build a Data object
@@ -175,6 +177,13 @@ class Data : public ProtoHelper {
     return H::combine(std::move(h), m.addr, m.type, m.size);
   }
 };
+
+/**
+ * Export all the references to the provided data
+ *
+ * @param data Data object
+ */
+void ExportDataReferences(const Data& data);
 
 }  // namespace quokka
 

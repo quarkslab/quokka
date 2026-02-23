@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <algorithm>
+#include <optional>
 #include <stdexcept>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -283,7 +284,7 @@ void Function::ExportBody(func_t* func_p) {
                    node_point.y};
       this->blocks.push_back({std::move(tmp_block), std::move(pos)});
     } else {
-      this->blocks.push_back({std::move(tmp_block), {}});
+      this->blocks.push_back({std::move(tmp_block), std::nullopt});
     }
   }
 

@@ -60,13 +60,13 @@ bool Data::IsInitialized() const {
 }
 
 Data Data::Make(ea_t addr, uint32_t size) {
-  DataType data_type;
+  BaseType data_type;
   tinfo_t tinf;
   // Try to obtain the tinfo descriptor
   if (get_tinfo(&tinf, addr))
-    data_type = GetDataType(tinf);
+    data_type = GetBaseType(tinf);
   else  // No tinfo, fall back on the flags
-    data_type = GetDataType(get_flags(addr));
+    data_type = GetBaseType(get_flags(addr));
 
   const Segments& segments = Segments::GetInstance();
 
@@ -86,29 +86,21 @@ Data Data::Make(ea_t addr, uint32_t size) {
 
   const CompositeTypes& composite_types = CompositeTypes::GetInstance();
 
+  // TODO adapt for Enum/pointer/array
   // Get the pointed type
-  switch (data_type) {
-    case TYPE_UNION:
-    case TYPE_STRUCT: {
-      const auto& it = composite_types.get_by_id(get_strid(addr));
+  if (data_type == TYPE_UNK) {
+    const auto& it = composite_types.get_by_id(get_strid(addr));
 
-      if (it == composite_types.end()) {
-        QLOGE << absl::StrFormat(
-            "Data at address 0x%x is of type composite but the "
-            "associated composite type was not exported",
-            addr);
-        // Change the type to TYPE_UNK to avoid breaking the protobuf
-        data.type = TYPE_UNK;
-      } else {
-        data.SetReferenceType(*it);
-      }
-      break;
+    if (it == composite_types.end()) {
+      QLOGE << absl::StrFormat(
+          "Data at address 0x%x is of type composite but the "
+          "associated composite type was not exported",
+          addr);
+      // Change the type to TYPE_UNK to avoid breaking the protobuf
+      data.type = TYPE_UNK;
+    } else {
+      data.SetReferenceType(*it);
     }
-    case TYPE_ENUM:
-      // TODO
-      break;
-    default:
-      break;
   }
 
   // Increment the ref-counter of the segment

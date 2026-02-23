@@ -104,42 +104,28 @@ static quokka::Quokka::Block::BlockType ToProtoBlockType(BlockType block_type) {
   }
 }
 
-static size_t ToProtoDataType(DataType data_type) {
+static size_t ToProtoBaseType(BaseType data_type) {
   // Use the underlying protobuf enum value as it is guaranteed that the first
   // elements of the `types` array are always the primitive types, ordered in
   // the same way as they are declared in the protobuf enum.
   // TODO one day use a more generic way of handling this
   switch (data_type) {
     case TYPE_B:
-      return Quokka::DataType::Quokka_DataType_TYPE_B;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_B;
     case TYPE_W:
-      return Quokka::DataType::Quokka_DataType_TYPE_W;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_W;
     case TYPE_DW:
-      return Quokka::DataType::Quokka_DataType_TYPE_DW;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_DW;
     case TYPE_QW:
-      return Quokka::DataType::Quokka_DataType_TYPE_QW;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_QW;
     case TYPE_OW:
-      return Quokka::DataType::Quokka_DataType_TYPE_OW;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_OW;
     case TYPE_FLOAT:
-      return Quokka::DataType::Quokka_DataType_TYPE_FLOAT;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_FLOAT;
     case TYPE_DOUBLE:
-      return Quokka::DataType::Quokka_DataType_TYPE_DOUBLE;
-    case TYPE_ASCII:
-      return Quokka::DataType::Quokka_DataType_TYPE_ASCII;
-    case TYPE_STRUCT:
-      return Quokka::DataType::Quokka_DataType_TYPE_STRUCT;
-    case TYPE_UNION:
-      return Quokka::DataType::Quokka_DataType_TYPE_UNION;
-    case TYPE_ENUM:
-      return Quokka::DataType::Quokka_DataType_TYPE_ENUM;
-    case TYPE_ALIGN:
-      return Quokka::DataType::Quokka_DataType_TYPE_ALIGN;
-    case TYPE_POINTER:
-      return Quokka::DataType::Quokka_DataType_TYPE_POINTER;
-    case TYPE_ARRAY:
-      return Quokka::DataType::Quokka_DataType_TYPE_ARRAY;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_DOUBLE;
     default:
-      return Quokka::DataType::Quokka_DataType_TYPE_UNK;
+      return Quokka::BaseType::Quokka_BaseType_TYPE_UNK;
   }
 }
 
@@ -188,6 +174,22 @@ static void WriteBlock(Quokka::Function* proto_func, const Block& block,
     proto_pos->set_y(position->y);
     proto_pos->set_position_type(position->pos_type);
   }
+
+  // Xrefs
+  for (const auto& [instr_idx, xref_ptr] : block.xrefs) {
+    for (const Reference* xref : xref_ptr->from) {
+      Quokka::Block::InstructionXref* proto_xref =
+          proto_block->add_instructions_xref_from();
+      proto_xref->set_instr_bb_idx(instr_idx);
+      proto_xref->set_xref_index(xref->proto_index);
+    }
+    for (const Reference* xref : xref_ptr->to) {
+      Quokka::Block::InstructionXref* proto_xref =
+          proto_block->add_instructions_xref_to();
+      proto_xref->set_instr_bb_idx(instr_idx);
+      proto_xref->set_xref_index(xref->proto_index);
+    }
+  }
 }
 
 static void WriteCompositeTypes(quokka::Quokka* proto) {
@@ -223,7 +225,7 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
             },
             **member.composite_type_ptr);
       } else {
-        proto_member->set_type_index(ToProtoDataType(member.type));
+        proto_member->set_type_index(ToProtoBaseType(member.type));
       }
       proto_member->set_size(member.size);
     }
@@ -474,8 +476,9 @@ void WriteReferences(Quokka* proto) {
 
   proto->mutable_references()->Reserve(references.size());
   for (const auto& reference : references.GetSortedView()) {
-    Quokka::Reference* proto_ref = proto->add_references();
+    reference.proto_index = proto->references_size();
 
+    Quokka::Reference* proto_ref = proto->add_references();
     proto_ref->set_reference_type(reference.type);
     WriteLocation(proto_ref->mutable_source(), reference.source);
     WriteLocation(proto_ref->mutable_destination(), reference.destination);
@@ -516,10 +519,15 @@ void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket) {
                   &set_type](const auto& obj) { set_type(obj, proto_data); },
                  *ref_type);
     } else {
-      proto_data->set_type_index(ToProtoDataType(data.type));
+      proto_data->set_type_index(ToProtoBaseType(data.type));
     }
     proto_data->set_size(data.size);
     proto_data->set_not_initialized(not data.IsInitialized());
+
+    for (const Reference* xref : data.xrefs.from)
+      proto_data->add_xref_from(xref->proto_index);
+    for (const Reference* xref : data.xrefs.to)
+      proto_data->add_xref_to(xref->proto_index);
 
     std::string_view name = data.GetName();
     if (not name.empty())
@@ -666,21 +674,14 @@ void WriteTypes(quokka::Quokka* proto) {
                                   Enums::GetInstance().size());
 
   // Start by writing the primitive types
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_UNK);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_B);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_W);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_DW);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_QW);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_OW);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_FLOAT);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_DOUBLE);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ASCII);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_STRUCT);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ALIGN);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_POINTER);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ENUM);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_UNION);
-  proto->add_types()->set_primitive_type(Quokka_DataType_TYPE_ARRAY);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_UNK);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_B);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_W);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_DW);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_QW);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_OW);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_FLOAT);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_DOUBLE);
 
   // The order matters! The last ones should be structs and unions
   WriteEnums(proto);

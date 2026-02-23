@@ -60,7 +60,7 @@ static void ExportCompositeMembers(
       size = 0;
     }
 
-    DataType member_type = GetDataType(udm.type);
+    BaseType member_type = GetBaseType(udm.type);
 
     // Emplace the CompositeTypeMember
     auto& member = std::visit(
@@ -70,8 +70,9 @@ static void ExportCompositeMembers(
         },
         composite_type);
 
+    // TODO adapt for enum/pointer/array
     // Add the composite type pointer if the member is composite as well
-    if (member_type == TYPE_STRUCT || member_type == TYPE_UNION) {
+    if (member_type == TYPE_UNK) {
       std::string base_type_name;
       qstring ida_string;
       udm.type.get_type_name(&ida_string);
@@ -148,6 +149,8 @@ void ExportCompositeDataTypes() {
     if (!tif.get_numbered_type(ordinal, BTF_STRUCT) &&
         !tif.get_numbered_type(ordinal, BTF_UNION))
       continue;
+    if (tif.is_typedef())  // Skip typedef
+      continue;
 
     ExportStructOrUnion(tif);
   }
@@ -180,6 +183,8 @@ void ExportEnums() {
     if (!tif.get_numbered_type(ordinal, BTF_ENUM))
       continue;
     if (tif.is_forward_decl())  // Skip forward decls
+      continue;
+    if (tif.is_typedef())  // Skip typedef
       continue;
 
     qstring enum_name;

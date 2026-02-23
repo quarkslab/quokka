@@ -75,12 +75,6 @@ int ExportBinary(const std::string& filename) {
   replace_wait_box("quokka: linear scan in progress");
   ExportLinearScan(&quokka_protobuf, std::move(ranges));
 
-  {
-    SCOPED_STEP("Writing references in the protobuf message...",
-                "References written successfully");
-    WriteReferences(&quokka_protobuf);
-  }
-
   // Write on the protobuf
   {
     SCOPED_STEP("Writing functions in the protobuf message...",

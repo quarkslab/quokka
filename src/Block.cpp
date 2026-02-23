@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "quokka/Block.h"
+
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
 // clang-format on
@@ -21,7 +23,6 @@
 
 #include "absl/strings/str_format.h"
 
-#include "quokka/Block.h"
 #include "quokka/Instruction.h"
 #include "quokka/Reference.h"
 #include "quokka/Settings.h"
@@ -124,7 +125,7 @@ void Block::ExportInstructions() {
       // this->instructions.push_back(instruction);
     }
 
-    ExportCodeReference(current_ea);
+    ExportCodeReference(*this, this->instr_count, current_ea);
 
     ++this->instr_count;
     current_ea += static_cast<ea_t>(decoded_size);

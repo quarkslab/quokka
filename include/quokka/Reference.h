@@ -21,8 +21,12 @@
 #define QUOKKA_REFERENCE_H
 
 #include <cstdint>
+#include <memory>
+#include <stdexcept>
+#include <unordered_map>
 #include <utility>
 #include <variant>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
@@ -30,8 +34,9 @@
 #include <pro.h>
 #include <typeinf.hpp>
 
+#include "absl/hash/hash.h"
+
 #include "Bucket.h"
-#include "Data.h"
 #include "DataType.h"
 #include "ProtoHelper.h"
 #include "quokka.pb.h"
@@ -40,7 +45,15 @@ namespace quokka {
 
 namespace reference {
 inline constexpr int32_t WHOLE_TYPE = -1;
-}
+
+inline constexpr Quokka::Reference::ReferenceType REF_CODE =
+    Quokka::Reference::ReferenceType::Quokka_Reference_ReferenceType_REF_CODE;
+inline constexpr Quokka::Reference::ReferenceType REF_DATA =
+    Quokka::Reference::ReferenceType::Quokka_Reference_ReferenceType_REF_DATA;
+inline constexpr Quokka::Reference::ReferenceType REF_SYMBOL =
+    Quokka::Reference::ReferenceType::Quokka_Reference_ReferenceType_REF_SYMBOL;
+
+}  // namespace reference
 
 /**
  * ---------------------------------------------
@@ -98,6 +111,12 @@ class Reference : public ProtoHelper {
  */
 class References : public SetBucket<Reference> {
  private:
+  using Base = SetBucket<Reference>;
+
+  std::unordered_multimap<Reference, std::vector<const Reference*>*,
+                          absl::Hash<Reference>>
+      pending_links;
+
   explicit References() = default;
 
  public:
@@ -119,27 +138,73 @@ class References : public SetBucket<Reference> {
   References(References&&) = delete;
   void operator=(References const&) = delete;
   void operator=(References&&) = delete;
+
+  bool contains(const Reference& ref) {
+    return this->storage->bucket.contains(ref);
+  }
+
+  const Reference& get(const Reference& ref) {
+    auto it = this->storage->bucket.find(ref);
+    if (it != this->storage->bucket.end())
+      return **it;
+    else
+      throw std::out_of_range("Reference does not exist");
+  }
+
+  // Overload emplace function
+  template <typename... Args>
+  const Reference& emplace(Args&&... args) {
+    const Reference& ref = Base::emplace(std::forward<Args>(args)...);
+    auto [it, end] = this->pending_links.equal_range(ref);
+    while (it != end) {
+      it->second->push_back(&ref);
+      it = this->pending_links.erase(it);
+    }
+    return ref;
+  }
+
+  // Overload insert function
+  template <typename... Args>
+  const Reference& insert(Args&&... args) {
+    const Reference& ref = Base::insert(std::forward<Args>(args)...);
+    auto [it, end] = this->pending_links.equal_range(ref);
+    while (it != end) {
+      it->second->push_back(&ref);
+      it = this->pending_links.erase(it);
+    }
+    return ref;
+  }
+
+  void assert_no_pending_link() const { assert(this->pending_links.empty()); }
+
+  /**
+   * Attach a link from the @param ref_vector (vector of references) to
+   * the reference @param ref when it will be added to the collection
+   * (or immediately if it's already there).
+   *
+   * @param ref_vector A pointer to a vector object where to store the
+   * reference pointer
+   * @param ref The reference bound to the ref_vector
+   */
+  void attach_link(std::vector<const Reference*>* ref_vector,
+                   const Reference& ref) {
+    if (this->contains(ref))
+      ref_vector->push_back(std::addressof(this->get(ref)));
+    else
+      this->pending_links.insert({ref, ref_vector});
+  }
 };
 
-/**
- * Export all code references to address
- *
- * @param address Address
- */
-void ExportCodeReference(ea_t address);
-
-/**
- * Export all the references to the provided data
- *
- * @param data Data object
- */
-void ExportDataReferences(const Data& data);
+struct Xref {
+  std::vector<const Reference*> to, from;
+};
 
 // /**
 //  * Export all the references towards the unknown at current_ea
 //  *
 //  * This is a special case from DataReferences has the data does not really
-//  * exist but will be put in the DataBucket if we find some references towards
+//  * exist but will be put in the DataBucket if we find some references
+//  towards
 //  * it (the resulting data will be of size 1 and type UNKNOWN).
 //  *
 //  * @param current_ea Address

@@ -507,6 +507,14 @@ int ExportLinearScan(quokka::Quokka* proto,
   //                            sort_timer.ElapsedSeconds(absl::Now()));
   // }
 
+  // First export the references, then the data itself
+  {
+    SCOPED_STEP("Writing references in the protobuf message...",
+                "References written successfully");
+    // References::GetInstance().assert_no_pending_link();
+    WriteReferences(proto);
+  }
+
   {
     SCOPED_STEP("Starting to write data and comments...",
                 "Data and comments written successfully");

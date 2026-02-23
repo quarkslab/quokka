@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "quokka/FileMetadata.h"
+
 #include <string>
 
 #include "quokka/Writer.h"

@@ -14,7 +14,9 @@
 
 #include "quokka/Reference.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -24,6 +26,9 @@
 #include <xref.hpp>
 
 #include "quokka.pb.h"
+#include "quokka/Block.h"
+#include "quokka/Data.h"
+#include "quokka/DataType.h"
 #include "quokka/ProtoHelper.h"
 
 namespace quokka {
@@ -38,29 +43,60 @@ namespace quokka {
 //   }
 // }
 
-void ExportCodeReference(ea_t address) {
+void ExportCodeReference(const Block& block, size_t instr_idx, ea_t address) {
   References& references = References::GetInstance();
+  block.xrefs.try_emplace(instr_idx, std::make_unique<Xref>());
+  Xref& block_xrefs = *block.xrefs[instr_idx];
 
-  std::vector<ea_t> flow_refs;
-
+  // Export TO xref
   xrefblk_t xref;
   for (bool ok = xref.first_to(address, XREF_DATA); ok; ok = xref.next_to()) {
-    references.emplace(xref.from, address,
-                       Quokka_Reference_ReferenceType_REF_DATA);
+    block_xrefs.to.push_back(std::addressof(
+        references.emplace(xref.from, address, reference::REF_DATA)));
   }
   for (bool ok = xref.first_to(address, XREF_CODE); ok; ok = xref.next_to()) {
-    references.emplace(xref.from, address,
-                       Quokka_Reference_ReferenceType_REF_CODE);
+    block_xrefs.to.push_back(std::addressof(
+        references.emplace(xref.from, address, reference::REF_CODE)));
+  }
+
+  // Attach link in the FROM xref
+  for (bool ok = xref.first_from(address, XREF_DATA); ok;
+       ok = xref.next_from()) {
+    references.attach_link(&block_xrefs.from,
+                           {address, xref.to, reference::REF_DATA});
+  }
+  for (bool ok = xref.first_from(address, XREF_CODE); ok;
+       ok = xref.next_from()) {
+    references.attach_link(&block_xrefs.from,
+                           {address, xref.to, reference::REF_CODE});
   }
 }
 
 void ExportDataReferences(const Data& data) {
   References& references = References::GetInstance();
+  DataTypes& data_types = DataTypes::GetInstance();
 
+  // Export TO xref
   xrefblk_t xref;
   for (bool ok = xref.first_to(data.addr); ok; ok = xref.next_to()) {
-    references.emplace(xref.from, data.addr,
-                       Quokka_Reference_ReferenceType_REF_DATA);
+    data.xrefs.to.push_back(std::addressof(
+        references.emplace(xref.from, data.addr, reference::REF_DATA)));
+  }
+
+  // Attach link in the FROM xref
+  for (bool ok = xref.first_from(data.addr, XREF_EA); ok;
+       ok = xref.next_from()) {
+    references.attach_link(&data.xrefs.from,
+                           {data.addr, xref.to, reference::REF_DATA});
+  }
+  for (bool ok = xref.first_from(data.addr, XREF_TID); ok;
+       ok = xref.next_from()) {
+    auto it = data_types.find_by_tid(xref.to);
+
+    // DataTypes should have already been exported by now
+    assert(it != data_types.end());
+    // references.attach_link(&data.xrefs.from,
+    //                        {data.addr, *it, reference::REF_SYMBOL});
   }
 }
 

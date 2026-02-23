@@ -25,6 +25,9 @@
 #define QUOKKA_BLOCK_H
 
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -38,6 +41,7 @@
 
 #include "Instruction.h"
 #include "Logger.h"
+#include "Reference.h"
 #include "Segment.h"
 #include "Windows.h"
 
@@ -82,6 +86,8 @@ class Block {
   size_t instr_count = 0;  ///< How many instructions. Useful for light mode
   bool is_thumb;           ///< Is it a ARM thumb block
 
+  mutable absl::flat_hash_map<uint32_t, std::unique_ptr<Xref>> xrefs;
+
   /**
    * List of instructions. Container of all instructions referenced in
    * the block. The ordering is important here, because the address are
@@ -96,6 +102,14 @@ class Block {
    * @param eaddr End address of the block
    */
   Block(ea_t addr, ea_t eaddr, BlockType block_type);
+
+  // Delete copy semantic
+  Block(const Block&) noexcept = delete;
+  Block& operator=(const Block&) noexcept = delete;
+
+  // Keep move semantic
+  Block(Block&&) noexcept = default;
+  Block& operator=(Block&&) noexcept = default;
 
   /**
    * Check if `addr` belongs to the block
@@ -138,6 +152,15 @@ class Block {
    */
   absl::flat_hash_map<ea_t, int> address_to_index;
 };
+
+/**
+ * Export all code references to address
+ *
+ * @param block The block in which the address lives
+ * @param instr_idx The index in the basic block of the instruction
+ * @param address Address
+ */
+void ExportCodeReference(const Block& block, size_t instr_idx, ea_t address);
 
 }  // namespace quokka
 

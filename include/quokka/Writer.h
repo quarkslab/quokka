@@ -68,7 +68,6 @@ class Metadata;
 class ReferenceHolder;
 class Comments;
 
-enum DataType : short;
 enum CommentType : short;
 enum ProcName : short;
 enum AddressSize : short;
@@ -91,13 +90,6 @@ enum ExporterMode : short;
 //  */
 // quokka::Quokka::Function::Position::PositionType ToProtoPositionType(
 //     PositionType position_type);
-
-// /**
-//  * Convert a function type to the proto associated type
-//  * @param data_type Type to convert
-//  * @return Converted type
-//  */
-// quokka::Quokka::DataType ToProtoDataType(DataType data_type);
 
 // /**
 //  * Convert a function type to the proto associated type
