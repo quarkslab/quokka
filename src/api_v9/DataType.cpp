@@ -95,7 +95,7 @@ static void ExportCompositeMembers(
     /* TODO Retrieve comments */
     std::visit(
         [&](auto& composite) {
-          ExportSymbolReference(&composite, composite.xref_to, tif.get_tid(),
+          ExportSymbolReference(&composite, member.xref_to, tif.get_tid(),
                                 member_idx);
           //   GetStructureMemberComment(composite_type_ptr,
           //                             composite.members.size(),

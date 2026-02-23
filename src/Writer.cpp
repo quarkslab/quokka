@@ -203,6 +203,9 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
     proto_composite_type->set_name(composite.name);
     proto_composite_type->set_type(CompositeSubTypeToProto<T>());
     proto_composite_type->set_size(composite.size);
+    // Xref
+    for (const Reference* xref : composite.xref_to)
+      proto_composite_type->add_xref_to(xref->proto_index);
   };
 
   auto write_members = [](auto& composite,
@@ -228,6 +231,10 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
         proto_member->set_type_index(ToProtoBaseType(member.type));
       }
       proto_member->set_size(member.size);
+
+      // Xref
+      for (const Reference* xref : member.xref_to)
+        proto_member->add_xref_to(xref->proto_index);
     }
   };
 

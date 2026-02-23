@@ -136,6 +136,7 @@ class CompositeTypeMember : public ProtoHelper {
       composite_type_ptr;  ///< Pointer to the CompositeType if
                            ///< the member type is composite
   asize_t size;            ///< Size of the field
+  std::vector<const Reference*> xref_to;
 };
 
 /**
