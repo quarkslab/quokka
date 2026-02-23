@@ -16,7 +16,8 @@ var searchData=
   ['end_5fle_13',['END_LE',['../FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5',1,'quokka']]],
   ['endianness_14',['endianness',['../classquokka_1_1Metadata.html#a82d512fc7c2c6c59557fdde464b80762',1,'quokka::Metadata::endianness'],['../FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127',1,'quokka::Endianness']]],
   ['erase_15',['erase',['../classquokka_1_1BucketNew.html#a316b2804ec53f447fe5b03f1688a7f0d',1,'quokka::BucketNew']]],
-  ['exportermode_16',['ExporterMode',['../Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753',1,'quokka']]],
-  ['exportinstructions_17',['ExportInstructions',['../classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd',1,'quokka::Settings']]],
-  ['exportinstructionstrings_18',['ExportInstructionStrings',['../classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb',1,'quokka::Settings']]]
+  ['exportdecompiledcode_16',['ExportDecompiledCode',['../classquokka_1_1Settings.html#a27bcaeb8e79d808e93b43c778a0c7846',1,'quokka::Settings']]],
+  ['exportermode_17',['ExporterMode',['../Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753',1,'quokka']]],
+  ['exportinstructions_18',['ExportInstructions',['../classquokka_1_1Settings.html#ad7c6a904d5252f03c30157d3eb6d37cd',1,'quokka::Settings']]],
+  ['exportinstructionstrings_19',['ExportInstructionStrings',['../classquokka_1_1Settings.html#addff8878a738046a29dda30c14521ecb',1,'quokka::Settings']]]
 ];
