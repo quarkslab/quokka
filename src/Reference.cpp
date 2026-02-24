@@ -25,11 +25,14 @@
 #include <typeinf.hpp>
 #include <xref.hpp>
 
+#include "absl/strings/str_format.h"
+
 #include "quokka.pb.h"
 #include "quokka/Block.h"
 #include "quokka/Data.h"
 #include "quokka/DataType.h"
 #include "quokka/ProtoHelper.h"
+#include "quokka/Util.h"
 
 namespace quokka {
 
@@ -42,6 +45,88 @@ namespace quokka {
 //     }
 //   }
 // }
+
+static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
+                        Quokka::Reference::ReferenceType type, int flags = -1) {
+  References& references = References::GetInstance();
+
+  // Infer from type
+  if (flags == -1) {
+    flags = XREF_EA;
+    switch (type) {
+      case reference::REF_DATA:
+        flags |= XREF_DATA;
+        break;
+      case reference::REF_CODE:
+        flags |= XREF_CODE;
+        break;
+      case reference::REF_SYMBOL:
+        flags = XREF_TID;
+        break;
+      default:
+        assert(false);  // Almost certaintly a developer error
+        break;
+    }
+  }
+
+  xrefblk_t xref;
+  if (flags == XREF_TID) {
+    DataTypes& data_types = DataTypes::GetInstance();
+
+    for (bool ok = xref.first_from(address, flags); ok; ok = xref.next_from()) {
+      // If passed a member TID, get_tid_ordinal() resolves the owning local
+      // type ordinal, otherwise it resolves the type itself
+      uint32 ord = get_tid_ordinal(xref.to);
+      assert(ord != 0);  // Should never happen;
+
+      tinfo_t tif;
+      if (!tif.get_numbered_type(ord))
+        assert(false);  // Should never happen;
+
+      tid_t parent_tid = tif.get_tid();
+      int32_t member_idx;
+      if (parent_tid == xref.to) {  // xref is pointing to the whole object
+        member_idx = reference::WHOLE_TYPE;
+      } else {  // xref is pointing to a member
+        // on failure, the tinfo_t object becomes empty
+        tinfo_t tmp = tif;
+        member_idx = tif.get_udm_by_tid(nullptr, xref.to);
+        if (member_idx == -1)  // maybe an enum?
+          member_idx = tmp.get_edm_by_tid(nullptr, xref.to);
+
+        assert(member_idx != -1);  // Huge problem
+      }
+
+      auto it = data_types.find_by_tid(parent_tid);
+      if (it == data_types.end()) {
+        tif.get_numbered_type(ord);
+
+        if (tif.is_typedef() || tif.is_typeref()) {
+          QLOGE << absl::StrFormat(
+              "Dropping xref from 0x%08llx to typedef/typeref %08llx "
+              "(specifically it is 0x%08llx)",
+              address, parent_tid, xref.to);
+          continue;  // It's kinda ok to lose references to typerefs
+        }
+
+        // It's not ok to lose xrefs on real types
+        assert(false && "Found a xref to a type that has not been exported!");
+      }
+
+      references.attach_link(
+          &xrefs_from,
+          {address,
+           std::make_pair(
+               std::addressof(UpcastVariant<ProtoHelper>(it->second)),
+               member_idx),
+           type});
+    }
+  } else {
+    for (bool ok = xref.first_from(address, flags); ok; ok = xref.next_from()) {
+      references.attach_link(&xrefs_from, {address, xref.to, type});
+    }
+  }
+}
 
 void ExportCodeReference(const Block& block, size_t instr_idx, ea_t address) {
   References& references = References::GetInstance();
@@ -60,21 +145,13 @@ void ExportCodeReference(const Block& block, size_t instr_idx, ea_t address) {
   }
 
   // Attach link in the FROM xref
-  for (bool ok = xref.first_from(address, XREF_DATA); ok;
-       ok = xref.next_from()) {
-    references.attach_link(&block_xrefs.from,
-                           {address, xref.to, reference::REF_DATA});
-  }
-  for (bool ok = xref.first_from(address, XREF_CODE); ok;
-       ok = xref.next_from()) {
-    references.attach_link(&block_xrefs.from,
-                           {address, xref.to, reference::REF_CODE});
-  }
+  AttachLinks(block_xrefs.from, address, reference::REF_DATA);
+  AttachLinks(block_xrefs.from, address, reference::REF_CODE);
+  AttachLinks(block_xrefs.from, address, reference::REF_SYMBOL);
 }
 
 void ExportDataReferences(const Data& data) {
   References& references = References::GetInstance();
-  DataTypes& data_types = DataTypes::GetInstance();
 
   // Export TO xref
   xrefblk_t xref;
@@ -84,20 +161,8 @@ void ExportDataReferences(const Data& data) {
   }
 
   // Attach link in the FROM xref
-  for (bool ok = xref.first_from(data.addr, XREF_EA); ok;
-       ok = xref.next_from()) {
-    references.attach_link(&data.xrefs.from,
-                           {data.addr, xref.to, reference::REF_DATA});
-  }
-  for (bool ok = xref.first_from(data.addr, XREF_TID); ok;
-       ok = xref.next_from()) {
-    auto it = data_types.find_by_tid(xref.to);
-
-    // DataTypes should have already been exported by now
-    assert(it != data_types.end());
-    // references.attach_link(&data.xrefs.from,
-    //                        {data.addr, *it, reference::REF_SYMBOL});
-  }
+  AttachLinks(data.xrefs.from, data.addr, reference::REF_DATA, XREF_EA);
+  AttachLinks(data.xrefs.from, data.addr, reference::REF_SYMBOL);
 }
 
 // void ExportUnkReferences(ea_t current_ea, BucketNew<Data>& data_bucket) {

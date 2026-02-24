@@ -30,6 +30,7 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -65,6 +66,24 @@ namespace quokka {
 #define SCOPED_BOX_STEP(wait_box_msg, start_msg, done_msg)      \
   [[maybe_unused]] auto QK_CONCAT(_scoped_step_, __COUNTER__) = \
       scoped_step((start_msg), (done_msg), (wait_box_msg))
+
+template <typename T>
+struct is_std_variant : std::false_type {};
+
+template <typename... Ts>
+struct is_std_variant<std::variant<Ts...>> : std::true_type {};
+
+template <typename T>
+concept StdVariant = is_std_variant<std::remove_cvref_t<T>>::value;
+
+template <typename...>
+static constexpr bool always_false_v = false;
+
+template <typename T>
+struct filter_type_adaptor_t {};
+
+template <typename T>
+inline constexpr filter_type_adaptor_t<T> filter_type{};
 
 // Concept for checking that type T is one of the std::variant types not
 // considering cv qualifiers
@@ -342,6 +361,17 @@ static constexpr inline void for_each_visit(auto& collection, auto lambda) {
 }
 static constexpr inline void for_each_ptr_visit(auto& collection, auto lambda) {
   for (auto& element : collection) std::visit(lambda, *element);
+}
+
+template <typename B, StdVariant V>
+B& UpcastVariant(V& variant) {
+  return std::visit([](auto& x) -> B& { return static_cast<B&>(x); }, variant);
+}
+template <typename B, StdVariant V>
+const B& UpcastVariant(const V& variant) {
+  return std::visit(
+      [](const auto& x) -> const B& { return static_cast<const B&>(x); },
+      variant);
 }
 
 /**

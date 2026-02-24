@@ -62,11 +62,22 @@ bool Data::IsInitialized() const {
 Data Data::Make(ea_t addr, uint32_t size) {
   BaseType data_type;
   tinfo_t tinf;
+  tid_t tid = BADADDR;
   // Try to obtain the tinfo descriptor
-  if (get_tinfo(&tinf, addr))
+  if (get_tinfo(&tinf, addr)) {
+    // Resolve the typedef/typeref to final type
+    if (tinf.is_typeref() || tinf.is_typedef()) {
+      uint32_t final_ordinal = tinf.get_final_ordinal();
+      assert(final_ordinal > 0 &&
+             "Got a typedef/typeref type without a final ordinal");
+      if (!tinf.get_numbered_type(final_ordinal))
+        assert(false && "Cannot retrieve the final ordinal tinfo_t");
+      tid = tinf.get_tid();
+    }
     data_type = GetBaseType(tinf);
-  else  // No tinfo, fall back on the flags
+  } else {  // No tinfo, fall back on the flags
     data_type = GetBaseType(get_flags(addr));
+  }
 
   const Segments& segments = Segments::GetInstance();
 
@@ -84,22 +95,22 @@ Data Data::Make(ea_t addr, uint32_t size) {
 
   Data data(addr, data_type, size, get_fileregion_offset(addr), &segment);
 
-  const CompositeTypes& composite_types = CompositeTypes::GetInstance();
+  const DataTypes& data_types = DataTypes::GetInstance();
 
   // TODO adapt for Enum/pointer/array
   // Get the pointed type
   if (data_type == TYPE_UNK) {
-    const auto& it = composite_types.get_by_id(get_strid(addr));
+    const auto& it = data_types.find_by_tid(tid);
 
-    if (it == composite_types.end()) {
+    if (it == data_types.end()) {
       QLOGE << absl::StrFormat(
           "Data at address 0x%x is of type composite but the "
           "associated composite type was not exported",
           addr);
       // Change the type to TYPE_UNK to avoid breaking the protobuf
-      data.type = TYPE_UNK;
+      data.base_type = TYPE_UNK;
     } else {
-      data.SetReferenceType(*it);
+      data.target_tid = it->first;
     }
   }
 

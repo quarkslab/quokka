@@ -63,8 +63,6 @@ class Data : public ProtoHelper {
       std::variant<RefCounter<EnumType>, RefCounter<CompositeConcreteType>>;
 
   std::string name;  ///< If applicable, the name of the data
-  std::optional<RefTypeT>
-      ref_type;  ///< Referenced type when the data type is enum or composite
 
   /**
    * Constructor
@@ -78,17 +76,12 @@ class Data : public ProtoHelper {
   Data(ea_t addr_, BaseType base_type_, uint64_t size_, int64_t file_offset_,
        const Segment* segment_)
       : addr(addr_),
-        type(base_type_),
+        base_type(base_type_),
         size(size_),
         file_offset(file_offset_),
         segment(segment_) {
     if (HasName(false))
       this->SetName();
-  }
-
-  template <typename T>
-  void SetReferenceTypeImpl(RefCounter<T> type) {
-    this->ref_type = RefTypeT(type);
   }
 
   /**
@@ -106,12 +99,14 @@ class Data : public ProtoHelper {
   void SetName();
 
  public:
-  ea_t addr = BADADDR;       ///< Address attached to the data
-  BaseType type = TYPE_UNK;  ///< Data type
+  ea_t addr = BADADDR;            ///< Address attached to the data
+  BaseType base_type = TYPE_UNK;  ///< Data type
   uint32_t size;  ///< Size of the data (not always redundant for certain types)
   const Segment* segment;  ///< IDA segment. It has to outlive Data
   int64 file_offset;       ///< File offset, if <0 then there is none
   mutable Xref xrefs;
+  std::optional<tid_t>
+      target_tid;  ///< IDA tid when the data not of a base type
 
   /**
    * Static method to build a Data object
@@ -138,26 +133,13 @@ class Data : public ProtoHelper {
   [[nodiscard]] bool IsInitialized() const;
 
   /**
-   * Proxy for template argument deduction
-   */
-  template <template <typename> typename T, typename L>
-    requires(std::constructible_from<RefCounter<L>, T<L>>)
-  void SetReferenceType(T<L> type) {
-    this->SetReferenceTypeImpl(RefCounter<L>(type));
-  }
-
-  const std::optional<RefTypeT>& GetReferenceType() const {
-    return this->ref_type;
-  }
-
-  /**
    * Equality operator
    *
-   * Two objects are considered equal when they are at the same address, they
-   * have the same type and size
+   * Two objects are considered equal when they are at the same address and have
+   * the same size
    */
   bool operator==(const Data& rhs) const {
-    return addr == rhs.addr && type == rhs.type && size == rhs.size;
+    return addr == rhs.addr && size == rhs.size;
   }
 
   /**
@@ -174,7 +156,7 @@ class Data : public ProtoHelper {
    */
   template <typename H>
   friend H AbslHashValue(H h, const Data& m) {
-    return H::combine(std::move(h), m.addr, m.type, m.size);
+    return H::combine(std::move(h), m.addr, m.size);
   }
 };
 

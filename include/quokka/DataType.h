@@ -21,11 +21,15 @@
 #ifndef QUOKKA_COMPOSITE_DATA_H
 #define QUOKKA_COMPOSITE_DATA_H
 
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -132,115 +136,10 @@ class CompositeTypeMember : public ProtoHelper {
   ea_t offset;       ///< Field offset (IDA internal)
   std::string name;  ///< Name of the field
   BaseType type;     ///< Base type of the value
-  std::optional<RefCounter<CompositeConcreteType>>
-      composite_type_ptr;  ///< Pointer to the CompositeType if
-                           ///< the member type is composite
-  asize_t size;            ///< Size of the field
+  std::optional<tid_t>
+      target_tid;  ///< IDA tid_t of the target type (one of DataTypes variant)
+  asize_t size;    ///< Size of the field
   std::vector<const Reference*> xref_to;
-};
-
-/**
- * -----------------------------------------------------------------------------
- * quokka::CompositeTypes
- * -----------------------------------------------------------------------------
- * Container for all the composite data types in the program (like struct or
- * unions).
- *
- * Use a singleton pattern and act like a std::vector.
- */
-class CompositeTypes {
- public:
-  using ElementT = std::shared_ptr<CompositeConcreteType>;
-  using iterator = std::vector<ElementT>::iterator;
-  using const_iterator = std::vector<ElementT>::const_iterator;
-
- private:
-  std::vector<ElementT> composite_types_;  ///< Internal list
-
-  explicit CompositeTypes() = default;  ///< Private constructor
-
- public:
-  /**
-   * Return the instance of the `CompositeTypes` class.
-   * Used for the singleton pattern.
-   * @return `CompositeTypes`
-   */
-  static CompositeTypes& GetInstance() {
-    static CompositeTypes instance;
-    return instance;
-  }
-
-  /**
-   * Delete constructors for singleton pattern
-   */
-  CompositeTypes(CompositeTypes const&) = delete;
-  void operator=(CompositeTypes const&) = delete;
-
-  /**
-   * Creates the object of type T and pushes into the collection.
-   *
-   * @tparam T The type of the object to store. Must be a type from
-   * CompositeConcreteType
-   * @tparam Args Arguments to be forwarded to the T constructor
-   * @param args Arguments of the T constructor
-   * @return A reference to the newly added object
-   */
-  template <IsOneOf<CompositeConcreteType> T, typename... ArgsT>
-  ElementT& emplace_back(ArgsT&&... args) {
-    return composite_types_.emplace_back(
-        std::make_shared<CompositeConcreteType>(
-            T(std::forward<ArgsT>(args)...)));
-  }
-
-  /**
-   * Find the composite type with the specified name.
-   * @return An iterator to the requested element. If no such element is found,
-   * past-the-end (see end()) iterator is returned.
-   */
-  constexpr const_iterator get_by_name(const std::string& name) const {
-    return std::find_if(
-        composite_types_.begin(), composite_types_.end(),
-        [&name](const auto& element) {
-          return std::visit([&name](const auto& el) { return el.name == name; },
-                            *element);
-        });
-  }
-
-  /**
-   * Find the composite type with the specified ID.
-   * @return An iterator to the requested element. If no such element is found,
-   * past-the-end (see end()) iterator is returned.
-   */
-  constexpr const_iterator get_by_id(tid_t type_id) const {
-    return std::find_if(
-        composite_types_.begin(), composite_types_.end(),
-        [&type_id](const auto& element) {
-          return std::visit(
-              [&type_id](const auto& el) { return el.id == type_id; },
-              *element);
-        });
-  }
-
-  /**
-   * Proxy for the std::vector::size()
-   * @return Size of the container
-   */
-  [[nodiscard]] std::size_t size() const { return composite_types_.size(); }
-
-  /**
-   * Proxy for the std::vector::back()
-   * @return Reference to the last element
-   */
-  constexpr ElementT& back() { return composite_types_.back(); }
-  constexpr const ElementT& back() const { return composite_types_.back(); }
-
-  /**
-   * Proxy iterators
-   */
-  iterator begin() { return composite_types_.begin(); }
-  iterator end() { return composite_types_.end(); }
-  const_iterator begin() const { return composite_types_.cbegin(); }
-  const_iterator end() const { return composite_types_.cend(); }
 };
 
 struct EnumValue {
@@ -281,40 +180,6 @@ class EnumType : public ProtoHelper {
   }
 };
 
-/**
- * -----------------------------------------------------------------------------
- * quokka::Enums
- * -----------------------------------------------------------------------------
- * Container for all the enum types in the program.
- *
- * Use a singleton pattern and act like a set.
- */
-class Enums : public SetBucket<EnumType> {
- private:
-  explicit Enums() = default;  ///< Private constructor
-
- public:
-  using SetBucket<EnumType>::SetBucket;
-
-  /**
-   * Return the instance of the `Enums` class.
-   * Used for the singleton pattern.
-   * @return `Enums`
-   */
-  static Enums& GetInstance() {
-    static Enums instance;
-    return instance;
-  }
-
-  /**
-   * Delete constructors for singleton pattern
-   */
-  Enums(Enums const&) = delete;
-  Enums(Enums&&) = delete;
-  void operator=(Enums const&) = delete;
-  void operator=(Enums&&) = delete;
-};
-
 template <typename T>
 constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
   using U = std::remove_cvref_t<T>;
@@ -343,14 +208,22 @@ class DataTypes {
     using BaseIt =
         std::conditional_t<IsConst, typename CollectionT::const_iterator,
                            typename CollectionT::iterator>;
+    using MappedRef = std::conditional_t<IsConst, const TypeT&, TypeT&>;
+    using PairRef = std::pair<const tid_t&, MappedRef>;
+
+    struct arrow_proxy {
+      PairRef value;
+      const PairRef* operator->() const noexcept { return &value; }
+    };
 
    public:
+    using iterator_concept = std::forward_iterator_tag;
     using iterator_category = std::forward_iterator_tag;
     using difference_type =
         typename std::iterator_traits<BaseIt>::difference_type;
-    using value_type = TypeT;
-    using reference = std::conditional_t<IsConst, const TypeT&, TypeT&>;
-    using pointer = std::conditional_t<IsConst, const TypeT*, TypeT*>;
+    using value_type = std::pair<tid_t, TypeT>;
+    using reference = PairRef;
+    using pointer = arrow_proxy;
 
     value_iterator() = default;
 
@@ -360,15 +233,13 @@ class DataTypes {
         : it_(other.it_) {}
 
     reference operator*() const {
-      assert(it_ != BaseIt{});  // optional sanity check
       assert(it_->second && "null TypeT pointer in DataTypes::collection");
-      return *(it_->second);
+      return {it_->first, *it_->second};
     }
 
     pointer operator->() const {
-      assert(it_ != BaseIt{});  // optional sanity check
       assert(it_->second && "null TypeT pointer in DataTypes::collection");
-      return it_->second.get();
+      return pointer{operator*()};
     }
 
     value_iterator& operator++() {
@@ -394,6 +265,12 @@ class DataTypes {
     explicit value_iterator(BaseIt it) : it_(it) {}
     BaseIt it_{};
   };
+
+  template <class T>
+  friend auto operator|(DataTypes& dt, filter_type_adaptor_t<T>);
+
+  template <class T>
+  friend auto operator|(const DataTypes& dt, filter_type_adaptor_t<T>);
 
   explicit DataTypes() = default;  ///< Private constructor
 
@@ -439,9 +316,27 @@ class DataTypes {
    * @return A reference to the newly added object
    */
   template <IsOneOf<TypeT> T, typename... ArgsT>
-  TypeT& emplace_back(tid_t tid, ArgsT&&... args) {
-    return collection.emplace(
-        {tid, std::make_unique<TypeT>(T(std::forward<ArgsT>(args)...))});
+  T& emplace(tid_t tid, ArgsT&&... args) {
+    auto p = std::make_unique<TypeT>(std::in_place_type<T>,
+                                     std::forward<ArgsT>(args)...);
+    return std::get<T>(*(collection.insert({tid, std::move(p)}).first->second));
+  }
+
+  /**
+   * Adds the object T to the collection.
+   *
+   * @tparam T The type of the object to store. Must be a type from
+   * TypeT
+   * @param tid The IDA tid of the type
+   * @param obj object to push into the collection
+   * @return A reference to the newly added object
+   */
+  template <IsOneOf<TypeT> T>
+  const T& insert(tid_t tid, T&& obj) {
+    using U = std::remove_cvref_t<T>;
+    auto p =
+        std::make_unique<TypeT>(std::in_place_type<U>, std::forward<T>(obj));
+    return std::get<T>(*(collection.insert({tid, std::move(p)}).first->second));
   }
 
   /**
@@ -455,6 +350,71 @@ class DataTypes {
 
   size_t size() const { return collection.size(); }
 };
+
+// Concepts and helpers
+template <typename T, typename U = std::remove_cvref_t<T>>
+concept IsCompositeType =
+    std::is_same_v<U, StructureType> || std::is_same_v<U, UnionType>;
+
+template <typename T>
+auto operator|(DataTypes& dt, filter_type_adaptor_t<T>) {
+  return dt.collection | std::views::filter([](auto& it) {
+           return it.second && std::holds_alternative<T>(*it.second);
+         }) |
+         std::views::transform([](auto& it) {
+           return std::pair<decltype((it.first)), T&>{it.first,
+                                                      std::get<T>(*it.second)};
+         });
+}
+
+template <typename T>
+auto operator|(const DataTypes& dt, filter_type_adaptor_t<T>) {
+  return dt.collection | std::views::filter([](const auto& it) {
+           return it.second && std::holds_alternative<T>(*it.second);
+         }) |
+         std::views::transform([](const auto& it) {
+           return std::pair<decltype((it.first)), const T&>{
+               it.first, std::get<T>(*it.second)};
+         });
+}
+
+template <typename F, typename T>
+concept visit_callback =
+    std::invocable<F&, T&> || std::invocable<F&, const tid_t&, T&>;
+
+template <typename... Ts, typename Variant, typename F>
+  requires((IsOneOf<Ts, Variant>) && ...)
+void visit_selected(Variant&& v, F&& fn) {
+  std::visit(
+      [&]<typename U>(U&& x) {
+        using X = std::remove_cvref_t<U>;
+        if constexpr ((std::same_as<X, Ts> || ...)) {
+          std::invoke(std::forward<F>(fn), std::forward<U>(x));
+        }
+      },
+      std::forward<Variant>(v));
+}
+
+template <typename... Ts, typename DT, typename F>
+  requires std::same_as<std::remove_cvref_t<DT>, DataTypes> &&
+           ((visit_callback<F, std::conditional_t<
+                                   std::is_const_v<std::remove_reference_t<DT>>,
+                                   const Ts, Ts>>) &&
+            ...)
+static inline void for_each_visit(const DT& dt, F&& fn) {
+  for (auto&& [tid, var] : dt) {
+    visit_selected<Ts...>(var, [&](auto&& x) {
+      if constexpr (std::invocable<F&, decltype(x)>) {
+        std::invoke(fn, std::forward<decltype(x)>(x));
+      } else if constexpr (std::invocable<F&, decltype((tid)), decltype(x)>) {
+        std::invoke(fn, tid, std::forward<decltype(x)>(x));
+      } else {
+        static_assert(always_false_v<decltype(x)>,
+                      "for_each_visit: callback signature mismatch");
+      }
+    });
+  }
+}
 
 /**
  * Export the composite data types of the program.
