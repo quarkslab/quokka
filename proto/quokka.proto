@@ -212,6 +212,13 @@ message Quokka {
       Position position = 2;
     }
 
+    message FunctionEdits {
+      bool name_set = 1;
+      bool prototype_set = 2;
+      repeated uint32 comments = 3;
+      repeated uint32 edges = 4;
+    }
+
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
     int64 file_offset =
@@ -235,6 +242,8 @@ message Quokka {
     string decompiled_code = 11;
     string prototype = 12;
     repeated string comments = 13;
+
+    FunctionEdits edits = 14;
   }
 
   message Layout {
@@ -414,20 +423,20 @@ message Quokka {
   repeated Data data = 4;
   repeated Type types = 5;
 
-  repeated Instruction instructions = 6;
-  repeated string mnemonics = 7;
+  repeated Instruction instructions = 6;  // field empty in LIGHT mode
+  repeated string mnemonics = 7;          // field empty in LIGHT mode
 
   repeated Function functions = 8;
   repeated Reference references = 9;
 
   repeated string register_table = 10;
-  repeated Operand operands = 11;
+  repeated Operand operands = 11;        // field empty in LIGHT mode
 
   repeated Segment segments = 12;
 
   repeated OrphanedInstruction orphaned_instructions = 13;
 
-  repeated string operand_strings = 14;
+  repeated string operand_strings = 14;  // field empty in LIGHT mode
 
   string headers = 15;
 }

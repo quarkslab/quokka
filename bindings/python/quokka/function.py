@@ -20,6 +20,7 @@ from functools import cached_property
 from typing import Tuple, TYPE_CHECKING
 import networkx
 
+from collections import UserList
 import quokka
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka import Block, FunctionMissingError
@@ -119,7 +120,6 @@ class Function(dict):
         """Constructor"""
         super(dict, self).__init__()
         self.start: int = program.virtual_address(func.segment_index, func.segment_offset)
-        self.name: str = func.name
         self.proto = func
         self.proto_index = proto_index
         self.mangled_name: str = func.mangled_name or func.name
@@ -147,6 +147,11 @@ class Function(dict):
         self._chunks: list[tuple[AddressT, AddressT]] = self.coalesce_block_ranges(block_ranges)
         
         # TODO: Retrieving calling convention
+
+    @property
+    def has_body(self) -> bool:
+        """Check if the function has a body (e.g. at least one block)"""
+        return len(self._block_data) > 0
 
     def __getitem__(self, address: AddressT) -> Block:
         """Lazy loader for blocks within the function"""
@@ -185,6 +190,21 @@ class Function(dict):
         """Return the function comments"""
         return self.proto.comments
 
+    def add_comment(self, comment: str) -> None:
+        """Add a comment to the function"""
+        self.proto.comments.append(comment)
+        self.proto.edits.comments.append(len(self.proto.comments) - 1)
+
+    def add_edge(self, source: Block, destination: Block, type: EdgeType) -> None:
+        """Add an edge to the function CFG"""
+        assert source in self.blocks and destination in self.blocks, "Both source and destination blocks must belong to the function"
+        edge = self.proto.edges.add()
+        edge.source = source._proto_index
+        edge.destination = destination._proto_index
+        edge.edge_type = type.to_proto()
+        edge.user_defined = True
+        self.proto.edits.edges.append(len(self.proto.edges) - 1)
+
     @cached_property
     def strings(self) -> list[str]:
         """Return the list of strings referenced by the function"""
@@ -194,9 +214,26 @@ class Function(dict):
         return strings
 
     @property
+    def name(self) -> str:
+        """Return the function name"""
+        return self.proto.name
+    
+    @name.setter
+    def name(self, value: str) -> None:
+        """Set the function name"""
+        self.proto.name = value
+        self.proto.edits.name_set = True
+
+    @property
     def prototype(self) -> str:
         """Return the function prototype if any"""
         return self.proto.prototype
+
+    @prototype.setter
+    def prototype(self, value: str) -> None:
+        """Set the function prototype"""
+        self.proto.prototype = value
+        self.proto.edits.prototype_set = True
 
     @cached_property
     def constants(self) -> list[int]:
@@ -259,7 +296,7 @@ class Function(dict):
         except ValueError:
             return self.start + 1
 
-    @property
+    @cached_property
     def callees(self) -> list['Function']:
         """Return the list of calls made by this function.
         The semantic of a "call" is to jump or call to the **starting** of a function.
@@ -268,19 +305,30 @@ class Function(dict):
         Note: The list is not deduplicated so a target may occur multiple time.
         """
         calls = set()
-        for inst in self.instructions:
-            calls.update(self.program[x] for x in inst.callees)
+        # Iterate all basic blocks references to find calls to other functions
+        # Note do not use basic block object thus does not requires loading them.
+        for block in self.proto.blocks:
+            for inst_xref in block.instructions_xrefs_from:
+                xref = self.program.proto.references[inst_xref.xref_index]
+                if xref.type == Pb.Reference.REF_CODE:
+                    if xref.destination.address in self.program:  # Pointing on a function head
+                        calls.add(self.program[xref.destination.address])
+                # In all other else cases we are not on a call edge
         return list(calls)
 
-    @property
+    @cached_property
     def callers(self) -> list['Function']:
         """Retrieve the function callers (the ones calling this function)"""
         callers = []
-        try:
-            ins = next(self.instructions)
-            return [self.program[x] for x in ins.callers]
-        except StopIteration:
-            return callers
+        if self.has_body:
+            block_idx, _ = self._block_data[self.start]
+            block = self.proto.blocks[block_idx]
+            for inst_xref in (x for x in block.instructions_xrefs_to if x.instr_bb_idx == 0):
+                xref = self.program.proto.references[inst_xref.xref_index]
+                if xref.type == Pb.Reference.REF_CODE:
+                    if f := self.program.find_function_by_address(xref.source.address):
+                        callers.append(f)
+        return callers
 
     @property
     def instructions(self):

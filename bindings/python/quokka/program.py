@@ -243,6 +243,20 @@ class Program(dict):
         """
         return self.segments[seg_id].address + seg_offset
 
+    def find_function_by_address(self, address: AddressT) -> quokka.Function|None:
+        """Find a function by an address
+
+        Arguments:
+            address: Address to query
+
+        Returns:
+            The function at the address or None
+        """
+        for function in self.values():
+            if function.in_function(address):
+                return function
+        return None
+
     def address_to_offset(self, address: AddressT) -> int:
         """Converts a program offset to a file offset.
 
