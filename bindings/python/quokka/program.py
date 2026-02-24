@@ -649,7 +649,7 @@ class Program(dict):
             mode: Export mode (LIGHT, NORMAL or FULL)
 
         Returns:
-            A |`Program` instance or None if
+            A |`Path` instance or None if
 
         Raises:
             QuokkaError: If the export fails
@@ -712,3 +712,74 @@ class Program(dict):
             )
 
         return output_file
+
+
+    def write(self, output_file: Path|str|None = None) -> None:
+        """Write the program to a file
+
+        Arguments:
+            output_file: Where to write the program
+        """
+        if output_file is None:
+            output_file = self.export_file
+        with open(output_file, "wb") as fd:
+            fd.write(self.proto.SerializeToString())
+
+    def _commit_edits_ida(self) -> bool:
+        """Commit the edits to the IDA database."""
+
+        script_file = Path(__file__).parent / "backends" / "ida.py"
+
+        ida = idascript.IDA(
+            self.executable.exec_file,
+            script_file=script_file,
+            script_params=[],
+            database_path=None,
+        )
+        ida.start()
+        ret_code = ida.wait()
+
+        if ret_code == idascript.IDA.TIMEOUT_RETURNCODE:
+            Program.logger.error(f"Updates application triggered timeout")  # not meant to happen
+        elif ret_code != 0:  # Everything but 0 is an error
+            Program.logger.debug(f"Edits {ret_code} errors during applying")
+            Program.logger.debug(ida.stderr.read().decode("utf-8"))
+            return True  # still return True even if some changes applied with errors
+        # Other returned 0 so application was sucessful
+        return True
+
+    def commit(self) -> bool:
+        """Commit the changes to the export file
+        and apply them to the underlying disassembler."""
+        self.write()
+        match self.disassembler:
+            case Disassembler.IDA:
+                return self._commit_edits_ida()
+            case Disassembler.GHIDRA:
+                pass
+                # TODO: Call ghidra script with the write script
+            case Disassembler.BINARY_NINJA:
+                raise NotImplementedError("Binary Ninja export is not implemented yet")
+            case _:
+                raise NotImplementedError("Unknown disassembler")
+        return True
+
+
+    def regenerate(self) -> 'Program':
+        """Regenerate the Quokka file and from the binary
+        after applying editions.
+
+        This is useful to update the program after making changes to the binary (e.g. by
+        applying patches).
+
+        Returns:
+            A new instance of Program with the updated data.
+        
+            Raises:
+                QuokkaError: If applying changes failed or regenerating Quokka file failed.
+        """
+        if self.commit():
+            path = Program.generate(self.executable.exec_file, self.export_file, override=True)
+            return Program.open(path, self.executable.exec_file)
+        else:
+            raise QuokkaError("Failed to commit changes to the export file.")
