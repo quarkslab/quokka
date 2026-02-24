@@ -31,6 +31,19 @@ message Quokka {
     CC_GOSTK = 9;
   }
 
+  enum EdgeType {
+    EDGE_UNKNOWN = 0;
+    EDGE_JUMP_UNCOND = 1;  /* IDA:fl_JN        Ghidra:UNCONDITIONAL_JUMP   */
+    EDGE_JUMP_COND = 2;    /* IDA:fl_JN(+idp)  Ghidra:CONDITIONAL_JUMP     */
+    EDGE_JUMP_INDIR = 3;   /* IDA:fl_JN(+idp)  Ghidra:COMPUTED_JUMP        */
+    EDGE_CALL = 4;         /* IDA:fl_CN        Ghidra:CALL                 */
+    EDGE_CALL_INDIR = 5;   /* IDA:fl_CN(+idp)  Ghidra:COMPUTED_CALL        */
+    EDGE_DATA_READ = 6;    /* IDA:dr_R         Ghidra:READ                 */
+    EDGE_DATA_WRITE = 7;   /* IDA:dr_W         Ghidra:WRITE                */
+    EDGE_DATA_INDIR = 8;   /* IDA:dr_O         Ghidra:DATA                 */
+    EDGE_TYPE_SYMBOL = 9;  /* IDA:dr_S         Ghidra:-                    */
+  }
+
   message Meta {
     enum ISA {
       PROC_INTEL = 0;
@@ -168,13 +181,6 @@ message Quokka {
 
   message Function {
     message Edge {
-      enum EdgeType {
-        TYPE_UNCONDITIONAL = 0;
-        TYPE_TRUE = 1;
-        TYPE_FALSE = 2;
-        TYPE_DYNAMIC = 3;  // Like a switch jump table
-      }
-
       EdgeType edge_type = 1;
       uint32 source = 2;       // Block index source
       uint32 destination = 3;  // Block index destination
@@ -331,12 +337,6 @@ message Quokka {
   }
 
   message Reference {
-    enum ReferenceType {
-      REF_CODE = 0;
-      REF_DATA = 1;
-      REF_SYMBOL = 2;
-      REF_UNK = 3;
-    }
 
     message Location {
       oneof Type {
@@ -350,7 +350,7 @@ message Quokka {
     Location source = 1;
     // The location that is referenced (for ex: data)
     Location destination = 2;
-    ReferenceType reference_type = 3;
+    EdgeType reference_type = 3;
   }
 
   message Segment {
