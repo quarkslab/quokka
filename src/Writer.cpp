@@ -203,9 +203,16 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
     proto_composite_type->set_name(composite.name);
     proto_composite_type->set_type(CompositeSubTypeToProto<T>());
     proto_composite_type->set_size(composite.size);
+
     // Xref
     for (const Reference* xref : composite.xref_to)
       proto_composite_type->add_xref_to(xref->proto_index);
+
+    // Export type declaration as string
+    if (!composite.c_str.empty()) {
+      proto_composite_type->set_c_str(composite.c_str);
+    }
+
   };
 
   auto write_members = [](auto& composite,
@@ -272,6 +279,9 @@ static void WriteEnums(quokka::Quokka* proto) {
       proto_enum->add_xref_to(xref->proto_index);
 
     proto_enum->mutable_values()->Reserve(enum_type.values.size());
+    if (!enum_type.c_str.empty()) {
+      proto_enum->set_c_str(enum_type.c_str);
+    }
     for (const auto& enum_value : enum_type.values) {
       Quokka::EnumType::EnumValue* proto_value = proto_enum->add_values();
       proto_value->set_name(enum_value.name);
@@ -451,6 +461,8 @@ void WriteFunctions(quokka::Quokka* proto,
     if (!function.decompiled_code.empty())
       proto_func->set_decompiled_code(function.decompiled_code);
 
+    if (!function.prototype.empty())
+      proto_func->set_prototype(function.prototype);
     assert(function.segment != nullptr);
     assert(function.segment->start_addr <= function.start_addr &&
            function.start_addr < function.segment->end_addr);
@@ -701,6 +713,36 @@ void WriteTypes(quokka::Quokka* proto) {
   // The order matters! The last ones should be structs and unions
   WriteEnums(proto);
   WriteCompositeTypes(proto);
+}
+
+class string_text_sink_t : public text_sink_t
+{
+public:
+    std::string &buffer;
+
+    string_text_sink_t(std::string &buf) : buffer(buf) {}
+
+    int idaapi print(const char *str) override
+    {
+        buffer += str;
+        return strlen(str);
+    }
+};
+
+void WriteHeaders(quokka::Quokka* proto) {
+  // Get the number of types
+  til_t *ti = get_idati();
+  if (!ti) {
+         QLOGE << "Failed to get idati!\n";
+         return;
+  }
+
+  string_text_sink_t printer(*proto->mutable_headers());
+  qvector<uint32> ordvec_t;
+  for (uint32 ord = 1; ord <= get_ordinal_count(ti); ord++) {
+    ordvec_t.push_back(ord);
+  }
+  print_decls(printer, ti, &ordvec_t, PDF_INCL_DEPS | PDF_DEF_FWD | PDF_DEF_BASE | PDF_HEADER_CMT);
 }
 
 quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode) {

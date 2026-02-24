@@ -35,6 +35,8 @@
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 
+#include <typeinf.hpp>
+
 namespace quokka {
 
 static EdgeType GetEdgeType(size_t out_degree, const Block& src_block,
@@ -199,6 +201,35 @@ void Function::InitFromAddr(ea_t addr) {
   std::string mangled_name = GetName(this->start_addr, true);
   if (mangled_name != this->name)
     this->mangled_name = std::move(mangled_name);
+
+  this->ExportPrototype(addr);
+}
+
+void Function::ExportPrototype(ea_t addr) {
+  tinfo_t tif;
+  qstring decl;
+
+  QLOGI << absl::StrFormat("Exporting prototype for function at address 0x%08x",
+                       this->start_addr);
+
+  func_t* func = get_func(addr);
+  
+  if (func != nullptr) {
+    if (!get_tinfo(&tif, addr)) {
+      QLOGW << absl::StrFormat(
+          "Cannot get type information for function at address 0x%08x: %s",
+          this->start_addr, name.c_str());
+      return;
+    }
+
+    // qstring name;
+    // tif.get_type_name(&name);
+
+    if (tif.print(&decl, this->name.c_str(), /*PRTYPE_TYPE |*/ PRTYPE_1LINE | PRTYPE_DEF | PRTYPE_SEMI))
+    {
+        this->prototype = ConvertIdaString(decl);
+    }
+  }
 }
 
 void Function::ExportBody(func_t* func_p) {

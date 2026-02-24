@@ -350,12 +350,14 @@ class Function {
  private:
   void InitFromAddr(ea_t addr);
   void ExportBody(func_t* func_p);
+  void ExportPrototype(ea_t addr);
 
  public:
   ea_t start_addr;           ///< Starting address
   std::string name;          ///< Function name
   std::string mangled_name;  ///< Function mangled name (not empty only if
                              ///< different than the standard one)
+  std::string prototype;     ///< Function prototype (if any)
   FunctionType func_type;    ///< Function type
   const Segment* segment;    ///< The segment where the function lives
   int64 file_offset;  ///< File offset of the function, if <0 then there is none

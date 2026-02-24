@@ -55,6 +55,7 @@ int ExportBinary(const std::string& filename) {
     ExportEnums();  // First enums
     ExportCompositeDataTypes();
     WriteTypes(&quokka_protobuf);
+    WriteHeaders(&quokka_protobuf);
   }
 
   // Export functions

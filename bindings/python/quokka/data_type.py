@@ -23,7 +23,7 @@ class BaseType(Enum):
     DOUBLE = auto()
 
     @staticmethod
-    def from_proto(data_type: Pb.DataType) -> "BaseType":
+    def from_proto(data_type: Pb.BaseType) -> "BaseType":
         """Convert the protobuf value into this enumeration"""
         mapping = {
             Pb.TYPE_B: BaseType.BYTE,

@@ -280,6 +280,13 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata);
 void WriteTypes(quokka::Quokka* proto);
 
 /**
+ * Write all the headers (local types)
+ *
+ * @param proto Protobuf main object
+ */
+void WriteHeaders(quokka::Quokka* proto);
+
+/**
  * Write the exporter metadata
  *
  * @param proto Protobuf main object

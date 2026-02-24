@@ -170,6 +170,14 @@ void ExportCompositeDataTypes() {
           bool res = tif.get_type_by_tid(composite.id);
           assert(res && "Couldn't retrieve the tinfo_t object from the tid_t");
 
+          // Print the enum as a C-string if possible
+          qstring composite_name;
+          tif.get_type_name(&composite_name);
+          qstring decl;
+          if (tif.print(&decl, composite_name.c_str(), PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+            composite.c_str = ConvertIdaString(decl);
+          
+          // Export the members of the struct/union
           if (!tif.is_empty_udt() && !tif.is_forward_decl())
             ExportCompositeMembers(composite_type_ptr, tif);
         },
@@ -208,6 +216,11 @@ void ExportEnums() {
       }
     }
 
+    // Print the enum as a C-string if possible
+    qstring decl;
+    if (tif.print(&decl, enum_name.c_str(), PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+      enum_type.c_str = ConvertIdaString(decl);
+
     const EnumType& new_obj = enums.insert(std::move(enum_type));
 
     // References
@@ -219,6 +232,7 @@ void ExportEnums() {
         ++i;
       }
     }
+
 
     // TODO comments
     // Check for comment for the enum

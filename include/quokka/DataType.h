@@ -87,7 +87,7 @@ class CompositeType : public ProtoHelper {
   std::string name;  ///< Composite type name
   tid_t id;          ///< Type id (IDA internal)
   size_t size;       ///< Structure size
-
+  std::string c_str;  ///< C-string representation of the composite type (if any)
   std::vector<CompositeTypeMember> members;  ///< Members list
   mutable std::vector<const Reference*> xref_to;
 };
@@ -263,7 +263,7 @@ class EnumType : public ProtoHelper {
   std::string name;               ///< Name of the enum
   std::vector<EnumValue> values;  ///< Internal values of the enum
   mutable std::vector<const Reference*> xref_to;
-
+  std::string c_str; ///< C-string representation of the enum (if any)
   bool operator==(const EnumType& o) const noexcept {
     return this->name == o.name;
   }
