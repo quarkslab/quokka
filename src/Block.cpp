@@ -125,7 +125,7 @@ void Block::ExportInstructions() {
       // this->instructions.push_back(instruction);
     }
 
-    ExportCodeReference(*this, this->instr_count, current_ea);
+    ExportCodeReference(*this, this->instr_count, current_ea, ida_instruction);
 
     ++this->instr_count;
     current_ea += static_cast<ea_t>(decoded_size);

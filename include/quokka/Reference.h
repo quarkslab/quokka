@@ -44,14 +44,6 @@ namespace quokka {
 
 namespace reference {
 inline constexpr int32_t WHOLE_TYPE = -1;
-
-inline constexpr Quokka::Reference::ReferenceType REF_CODE =
-    Quokka::Reference::ReferenceType::Quokka_Reference_ReferenceType_REF_CODE;
-inline constexpr Quokka::Reference::ReferenceType REF_DATA =
-    Quokka::Reference::ReferenceType::Quokka_Reference_ReferenceType_REF_DATA;
-inline constexpr Quokka::Reference::ReferenceType REF_SYMBOL =
-    Quokka::Reference::ReferenceType::Quokka_Reference_ReferenceType_REF_SYMBOL;
-
 }  // namespace reference
 
 /**
@@ -67,11 +59,11 @@ class Reference : public ProtoHelper {
  public:
   // Either an address or a pair {Type*, member_index/-1 if no member}.
   using Location = std::variant<ea_t, std::pair<const ProtoHelper*, int32_t>>;
-  using ReferenceType = Quokka::Reference::ReferenceType;
+  using EdgeType = Quokka::EdgeType;
 
   Location source;       ///< Source of the reference
   Location destination;  ///< Destination
-  ReferenceType type;    ///< Type of reference
+  EdgeType type;         ///< Type of reference
 
   /**
    * Constructor
@@ -79,7 +71,7 @@ class Reference : public ProtoHelper {
    * @param destination_ Destination
    * @param type_ Reference type
    */
-  Reference(Location source_, Location destination_, ReferenceType type_)
+  Reference(Location source_, Location destination_, EdgeType type_)
       : source(std::move(source_)),
         destination(std::move(destination_)),
         type(type_) {}

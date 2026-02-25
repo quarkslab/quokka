@@ -21,7 +21,6 @@
 #define QUOKKA_FUNCTION_H
 
 #include <optional>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -37,14 +36,10 @@
 #include <hexrays.hpp>
 #endif
 
-#include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
-#include "absl/strings/str_format.h"
 
 #include "Block.h"
-#include "Logger.h"
-#include "ProtoHelper.h"
 #include "Segment.h"
 #include "Windows.h"
 #include "quokka.pb.h"
@@ -63,18 +58,6 @@ enum FunctionType : short {
 };
 
 /**
- * Edge type
- * Used only for CFG export
- */
-enum EdgeType : short {
-  EDGE_UNK = 0,
-  TYPE_UNCONDITIONAL = 1,
-  TYPE_TRUE,
-  TYPE_FALSE,
-  TYPE_SWITCH
-};
-
-/**
  * -----------------------------------------------------------------------------
  * quokka::Edge
  * -----------------------------------------------------------------------------
@@ -86,6 +69,8 @@ enum EdgeType : short {
  * @note All edges are directed (from source to destination)
  */
 struct Edge {
+  using EdgeType = Quokka::EdgeType;
+
   /**
    * Constructor
    *
@@ -101,81 +86,6 @@ struct Edge {
   EdgeType edge_type;   ///< Type of edge
   int source_idx;       ///< Index of the source block
   int destination_idx;  ///< Index of the destination block
-};
-
-/**
- * -----------------------------------------------------------------------------
- * quokka::PendingEdge
- * -----------------------------------------------------------------------------
- * Represent a future edge in the CFG
- *
- * This type of edges is used when we don't know yet the source or destination
- * block so only the address are stored. Every of the pending edges is
- * expected to disappear after the whole program has been analyzed and each
- * address translated to a block index or a call reference.
- */
-struct PendingEdge {
-  EdgeType edge_type;  ///< Type of edge
-  ea_t source;         ///< Source of the edge
-  ea_t destination;    ///< Destination of the edge
-
-  /**
-   * Constructor
-   * @param edge_type Edge type
-   * @param source Source
-   * @param destination Destination
-   */
-  PendingEdge(EdgeType edge_type, ea_t source, ea_t destination)
-      : edge_type(edge_type), source(source), destination(destination) {};
-};
-
-class FuncChunk;
-
-/**
- * ---------------------------------------------
- * quokka::ChunkLocalization
- * ---------------------------------------------
- * Location of a chunk
- *
- * At first, the block may not be known so it will be populated afterwards
- */
-struct ChunkLocalization {
-  ea_t addr = BADADDR;               ///< Address of the target
-  std::shared_ptr<FuncChunk> chunk;  ///< Chunk
-  int block_idx = -1;                ///< Block index
-
-  /**
-   * Constructor used when no block index is known
-   *
-   * @param addr_ Target address
-   * @param chunk_p Chunk
-   */
-  ChunkLocalization(ea_t addr_, std::shared_ptr<FuncChunk> chunk_p)
-      : addr(addr_), chunk(std::move(chunk_p)), block_idx(-1) {}
-
-  /**
-   * Complete constructor
-   *
-   * @param addr_ Target address
-   * @param chunk_p Chunk
-   * @param block Block index
-   */
-  ChunkLocalization(ea_t addr_, std::shared_ptr<FuncChunk> chunk_p, int block)
-      : addr(addr_), chunk(std::move(chunk_p)), block_idx(block) {}
-};
-
-/**
- * ---------------------------------------------
- * quokka::ChunkEdge
- * ---------------------------------------------
- * Edge between two chunks
- *
- * This type of edges are used in a function reconstruction and are directed.
- */
-struct ChunkEdge {
-  EdgeType edge_type = EdgeType::EDGE_UNK;  ///< Type of edge
-  ChunkLocalization source;                 ///< Source chunk
-  ChunkLocalization destination;            ///< Destination chunk
 };
 
 /**
@@ -249,8 +159,7 @@ class FuncChunk {
 
   std::vector<std::shared_ptr<Block>> blocks;  ///< List of blocks
 
-  std::vector<Edge> edge_list;             ///< List of edges between blocks
-  std::vector<PendingEdge> pending_edges;  ///< List of pending edges
+  std::vector<Edge> edge_list;  ///< List of edges between blocks
 
   bool orphaned = true;  ///< Is it an orphaned chunk?
 
@@ -268,19 +177,6 @@ class FuncChunk {
    * @param func IDA func object
    */
   FuncChunk(func_t* func);
-
-  /**
-   * Add an edge between two addresses.
-   *
-   * This will be added to the pending_edges list.
-   * @note For fake chunks, it will also consider the destination to be a
-   * potential block head.
-   *
-   * @param source_addr Source address
-   * @param dest_addr Destination address
-   * @param edge_type Type of edge
-   */
-  void AddEdge(ea_t source_addr, ea_t dest_addr, EdgeType edge_type);
 
   /**
    * Check if `addr` belong to the chunk
@@ -383,24 +279,6 @@ class Function {
 
   void ExportDecompiledFunction(func_t* func_p);
 };
-
-/**
- * Create a chunk edge
- *
- * Create an edge between the source and destination
- *
- * @param edge_type Type of edge (always `TYPE_UNCONDITIONAL`)
- * @param source_chunk Source chunk
- * @param source_addr Source address
- * @param dest_chunk Destination chunk
- * @param dest_addr Destination address
- * @return
- */
-ChunkEdge CreateChunkEdge(EdgeType edge_type,
-                          std::shared_ptr<FuncChunk> source_chunk,
-                          ea_t source_addr,
-                          std::shared_ptr<FuncChunk> dest_chunk,
-                          ea_t dest_addr);
 
 class ImportManager;
 

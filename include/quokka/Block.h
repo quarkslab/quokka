@@ -36,6 +36,7 @@
 #include <pro.h>
 #include <gdl.hpp>
 #include <ida.hpp>
+#include <ua.hpp>
 
 #include "absl/container/flat_hash_map.h"
 
@@ -154,13 +155,15 @@ class Block {
 };
 
 /**
- * Export all code references to address
+ * Export all code references to an instruction
  *
  * @param block The block in which the address lives
  * @param instr_idx The index in the basic block of the instruction
  * @param address Address
+ * @param insn Instruction for which to extract xrefs
  */
-void ExportCodeReference(const Block& block, size_t instr_idx, ea_t address);
+void ExportCodeReference(const Block& block, size_t instr_idx, ea_t address,
+                         const insn_t& insn);
 
 }  // namespace quokka
 

@@ -21,6 +21,7 @@
 // clang-format on
 #include <pro.h>
 #include <bytes.hpp>
+#include <typeinf.hpp>
 
 #include "absl/strings/str_format.h"
 
@@ -35,37 +36,19 @@
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 
-#include <typeinf.hpp>
-
 namespace quokka {
 
-static EdgeType GetEdgeType(size_t out_degree, const Block& src_block,
-                            const Block& dst_block) {
+static constexpr Quokka::EdgeType GetEdgeType(size_t out_degree) {
   switch (out_degree) {
     case 0:  // No outgoing edges (end of function)
-      return EdgeType::EDGE_UNK;
+      return Quokka::EdgeType::Quokka_EdgeType_EDGE_UNKNOWN;
     case 1:  // 1 outgoing edge: unconditional jump
-      return EdgeType::TYPE_UNCONDITIONAL;
+      return Quokka::EdgeType::Quokka_EdgeType_EDGE_JUMP_UNCOND;
     case 2:  // 2 edges -> condition
-      return src_block.end_addr == dst_block.start_addr ? EdgeType::TYPE_FALSE
-                                                        : EdgeType::TYPE_TRUE;
+      return Quokka::EdgeType::Quokka_EdgeType_EDGE_JUMP_COND;
     default:  // 2+ edges -> switch
-      return EdgeType::TYPE_SWITCH;
+      return Quokka::EdgeType::Quokka_EdgeType_EDGE_JUMP_INDIR;
   }
-}
-
-ChunkEdge CreateChunkEdge(EdgeType edge_type,
-                          std::shared_ptr<FuncChunk> source_chunk,
-                          ea_t source_addr,
-                          std::shared_ptr<FuncChunk> dest_chunk,
-                          ea_t dest_addr) {
-  assert(source_chunk != nullptr && dest_chunk != nullptr &&
-         "Both chunks must be defined");
-
-  ChunkEdge chunk_edge = {
-      edge_type, ChunkLocalization(source_addr, std::move(source_chunk)),
-      ChunkLocalization(dest_addr, std::move(dest_chunk))};
-  return chunk_edge;
 }
 
 FuncChunk::FuncChunk(func_t* func) {
@@ -90,20 +73,6 @@ FuncChunk::FuncChunk(func_t* func) {
 
   QLOGD << absl::StrFormat("Creating FuncChunk [0x%08x; 0x%08x]", start_addr,
                            end_addr);
-}
-
-void FuncChunk::AddEdge(ea_t source_addr, ea_t dest_addr, EdgeType edge_type) {
-  // If this is a fake chunk, we want to keep the target in the list of
-  // potential heads. It may not be correct, but we have no way of finding it
-  // right now.
-  // if (this->fake_chunk) {
-  //   auto result = this->block_heads.find(dest_addr);
-  //   if (result == this->block_heads.end()) {
-  //     this->block_heads.emplace(dest_addr);
-  //   }
-  // }
-
-  this->pending_edges.emplace_back(edge_type, source_addr, dest_addr);
 }
 
 // std::shared_ptr<Block> FuncChunk::GetBlockContainingAddress(ea_t addr) {
@@ -210,10 +179,10 @@ void Function::ExportPrototype(ea_t addr) {
   qstring decl;
 
   QLOGI << absl::StrFormat("Exporting prototype for function at address 0x%08x",
-                       this->start_addr);
+                           this->start_addr);
 
   func_t* func = get_func(addr);
-  
+
   if (func != nullptr) {
     if (!get_tinfo(&tif, addr)) {
       QLOGW << absl::StrFormat(
@@ -225,9 +194,9 @@ void Function::ExportPrototype(ea_t addr) {
     // qstring name;
     // tif.get_type_name(&name);
 
-    if (tif.print(&decl, this->name.c_str(), /*PRTYPE_TYPE |*/ PRTYPE_1LINE | PRTYPE_DEF | PRTYPE_SEMI))
-    {
-        this->prototype = ConvertIdaString(decl);
+    if (tif.print(&decl, this->name.c_str(),
+                  /*PRTYPE_TYPE |*/ PRTYPE_1LINE | PRTYPE_DEF | PRTYPE_SEMI)) {
+      this->prototype = ConvertIdaString(decl);
     }
   }
 }
@@ -324,9 +293,7 @@ void Function::ExportBody(func_t* func_p) {
   for (int i = 0; i < flow_chart.node_qty(); ++i) {
     const auto& succ = flow_chart.blocks[i].succ;
     for (int j : succ) {
-      this->edges.emplace_back(GetEdgeType(succ.size(), this->blocks[i].first,
-                                           this->blocks[j].first),
-                               i, j);
+      this->edges.emplace_back(GetEdgeType(succ.size()), i, j);
     }
   }
 
@@ -334,9 +301,6 @@ void Function::ExportBody(func_t* func_p) {
   if (Settings::GetInstance().ExportDecompiledCode()) {
     ExportDecompiledFunction(func_p);
   }
-
-  // std::vector<ea_t> code_refs;
-  // GetCodeRefFrom(code_refs, range.start_ea);
 }
 
 void Function::ExportDecompiledFunction(func_t* func_p) {

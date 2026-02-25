@@ -66,23 +66,6 @@ static quokka::Quokka::Function::FunctionType ToProtoFuncType(
   }
 }
 
-static quokka::Quokka::Function::Edge::EdgeType ToProtoEdgeType(
-    EdgeType edge_type) {
-  switch (edge_type) {
-    case TYPE_TRUE:
-      return quokka::Quokka::Function::Edge::TYPE_TRUE;
-    case TYPE_FALSE:
-      return quokka::Quokka::Function::Edge::TYPE_FALSE;
-    case TYPE_SWITCH:
-      return quokka::Quokka::Function::Edge::TYPE_DYNAMIC;
-    case TYPE_UNCONDITIONAL:
-      return quokka::Quokka::Function::Edge::TYPE_UNCONDITIONAL;
-    default:
-      QLOGE << "Edge type is not correct";
-      return quokka::Quokka::Function::Edge::TYPE_UNCONDITIONAL;
-  }
-}
-
 /**
  * Convert a block type type to the proto associated type
  * @param block_type Type to convert
@@ -491,7 +474,7 @@ void WriteFunctions(quokka::Quokka* proto,
     // Add edges
     for (const auto& edge : function.edges) {
       auto* proto_edge = proto_func->add_edges();
-      proto_edge->set_edge_type(ToProtoEdgeType(edge.edge_type));
+      proto_edge->set_edge_type(edge.edge_type);
       proto_edge->set_source(edge.source_idx);
       proto_edge->set_destination(edge.destination_idx);
       proto_edge->set_user_defined(false);

@@ -62,29 +62,38 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
     BaseType member_type = GetBaseType(udm.type);
 
     // Emplace the CompositeTypeMember
-    auto& member = composite_type.members.emplace_back(
+    CompositeTypeMember& member = composite_type.members.emplace_back(
         udm.offset / 8, ConvertIdaString(udm.name), member_type, size);
 
-    // TODO adapt for enum/pointer/array
-    // Add the composite type pointer if the member is composite as well
+    // Add the target type if needed
     if (member_type == TYPE_UNK) {
-      std::string base_type_name;
-      qstring ida_string;
-      udm.type.get_type_name(&ida_string);
-      base_type_name = ConvertIdaString(ida_string);
+      if (udm.type.is_bitfield()) {
+        qstring ida_string;
+        tif.get_type_name(&ida_string);
+        QLOGW << absl::StrFormat(
+            "Found bitfield `%s` in the composite type `%s`. Bitfields are not "
+            "yet supported. Marking it as TYPE_UNK",
+            ConvertIdaString(udm.name), ConvertIdaString(ida_string));
+        member.type = TYPE_UNK;
+        goto member_done;
+      }
 
       // Ask the CompositeTypes manager to give us the relevant struct/union
       auto it = data_types.find_by_tuid(GetTypeUid(udm.type));
 
       if (it == data_types.end()) {
+        qstring ida_string;
+        tif.get_type_name(&ida_string);
         QLOGE << absl::StrFormat(
-            "Member `%s` is of composite type `%s` but it was not found within "
-            "the exported composite types.",
-            ConvertIdaString(udm.name), base_type_name);
+            "Member `%s` is of composite type `%s` but it was not found "
+            "within the exported composite types.",
+            ConvertIdaString(udm.name), ConvertIdaString(ida_string));
       } else {
         member.target_tuid = it->first;
       }
     }
+
+  member_done:  // Member was built correctly
 
     /* TODO Retrieve comments */
     ExportSymbolReference(&composite_type, member.xref_to, tif.get_udm_tid(member_idx),
