@@ -87,7 +87,7 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
     }
 
     /* TODO Retrieve comments */
-    ExportSymbolReference(&composite_type, member.xref_to, tif.get_tid(),
+    ExportSymbolReference(&composite_type, member.xref_to, tif.get_udm_tid(member_idx),
                           member_idx);
     //   GetStructureMemberComment(composite_type_ptr,
     //                             composite.members.size(),
@@ -247,7 +247,7 @@ void ExportEnums() {
                           reference::WHOLE_TYPE);
     if (has_members) {
       for (size_t i = 0; const edm_t& edm : edt) {
-        ExportSymbolReference(&new_obj, new_obj.xref_to, edm.get_tid(), i);
+        ExportSymbolReference(&new_obj, new_obj.xref_to, tif.get_edm_tid(i), i);
         ++i;
       }
     }
