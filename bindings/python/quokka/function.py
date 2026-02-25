@@ -25,7 +25,7 @@ from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImport
 from quokka import Block, FunctionMissingError
 from quokka.types import (
     AddressT,
-    EdgeType,
+    RefType,
     FunctionType,
     Index,
     SegmentType
@@ -220,7 +220,7 @@ class Function(dict):
             graph.add_edge(
                 self._index_to_address[edge.source],
                 self._index_to_address[edge.destination],
-                condition=EdgeType.from_proto(edge.edge_type),
+                condition=RefType.from_proto(edge.edge_type),
             )
 
         return graph

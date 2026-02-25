@@ -32,16 +32,16 @@ message Quokka {
   }
 
   enum EdgeType {
-    EDGE_UNKNOWN = 0;
-    EDGE_JUMP_UNCOND = 1;  /* IDA:fl_JN        Ghidra:UNCONDITIONAL_JUMP   */
-    EDGE_JUMP_COND = 2;    /* IDA:fl_JN(+idp)  Ghidra:CONDITIONAL_JUMP     */
-    EDGE_JUMP_INDIR = 3;   /* IDA:fl_JN(+idp)  Ghidra:COMPUTED_JUMP        */
-    EDGE_CALL = 4;         /* IDA:fl_CN        Ghidra:CALL                 */
-    EDGE_CALL_INDIR = 5;   /* IDA:fl_CN(+idp)  Ghidra:COMPUTED_CALL        */
-    EDGE_DATA_READ = 6;    /* IDA:dr_R         Ghidra:READ                 */
-    EDGE_DATA_WRITE = 7;   /* IDA:dr_W         Ghidra:WRITE                */
-    EDGE_DATA_INDIR = 8;   /* IDA:dr_O         Ghidra:DATA                 */
-    EDGE_TYPE_SYMBOL = 9;  /* IDA:dr_S         Ghidra:-                    */
+    EDGE_JUMP_UNCOND = 0;  /* IDA:fl_JN        Ghidra:UNCONDITIONAL_JUMP   */
+    EDGE_JUMP_COND = 1;    /* IDA:fl_JN(+idp)  Ghidra:CONDITIONAL_JUMP     */
+    EDGE_JUMP_INDIR = 2;   /* IDA:fl_JN(+idp)  Ghidra:COMPUTED_JUMP        */
+    EDGE_CALL = 3;         /* IDA:fl_CN        Ghidra:CALL                 */
+    EDGE_CALL_INDIR = 4;   /* IDA:fl_CN(+idp)  Ghidra:COMPUTED_CALL        */
+    EDGE_DATA_READ = 5;    /* IDA:dr_R         Ghidra:READ                 */
+    EDGE_DATA_WRITE = 6;   /* IDA:dr_W         Ghidra:WRITE                */
+    EDGE_DATA_INDIR = 7;   /* IDA:dr_O         Ghidra:DATA                 */
+    EDGE_TYPE_SYMBOL = 8;  /* IDA:dr_S         Ghidra:-                    */
+    EDGE_UNKNOWN = 9;
   }
 
   message Meta {

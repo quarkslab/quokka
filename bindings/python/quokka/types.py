@@ -87,31 +87,58 @@ class Endianness(enum.Enum):
         return mapping.get(endianness, Endianness.UNKNOWN)
 
 
-class EdgeType(enum.Enum):
-    """Edge Type"""
+class RefType(enum.IntEnum):
+    """Reference Type"""
 
-    UNCONDITIONAL = enum.auto()
-    TRUE = enum.auto()
-    FALSE = enum.auto()
-    SWITCH = enum.auto()
+    UNKNOWN = 0
+    JMP_UNCOND = 1
+    JMP_COND = 2
+    JMP_INDIR = 3
+    CALL = 4
+    CALL_INDIR = 5
+    DATA_READ = 6
+    DATA_WRITE = 7
+    DATA_INDIR = 8
+    TYPE_SYMBOL = 9
 
     @staticmethod
     def from_proto(
-        edge_type: "Pb.Edge.EdgeTypeValue",
-    ) -> "EdgeType":
+        edge_type: "Pb.EdgeTypeValue",
+    ) -> "RefType":
         """Convert the protobuf value into this enumeration"""
-        mapping = {
-            Pb.Edge.TYPE_UNCONDITIONAL: EdgeType.UNCONDITIONAL,
-            Pb.Edge.TYPE_TRUE: EdgeType.TRUE,
-            Pb.Edge.TYPE_FALSE: EdgeType.FALSE,
-            Pb.Edge.TYPE_SWITCH: EdgeType.SWITCH,
-        }
+        try:
+            return RefType(edge_type)
+        except ValueError as e:
+            raise ValueError("Unable to decode Edge Type") from e
 
-        edge = mapping.get(edge_type)
-        if edge is not None:
-            return edge
+    def to_proto(self) -> "Pb.EdgeTypeValue":
+        """Convert this enumeration into the protobuf value"""
+        return Pb.EdgeTypeValue(self.value)
 
-        raise ValueError("Unable to decode Edge Type")
+    @property
+    def is_dynamic(self) -> bool:
+        """Returns True if this edge type is a dynamic reference (i.e. indirect jump or call)"""
+        return self in {RefType.JMP_INDIR, RefType.CALL_INDIR}
+
+    @property
+    def is_call(self) -> bool:
+        """Returns True if this edge type is a call reference"""
+        return self in {RefType.CALL, RefType.CALL_INDIR}
+
+    @property
+    def is_code(self) -> bool:
+        """Returns True if this edge type is a code reference"""
+        return self in {RefType.JMP_UNCOND, RefType.JMP_COND, RefType.JMP_INDIR, RefType.CALL, RefType.CALL_INDIR}
+
+    @property
+    def is_data(self) -> bool:
+        """Returns True if this edge type is a data reference"""
+        return self in {RefType.DATA_READ, RefType.DATA_WRITE, RefType.DATA_INDIR}
+    
+    @property
+    def is_symbol(self) -> bool:
+        """Returns True if this edge type is a symbol reference"""
+        return self == RefType.TYPE_SYMBOL
 
 
 class FunctionType(enum.Enum):
@@ -191,26 +218,6 @@ class OperandType(enum.Enum):
 
         return mapping.get(operand_type, OperandType.OTHER)
 
-class ReferenceType(enum.Enum):
-    """Reference Type"""
-
-    CODE = enum.auto()
-    DATA = enum.auto()
-    SYMBOL = enum.auto()
-    UNKNOWN = enum.auto()
-
-    @staticmethod
-    def from_proto(
-        reference_type: "Pb.Reference.ReferenceType",
-    ) -> "ReferenceType":
-        """Convert the protobuf value into this enumeration"""
-        mapping = {
-            Pb.Reference.REF_CODE: ReferenceType.CODE,
-            Pb.Reference.REF_DATA: ReferenceType.DATA,
-            Pb.Reference.REF_SYMBOL: ReferenceType.SYMBOL,
-        }
-
-        return mapping.get(reference_type, ReferenceType.UNKNOWN)
 
 class SegmentType(enum.Enum):
     """Segment Type"""

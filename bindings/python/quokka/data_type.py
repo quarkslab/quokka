@@ -4,7 +4,7 @@ from enum import IntEnum, auto, Enum
 from typing import TYPE_CHECKING, Iterable, Type
 
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
-from quokka.types import AddressT
+from quokka.types import AddressT, RefType
 
 if TYPE_CHECKING:
     from quokka import Program, Data
@@ -65,6 +65,7 @@ class ComplexType(object):
 
         # Xrefs attached to the type itself
         self._xrefs_to = [self._program.proto.references[x] for x in proto.xref_to]
+        self._xrefs_to = [(RefType(ref.reference_type), ref) for ref in self._xrefs_to]
     
     @property
     def comments(self) -> list[str]:
@@ -75,15 +76,23 @@ class ComplexType(object):
     def data_refs_to(self) -> list['Data']:
         """Returns all data reference to this type"""
         # Get protobuf type ids
-        return [self._program.data_holder[xref.source.address] for xref in self._xrefs_to
-                if xref.reference_type == Pb.Reference.REF_DATA]
+        return [self._program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t.is_data]
+
+    @property
+    def data_read_refs_to(self) -> list['Data']:
+        """Returns all data read reference to this instruction"""
+        return [self._program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+
+    @property
+    def data_write_refs_to(self) -> list['Data']:
+        """Returns all data write reference to this instruction"""
+        return [self._program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
     @property
     def code_refs_to(self) -> list[AddressT]:
         """Returns all code reference to this type"""
         # Get protobuf type ids
-        return [xref.source.address for xref in self._xrefs_to
-                if xref.reference_type == Pb.Reference.REF_CODE]
+        return [xref.source.address for t, xref in self._xrefs_to if t.is_code]
 
 
 
@@ -148,6 +157,7 @@ class EnumType(ComplexType):
         self.size: int = program.get_type(proto.base_type).size
         self._members: dict[str, EnumTypeMember] = {member.name: EnumTypeMember(member, self) 
                                                     for member in proto.values}
+        self._members_by_idx = [self._members[x.name] for x in proto.values]
 
     @property
     def members(self) -> Iterable[EnumTypeMember]:
@@ -157,6 +167,9 @@ class EnumType(ComplexType):
     def __iter__(self):
         """Iterate over the enum members"""
         return iter(self._members.values())
+
+    def __getitem__(self, key: int) -> EnumTypeMember:
+        return self._members_by_idx[key]
 
     def __getattr__(self, name):
         if name in self._members:
@@ -316,4 +329,5 @@ class UnionType(StructureType):
 
 
 TypeT = StructureType | BaseType | UnionType | ArrayType | PointerType | EnumType
+TypeTorMember = TypeT | StructureTypeMember | EnumTypeMember
 TypeValue = int | float | str | bytes | EnumType

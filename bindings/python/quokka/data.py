@@ -24,7 +24,7 @@ from typing import Mapping
 import quokka
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 
-from quokka.types import AddressT, Index
+from quokka.types import AddressT, Index, RefType
 from quokka.data_type import EnumType, TypeT, TypeValue
 
 
@@ -66,8 +66,10 @@ class Data:
 
         # Retrieve xrefs (for the data)
         self._xrefs_from = [self.program.proto.references[x.xref_index] for x in self.proto.xref_from]
+        self._xrefs_from = [(RefType(ref.reference_type), ref) for ref in self._xrefs_from]
+        
         self._xrefs_to = [self.program.proto.references[x.xref_index] for x in self.proto.xref_to]
-
+        self._xrefs_to = [(RefType(ref.reference_type), ref) for ref in self._xrefs_to]
 
 
     def __eq__(self, other: "Pb.Data") -> bool:
@@ -104,33 +106,49 @@ class Data:
 
     @property
     def data_refs_to(self) -> list['Data']:
-        """Returns all data reference to this instruction"""
+        """Returns all data reference to this data"""
         # If querying refs_to get the source address
-        return [self.program.data_holder[xref.source.address] for xref in self._xrefs_to if xref.reference_type == Pb.Reference.REF_DATA]
+        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t.is_data]
+
+    @property
+    def data_read_refs_to(self) -> list[quokka.Data]:
+        """Returns all data read reference to this data"""
+        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+
+    @property
+    def data_write_refs_to(self) -> list[quokka.Data]:
+        """Returns all data write reference to this data"""
+        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
     @property
     def data_refs_from(self) -> list['Data']:
-        """Returns all data reference from this instruction"""
+        """Returns all data reference from this data"""
         # If querying refs_from get the destination address
-        return [self.program.data_holder[xref.destination.address] for xref in self._xrefs_from if xref.reference_type == Pb.Reference.REF_DATA]
+        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t.is_data]
 
     @property
-    def code_refs_from(self) -> list[AddressT]:
-        """Returns all code reference from this instruction"""
-        # If querying refs_from get the destination address
-        return [xref.destination.address for xref in self._xrefs_from if xref.reference_type == Pb.Reference.REF_CODE]
+    def data_read_refs_from(self) -> list[quokka.Data]:
+        """Returns all data read reference from this data"""
+        # FIXME: Right now consider DATA_INDIR reference as read references (do we want to distinguish R/W ?)
+        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+
+    @property
+    def data_write_refs_from(self) -> list[quokka.Data]:
+        """Returns all data write reference from this data"""
+        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t == RefType.DATA_WRITE]
+
 
     @property
     def code_refs_to(self) -> list[AddressT]:
-        """Returns all code reference to this instruction"""
+        """Returns all code reference to this data"""
         # If querying refs_to get the source address
-        return [xref.source.address for xref in self._xrefs_to if xref.reference_type == Pb.Reference.REF_CODE]
+        return [xref.source.address for t, xref in self._xrefs_to if t.is_code]
 
     @property
     def type_refs_from(self) -> list[TypeT]:
-        """Returns all type reference from this instruction"""
+        """Returns all type reference from this data"""
         # Get protobuf type ids
-        type_ids = [xref.destination.data_type_identifier for xref in self._xrefs_from if xref.reference_type == Pb.Reference.REF_SYMBOL]
+        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol]
         # Resolve type ids to actual types
         return [self.program.get_type(type_id) for type_id in type_ids]
     

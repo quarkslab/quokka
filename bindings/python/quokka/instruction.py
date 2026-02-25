@@ -30,7 +30,7 @@ from quokka.types import (
     Any,
     ExporterMode,
     Index,
-    ReferenceType,
+    RefType,
     AccessMode,
     OperandType
 )
@@ -60,27 +60,24 @@ class Operand(ABC):
     def __init__(self, program: quokka.Program):
         """Constructor"""
         self.program: quokka.Program = program
-        self._xrefs_from: dict[ReferenceType, list[AddressT|Index]] = {
-            ReferenceType.CODE: [],
-            ReferenceType.DATA: [],
-            ReferenceType.SYMBOL: [],
-        }
+        self._data_xrefs_from: list[AddressT] = []
+        self._code_xrefs_from: list[AddressT] = []
+        self._type_xrefs_from: list[tuple[Index, int]] = []
 
     @property
     def data_refs_from(self) -> list[quokka.Data]:
         """Returns all data reference from this instruction"""
-        return [self.program.data_holder[xref] for xref in self._xrefs_from[ReferenceType.DATA]]
+        return [self.program.data_holder[xref] for xref in self._data_xrefs_from]
 
     @property
     def code_refs_from(self) -> list[AddressT]:
         """Returns all code reference from this instruction"""
-        return [xref for xref in self._xrefs_from[ReferenceType.CODE]]
+        return [xref for xref in self._code_xrefs_from]
 
     @property
     def type_refs_from(self) -> list[TypeT]:
         """Returns all type reference from this instruction"""
-        return [self.program.get_type(type_id) for type_id in 
-                self._xrefs_from[ReferenceType.SYMBOL]]
+        return [self.program.get_type(type_index, member_index) for type_index, member_index in self._type_xrefs_from]
 
     @property
     @abstractmethod
@@ -297,8 +294,10 @@ class Instruction:
 
         # Retrieve xrefs (for the instruction)
         self._xrefs_from = [self.program.proto.references[x.xref_index] for x in block.proto.instructions_xref_from if x.instr_bb_idx == inst_index]
-        self._xrefs_to = [self.program.proto.references[x.xref_index] for x in block.proto.instructions_xref_to if x.instr_bb_idx == inst_index]
+        self._xrefs_from = [(RefType(ref.reference_type), ref) for ref in self._xrefs_from]
 
+        self._xrefs_to = [self.program.proto.references[x.xref_index] for x in block.proto.instructions_xref_to if x.instr_bb_idx == inst_index]
+        self._xrefs_to = [(RefType(ref.reference_type), ref) for ref in self._xrefs_to]
 
         #: Instruction index in the parent block
         self.index: int = inst_index
@@ -391,38 +390,54 @@ class Instruction:
     def data_refs_to(self) -> list[quokka.Data]:
         """Returns all data reference to this instruction"""
         # If querying refs_to get the source address
-        return [self.program.data_holder[xref.source.address] for xref in self._xrefs_to
-                if xref.reference_type == Pb.Reference.REF_DATA]
+        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t.is_data]
+
+    @property
+    def data_read_refs_to(self) -> list[quokka.Data]:
+        """Returns all data read reference to this instruction"""
+        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+
+    @property
+    def data_write_refs_to(self) -> list[quokka.Data]:
+        """Returns all data write reference to this instruction"""
+        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
     @property
     def data_refs_from(self) -> list[quokka.Data]:
         """Returns all data reference from this instruction"""
         # If querying refs_from get the destination address
-        return [self.program.data_holder[xref.destination.address] for xref in self._xrefs_from
-                if xref.reference_type == Pb.Reference.REF_DATA]
+        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t.is_data]
+
+    @property
+    def data_read_refs_from(self) -> list[quokka.Data]:
+        """Returns all data read reference from this instruction"""
+        # FIXME: Right now consider DATA_INDIR reference as read references (do we want to distinguish R/W ?)
+        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+
+    @property
+    def data_write_refs_from(self) -> list[quokka.Data]:
+        """Returns all data write reference from this instruction"""
+        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t == RefType.DATA_WRITE]
 
     @property
     def code_refs_from(self) -> list[AddressT]:
         """Returns all code reference from this instruction"""
         # If querying refs_from get the destination address
-        return [xref.destination.address for xref in self._xrefs_from
-                if xref.reference_type == Pb.Reference.REF_CODE]
+        return [xref.destination.address for t, xref in self._xrefs_from if t.is_code]
 
     @property
     def code_refs_to(self) -> list[AddressT]:
         """Returns all code reference to this instruction"""
         # If querying refs_to get the source address
-        return [xref.source.address for xref in self._xrefs_to
-                if xref.reference_type == Pb.Reference.REF_CODE]
+        return [xref.source.address for t, xref in self._xrefs_to if t.is_code]
 
     @property
     def type_refs_from(self) -> list[TypeT]:
         """Returns all type reference from this instruction"""
         # Get protobuf type ids
-        type_ids = [xref.destination.data_type_identifier for xref in self._xrefs_from
-                    if xref.reference_type == Pb.Reference.REF_SYMBOL]
+        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol]
         # Resolve type ids to actual types
-        return [self.program.get_type(type_id) for type_id in type_ids]
+        return [self.program.get_type(dtype.type_index, dtype.member_index) for dtype in type_ids]
     
     @property
     def callees(self) -> list[AddressT]:
@@ -435,6 +450,36 @@ class Instruction:
         """Returns all call reference to this instruction"""
         # Check if the reference address points to a function head
         return [addr for addr in self.code_refs_to if addr in self.program]
+
+    def is_fall_through(self, addr: AddressT) -> bool:
+        """Check if the given address is a fall-through of the instruction
+
+        Arguments:
+            addr: Address to check
+        Returns:
+            True if the address is a fall-through of the instruction, False otherwise
+        """
+        return addr == self.address + self.size
+
+    @property
+    def is_call(self) -> bool:
+        """Returns True if this instruction is a call instruction"""
+        return any(t.is_call for t, _ in self._xrefs_from)
+    
+    @property
+    def is_dynamic(self) -> bool:
+        """Returns True if this instruction is a dynamic reference (i.e. indirect jump or call)"""
+        return any(t.is_dynamic for t, _ in self._xrefs_from)
+
+    @property
+    def is_jump(self) -> bool:
+        """Returns True if this instruction is a jump instruction"""
+        return any(t.is_code and not t.is_call for t, _ in self._xrefs_from)
+
+    @property
+    def is_conditional_jump(self) -> bool:
+        """Returns True if this instruction is a conditional jump instruction"""
+        return any(t == RefType.JMP_COND for t, _ in self._xrefs_from)
 
     @property
     def operands(self) -> list[Operand]:
@@ -466,36 +511,36 @@ class Instruction:
         mem_ops = [x for x in operands if x.type == OperandType.MEMORY]
         imm_ops = [x for x in operands if x.type == OperandType.IMMEDIATE]
 
-        for dxref in (x for x in self._xrefs_from if x.reference_type == Pb.Reference.REF_DATA):
+        for dxref in (xref.destination.address for t, xref in self._xrefs_from if t.is_data):
             # If there is only one memory operand assign data ref to it
             if len(operands) == 1:  # Only one operand, assign the data ref to it
-                operands[0].xrefs[ReferenceType.DATA] = dxref
+                operands[0]._data_xrefs_from.append(dxref)
             elif len(mem_ops) == 1:  # Only one memory operand, assign the data ref to it
-                mem_ops[0].xrefs[ReferenceType.DATA] = dxref
+                mem_ops[0]._data_xrefs_from.append(dxref)
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the data ref to it
-                imm_ops[0].xrefs[ReferenceType.DATA] = dxref
+                imm_ops[0]._data_xrefs_from.append(dxref)
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign data refs")
         
-        for cxref in (x for x in self._xrefs_from if x.reference_type == Pb.Reference.REF_CODE):
+        for cxref in (xref.destination.address for t, xref in self._xrefs_from if t.is_code):
             # If there is only one memory operand assign code ref to it
             if len(operands) == 1:  # Only one operand, assign the code ref to it
-                operands[0].xrefs[ReferenceType.CODE] = cxref
+                operands[0]._code_xrefs_from.append(cxref)
             elif len(mem_ops) == 1:  # Only one memory operand, assign the code ref to it
-                mem_ops[0].xrefs[ReferenceType.CODE] = cxref
+                mem_ops[0]._code_xrefs_from.append(cxref)
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the code ref to it
-                imm_ops[0].xrefs[ReferenceType.CODE] = cxref
+                imm_ops[0]._code_xrefs_from.append(cxref)
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign code refs")
 
-        for sxref in (x for x in self._xrefs_from if x.reference_type == Pb.Reference.REF_SYMBOL):
+        for sxref in (xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol):
             # If there is only one memory operand assign symbol ref to it
             if len(operands) == 1:  # Only one operand, assign the symbol ref to it
-                operands[0].xrefs[ReferenceType.SYMBOL] = sxref
+                operands[0]._type_xrefs_from.append((sxref.type_index, sxref.member_index))
             elif len(mem_ops) == 1:  # Only one memory operand, assign the symbol ref to it
-                mem_ops[0].xrefs[ReferenceType.SYMBOL] = sxref
+                mem_ops[0]._type_xrefs_from.append((sxref.type_index, sxref.member_index))
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the symbol ref to it
-                imm_ops[0].xrefs[ReferenceType.SYMBOL] = sxref
+                imm_ops[0]._type_xrefs_from.append((sxref.type_index, sxref.member_index))
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign symbol refs")
 

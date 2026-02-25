@@ -10,12 +10,17 @@ We denote links between two element as `References`.
 `quokka` uses several Reference Types listed below that are self-explanatory.
 
 ```python title="Extract of types.py" 
-class ReferenceType(enum.Enum):
-    CALL = enum.auto()
-    DATA = enum.auto()
-    ENUM = enum.auto()
-    STRUC = enum.auto()
-    UNKNOWN = enum.auto()
+class RefType(enum.IntEnum):
+    UNKNOWN = 0
+    JMP_UNCOND = 1
+    JMP_COND = 2
+    JMP_INDIR = 3
+    CALL = 4
+    CALL_INDIR = 5
+    DATA_READ = 6
+    DATA_WRITE = 7
+    DATA_INDIR = 8
+    TYPE_SYMBOL = 9
 ```
 
 ## Call References
@@ -47,22 +52,8 @@ inst = prog.get_instruction(0x8049287)
 print(inst.cs_inst)
 # <CsInsn 0x8049287 [a140e00408]: mov eax, dword ptr [0x804e040]>
 
-for data in inst.data_references:
+for data in inst.data_refs_from:
 	print(f"{data.type}: {data.address} {data.value}")
 	# DataType.DOUBLE_WORD : 0x804e040 None
 ```
 
-## Reference Manager
-
-Every Reference is stored in the Reference Manager. The API is not yet 
-stabilized and the Reference Manager should not be used directly.
-
-```python
-import quokka
-prog = quokka.Program('docs/samples/qb-crackme.quokka', 'docs/samples/qb-crackme')
-
-# To list every call to a `Chunk`
-func = prog.fun_names["get_input"]
-chunk = func[func.start]
-prog.references.resolve_calls(chunk)
-```

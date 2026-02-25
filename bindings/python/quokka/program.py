@@ -42,6 +42,7 @@ from quokka.data_type import (
     PointerType,
     StructureType,
     EnumType,
+    TypeTorMember,
     UnionType,
     TypeT
 )
@@ -146,7 +147,6 @@ class Program(dict):
         self.calling_convention: CallingConvention = CallingConvention.from_proto(self.proto.meta.calling_convention)
 
         self.executable = quokka.Executable(exec_path, self.endianness)
-        # self.references = quokka.References(self)
         self.data_holder = quokka.DataHolder(self.proto, self)
 
         # Functions
@@ -339,11 +339,12 @@ class Program(dict):
         except KeyError as exc:
             raise KeyError(f"No item at address 0x{addr:x}") from exc
 
-    def get_type(self, type_index: Index) -> TypeT:
+    def get_type(self, type_index: Index, member_index: int = -1) -> TypeTorMember:
         """Get a type by its index
 
         Arguments:
             type_index: Index of the type in the proto
+            member_index: Index of the member in the type (if applicable)
 
         Returns:
             The corresponding type
@@ -376,7 +377,12 @@ class Program(dict):
             else:
                 assert False, "Unknown type"
 
-            return self._types[type_index]
+            typ = self._types[type_index]
+            if member_index != -1:
+                assert isinstance(typ, (StructureType, UnionType, EnumType))
+                return typ[member_index]
+            else:
+                return typ
 
     # @cached_property
     # def memory(self) -> "quokka.Memory":
