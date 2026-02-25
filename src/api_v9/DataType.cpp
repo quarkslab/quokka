@@ -74,7 +74,7 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
       base_type_name = ConvertIdaString(ida_string);
 
       // Ask the CompositeTypes manager to give us the relevant struct/union
-      auto it = data_types.find_by_tid(udm.type.get_tid());
+      auto it = data_types.find_by_tuid(GetTypeUid(udm.type));
 
       if (it == data_types.end()) {
         QLOGE << absl::StrFormat(
@@ -82,7 +82,7 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
             "the exported composite types.",
             ConvertIdaString(udm.name), base_type_name);
       } else {
-        member.target_tid = it->first;
+        member.target_tuid = it->first;
       }
     }
 
@@ -113,6 +113,7 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
   qstring name;
   tif.get_type_name(&name);
   tid_t tid = tif.get_tid();
+  type_uid_t tuid = GetTypeUid(tif);
 
   DataTypes& data_types = DataTypes::GetInstance();
   size_t size = tif.is_forward_decl() ? 0 : tif.get_size();
@@ -125,13 +126,41 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
 
   if (tif.is_union()) {
     const auto& type =
-        data_types.emplace<UnionType>(tid, ConvertIdaString(name), tid, size);
+        data_types.emplace<UnionType>(tuid, ConvertIdaString(name), tid, size);
     finalize_export(type);
   } else {
     const auto& type = data_types.emplace<StructureType>(
-        tid, ConvertIdaString(name), tid, size);
+        tuid, ConvertIdaString(name), tid, size);
     finalize_export(type);
   }
+}
+
+static std::variant<type_uid_t, BaseType> ExportInnerElement(
+    const tinfo_t& tif) {
+  if (tif.empty())
+    return TYPE_UNK;
+
+  const DataTypes& data_types = DataTypes::GetInstance();
+
+  BaseType base_type = GetBaseType(tif);
+
+  switch (base_type) {
+    case TYPE_POINTER:
+      return ExportPointer(tif);
+    case TYPE_ARRAY:
+      return ExportArray(tif);
+      return TYPE_UNK;
+    case TYPE_UNK: {
+      type_uid_t tuid = GetTypeUid(tif);
+      // We should already have exported the data types
+      assert(data_types.find_by_tuid(tuid) != data_types.end());
+      return tuid;
+    }
+    default:  // Primitive type
+      break;
+  }
+
+  return base_type;
 }
 
 void ExportCompositeDataTypes() {
@@ -151,32 +180,26 @@ void ExportCompositeDataTypes() {
   // members referencing structures that have yet to be exported or are
   // incomplete.
   // For ex: struct A { A *a; };
-  DataTypes& data_types = DataTypes::GetInstance();
-  for (auto&& [tid, variant_type] : data_types) {
-    std::visit(
-        [&tid]<typename T>(T& data_type) -> void {
-          if constexpr (IsCompositeType<T>) {
-            tinfo_t tif;
-            bool res = tif.get_type_by_tid(tid);
-            assert(res &&
-                   "Couldn't retrieve the tinfo_t object from the tid_t");
+  for_each_visit<StructureType, UnionType>(
+      DataTypes::GetInstance(),
+      [](const type_uid_t& tuid, auto& data_type) -> void {
+        assert(tuid.is_real_tid);  // We should never ever have a fake tid here
+        tinfo_t tif;
+        bool res = tif.get_type_by_tid(tuid.tid);
+        assert(res && "Couldn't retrieve the tinfo_t object from the tid_t");
 
-            // Print the enum as a C-string if possible
-            qstring composite_name;
-            tif.get_type_name(&composite_name);
-            qstring decl;
-            if (tif.print(
-                    &decl, composite_name.c_str(),
-                    PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
-              data_type.c_str = ConvertIdaString(decl);
+        // Print the enum as a C-string if possible
+        qstring composite_name;
+        tif.get_type_name(&composite_name);
+        qstring decl;
+        if (tif.print(&decl, composite_name.c_str(),
+                      PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+          data_type.c_str = ConvertIdaString(decl);
 
-            // Export the members of the struct/union
-            if (!tif.is_empty_udt() && !tif.is_forward_decl())
-              ExportCompositeMembers(data_type, tif);
-          }
-        },
-        variant_type);
-  }
+        // Export the members of the struct/union
+        if (!tif.is_empty_udt() && !tif.is_forward_decl())
+          ExportCompositeMembers(data_type, tif);
+      });
 }
 
 void ExportEnums() {
@@ -217,7 +240,7 @@ void ExportEnums() {
       enum_type.c_str = ConvertIdaString(decl);
 
     const EnumType& new_obj =
-        data_types.insert(tif.get_tid(), std::move(enum_type));
+        data_types.insert(GetTypeUid(tif), std::move(enum_type));
 
     // References
     ExportSymbolReference(&new_obj, new_obj.xref_to, tif.get_tid(),
@@ -233,6 +256,62 @@ void ExportEnums() {
     // Check for comment for the enum
     // GetEnumComment(enum_type);
   }
+}
+
+type_uid_t ExportPointer(const tinfo_t& tif) {
+  DataTypes& data_types = DataTypes::GetInstance();
+
+  // First check if it has already been exported
+  type_uid_t tuid = GetTypeUid(tif);
+  auto it = data_types.find_by_tuid(tuid);
+  if (it != data_types.end())
+    return tuid;
+
+  ptr_type_data_t pi;
+  if (!tif.get_ptr_details(&pi))
+    assert(false);
+
+  size_t size = tif.is_forward_decl() ? 0 : tif.get_size();
+  tid_t tid = tif.get_tid();
+  qstring name;
+  tif.get_type_name(&name);
+
+  PointerType& pointer_type =
+      data_types.emplace<PointerType>(tuid, ConvertIdaString(name), tid, size);
+
+  if (pi.is_code_ptr())  // Function pointer, store it as pointer to UNK
+    pointer_type.element_type = TYPE_UNK;
+  else
+    pointer_type.element_type = ExportInnerElement(pi.obj_type);
+
+  return tuid;
+}
+
+type_uid_t ExportArray(const tinfo_t& tif) {
+  DataTypes& data_types = DataTypes::GetInstance();
+
+  // First check if it has already been exported
+  type_uid_t tuid = GetTypeUid(tif);
+  auto it = data_types.find_by_tuid(tuid);
+  if (it != data_types.end())
+    return tuid;
+
+  array_type_data_t ai;
+  if (!tif.get_array_details(&ai))
+    assert(false);
+
+  size_t size = ai.nelems * GetTinfoSize(ai.elem_type);
+
+  tid_t tid = tif.get_tid();
+  qstring name;
+  tif.get_type_name(&name);
+
+  ArrayType& array_type =
+      data_types.emplace<ArrayType>(tuid, ConvertIdaString(name), tid, size);
+
+  array_type.element_type = ExportInnerElement(ai.elem_type);
+
+  return tuid;
 }
 
 }  // namespace quokka

@@ -18,6 +18,12 @@
 #include <type_traits>
 #include <variant>
 
+// clang-format off: Compatibility.h must come before ida headers
+#include "quokka/Compatibility.h"
+// clang-format on
+#include <pro.h>
+#include <typeinf.hpp>
+
 #include "quokka.pb.h"
 #include "quokka/Block.h"
 #include "quokka/Bucket.h"
@@ -125,6 +131,8 @@ static size_t ToProtoBaseType(BaseType data_type) {
       return Quokka::BaseType::Quokka_BaseType_TYPE_FLOAT;
     case TYPE_DOUBLE:
       return Quokka::BaseType::Quokka_BaseType_TYPE_DOUBLE;
+    case TYPE_VOID:
+      return Quokka::BaseType::Quokka_BaseType_TYPE_VOID;
     default:
       return Quokka::BaseType::Quokka_BaseType_TYPE_UNK;
   }
@@ -213,7 +221,6 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
     if (!composite.c_str.empty()) {
       proto_composite_type->set_c_str(composite.c_str);
     }
-
   };
 
   auto write_members = [&data_types](
@@ -230,8 +237,8 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
       proto_member->set_offset(member.offset);
       proto_member->set_name(member.name);
       // If it is not base type
-      if (member.target_tid.has_value()) {
-        auto target_type = data_types.find_by_tid(*member.target_tid);
+      if (member.target_tuid.has_value()) {
+        auto target_type = data_types.find_by_tuid(*member.target_tuid);
         assert(target_type != data_types.end());  // We should never have a miss
         proto_member->set_type_index(
             UpcastVariant<ProtoHelper>(target_type->second).proto_index);
@@ -524,8 +531,8 @@ void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket) {
     proto_data->set_segment_index(data.segment->proto_index);
     proto_data->set_segment_offset(data.addr - data.segment->start_addr);
     proto_data->set_file_offset(data.file_offset);
-    if (data.target_tid.has_value()) {
-      auto it = data_types.find_by_tid(*data.target_tid);
+    if (data.target_tuid.has_value()) {
+      auto it = data_types.find_by_tuid(*data.target_tuid);
       assert(it != data_types.end());  // Huge problem
       proto_data->set_type_index(
           UpcastVariant<ProtoHelper>(it->second).proto_index);
@@ -681,7 +688,7 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
 
 void WriteTypes(quokka::Quokka* proto) {
   // Try to reserve the right amount from the start
-  proto->mutable_types()->Reserve(15 + DataTypes::GetInstance().size());
+  proto->mutable_types()->Reserve(9 + DataTypes::GetInstance().size());
 
   // Start by writing the primitive types
   proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_UNK);
@@ -692,32 +699,31 @@ void WriteTypes(quokka::Quokka* proto) {
   proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_OW);
   proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_FLOAT);
   proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_DOUBLE);
+  proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_VOID);
 
   // The order matters! The last ones should be structs and unions
   WriteEnums(proto);
   WriteCompositeTypes(proto);
 }
 
-class string_text_sink_t : public text_sink_t
-{
-public:
-    std::string &buffer;
+class string_text_sink_t : public text_sink_t {
+ public:
+  std::string& buffer;
 
-    string_text_sink_t(std::string &buf) : buffer(buf) {}
+  string_text_sink_t(std::string& buf) : buffer(buf) {}
 
-    int idaapi print(const char *str) override
-    {
-        buffer += str;
-        return strlen(str);
-    }
+  int idaapi print(const char* str) override {
+    buffer += str;
+    return strlen(str);
+  }
 };
 
 void WriteHeaders(quokka::Quokka* proto) {
   // Get the number of types
-  til_t *ti = get_idati();
+  til_t* ti = get_idati();
   if (!ti) {
-         QLOGE << "Failed to get idati!\n";
-         return;
+    QLOGE << "Failed to get idati!\n";
+    return;
   }
 
   string_text_sink_t printer(*proto->mutable_headers());
@@ -725,7 +731,8 @@ void WriteHeaders(quokka::Quokka* proto) {
   for (uint32 ord = 1; ord <= get_ordinal_count(ti); ord++) {
     ordvec_t.push_back(ord);
   }
-  print_decls(printer, ti, &ordvec_t, PDF_INCL_DEPS | PDF_DEF_FWD | PDF_DEF_BASE | PDF_HEADER_CMT);
+  print_decls(printer, ti, &ordvec_t,
+              PDF_INCL_DEPS | PDF_DEF_FWD | PDF_DEF_BASE | PDF_HEADER_CMT);
 }
 
 quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode) {

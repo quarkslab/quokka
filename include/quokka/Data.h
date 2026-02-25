@@ -59,9 +59,6 @@ namespace quokka {
  */
 class Data : public ProtoHelper {
  private:
-  using RefTypeT =
-      std::variant<RefCounter<EnumType>, RefCounter<CompositeConcreteType>>;
-
   std::string name;  ///< If applicable, the name of the data
 
   /**
@@ -75,11 +72,19 @@ class Data : public ProtoHelper {
    */
   Data(ea_t addr_, BaseType base_type_, uint64_t size_, int64_t file_offset_,
        const Segment* segment_)
-      : addr(addr_),
-        base_type(base_type_),
-        size(size_),
-        file_offset(file_offset_),
-        segment(segment_) {
+      : addr(addr_), size(size_), file_offset(file_offset_), segment(segment_) {
+    switch (base_type_) {
+      case TYPE_POINTER:
+      case TYPE_ARRAY:
+      case TYPE_STR:
+      case TYPE_ALIGN:
+        base_type = TYPE_UNK;
+        break;
+      default:
+        base_type = TYPE_UNK;
+        break;
+    }
+
     if (HasName(false))
       this->SetName();
   }
@@ -105,8 +110,8 @@ class Data : public ProtoHelper {
   const Segment* segment;  ///< IDA segment. It has to outlive Data
   int64 file_offset;       ///< File offset, if <0 then there is none
   mutable Xref xrefs;
-  std::optional<tid_t>
-      target_tid;  ///< IDA tid when the data not of a base type
+  std::optional<type_uid_t>
+      target_tuid;  ///< type UID when the data not of a base type
 
   /**
    * Static method to build a Data object

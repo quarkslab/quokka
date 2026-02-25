@@ -63,8 +63,11 @@ Data Data::Make(ea_t addr, uint32_t size) {
   BaseType data_type;
   tinfo_t tinf;
   tid_t tid = BADADDR;
-  // Try to obtain the tinfo descriptor
-  if (get_tinfo(&tinf, addr)) {
+
+  if (has_ti(addr)) {  // Try to obtain the tinfo descriptor
+    if (!get_tinfo(&tinf, addr))
+      assert(false);
+
     // Resolve the typedef/typeref to final type
     if (tinf.is_typeref() || tinf.is_typedef()) {
       uint32_t final_ordinal = tinf.get_final_ordinal();
@@ -72,12 +75,17 @@ Data Data::Make(ea_t addr, uint32_t size) {
              "Got a typedef/typeref type without a final ordinal");
       if (!tinf.get_numbered_type(final_ordinal))
         assert(false && "Cannot retrieve the final ordinal tinfo_t");
-      tid = tinf.get_tid();
     }
+    tid = tinf.get_tid();
     data_type = GetBaseType(tinf);
   } else {  // No tinfo, fall back on the flags
     data_type = GetBaseType(get_flags(addr));
   }
+
+  // TYPE_POINTER => !tinfo.empty()
+  assert(data_type != TYPE_POINTER || !tinf.empty());
+  // TYPE_ARRAY => !tinfo.empty()
+  assert(data_type != TYPE_POINTER || !tinf.empty());
 
   const Segments& segments = Segments::GetInstance();
 
@@ -97,10 +105,44 @@ Data Data::Make(ea_t addr, uint32_t size) {
 
   const DataTypes& data_types = DataTypes::GetInstance();
 
-  // TODO adapt for Enum/pointer/array
-  // Get the pointed type
-  if (data_type == TYPE_UNK) {
-    const auto& it = data_types.find_by_tid(tid);
+  if (data_type == TYPE_POINTER) {
+    data.target_tuid = ExportPointer(tinf);
+
+  } else if (data_type == TYPE_ARRAY) {
+    data.target_tuid = ExportArray(tinf);
+
+  } else if (data_type == TYPE_STR) {  // String literal, No tinfo_t available
+    if (guess_tinfo(&tinf, addr) > 0) {
+      data.target_tuid = ExportArray(tinf);
+    } else {
+      QLOGE << absl::StrFormat(
+          "Couldn't recover the tinfo_t from the string literal at address "
+          "0x%08llx. Marking it as TYPE_UNK",
+          addr);
+      data.base_type = TYPE_UNK;
+    }
+
+  } else if (data_type == TYPE_ALIGN) {
+    data.base_type = TYPE_UNK;  // This is useless data. Mark it as unknown
+
+  } else if (data_type == TYPE_UNK) {  // Most likely a enum/struct/union
+    // Sometimes IDA fails at giving us the correct tinfo_t. Try to recover it
+    // through unconventional means
+    if (tid == BADADDR) {
+      tid = get_strid(addr);
+      if (tid == BADADDR) {
+        QLOGE << absl::StrFormat(
+            "Cannot correctly identify the type of data at address 0x%08llx. "
+            "Marking it as TYPE_UNK",
+            addr);
+        data.base_type = TYPE_UNK;
+        goto data_exported;  // Skip to the end
+      }
+    }
+
+    // Failing to resolve the data type at this point is really bad
+    // Note: here tid is guaranteed to be valid but tinf might not be
+    const auto& it = data_types.find_by_tuid(GetTypeUid(tid));
 
     if (it == data_types.end()) {
       QLOGE << absl::StrFormat(
@@ -110,10 +152,11 @@ Data Data::Make(ea_t addr, uint32_t size) {
       // Change the type to TYPE_UNK to avoid breaking the protobuf
       data.base_type = TYPE_UNK;
     } else {
-      data.target_tid = it->first;
+      data.target_tuid = it->first;
     }
   }
 
+data_exported:
   // Increment the ref-counter of the segment
   segment.ref_count++;
 

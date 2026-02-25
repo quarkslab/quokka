@@ -263,6 +263,7 @@ message Quokka {
     TYPE_OW = 5;
     TYPE_FLOAT = 6;
     TYPE_DOUBLE = 7;
+    TYPE_VOID = 8;
   }
 
   // For the future

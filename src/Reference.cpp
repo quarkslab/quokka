@@ -84,6 +84,7 @@ static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
         assert(false);  // Should never happen;
 
       tid_t parent_tid = tif.get_tid();
+      type_uid_t parent_tuid = GetTypeUid(tif);
       int32_t member_idx;
       if (parent_tid == xref.to) {  // xref is pointing to the whole object
         member_idx = reference::WHOLE_TYPE;
@@ -97,7 +98,7 @@ static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
         assert(member_idx != -1);  // Huge problem
       }
 
-      auto it = data_types.find_by_tid(parent_tid);
+      auto it = data_types.find_by_tuid(parent_tuid);
       if (it == data_types.end()) {
         tif.get_numbered_type(ord);
 

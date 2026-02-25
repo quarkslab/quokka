@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <cstddef>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -22,6 +23,9 @@
 #include <pro.h>
 #include <bytes.hpp>
 #include <typeinf.hpp>
+
+#include "absl/container/flat_hash_map.h"
+#include "absl/strings/str_format.h"
 
 #include "quokka/DataType.h"
 
@@ -48,7 +52,12 @@ BaseType GetBaseType(flags_t flags) {
     return TYPE_FLOAT;
   } else if (is_double(flags)) {
     return TYPE_DOUBLE;
+  } else if (is_strlit(flags)) {
+    return TYPE_STR;
+  } else if (is_align(flags)) {
+    return TYPE_ALIGN;
   }
+  // TYPE_VOID can never be identified through flags
   return TYPE_UNK;
 }
 
@@ -83,10 +92,11 @@ BaseType GetBaseType(const tinfo_t& tinf) {
       return TYPE_OW;
     case BT_INT:  // natural int. Query for size
       return int_from_tinfo_size();
+    case BTF_VOID:
+      return TYPE_VOID;
     case BT_BOOL:
       switch (tinf.get_realtype() & TYPE_FLAGS_MASK) {
-        case BTMT_DEFBOOL:  // size is model specific or unknown. Query for
-                            // size
+        case BTMT_DEFBOOL:  // size is model specific or unknown. Query for size
           return int_from_tinfo_size();
         case BTMT_BOOL1:
           return TYPE_B;
@@ -106,9 +116,58 @@ BaseType GetBaseType(const tinfo_t& tinf) {
         default:  // Could actually be a long double or other len
           return TYPE_DOUBLE;
       }
+    case BT_PTR:
+      return TYPE_POINTER;
+    case BT_ARRAY: {
+      return TYPE_ARRAY;
+    }
     default:
       return TYPE_UNK;
   }
+}
+
+static std::string MakeCanonicalKey(const tinfo_t& tif) {
+  qtype type_bytes, field_bytes;
+  if (!tif.serialize(&type_bytes, &field_bytes, nullptr)) {
+    qstring type_str;
+    tif.print(&type_str);
+    throw std::runtime_error(
+        absl::StrFormat("Cannot serialize type %s", type_str.c_str()));
+  }
+
+  std::string key;
+  key.reserve(type_bytes.size() + 1 + field_bytes.size());
+  key.append((const char*)type_bytes.c_str(), type_bytes.size());
+  key.push_back('\0');
+  key.append((const char*)field_bytes.c_str(), field_bytes.size());
+  return key;
+}
+
+type_uid_t GetTypeUid(const tinfo_t& tif) {
+  static absl::flat_hash_map<std::string, tid_t> key_to_synth;
+  static tid_t next_synth_id = 0;
+
+  tid_t tid = tif.get_tid();
+  if (tid != BADADDR)
+    return {true, tid};  // Keep consistency with IDA
+
+  // No tid, use serialization and internal mapping
+  auto key = MakeCanonicalKey(tif);
+
+  auto it = key_to_synth.find(key);
+  if (it != key_to_synth.end())
+    return {false, it->second};
+
+  tid_t sid = next_synth_id++;
+  key_to_synth[key] = sid;
+  return {false, sid};
+}
+
+type_uid_t GetTypeUid(const tid_t& tid) {
+  if (tid == BADADDR)
+    throw std::invalid_argument(
+        "Cannot build a valid type_uid_t from an invalid tid_t");
+  return {true, tid};
 }
 
 CompositeType::CompositeType(std::string&& n, tid_t id_, size_t sz)
