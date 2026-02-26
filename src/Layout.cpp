@@ -264,7 +264,6 @@ void HeadIterator::DebugPrint() const {
   QLOGD << absl::StrFormat("\titem_size: 0x%x", this->item_size);
   QLOGD << absl::StrFormat("\tnext_head_addr: 0x%08x", this->next_head_addr);
   QLOGD << absl::StrFormat("\tnext_unk_addr: 0x%08x", this->next_unk_addr);
-  QLOGD << absl::StrFormat("\tnext_chunk_addr: 0x%08x", this->next_chunk_addr);
   QLOGD << absl::StrFormat("\tnext_ea: 0x%08x\n", this->next_ea);
 }
 

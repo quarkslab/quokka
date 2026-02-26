@@ -127,7 +127,6 @@ class HeadIterator {
   /* Information about futures address */
   ea_t next_unk_addr = BADADDR;    ///< Next unknown address
   ea_t next_head_addr = BADADDR;   ///< Next head address
-  ea_t next_chunk_addr = BADADDR;  ///< Next chunk head address
 
   Layout current_layout;  ///< Current layout
 
