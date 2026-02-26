@@ -8,11 +8,50 @@ env:
 permissions: {}
 
 jobs:
+  setup:
+    name: Determine build scope
+    runs-on: ubuntu-latest
+    outputs:
+      ida_versions: ${{ steps.set-matrix.outputs.ida_versions }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Determine build scope
+        id: set-matrix
+        shell: bash
+        run: |
+          FULL='["74","77","80","81","82","83","84","85","90","90sp1","91","9.2","9.3"]'
+          LIGHT='["77","85","9.2","9.3"]'
+
+          # Full build for releases (tag pushes)
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "ida_versions=$FULL" >> "$GITHUB_OUTPUT"
+            echo "Building all SDK versions (tag push)"
+            exit 0
+          fi
+
+          # Full build every 30 commits
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          if (( COMMIT_COUNT % 30 == 0 )); then
+            echo "ida_versions=$FULL" >> "$GITHUB_OUTPUT"
+            echo "Building all SDK versions (commit #$COMMIT_COUNT)"
+            exit 0
+          fi
+
+          # Light build otherwise
+          echo "ida_versions=$LIGHT" >> "$GITHUB_OUTPUT"
+          echo "Light build (commit #$COMMIT_COUNT)"
+
   build:
+    needs: setup
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91, 9.2]
+        ida_sdk: ${{ fromJSON(needs.setup.outputs.ida_versions) }}
         include:
           - os: ubuntu-latest
             ext: so
@@ -23,7 +62,7 @@ jobs:
         exclude:
           # We exclude these because ARM libraries were not available in 7.4 and the latest macos runner on GitHub are Mx machines
           - os: macos-latest
-            ida_sdk: 74
+            ida_sdk: "74"
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -72,8 +111,9 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
       - name: Fetch IDA SDKs (Linux / MacOS)
-        if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
-            (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') }}
+        if:
+          ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
+          (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
@@ -84,8 +124,9 @@ jobs:
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && rm third_party/$IDA_SDK_VERSION/include/regex.h
 
       - name: Fetch IDA SDKs (Windows)
-        if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
-            matrix.os == 'windows-latest' }}
+        if:
+          ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
+          matrix.os == 'windows-latest' }}
         env:
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
@@ -169,7 +210,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91, 9.2]
+        ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91, 9.2, 9.3]
         bitness: ["", "-32"]
         include:
           - os: windows-latest
@@ -190,6 +231,8 @@ jobs:
           - ida_sdk: 91
             bitness: "-32"
           - ida_sdk: 9.2
+            bitness: "-32"
+          - ida_sdk: 9.3
             bitness: "-32"
 
     steps:
