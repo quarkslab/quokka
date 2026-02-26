@@ -90,16 +90,16 @@ class Endianness(enum.Enum):
 class RefType(enum.IntEnum):
     """Reference Type"""
 
-    UNKNOWN = 0
-    JMP_UNCOND = 1
-    JMP_COND = 2
-    JMP_INDIR = 3
-    CALL = 4
-    CALL_INDIR = 5
-    DATA_READ = 6
-    DATA_WRITE = 7
-    DATA_INDIR = 8
-    TYPE_SYMBOL = 9
+    JMP_UNCOND = 0
+    JMP_COND = 1
+    JMP_INDIR = 2
+    CALL = 3
+    CALL_INDIR = 4
+    DATA_READ = 5
+    DATA_WRITE = 6
+    DATA_INDIR = 7
+    TYPE_SYMBOL = 8
+    UNKNOWN = 9
 
     @staticmethod
     def from_proto(

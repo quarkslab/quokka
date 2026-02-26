@@ -60,33 +60,24 @@ class EnumABCMeta(EnumMeta, ABCMeta):
     pass
 
 
-class BaseType(CoreType, Enum, metaclass=EnumABCMeta):
+class BaseType(CoreType, IntEnum, metaclass=EnumABCMeta):
     """Data Type"""
 
-    UNKNOWN = auto()
-    BYTE = auto()
-    WORD = auto()
-    DOUBLE_WORD = auto()
-    QUAD_WORD = auto()
-    OCTO_WORD = auto()
-    FLOAT = auto()
-    DOUBLE = auto()
+    UNKNOWN = 0
+    BYTE = 1
+    WORD = 2
+    DOUBLE_WORD = 3
+    QUAD_WORD = 4
+    OCTO_WORD = 5
+    FLOAT = 6
+    DOUBLE = 7
+    VOID = 8
 
     @staticmethod
     def from_proto(data_type: Pb.BaseType) -> "BaseType":
         """Convert the protobuf value into this enumeration"""
-        mapping = {
-            Pb.TYPE_B: BaseType.BYTE,
-            Pb.TYPE_W: BaseType.WORD,
-            Pb.TYPE_DW: BaseType.DOUBLE_WORD,
-            Pb.TYPE_QW: BaseType.QUAD_WORD,
-            Pb.TYPE_OW: BaseType.OCTO_WORD,
-            Pb.TYPE_FLOAT: BaseType.FLOAT,
-            Pb.TYPE_DOUBLE: BaseType.DOUBLE,
-        }
-
-        return mapping.get(data_type, BaseType.UNKNOWN)
-
+        return BaseType(data_type)
+    
     @property
     def size(self) -> int:
         """Size of the data type in bytes"""
@@ -98,6 +89,7 @@ class BaseType(CoreType, Enum, metaclass=EnumABCMeta):
             BaseType.OCTO_WORD: 16,
             BaseType.FLOAT: 4,
             BaseType.DOUBLE: 8,
+            BaseType.VOID: 0,
         }
 
         return mapping.get(self, 0)
