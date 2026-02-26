@@ -20,9 +20,10 @@
 #ifndef QUOKKA_LOGGER_H
 #define QUOKKA_LOGGER_H
 
-#include <ctime>
+#include <cstddef>
+#include <cstdio>
+#include <string>
 #include <string_view>
-#include <utility>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
@@ -32,6 +33,7 @@
 
 #include "absl/strings/str_cat.h"
 #include "absl/time/clock.h"
+#include "absl/time/time.h"
 
 #include "Windows.h"
 
@@ -127,7 +129,7 @@ class Logger {
    * @param level Log level
    * @return Value
    */
-  static const char* LogLevelToString(LogLevel level) {
+  static constexpr const char* LogLevelToString(LogLevel level) {
     switch (level) {
       case DEBUG:
         return "DEBUG";

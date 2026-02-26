@@ -20,19 +20,13 @@
 #ifndef FILEMETADATA_H
 #define FILEMETADATA_H
 
+#include <string>
+#include <string_view>
+
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
 // clang-format on
 #include <pro.h>
-#include <ida.hpp>
-#include <kernwin.hpp>
-#include <nalt.hpp>
-#include <typeinf.hpp>
-
-#include "absl/flags/internal/path_util.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/escaping.h"
-#include "absl/strings/str_format.h"
 
 #include "ProtoWrapper.h"
 #include "Windows.h"
@@ -40,11 +34,11 @@
 namespace quokka {
 
 namespace {
-  using namespace std::string_view_literals;
+using namespace std::string_view_literals;
 
-  // Protobuf backend codename
-  constexpr const std::string_view BACKEND_NAME = "IDA"sv;
-}  // namespace quokka
+// Protobuf backend codename
+constexpr const std::string_view BACKEND_NAME = "IDA"sv;
+}  // namespace
 
 /**
  * Processor types
@@ -206,18 +200,6 @@ class Metadata {
 };
 
 /**
- * Retrieve the input file sha256 hash
- * @return The lowercase hexdigest of the hash
- */
-inline std::string GetInputFileSha256();
-
-/**
- * Retrieve the input file MD5 hash
- * @return The lowercase hexdigest of the hash
- */
-inline std::string GetInputFileMd5();
-
-/**
  * Export all the metadata of the input file
  *
  * This will mostly iterate through the inf structure of IDA and retrieve
@@ -228,7 +210,7 @@ inline std::string GetInputFileMd5();
  * @param proto Main protobuf pointer
  * @return
  */
-int ExportMeta(quokka::Quokka* proto);
+int ExportMeta(Quokka* proto);
 
 }  // namespace quokka
 #endif

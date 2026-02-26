@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
 // clang-format on
-#include <bytes.hpp>
-#include <ida.hpp>
+#include <pro.h>
 #include <idp.hpp>
 #include <typeinf.hpp>
 #include <ua.hpp>
@@ -30,11 +31,11 @@
 
 #include "absl/strings/str_format.h"
 
-#include "quokka.pb.h"
 #include "quokka/Block.h"
 #include "quokka/Data.h"
 #include "quokka/DataType.h"
 #include "quokka/ProtoHelper.h"
+#include "quokka/ProtoWrapper.h"
 #include "quokka/Reference.h"
 #include "quokka/Util.h"
 
@@ -50,7 +51,7 @@ namespace quokka {
 //   }
 // }
 
-static Quokka::EdgeType GetXrefType(const xrefblk_t& xref);
+static Quokka::EdgeType GetXrefType(const xrefblk_t& xref);  // Forward decl
 
 static constexpr bool is_indirect_code_operand(const op_t& op) {
   switch (op.type) {

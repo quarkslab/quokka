@@ -22,65 +22,23 @@
 #ifndef QUOKKA_H
 #define QUOKKA_H
 
-#include <filesystem>
-#include <fstream>
+// #include <fstream>
+#include <sys/types.h>
+#include <cstdarg>
+#include <cstddef>
 #include <string>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
-#include <auto.hpp>
-#include <entry.hpp>
+// clang-format on
+#include <pro.h>
 #include <expr.hpp>
-#include <gdl.hpp>
-#include <graph.hpp>
-#include <ida.hpp>
 #include <idp.hpp>
-#include <loader.hpp>
-#include <nalt.hpp>
-#ifdef HAS_HEXRAYS
-#include <hexrays.hpp>
-#endif
 
-#include "absl/strings/ascii.h"
-#include "absl/strings/escaping.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_format.h"
-
-#include "ProtoWrapper.h"
+#include "Settings.h"
 #include "Windows.h"
 
 namespace quokka {
-
-enum ExporterMode : short;
-
-/**
- * Retrieve the export mode by looking at the argument passed on the command
- * line
- *
- * @return The correct export mode. By default it is MODE_LIGHT
- */
-ExporterMode GetModeFromArgument();
-
-/**
- * Retrieve the argument passed on the command line
- *
- * An option may be passed to a plugin using the -O{PluginName}{Option}={Value}
- *
- * @param name Name of the argument
- * @param to_upper Should we convert the value to upper case ?
- * @return
- */
-std::string GetArgument(const char* name, bool to_upper = false);
-
-/**
- * Return an output filename
- *
- * First try to see if the option "File" as been set.
- * Then try to store it in the same directory as input file using "
- * .Quokka" extension
- *
- * @return A potential output file name
- */
-std::string GetOutputFileName();
 
 /**
  * Function registered to be called via IDC
@@ -108,19 +66,6 @@ ssize_t idaapi UIHook(void*, int event_id, va_list arguments);
  * all the time but we don't reset it.
  */
 void UnsimplifyARM();
-
-/**
- * Export the binary to filename
- *
- * Here we are ! Main method of the plugin, will take care of export the
- * loaded binary.
- *
- * @note If the filename is not writable, another try will be made in the
- * /tmp directory. However, this will not works on Windows.
- *
- * @return Code for success
- */
-int ExportBinary(const std::string& filename);
 
 /**
  * Get argument for command line and set Log level

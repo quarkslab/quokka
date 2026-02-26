@@ -13,25 +13,38 @@
 // limitations under the License.
 
 #include <algorithm>
+#include <cassert>
+#include <cstddef>
+#include <exception>
 #include <optional>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
 // clang-format on
 #include <pro.h>
 #include <bytes.hpp>
+#include <funcs.hpp>
+#include <gdl.hpp>
+#include <graph.hpp>
+#include <ida.hpp>
+#include <loader.hpp>
+#include <nalt.hpp>
 #include <typeinf.hpp>
+#ifdef HAS_HEXRAYS
+#include <hexrays.hpp>
+#endif
 
 #include "absl/strings/str_format.h"
 
 #include "quokka/Block.h"
-// #include "quokka/Comment.h"
 #include "quokka/Function.h"
 #include "quokka/Imports.h"
-// #include "quokka/Reference.h"
-#include "quokka.pb.h"
 #include "quokka/Logger.h"
+#include "quokka/ProtoWrapper.h"
 #include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
@@ -49,93 +62,6 @@ static constexpr Quokka::EdgeType GetEdgeType(size_t out_degree) {
     default:  // 2+ edges -> switch
       return Quokka::EdgeType::Quokka_EdgeType_EDGE_JUMP_INDIR;
   }
-}
-
-FuncChunk::FuncChunk(func_t* func) {
-  this->start_addr = func->start_ea;
-  this->end_addr = func->end_ea;
-
-  qflow_chart_t fchart =
-      qflow_chart_t("", nullptr, func->start_ea, func->end_ea, FC_NOEXT);
-
-  size_t index = 0;
-  for (const auto& block : fchart.blocks) {
-    this->block_heads.emplace(block.start_ea);
-    this->block_types.try_emplace(block.start_ea,
-                                  fchart.calc_block_type(index));
-    this->block_ends[block.start_ea] = block.end_ea;
-    ++index;
-  }
-
-  if (get_fileregion_offset(func->start_ea) == -1) {
-    this->in_file = false;
-  }
-
-  QLOGD << absl::StrFormat("Creating FuncChunk [0x%08x; 0x%08x]", start_addr,
-                           end_addr);
-}
-
-// std::shared_ptr<Block> FuncChunk::GetBlockContainingAddress(ea_t addr) {
-//   /*
-//         auto it = std::lower_bound(blocks.begin(), blocks.end(), addr,
-//                 [](const Block* lhs, const ea_t addr) -> bool {
-//            return lhs->start_addr < addr;
-//         });
-//     */
-
-//   auto it = std::find_if(blocks.begin(), blocks.end(),
-//                          [addr](const std::shared_ptr<Block>& b) -> bool {
-//                            return b->IsBetween(addr);
-//                          });
-
-//   if (it != blocks.end() && (*it)->IsBetween(addr)) {
-//     return *it;
-//   }
-//   return nullptr;
-// }
-
-std::optional<int> FuncChunk::GetBlockIdx(
-    const std::shared_ptr<Block>& block) const {
-  auto it = std::find_if(
-      this->blocks.begin(), this->blocks.end(),
-      [block](const std::shared_ptr<Block>& b) -> bool { return b == block; });
-
-  if (it != this->blocks.end()) {
-    return static_cast<int>(std::distance(this->blocks.begin(), it));
-  }
-
-  return std::nullopt;
-}
-
-bool FuncChunk::operator<(const FuncChunk& rhs) const {
-  return start_addr < rhs.start_addr;
-}
-
-bool FuncChunk::operator>(const FuncChunk& rhs) const { return rhs < *this; }
-
-bool FuncChunk::operator<=(const FuncChunk& rhs) const {
-  return this->start_addr <= rhs.start_addr;
-}
-
-bool FuncChunk::operator>=(const FuncChunk& rhs) const { return rhs <= *this; }
-
-void FuncChunk::Resize(ea_t endaddr) {
-  ea_t end = 0;
-  for (const auto& block_p : this->blocks) {
-    end = std::max(block_p->end_addr, end);
-  }
-
-  // For empty chunks, set a size of 1
-  if (this->blocks.empty()) {
-    this->end_addr = this->start_addr + 1;
-    return;
-  }
-
-  if (end == 0 or end == BADADDR) {
-    QLOGE << "Error while computing end address for chunk";
-  }
-
-  this->end_addr = end;
 }
 
 Function::Function(func_t* func_p) {

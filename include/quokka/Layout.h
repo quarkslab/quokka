@@ -24,54 +24,23 @@
 #ifndef QUOKKA_LAYOUT_H
 #define QUOKKA_LAYOUT_H
 
-#include <cassert>
+#include <cstddef>
 #include <cstdint>
-#include <optional>
+#include <deque>
 #include <string_view>
-#include <unordered_set>
+#include <utility>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
 // clang-format on
 #include <pro.h>
-#include <bytes.hpp>
-#include <funcs.hpp>
-#include <gdl.hpp>
-#include <graph.hpp>
-#include <ida.hpp>
-#include <kernwin.hpp>
-#include <nalt.hpp>
-#include <segment.hpp>
-#include <ua.hpp>
-#include <utility>
-#include <vector>
-#include <xref.hpp>
-
-#include "absl/container/btree_set.h"
-#include "absl/hash/hash.h"
-#include "absl/time/clock.h"
 
 #include "Bucket.h"
 #include "Data.h"
-#include "Function.h"
-#include "Imports.h"
-#include "Logger.h"
 #include "ProtoWrapper.h"
-#include "Segment.h"
-#include "Windows.h"
 
 namespace quokka {
-
-class FuncChunk;
-class Block;
-class Instruction;
-class Data;
-class Operand;
-class OperandString;
-class Mnemonic;
-class Comments;
-class FuncChunkCollection;
-class Function;
 
 /**
  * Machine state and layout state
@@ -156,48 +125,38 @@ class HeadIterator {
   State state = START;  ///< Current state
 
   /* Information about futures address */
-  ea_t next_unk_addr = BADADDR;       ///< Next unknown address
-  ea_t next_head_addr = BADADDR;      ///< Next head address
-  ea_t next_chunk_addr = BADADDR;     ///< Next chunk head address
-  func_t* next_func_chunk = nullptr;  ///< Next function chunk pointer
+  ea_t next_unk_addr = BADADDR;    ///< Next unknown address
+  ea_t next_head_addr = BADADDR;   ///< Next head address
+  ea_t next_chunk_addr = BADADDR;  ///< Next chunk head address
 
-  /* Pointers on current element */
-  std::shared_ptr<Block> current_block = nullptr;  ///< Current block
-
-  Layout current_layout;                   ///< Current layout
-  std::optional<FuncChunk> current_chunk;  ///< Current chunk
+  Layout current_layout;  ///< Current layout
 
   /**
-   * Has the decoding of an instruction failed ?
+   * Reset the next addresses to be the first after `address`
    *
-   * If is set to true, the next instruction will be searched aggressively
-   * (it will try every next address until a valid one is found).
+   * This method is used at the beginning of the export (when address ==
+   * min_ea) and every time after a false decoding
+   *
+   * @param address Address to start from
    */
-  bool false_decoding = false;
+  void InitAddresses(ea_t address);
 
   /**
-   * Is the `current_ea` an instruction head ?
-   * @return Bool for success
+   * Create a new layout and set it to current_layout
+   * @param start_addr Start address
+   * @param current_state Layout state
+   * @param size Size of the layout
    */
-  bool IsInstHead() const;
+  void StartLayout(ea_t start_addr, State current_state, ea_t size = 0);
 
   /**
-   * Is the `current_ea` a block head ?
-   * @return Bool for success
+   * Augment the size of the current layout
+   * Most of the item, it's only the size of the current item but for GAP,
+   * we take a shortcut.
+   *
+   * @param size Optional size. If it is zero then it is automatically deduced
    */
-  bool IsBlockHead() const;
-
-  /**
-   * Create a new block at `current_ea`
-   * @return Block
-   */
-  std::shared_ptr<Block> CreateNewBlock();
-
-  /**
-   * Is the `current_ea` a chunk tail ?
-   * @return Bool for success
-   */
-  bool IsChunkTail() const;
+  void AddLayoutSize(size_t size = 0);
 
   /**
    * Updates the next_ea attribute.
@@ -215,11 +174,6 @@ class HeadIterator {
   void RotateLayout(State state, ea_t addr, ea_t size);
 
  public:
-  /**
-   * Current instruction
-   */
-  std::shared_ptr<Instruction> current_instruction = nullptr;
-
   std::deque<Layout> layouts;  ///< List of layouts
 
   // BucketNew<Instruction> instruction_bucket;         ///< Bucket of
@@ -228,8 +182,6 @@ class HeadIterator {
   // of op strings BucketNew<Mnemonic> mnemonic_bucket;               ///<
   // Bucket of mnemonic
   SetBucket<Data> data_list;  ///< Bucket of data
-
-  std::forward_list<std::shared_ptr<Block>> blocks;  ///< List of blocks
 
   /**
    * Constructor
@@ -240,41 +192,6 @@ class HeadIterator {
    * @param max_ea Maximum address
    */
   HeadIterator(ea_t start_ea, ea_t max_ea);
-
-  /**
-   * Is the `current_ea` a chunk head ?
-   * @return Bool for success
-   */
-  [[nodiscard]] bool IsChunkHead() const;
-
-  /**
-   * Create a new chunk at `current_ea`
-   * @return
-   */
-  void CreateNewChunk();
-
-  /**
-   * Create a fake chunk
-   * For a fake chunk, we don't have any information on potential blocks
-   * (expect the one starting at the chunk start) so it will be retrieved
-   * on the fly
-   * @return FuncChunk object
-   */
-  // std::shared_ptr<FuncChunk> CreateFakeChunk();
-
-  /**
-   * Is the `current_ea` a block tail ?
-   * @return Bool for success
-   */
-  [[nodiscard]] bool IsBlockTail() const;
-
-  /**
-   * Create a fake block at `current_ea`
-   * Sometimes, we may already have had the intuition that this address
-   * would have been a block head (because of an edge pointing towards).
-   * @return Block
-   */
-  std::shared_ptr<Block> CreateFakeBlock();
 
   /**
    * Create a instruction
@@ -296,42 +213,7 @@ class HeadIterator {
    *
    * @return An instruction (or a nullptr)
    */
-  std::shared_ptr<Instruction> CreateNewInst();
-
-  /**
-   * Reset the next addresses to be the first after `address`
-   *
-   * This method is used at the beginning of the export (when address ==
-   * min_ea) and every time after a false decoding
-   *
-   * @param address Address to start from
-   */
-  void InitAddresses(ea_t address);
-
-  /**
-   * Retrieve the next chunk address if any are found
-   * @param address Address to start from
-   * @param skip_current Do not consider the chunk starting at the current
-   * address
-   */
-  void SetNextChunk(ea_t address, bool skip_current = true);
-
-  /**
-   * Create a new layout and set it to current_layout
-   * @param start_addr Start address
-   * @param current_state Layout state
-   * @param size Size of the layout
-   */
-  void StartLayout(ea_t start_addr, State current_state, ea_t size = 0);
-
-  /**
-   * Augment the size of the current layout
-   * Most of the item, it's only the size of the current item but for GAP,
-   * we take a shortcut.
-   *
-   * @param size Optional size. If it is zero then it is automatically deduced
-   */
-  void AddLayoutSize(size_t size = 0);
+  // std::shared_ptr<Instruction> CreateNewInst();
 
   /**
    * Move forward by computing the next address, state and layout.
@@ -356,14 +238,6 @@ class HeadIterator {
 };
 
 /**
- * Compute the state at address
- *
- * @param address Address
- * @return State type
- */
-State GetState(ea_t address);
-
-/**
  * This will be responsible for iterating through every head that is not part of
  * the provided ranges, exporting blocks, instructions and data. Normally the
  * excluded ranges are the function chunks that have been already exported
@@ -373,7 +247,7 @@ State GetState(ea_t address);
  * the analysis
  * @return Int for success
  */
-int ExportLinearScan(quokka::Quokka* proto,
+int ExportLinearScan(Quokka* proto,
                      const std::vector<std::pair<ea_t, ea_t>>& exclude_ranges);
 
 }  // namespace quokka

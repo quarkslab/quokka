@@ -20,7 +20,9 @@
 #ifndef QUOKKA_FUNCTION_H
 #define QUOKKA_FUNCTION_H
 
+#include <cstdint>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -29,20 +31,11 @@
 // clang-format on
 #include <pro.h>
 #include <funcs.hpp>
-#include <gdl.hpp>
-#include <graph.hpp>
-#include <loader.hpp>
-#ifdef HAS_HEXRAYS
-#include <hexrays.hpp>
-#endif
-
-#include "absl/container/flat_hash_map.h"
-#include "absl/container/flat_hash_set.h"
 
 #include "Block.h"
+#include "ProtoWrapper.h"
 #include "Segment.h"
 #include "Windows.h"
-#include "quokka.pb.h"
 
 namespace quokka {
 
@@ -116,126 +109,6 @@ struct Position {
 
 /**
  * ---------------------------------------------
- * quokka::FuncChunk
- * ---------------------------------------------
- * Function chunk representation
- *
- * The definition of a chunk is a sequence of consecutive blocks (may
- * be intervened with data on some arch) which are part of a function. They
- * may not represent a connected graph however.
- *
- * `FuncChunk` in quokka may also be "fake", like blocks. They represent
- * in this case a sequence of blocks. They are used when the function
- * recognition failed and orphaned instructions are found so every
- * instruction belongs to at least one `FuncChunk`.
- */
-class FuncChunk {
- public:
-  ea_t start_addr = BADADDR;  ///< Start address of the chunk
-  ea_t end_addr = BADADDR;    ///< End address
-
-  /**
-   * Is the chunk part of the binary ?
-   * Code may be retrieved by IDA for dependency that does not belong to
-   * the analyzed program, so we keep here if the chunk correspond to code
-   * inside the binary
-   */
-  bool in_file = true;
-
-  /**
-   * Set of the block starting address
-   */
-  absl::flat_hash_set<ea_t> block_heads;
-
-  /**
-   * Block types
-   */
-  absl::flat_hash_map<ea_t, fc_block_type_t> block_types;
-
-  /**
-   * Map between the start of blocks and their end address
-   */
-  absl::flat_hash_map<ea_t, ea_t> block_ends;
-
-  std::vector<std::shared_ptr<Block>> blocks;  ///< List of blocks
-
-  std::vector<Edge> edge_list;  ///< List of edges between blocks
-
-  bool orphaned = true;  ///< Is it an orphaned chunk?
-
-  /**
-   * Constructor for fake chunk for imports
-   *
-   * @param start Starting address
-   * @param is_import Is the chunk associated with an imported function?
-   */
-  explicit FuncChunk(ea_t start, bool is_import)
-      : start_addr(start), end_addr(start + 1), in_file(false) {};
-
-  /**
-   * Constructor for chunk
-   * @param func IDA func object
-   */
-  FuncChunk(func_t* func);
-
-  /**
-   * Check if `addr` belong to the chunk
-   * @param addr Start address
-   * @return Boolean for success
-   */
-  [[nodiscard]] bool InChunk(ea_t addr) const {
-    return this->start_addr <= addr && addr < this->end_addr;
-  };
-
-  /**
-   * Retrieve the block index of `block`
-   * @param block Block to search
-   * @return Positive integer if found
-   */
-  [[nodiscard]] std::optional<int> GetBlockIdx(
-      const std::shared_ptr<Block>& block) const;
-
-  /**
-   * Get the block where `addr` belong
-   * TODO(dm) keep a sorted list of blocks in the FuncChunk
-   * @param addr Address to search
-   * @return Pointer to a block
-   */
-  std::shared_ptr<Block> GetBlockContainingAddress(ea_t addr);
-
-  /**
-   * Retrieve the block index from the address
-   * TODO(dm) improve perf
-   * @param addr Address to search
-   * @return Positive index
-   */
-  std::optional<int> BlockIdxFromAddr(ea_t addr) {
-    std::shared_ptr<Block> b = this->GetBlockContainingAddress(addr);
-    if (b != nullptr) {
-      return GetBlockIdx(b);
-    }
-    return std::nullopt;
-  }
-
-  /**
-   * Resize the chunk
-   * This set the end address to the max address of any of the blocks in
-   * the chunk. Will fail if a block have no end address (or a BADADDR)
-   * @param end_addr New end address to check for correctness
-   */
-  void Resize(ea_t end_addr);
-
-  /**
-   * Operator overloading
-   */
-  bool operator<(const FuncChunk& rhs) const;
-  bool operator>(const FuncChunk& rhs) const;
-  bool operator<=(const FuncChunk& rhs) const;
-  bool operator>=(const FuncChunk& rhs) const;
-};
-
-/**
- * ---------------------------------------------
  * quokka::Function
  * ---------------------------------------------
  * Function representation
@@ -280,8 +153,6 @@ class Function {
   void ExportDecompiledFunction(func_t* func_p);
 };
 
-class ImportManager;
-
 /**
  * Export all the functions in the binary by iterating through the flow chart.
  * It returns two objects: a vector of Function and a lexicographically sorted
@@ -296,19 +167,6 @@ class ImportManager;
  */
 std::pair<std::vector<Function>, std::vector<std::pair<ea_t, ea_t>>>
 ExportFunctions();
-
-/**
- * Exported imported function
- *
- * This function is only called when they are not exported by default.
- *
- * @param import_manager Import Manager
- * @param func_list  List of functions
- * @param chunks Chunk collection*
- */
-// void ExportImportedFunctions(const ImportManager& import_manager,
-//                              std::vector<Function>& func_list,
-//                              const FuncChunkCollection& chunks);
 
 }  // namespace quokka
 #endif  // QUOKKA_FUNCTION_H

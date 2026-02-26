@@ -22,29 +22,22 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <ranges>
-#include <stdexcept>
-#include <utility>
+#include <string>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
 // clang-format on
 #include <pro.h>
-#include <loader.hpp>
-#include <name.hpp>
 #include <segment.hpp>
 
-#include "absl/strings/str_format.h"
+#include "absl/hash/hash.h"
 
 #include "Bucket.h"
-#include "Logger.h"
+#include "FileMetadata.h"
 #include "ProtoHelper.h"
-#include "ProtoWrapper.h"
 #include "Windows.h"
 
 namespace quokka {
-
-enum AddressSize : short;
 
 /**
  * Segment types
@@ -183,14 +176,6 @@ class Segments final : public MultiMapBucket<sel_t, Segment> {
  * @throws out_of_range if the address doesn't belong to any segment
  */
 const Segment& GetSegment(ea_t addr);
-
-/**
- * Retrieve the type of a segment
- *
- * @param seg_type IDA segment type
- * @return
- */
-SegmentType GetSegmentType(uchar seg_type);
 
 /**
  * Export all segments

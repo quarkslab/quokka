@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cassert>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
-#include <string>
 #include <variant>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
 // clang-format on
-#include <bytes.hpp>
 #include <typeinf.hpp>
 
 #include "absl/strings/str_format.h"
 
 #include "quokka/DataType.h"
+#include "quokka/Logger.h"
 #include "quokka/Reference.h"
 #include "quokka/Util.h"
 
@@ -75,7 +75,7 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
             "yet supported. Marking it as TYPE_UNK",
             ConvertIdaString(udm.name), ConvertIdaString(ida_string));
         member.type = TYPE_UNK;
-        goto member_done;
+        goto member_done;  // fast termination
       }
 
       // Ask the CompositeTypes manager to give us the relevant struct/union
@@ -96,8 +96,8 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
   member_done:  // Member was built correctly
 
     /* TODO Retrieve comments */
-    ExportSymbolReference(&composite_type, member.xref_to, tif.get_udm_tid(member_idx),
-                          member_idx);
+    ExportSymbolReference(&composite_type, member.xref_to,
+                          tif.get_udm_tid(member_idx), member_idx);
     //   GetStructureMemberComment(composite_type_ptr,
     //                             composite.members.size(),
     //                             ida_member->id);

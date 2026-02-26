@@ -15,11 +15,15 @@
 #ifndef QUOKKA_IMPORTS_H
 #define QUOKKA_IMPORTS_H
 
-#include <pro.h>
-#include <nalt.hpp>
+#include <cstdint>
+#include <string>
 #include <utility>
 #include <vector>
+
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
+#include <pro.h>
 
 #include <absl/container/flat_hash_map.h>
 
@@ -40,11 +44,9 @@ struct Import {
       : name(std::move(name_)), ord(ord_) {}
 };
 
-class FuncChunkCollection;
-
 struct Range {
-  ea_t start = BADADDR64;
-  ea_t end = BADADDR64;
+  ea_t start = BADADDR;
+  ea_t end = BADADDR;
 
   bool operator<(const Range& other) const { return start < other.start; }
 

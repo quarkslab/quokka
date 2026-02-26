@@ -21,31 +21,22 @@
 #ifndef QUOKKA_DATA_H
 #define QUOKKA_DATA_H
 
-#include <concepts>
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
-#include <variant>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
 // clang-format on
 #include <pro.h>
-#include <bytes.hpp>
-#include <kernwin.hpp>
-#include <name.hpp>
-#include <typeinf.hpp>
 
-// #include "absl/hash/hash.h"
-// #include "absl/strings/str_format.h"
+#include "absl/hash/hash.h"
 
 #include "DataType.h"
 #include "ProtoHelper.h"
 #include "Reference.h"
 #include "Segment.h"
-#include "Util.h"
 
 namespace quokka {
 

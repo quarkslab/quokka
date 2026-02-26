@@ -28,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -35,13 +36,11 @@
 // clang-format on
 #include <pro.h>
 #include <gdl.hpp>
-#include <ida.hpp>
 #include <ua.hpp>
 
 #include "absl/container/flat_hash_map.h"
 
 #include "Instruction.h"
-#include "Logger.h"
 #include "Reference.h"
 #include "Segment.h"
 #include "Windows.h"
@@ -66,7 +65,27 @@ enum BlockType : short {
  * @param block_type Type of block (IDA)
  * @return Block type
  */
-BlockType RetrieveBlockType(fc_block_type_t block_type);
+constexpr BlockType RetrieveBlockType(fc_block_type_t block_type) {
+  switch (block_type) {
+    case fcb_normal:
+      return BTYPE_NORMAL;
+    case fcb_indjump:
+      return BTYPE_INDJUMP;
+    case fcb_ret:
+      return BTYPE_RET;
+    case fcb_cndret:
+      return BTYPE_CNDRET;
+    case fcb_noret:
+      return BTYPE_NORET;
+    case fcb_enoret:
+      return BTYPE_ENORET;
+    case fcb_extern:
+      return BTYPE_EXTERN;
+    case fcb_error:
+      return BTYPE_ERROR;
+  }
+  assert(false && "Invalid block type");
+}
 
 /**
  * -----------------------------------------------------------------------------

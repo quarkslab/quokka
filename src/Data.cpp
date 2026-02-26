@@ -22,6 +22,7 @@
 #include <pro.h>
 #include <bytes.hpp>
 #include <loader.hpp>
+#include <nalt.hpp>
 #include <name.hpp>
 #include <segment.hpp>
 #include <typeinf.hpp>
@@ -30,7 +31,9 @@
 
 #include "quokka/Data.h"
 #include "quokka/DataType.h"
+#include "quokka/Logger.h"
 #include "quokka/Segment.h"
+#include "quokka/Util.h"
 
 // #if IDA_SDK_VERSION < 850
 // #include "api_v8/Data.cpp"

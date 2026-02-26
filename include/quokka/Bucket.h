@@ -21,17 +21,20 @@
 #ifndef QUOKKA_BUCKET_H
 #define QUOKKA_BUCKET_H
 
+#include <algorithm>
 #include <concepts>
 #include <cstddef>
 #include <functional>
 #include <iterator>
 #include <memory>
 #include <ranges>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
 #include <absl/container/btree_map.h>
 #include <absl/container/flat_hash_set.h>
+#include <absl/hash/hash.h>
 
 #include "ProtoHelper.h"
 

@@ -20,6 +20,7 @@
 #ifndef QUOKKA_REFERENCE_H
 #define QUOKKA_REFERENCE_H
 
+#include <cassert>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
@@ -38,7 +39,7 @@
 
 #include "Bucket.h"
 #include "ProtoHelper.h"
-#include "quokka.pb.h"
+#include "ProtoWrapper.h"
 
 namespace quokka {
 

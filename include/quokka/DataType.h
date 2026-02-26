@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -93,7 +94,25 @@ enum BaseType : uint8_t {
 BaseType GetBaseType(const tinfo_t& flags);
 BaseType GetBaseType(flags_t flags);
 
-struct CompositeTypeMember;  // forward declaration
+/**
+ * -----------------------------------------------------------------------------
+ * quokka::CompositeTypeMember
+ * -----------------------------------------------------------------------------
+ * A member of a composite type.
+ */
+class CompositeTypeMember {
+ public:
+  CompositeTypeMember(ea_t o, std::string&& n, BaseType t, asize_t sz)
+      : offset(o), name(std::forward<std::string>(n)), type(t), size(sz) {}
+
+  ea_t offset;       ///< Field offset (IDA internal)
+  std::string name;  ///< Name of the field
+  BaseType type;     ///< Base type of the value
+  std::optional<type_uid_t>
+      target_tuid;  ///< ID of the target type (one of DataTypes variant)
+  asize_t size;     ///< Size of the field
+  std::vector<const Reference*> xref_to;
+};
 
 /**
  * -----------------------------------------------------------------------------
@@ -105,7 +124,8 @@ struct CompositeTypeMember;  // forward declaration
  */
 class CompositeType : public ProtoHelper {
  public:
-  CompositeType(std::string&& n, tid_t id, size_t sz);
+  CompositeType(std::string&& n, tid_t id_, size_t sz)
+      : name(std::forward<std::string>(n)), id(id_), size(sz) {}
 
   std::string name;  ///< Composite type name
   tid_t id;          ///< Type id (IDA internal)
@@ -167,25 +187,6 @@ class ArrayType : public CompositeType {
   ArrayType(ArgsT&&... Args) : CompositeType(std::forward<ArgsT>(Args)...) {}
 };
 
-/**
- * -----------------------------------------------------------------------------
- * quokka::CompositeTypeMember
- * -----------------------------------------------------------------------------
- * A member of a composite type.
- */
-class CompositeTypeMember : public ProtoHelper {
- public:
-  CompositeTypeMember(ea_t o, std::string&& n, BaseType t, asize_t sz);
-
-  ea_t offset;       ///< Field offset (IDA internal)
-  std::string name;  ///< Name of the field
-  BaseType type;     ///< Base type of the value
-  std::optional<type_uid_t>
-      target_tuid;  ///< ID of the target type (one of DataTypes variant)
-  asize_t size;     ///< Size of the field
-  std::vector<const Reference*> xref_to;
-};
-
 struct EnumValue {
   std::string name;
   int64_t value;
@@ -207,6 +208,7 @@ class EnumType : public ProtoHelper {
   std::vector<EnumValue> values;  ///< Internal values of the enum
   mutable std::vector<const Reference*> xref_to;
   std::string c_str;  ///< C-string representation of the enum (if any)
+
   bool operator==(const EnumType& o) const noexcept {
     return this->name == o.name;
   }

@@ -12,11 +12,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Quokka.h"
+#include <sys/types.h>
+#include <algorithm>
+#include <cassert>
+#include <cctype>
+#include <cstdarg>
+#include <cstddef>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <ios>
+#include <string>
+#include <utility>
+#include <vector>
 
+// clang-format off: Compatibility.h must come before ida headers
+#include "quokka/Compatibility.h"
+// clang-format on
+#include <pro.h>
+#include <auto.hpp>
+#include <config.hpp>
+#include <expr.hpp>
+#include <ida.hpp>
+#include <idp.hpp>
+#include <kernwin.hpp>
+#include <loader.hpp>
+#include <nalt.hpp>
+#ifdef HAS_HEXRAYS
+#include <hexrays.hpp>
+#endif
+
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
+#include "absl/strings/str_join.h"
+#include "absl/time/clock.h"
+
+#include "quokka/DataType.h"
 #include "quokka/FileMetadata.h"
 #include "quokka/Function.h"
 #include "quokka/Layout.h"
+#include "quokka/Logger.h"
+#include "quokka/ProtoWrapper.h"
+#include "quokka/Quokka.h"
+#include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 #include "quokka/Version.h"
@@ -24,7 +62,83 @@
 
 namespace quokka {
 
-int ExportBinary(const std::string& filename) {
+/**
+ * Retrieve the argument passed on the command line
+ *
+ * An option may be passed to a plugin using the -O{PluginName}{Option}={Value}
+ *
+ * @param name Name of the argument
+ * @param to_upper Should we convert the value to upper case ?
+ * @return
+ */
+static std::string GetArgument(const char* name, bool to_upper = false) {
+  const char* option = get_plugin_options(absl::StrCat("Quokka", name).c_str());
+
+  if (option != nullptr) {
+    std::string option_s(option);
+    if (to_upper) {
+      std::transform(
+          option_s.begin(), option_s.end(), option_s.begin(),
+          [](unsigned char c) -> unsigned char { return std::toupper(c); });
+    }
+    return option_s;
+  }
+
+  return "";
+}
+
+/**
+ * Retrieve the export mode by looking at the argument passed on the command
+ * line
+ *
+ * @return The correct export mode. By default it is MODE_LIGHT
+ */
+static ExporterMode GetModeFromArgument() {
+  // Look for options on command line
+  ExporterMode mode = ExporterMode::MODE_LIGHT;
+  std::string quokka_mode = GetArgument("Mode", true);
+  if (quokka_mode == "LIGHT") {
+    mode = ExporterMode::MODE_LIGHT;
+  } else if (quokka_mode == "SELF_CONTAINED") {
+    mode = ExporterMode::MODE_SELF_CONTAINED;
+  } else {
+    QLOGW << "Unknown mode provided in argument, using default (NORMAL)";
+  }
+
+  return mode;
+}
+
+/**
+ * Return an output filename
+ *
+ * First try to see if the option "File" as been set.
+ * Then try to store it in the same directory as input file using "
+ * .Quokka" extension
+ *
+ * @return A potential output file name
+ */
+static std::string GetOutputFileName() {
+  std::string output_file = GetArgument("File");
+  if (output_file.empty()) {
+    char path[QMAXPATH] = {0};
+    get_input_file_path(path, QMAXPATH);
+    output_file = ReplaceFileExtension(path, ".quokka");
+  }
+  return output_file;
+}
+
+/**
+ * Export the binary to filename
+ *
+ * Here we are ! Main method of the plugin, will take care of export the
+ * loaded binary.
+ *
+ * @note If the filename is not writable, another try will be made in the
+ * /tmp directory. However, this will not works on Windows.
+ *
+ * @return Code for success
+ */
+static int ExportBinary(const std::string& filename) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
   Quokka quokka_protobuf;
 
@@ -110,23 +224,6 @@ int ExportBinary(const std::string& filename) {
   return eOk;
 }
 
-ExporterMode GetModeFromArgument() {
-  // Look for options on command line
-  ExporterMode mode = ExporterMode::MODE_LIGHT;
-  std::string quokka_mode = GetArgument("Mode", true);
-  if (quokka_mode == "NORMAL") {
-    mode = ExporterMode::MODE_NORMAL;
-  } else if (quokka_mode == "LIGHT") {
-    mode = ExporterMode::MODE_LIGHT;
-  } else if (quokka_mode == "SELF_CONTAINED") {
-    mode = ExporterMode::MODE_SELF_CONTAINED;
-  } else {
-    QLOGW << "Unknown mode provided in argument, using default (NORMAL)";
-  }
-
-  return mode;
-}
-
 static error_t idaapi IdcQuokka(idc_value_t*, idc_value_t* res) {
   QLOG_DEBUG << "Calling Quokka from IDC";
 
@@ -140,22 +237,6 @@ static const char functionArgs[] = {0};
 static const ext_idcfunc_t kquokkaIdcFunc = {"quokka", IdcQuokka, functionArgs,
                                              nullptr,  0,         EXTFUN_BASE};
 
-std::string GetArgument(const char* name, bool to_upper) {
-  const char* option = get_plugin_options(absl::StrCat("Quokka", name).c_str());
-
-  if (option != nullptr) {
-    std::string option_s(option);
-    if (to_upper) {
-      std::transform(
-          option_s.begin(), option_s.end(), option_s.begin(),
-          [](unsigned char c) -> unsigned char { return std::toupper(c); });
-    }
-    return option_s;
-  }
-
-  return "";
-}
-
 bool GetBoolArgument(const char* name, bool default_value) {
   std::string option = GetArgument(name, true);
   if (option.empty()) {
@@ -166,16 +247,6 @@ bool GetBoolArgument(const char* name, bool default_value) {
         [](unsigned char c) -> unsigned char { return std::toupper(c); });
     return (option == "TRUE");
   }
-}
-
-std::string GetOutputFileName() {
-  std::string output_file = GetArgument("File");
-  if (output_file.empty()) {
-    char path[QMAXPATH] = {0};
-    get_input_file_path(path, QMAXPATH);
-    output_file = ReplaceFileExtension(path, ".quokka");
-  }
-  return output_file;
 }
 
 void UnsimplifyARM() {

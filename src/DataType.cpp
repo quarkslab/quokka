@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cstddef>
 #include <stdexcept>
 #include <string>
-#include <utility>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
@@ -169,12 +167,5 @@ type_uid_t GetTypeUid(const tid_t& tid) {
         "Cannot build a valid type_uid_t from an invalid tid_t");
   return {true, tid};
 }
-
-CompositeType::CompositeType(std::string&& n, tid_t id_, size_t sz)
-    : name(std::forward<std::string>(n)), id(id_), size(sz) {}
-
-CompositeTypeMember::CompositeTypeMember(ea_t o, std::string&& n, BaseType t,
-                                         asize_t sz)
-    : offset(o), name(std::forward<std::string>(n)), type(t), size(sz) {};
 
 }  // namespace quokka

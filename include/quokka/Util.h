@@ -21,33 +21,24 @@
 #define QUOKKA_UTIL_H
 
 #include <concepts>
-#include <cstdint>
-#include <iterator>
-#include <memory>
-#include <ranges>
-#include <stdexcept>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
 #include <variant>
-#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
 // clang-format on
 #include <pro.h>
-#include <bytes.hpp>
 #include <idp.hpp>
 #include <kernwin.hpp>
-#include <name.hpp>
 #include <ua.hpp>
 
-#include "absl/container/btree_map.h"
-#include "absl/container/flat_hash_set.h"
-#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
+#include "absl/time/time.h"
 
 #include "Logger.h"
 #include "ProtoHelper.h"
@@ -186,121 +177,6 @@ concept AllVariantDeriveFrom = requires(const Var& var) {
   (const std::variant<VarArgsT...>) {}(var);
 };
 
-/**
- * ---------------------------------------------
- * quokka::RefCounter
- * ---------------------------------------------
- * Reference Counter to ProtoHelper object utility
- *
- * Utility for managing the reference counter of the ProtoHelper objects
- * (protobuf objects). It works also on std::variant whose types are all derived
- * from ProtoHelper.
- * It models a non-owning reference (aka non-null raw pointer). The object
- * referenced should out-live the RefCounter.
- */
-template <typename T>
-  requires(std::derived_from<T, ProtoHelper> ||
-           AllVariantDeriveFrom<ProtoHelper, T>)
-class RefCounter {
- public:
-  ~RefCounter() noexcept {
-    if (auto spt = ptr_.lock()) {
-      if constexpr (std::derived_from<T, ProtoHelper>) {
-        spt->ref_count--;
-      } else {
-        std::visit([](const auto& v) { v.ref_count--; }, *spt);
-      }
-    }
-  }
-
-  RefCounter(const std::shared_ptr<T>& obj) : ptr_(obj) {
-    if (!obj)
-      throw new std::invalid_argument(
-          "Cannot have a RefCounter to a null pointer");
-    if constexpr (std::derived_from<T, ProtoHelper>) {
-      obj->ref_count++;
-    } else {
-      std::visit([](const auto& v) { v.ref_count++; }, *obj);
-    }
-  }
-
-  RefCounter(const RefCounter<T>& obj) noexcept : ptr_(obj.ptr_) {
-    if (auto spt = ptr_.lock()) {
-      if constexpr (std::derived_from<T, ProtoHelper>) {
-        spt->ref_count++;
-      } else {
-        std::visit([](const auto& v) { v.ref_count++; }, *spt);
-      }
-    }
-  }
-
-  RefCounter(RefCounter<T>&& obj) noexcept { std::swap(ptr_, obj.ptr_); }
-
-  RefCounter& operator=(const std::shared_ptr<T>& obj) {
-    if (!obj)
-      throw new std::invalid_argument(
-          "Cannot have a RefCounter to null pointer");
-    if (auto spt = ptr_.lock()) {
-      if constexpr (std::derived_from<T, ProtoHelper>) {
-        spt->ref_count--;
-        obj->ref_count++;
-      } else {
-        std::visit([](const auto& v) { v.ref_count--; }, *spt);
-        std::visit([](const auto& v) { v.ref_count++; }, *obj);
-      }
-    }
-    ptr_ = obj;
-    return *this;
-  }
-
-  RefCounter& operator=(const RefCounter<T>& obj) noexcept {
-    if (auto spt = ptr_.lock()) {
-      if constexpr (std::derived_from<T, ProtoHelper>)
-        spt->ref_count--;
-      else
-        std::visit([](const auto& v) { v.ref_count--; }, *spt);
-    }
-    ptr_ = obj.ptr_;
-    if (auto spt = ptr_.lock()) {
-      if constexpr (std::derived_from<T, ProtoHelper>)
-        spt->ref_count++;
-      else
-        std::visit([](const auto& v) { v.ref_count++; }, *spt);
-    }
-    return *this;
-  }
-
-  RefCounter& operator=(RefCounter<T>&& obj) noexcept {
-    if (auto spt = ptr_.lock()) {
-      if constexpr (std::derived_from<T, ProtoHelper>)
-        spt->ref_count--;
-      else
-        std::visit([](const auto& v) { v.ref_count--; }, *spt);
-    }
-    std::swap(ptr_, obj.ptr_);
-    return *this;
-  }
-
-  const T operator*() const {
-    if (auto spt = ptr_.lock()) {
-      return *spt;
-    } else {
-      throw new std::runtime_error("Cannot dereference an expired RefCount");
-    }
-  }
-
-  const std::shared_ptr<T> operator->() const {
-    if (auto spt = ptr_.lock()) {
-      return spt;
-    } else {
-      throw new std::runtime_error("Cannot dereference an expired RefCount");
-    }
-  }
-
- private:
-  std::weak_ptr<T> ptr_;
-};
-
 template <std::invocable F>
 class scope_exit_guard {
  public:
@@ -375,20 +251,6 @@ const B& UpcastVariant(const V& variant) {
 }
 
 /**
- * Implementation of a merge adjacent method
- *
- * @see http://coliru.stacked-crooked.com/a/0de073866090972d
- */
-template <typename ForwardIterator, typename OutputIterator, typename Equal,
-          typename Merge>
-void MergeAdjacent(ForwardIterator first, ForwardIterator last,
-                   OutputIterator out, Equal equal, Merge merge) {
-  for (auto lb = first, ub = last; lb != last; lb = ub)
-    *out++ = std::accumulate(
-        lb + 1, ub = std::mismatch(lb + 1, last, lb, equal).first, *lb, merge);
-}
-
-/**
  * Get the name associated to an address
  *
  * @param address Address to look at
@@ -415,16 +277,8 @@ std::string ConvertIdaString(const qstring& ida_string);
  * @param new_extension Extension to set
  * @return New file name
  */
-std::string ReplaceFileExtension(absl::string_view path,
-                                 absl::string_view new_extension);
-
-/**
- * Check if the option set will yield to true
- *
- * @param option Parameter to check
- * @return True if option is not empty
- */
-bool StrToBoolean(const std::string& option);
+std::string ReplaceFileExtension(std::string_view path,
+                                 std::string_view new_extension);
 
 /**
  * Get the processor "ph" variable

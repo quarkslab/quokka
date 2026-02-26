@@ -12,11 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Writer.h"
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <deque>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <variant>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
@@ -24,24 +30,22 @@
 #include <pro.h>
 #include <typeinf.hpp>
 
-#include "quokka.pb.h"
 #include "quokka/Block.h"
 #include "quokka/Bucket.h"
-// #include "quokka/Comment.h"
 #include "quokka/Data.h"
 #include "quokka/DataType.h"
 #include "quokka/FileMetadata.h"
-// #include "quokka/Function.h"
-// #include "quokka/Instruction.h"
 #include "quokka/Function.h"
 #include "quokka/Layout.h"
-// #include "quokka/Localization.h"
+#include "quokka/Logger.h"
 #include "quokka/ProtoHelper.h"
+#include "quokka/ProtoWrapper.h"
 #include "quokka/Reference.h"
 #include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 #include "quokka/Version.h"
+#include "quokka/Writer.h"
 
 namespace quokka {
 
@@ -50,19 +54,19 @@ namespace quokka {
  * @param func_type Type to convert
  * @return Converted type
  */
-static quokka::Quokka::Function::FunctionType ToProtoFuncType(
+static constexpr Quokka::Function::FunctionType ToProtoFuncType(
     FunctionType func_type) {
   switch (func_type) {
     case TYPE_NORMAL:
-      return quokka::Quokka::Function::TYPE_NORMAL;
+      return Quokka::Function::TYPE_NORMAL;
     case TYPE_IMPORTED:
-      return quokka::Quokka::Function::TYPE_IMPORTED;
+      return Quokka::Function::TYPE_IMPORTED;
     case TYPE_LIBRARY:
-      return quokka::Quokka::Function::TYPE_LIBRARY;
+      return Quokka::Function::TYPE_LIBRARY;
     case TYPE_THUNK:
-      return quokka::Quokka::Function::TYPE_THUNK;
+      return Quokka::Function::TYPE_THUNK;
     default:
-      return quokka::Quokka::Function::TYPE_INVALID;
+      return Quokka::Function::TYPE_INVALID;
   }
 }
 
@@ -71,30 +75,31 @@ static quokka::Quokka::Function::FunctionType ToProtoFuncType(
  * @param block_type Type to convert
  * @return the protobuf converted BlockType
  */
-static quokka::Quokka::Block::BlockType ToProtoBlockType(BlockType block_type) {
+static constexpr Quokka::Block::BlockType ToProtoBlockType(
+    BlockType block_type) {
   switch (block_type) {
     case BTYPE_NORMAL:
-      return quokka::Quokka::Block::BLOCK_TYPE_NORMAL;
+      return Quokka::Block::BLOCK_TYPE_NORMAL;
     case BTYPE_INDJUMP:
-      return quokka::Quokka::Block::BLOCK_TYPE_INDJUMP;
+      return Quokka::Block::BLOCK_TYPE_INDJUMP;
     case BTYPE_RET:
-      return quokka::Quokka::Block::BLOCK_TYPE_RET;
+      return Quokka::Block::BLOCK_TYPE_RET;
     case BTYPE_NORET:
-      return quokka::Quokka::Block::BLOCK_TYPE_NORET;
+      return Quokka::Block::BLOCK_TYPE_NORET;
     case BTYPE_CNDRET:
-      return quokka::Quokka::Block::BLOCK_TYPE_CNDRET;
+      return Quokka::Block::BLOCK_TYPE_CNDRET;
     case BTYPE_ENORET:
-      return quokka::Quokka::Block::BLOCK_TYPE_ENORET;
+      return Quokka::Block::BLOCK_TYPE_ENORET;
     case BTYPE_EXTERN:
-      return quokka::Quokka::Block::BLOCK_TYPE_EXTERN;
+      return Quokka::Block::BLOCK_TYPE_EXTERN;
     case BTYPE_ERROR:
-      return quokka::Quokka::Block::BLOCK_TYPE_ERROR;
+      return Quokka::Block::BLOCK_TYPE_ERROR;
     default:
       assert(false && "Mismatch between BlockType enum");
   }
 }
 
-static size_t ToProtoBaseType(BaseType data_type) {
+static constexpr size_t ToProtoBaseType(BaseType data_type) {
   // Use the underlying protobuf enum value as it is guaranteed that the first
   // elements of the `types` array are always the primitive types, ordered in
   // the same way as they are declared in the protobuf enum.
@@ -122,6 +127,179 @@ static size_t ToProtoBaseType(BaseType data_type) {
 }
 
 /**
+ * Convert a function type to the proto associated type
+ * @param proc_name Type to convert
+ * @return Converted type
+ */
+static constexpr Quokka::Meta::ISA ToProtoIsa(ProcName proc_name) {
+  switch (proc_name) {
+    case PROC_X86:
+      return Quokka::Meta::PROC_INTEL;
+    case PROC_ARM:
+      return Quokka::Meta::PROC_ARM;
+    case PROC_DALVIK:
+      return Quokka::Meta::PROC_DALVIK;
+    case PROC_PPC:
+      return Quokka::Meta::PROC_PPC;
+    case PROC_MIPS:
+      return Quokka::Meta::PROC_MIPS;
+    default:
+      return Quokka::Meta::PROC_UNK;
+  }
+}
+
+/**
+ * Convert a function type to the proto associated type
+ * @param endianness Type to convert
+ * @return Converted type
+ */
+static constexpr Quokka::Meta::Endianess ToProtoEndianness(
+    Endianness endianness) {
+  switch (endianness) {
+    case END_BE:
+      return Quokka::Meta::END_BE;
+    case END_LE:
+      return Quokka::Meta::END_LE;
+    default:
+      return Quokka::Meta::END_UNK;
+  }
+}
+
+/**
+ * Convert a function type to the proto associated type
+ * @param addr_size Type to convert
+ * @return Converted type
+ */
+static constexpr Quokka::AddressSize ToProtoAddressSize(AddressSize addr_size) {
+  switch (addr_size) {
+    case ADDR_64:
+      return Quokka::ADDR_64;
+    case ADDR_32:
+      return Quokka::ADDR_32;
+    default:
+      return Quokka::ADDR_UNK;
+  }
+}
+
+/**
+ * Convert a function type to the proto associated type
+ * @param cc Type to convert
+ * @return Converted type
+ */
+static constexpr Quokka::CallingConvention ToProtoCallingConvention(
+    CallingConvention cc) {
+  switch (cc) {
+    case CC_CDECL:
+      return Quokka::CC_CDECL;
+    case CC_ELLIPSIS:
+      return Quokka::CC_ELLIPSIS;
+    case CC_STDCALL:
+      return Quokka::CC_STDCALL;
+    case CC_PASCAL:
+      return Quokka::CC_PASCAL;
+    case CC_FASTCALL:
+      return Quokka::CC_FASTCALL;
+    case CC_THISCALL:
+      return Quokka::CC_THISCALL;
+    case CC_SWIFT:
+      return Quokka::CC_SWIFT;
+    case CC_GOLANG:
+      return Quokka::CC_GOLANG;
+    case CC_GOSTK:
+      return Quokka::CC_GOSTK;
+    default:
+      return Quokka::CC_UNK;
+  }
+}
+
+/**
+ * Convert a function type to the proto associated type
+ * @param hash_type Type to convert
+ * @return Converted type
+ */
+static constexpr Quokka::Meta::Hash::HashType ToProtoHashType(
+    HashType hash_type) {
+  switch (hash_type) {
+    case HASH_SHA256:
+      return Quokka::Meta::Hash::HASH_SHA256;
+    case HASH_MD5:
+      return Quokka::Meta::Hash::HASH_MD5;
+    default:
+      return Quokka::Meta::Hash::HASH_NONE;
+  }
+}
+
+/**
+ * Convert a function type to the proto associated type
+ * @param state Type to convert
+ * @return Converted type
+ */
+static constexpr Quokka::Layout::LayoutType GetLayoutTypeByState(State state) {
+  assert(state != START && state != FINISH && state != TBD);
+  switch (state) {
+    case CODE:
+      return Quokka::Layout::LAYOUT_CODE;
+
+    case DATA:
+      return Quokka::Layout::LAYOUT_DATA;
+
+    case UNK:
+    case UNK_WITH_XREF:  // Intentional fallthrough
+      return Quokka::Layout::LAYOUT_UNK;
+
+    case GAP:
+      return Quokka::Layout::LAYOUT_GAP;
+
+    default:
+      QLOGE << "Error, type not handled";
+      break;
+  }
+
+  return Quokka::Layout::LAYOUT_UNK;
+}
+
+/**
+ * Convert a function type to the proto associated type
+ * @param type Type to convert
+ * @return Converted type
+ */
+static constexpr Quokka::Segment::Type ToProtoSegmentType(SegmentType type) {
+  switch (type) {
+    case SegmentType::SEGMENT_CODE:
+      return Quokka::Segment::SEGMENT_CODE;
+    case SegmentType::SEGMENT_DATA:
+      return Quokka::Segment::SEGMENT_DATA;
+    case SegmentType::SEGMENT_BSS:
+      return Quokka::Segment::SEGMENT_BSS;
+    case SegmentType::SEGMENT_NULL:
+      return Quokka::Segment::SEGMENT_NULL;
+    case SegmentType::SEGMENT_EXTERN:
+      return Quokka::Segment::SEGMENT_EXTERN;
+    case SegmentType::SEGMENT_NORMAL:
+      return Quokka::Segment::SEGMENT_NORMAL;
+    case SegmentType::SEG_ABSOLUTE_SYMBOLS:
+      return Quokka::Segment::SEGMENT_ABSOLUTE_SYMBOLS;
+    default:
+      return Quokka::Segment::SEGMENT_UNK;
+  }
+}
+
+/**
+ * Convert a mode to the proto associated type
+ * @param mode Type to convert
+ * @return
+ */
+static constexpr Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode) {
+  switch (mode) {
+    case ExporterMode::MODE_LIGHT:
+      return Quokka::ExporterMeta::MODE_LIGHT;
+    case ExporterMode::MODE_SELF_CONTAINED:
+      return Quokka::ExporterMeta::MODE_SELF_CONTAINED;
+  }
+  assert(false && "Should not reach this point");
+}
+
+/**
  * Write a block
  *
  * @param proto_func Current protobuf object for Function
@@ -139,7 +317,7 @@ static void WriteBlock(Quokka::Function* proto_func, const Block& block,
          block.start_addr < block.segment->end_addr &&
          block.end_addr <= block.segment->end_addr);
 
-  quokka::Quokka::Block* proto_block = proto_func->add_blocks();
+  Quokka::Block* proto_block = proto_func->add_blocks();
   proto_block->set_segment_index(block.segment->proto_index);
   proto_block->set_segment_offset(block.start_addr - block.segment->start_addr);
   proto_block->set_file_offset(block.file_offset);
@@ -184,7 +362,7 @@ static void WriteBlock(Quokka::Function* proto_func, const Block& block,
   }
 }
 
-static void WriteCompositeTypes(quokka::Quokka* proto) {
+static void WriteCompositeTypes(Quokka* proto) {
   const DataTypes& data_types = DataTypes::GetInstance();
 
   auto write_composite_type = [&proto]<typename T>(T& composite) {
@@ -213,8 +391,6 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
     proto_composite_type->mutable_members()->Reserve(composite.members.size());
 
     for (const auto& member : composite.members) {
-      member.proto_index = proto_composite_type->members_size();
-
       Quokka::CompositeType::Member* proto_member =
           proto_composite_type->add_members();
       proto_member->set_offset(member.offset);
@@ -252,7 +428,7 @@ static void WriteCompositeTypes(quokka::Quokka* proto) {
       });
 }
 
-static void WriteEnums(quokka::Quokka* proto) {
+static void WriteEnums(Quokka* proto) {
   const DataTypes& data_types = DataTypes::GetInstance();
 
   for (const auto& [tid, enum_type] : data_types | filter_type<EnumType>) {
@@ -434,11 +610,10 @@ static void WriteLocation(Quokka::Reference::Location* proto_location,
 //   proto_position->set_y(position.y);
 // }
 
-void WriteFunctions(quokka::Quokka* proto,
-                    const std::vector<Function>& functions) {
+void WriteFunctions(Quokka* proto, const std::vector<Function>& functions) {
   proto->mutable_functions()->Reserve(static_cast<int>(functions.size()));
   for (const auto& function : functions) {
-    quokka::Quokka::Function* proto_func = proto->add_functions();
+    Quokka::Function* proto_func = proto->add_functions();
     proto_func->set_name(function.name);
     if (!function.mangled_name.empty())
       proto_func->set_mangled_name(function.mangled_name);
@@ -497,7 +672,7 @@ void WriteReferences(Quokka* proto) {
   }
 }
 
-void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket) {
+void WriteData(Quokka* proto, SetBucket<Data>& data_bucket) {
   data_bucket.Sort();
   proto->mutable_data()->Reserve(static_cast<int>(data_bucket.size()));
 
@@ -569,84 +744,8 @@ void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket) {
 //   }
 // }
 
-quokka::Quokka::Meta::Hash::HashType ToProtoHashType(HashType hash_type) {
-  switch (hash_type) {
-    case HASH_SHA256:
-      return quokka::Quokka::Meta::Hash::HASH_SHA256;
-    case HASH_MD5:
-      return quokka::Quokka::Meta::Hash::HASH_MD5;
-    default:
-      return quokka::Quokka::Meta::Hash::HASH_NONE;
-  }
-}
-
-quokka::Quokka::CallingConvention ToProtoCallingConvention(
-    CallingConvention cc) {
-  switch (cc) {
-    case CC_CDECL:
-      return quokka::Quokka::CC_CDECL;
-    case CC_ELLIPSIS:
-      return quokka::Quokka::CC_ELLIPSIS;
-    case CC_STDCALL:
-      return quokka::Quokka::CC_STDCALL;
-    case CC_PASCAL:
-      return quokka::Quokka::CC_PASCAL;
-    case CC_FASTCALL:
-      return quokka::Quokka::CC_FASTCALL;
-    case CC_THISCALL:
-      return quokka::Quokka::CC_THISCALL;
-    case CC_SWIFT:
-      return quokka::Quokka::CC_SWIFT;
-    case CC_GOLANG:
-      return quokka::Quokka::CC_GOLANG;
-    case CC_GOSTK:
-      return quokka::Quokka::CC_GOSTK;
-    default:
-      return quokka::Quokka::CC_UNK;
-  }
-}
-
-quokka::Quokka::AddressSize ToProtoAddressSize(AddressSize addr_size) {
-  switch (addr_size) {
-    case ADDR_64:
-      return quokka::Quokka::ADDR_64;
-    case ADDR_32:
-      return quokka::Quokka::ADDR_32;
-    default:
-      return quokka::Quokka::ADDR_UNK;
-  }
-}
-
-quokka::Quokka::Meta::Endianess ToProtoEndianness(Endianness endianness) {
-  switch (endianness) {
-    case END_BE:
-      return quokka::Quokka::Meta::END_BE;
-    case END_LE:
-      return quokka::Quokka::Meta::END_LE;
-    default:
-      return quokka::Quokka::Meta::END_UNK;
-  }
-}
-
-quokka::Quokka::Meta::ISA ToProtoIsa(ProcName proc_name) {
-  switch (proc_name) {
-    case PROC_X86:
-      return quokka::Quokka::Meta::PROC_INTEL;
-    case PROC_ARM:
-      return quokka::Quokka::Meta::PROC_ARM;
-    case PROC_DALVIK:
-      return quokka::Quokka::Meta::PROC_DALVIK;
-    case PROC_PPC:
-      return quokka::Quokka::Meta::PROC_PPC;
-    case PROC_MIPS:
-      return quokka::Quokka::Meta::PROC_MIPS;
-    default:
-      return quokka::Quokka::Meta::PROC_UNK;
-  }
-}
-
-void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
-  quokka::Quokka::Meta* proto_meta = proto->mutable_meta();
+void WriteMetadata(Quokka* proto, const Metadata& metadata) {
+  Quokka::Meta* proto_meta = proto->mutable_meta();
 
   proto_meta->set_executable_name(metadata.file_name);
 
@@ -656,7 +755,7 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
       ToProtoCallingConvention(metadata.calling_convention));
 
   /* Set FileHash */
-  quokka::Quokka::Meta::Hash* proto_hash = proto_meta->mutable_hash();
+  Quokka::Meta::Hash* proto_hash = proto_meta->mutable_hash();
   proto_hash->set_hash_value(metadata.file_hash.value);
   proto_hash->set_hash_type(ToProtoHashType(metadata.file_hash.type));
 
@@ -664,12 +763,12 @@ void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata) {
   proto_meta->set_address_size(ToProtoAddressSize(metadata.address_size));
 
   auto* proto_backend = proto_meta->mutable_backend();
-  proto_backend->set_name(quokka::Quokka::Meta::Backend::DISASS_IDA);
+  proto_backend->set_name(Quokka::Meta::Backend::DISASS_IDA);
   proto_backend->set_version(metadata.ida_version);
   proto_meta->set_decompilation_activated(metadata.decompilation_activated);
 }
 
-void WriteTypes(quokka::Quokka* proto) {
+void WriteTypes(Quokka* proto) {
   // Try to reserve the right amount from the start
   proto->mutable_types()->Reserve(9 + DataTypes::GetInstance().size());
 
@@ -684,7 +783,7 @@ void WriteTypes(quokka::Quokka* proto) {
   proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_DOUBLE);
   proto->add_types()->set_primitive_type(Quokka_BaseType_TYPE_VOID);
 
-  // The order matters! The last ones should be structs and unions
+  // The order matters! The last ones should be composite types
   WriteEnums(proto);
   WriteCompositeTypes(proto);
 }
@@ -701,7 +800,7 @@ class string_text_sink_t : public text_sink_t {
   }
 };
 
-void WriteHeaders(quokka::Quokka* proto) {
+void WriteHeaders(Quokka* proto) {
   // Get the number of types
   til_t* ti = get_idati();
   if (!ti) {
@@ -718,47 +817,15 @@ void WriteHeaders(quokka::Quokka* proto) {
               PDF_INCL_DEPS | PDF_DEF_FWD | PDF_DEF_BASE | PDF_HEADER_CMT);
 }
 
-quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode) {
-  switch (mode) {
-    case ExporterMode::MODE_LIGHT:
-      return quokka::Quokka::ExporterMeta::MODE_LIGHT;
-    case ExporterMode::MODE_SELF_CONTAINED:
-      return quokka::Quokka::ExporterMeta::MODE_SELF_CONTAINED;
-  }
-  assert(false && "Should not reach this point");
-}
-
-void WriteExporterMeta(quokka::Quokka* proto) {
+void WriteExporterMeta(Quokka* proto) {
   Settings s = Settings::GetInstance();
 
-  quokka::Quokka::ExporterMeta* proto_exportermeta =
-      proto->mutable_exporter_meta();
+  Quokka::ExporterMeta* proto_exportermeta = proto->mutable_exporter_meta();
   proto_exportermeta->set_version(GetVersion());
   proto_exportermeta->set_mode(ToProtoModeType(s.GetMode()));
 }
 
-quokka::Quokka::Segment::Type ToProtoSegmentType(SegmentType type) {
-  switch (type) {
-    case SegmentType::SEGMENT_CODE:
-      return quokka::Quokka::Segment::SEGMENT_CODE;
-    case SegmentType::SEGMENT_DATA:
-      return quokka::Quokka::Segment::SEGMENT_DATA;
-    case SegmentType::SEGMENT_BSS:
-      return quokka::Quokka::Segment::SEGMENT_BSS;
-    case SegmentType::SEGMENT_NULL:
-      return quokka::Quokka::Segment::SEGMENT_NULL;
-    case SegmentType::SEGMENT_EXTERN:
-      return quokka::Quokka::Segment::SEGMENT_EXTERN;
-    case SegmentType::SEGMENT_NORMAL:
-      return quokka::Quokka::Segment::SEGMENT_NORMAL;
-    case SegmentType::SEG_ABSOLUTE_SYMBOLS:
-      return quokka::Quokka::Segment::SEGMENT_ABSOLUTE_SYMBOLS;
-    default:
-      return quokka::Quokka::Segment::SEGMENT_UNK;
-  }
-}
-
-void WriteSegments(quokka::Quokka* proto) {
+void WriteSegments(Quokka* proto) {
   Segments& segments = Segments::GetInstance();
   segments.Sort();
 
@@ -766,7 +833,7 @@ void WriteSegments(quokka::Quokka* proto) {
 
   for (const Segment& segment : segments.GetSortedView()) {
     segment.proto_index = proto->segments_size();
-    quokka::Quokka::Segment* proto_seg = proto->add_segments();
+    Quokka::Segment* proto_seg = proto->add_segments();
     proto_seg->set_name(segment.name);
 
     proto_seg->set_virtual_addr(uint64_t(segment.start_addr));
@@ -780,34 +847,10 @@ void WriteSegments(quokka::Quokka* proto) {
   }
 }
 
-quokka::Quokka::Layout::LayoutType GetLayoutTypeByState(State state) {
-  assert(state != START && state != FINISH && state != TBD);
-  switch (state) {
-    case CODE:
-      return quokka::Quokka::Layout::LAYOUT_CODE;
-
-    case DATA:
-      return quokka::Quokka::Layout::LAYOUT_DATA;
-
-    case UNK:
-    case UNK_WITH_XREF:  // Intentional fallthrough
-      return quokka::Quokka::Layout::LAYOUT_UNK;
-
-    case GAP:
-      return quokka::Quokka::Layout::LAYOUT_GAP;
-
-    default:
-      QLOGE << "Error, type not handled";
-      break;
-  }
-
-  return quokka::Quokka::Layout::LAYOUT_UNK;
-}
-
-void WriteLayout(quokka::Quokka* proto, const std::deque<Layout>& layouts) {
+void WriteLayout(Quokka* proto, const std::deque<Layout>& layouts) {
   proto->mutable_layout()->Reserve(static_cast<int>(layouts.size()));
   for (const Layout& layout : layouts) {
-    quokka::Quokka::Layout* proto_layout = proto->add_layout();
+    Quokka::Layout* proto_layout = proto->add_layout();
     proto_layout->set_layout_type(GetLayoutTypeByState(layout.type));
     proto_layout->mutable_address_range()->set_start_address(layout.start);
     proto_layout->mutable_address_range()->set_size(layout.size);

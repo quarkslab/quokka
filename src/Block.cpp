@@ -12,19 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Block.h"
+#include <cassert>
+#include <stdexcept>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
 // clang-format on
+#include <pro.h>
 #include <idp.hpp>
+#include <loader.hpp>
 #include <segregs.hpp>
 #include <ua.hpp>
 
 #include "absl/strings/str_format.h"
 
+#include "quokka/Block.h"
 #include "quokka/Instruction.h"
-#include "quokka/Reference.h"
+#include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 
@@ -38,28 +42,6 @@ static bool is_thumb_ea(ea_t ea) {
   // 20 is the segment used for ARM to store thumb mode
   sel_t t = get_sreg(ea, 20);
   return t != BADSEL && t != 0;
-}
-
-BlockType RetrieveBlockType(fc_block_type_t block_type) {
-  switch (block_type) {
-    case fcb_normal:
-      return BTYPE_NORMAL;
-    case fcb_indjump:
-      return BTYPE_INDJUMP;
-    case fcb_ret:
-      return BTYPE_RET;
-    case fcb_cndret:
-      return BTYPE_CNDRET;
-    case fcb_noret:
-      return BTYPE_NORET;
-    case fcb_enoret:
-      return BTYPE_ENORET;
-    case fcb_extern:
-      return BTYPE_EXTERN;
-    case fcb_error:
-      return BTYPE_ERROR;
-  }
-  assert(false && "Invalid block type");
 }
 
 Block::Block(ea_t addr, ea_t eaddr, BlockType block_type)

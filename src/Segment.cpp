@@ -12,17 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Segment.h"
-#include <cstdint>
+#include <algorithm>
+#include <iterator>
 #include <stdexcept>
 
+// clang-format off: Compatibility.h must come before ida headers
+#include "quokka/Compatibility.h"
+// clang-format on
+#include <pro.h>
+#include <loader.hpp>
+#include <name.hpp>
+#include <segment.hpp>
+
+#include "absl/strings/str_format.h"
+
 #include "quokka/FileMetadata.h"
+#include "quokka/Logger.h"
+#include "quokka/Segment.h"
 #include "quokka/Util.h"
-#include "quokka/Writer.h"
 
 namespace quokka {
 
-SegmentType GetSegmentType(uchar seg_type) {
+/**
+ * Retrieve the type of a segment
+ *
+ * @param seg_type IDA segment type
+ * @return
+ */
+static constexpr SegmentType GetSegmentType(uchar seg_type) {
   switch (seg_type) {
     case SEG_CODE:
       return SegmentType::SEGMENT_CODE;
@@ -47,7 +64,7 @@ SegmentType GetSegmentType(uchar seg_type) {
 Segment::Segment(segment_t* segment) {
   qstring segment_name;
   if (get_segm_name(&segment_name, segment, GN_VISIBLE) != -1) {
-    name = std::move(ConvertIdaString(segment_name));
+    name = ConvertIdaString(segment_name);
   }
 
   start_addr = segment->start_ea;

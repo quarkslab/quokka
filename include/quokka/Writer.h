@@ -20,68 +20,18 @@
 #ifndef QUOKKA_WRITER_H
 #define QUOKKA_WRITER_H
 
-#include <cassert>
-#include <cstdint>
-#include <stdexcept>
-#include <utility>
-
-// clang-format off: Compatibility.h must come before ida headers
-#include "Compatibility.h"
-// clang-format on
-#include <pro.h>
-
-#include "absl/container/btree_set.h"
-#include "absl/container/flat_hash_map.h"
-#include "absl/strings/string_view.h"
+#include <deque>
+#include <vector>
 
 #include "Bucket.h"
 #include "Data.h"
 #include "FileMetadata.h"
-// #include "Localization.h"
-#include "Logger.h"
+#include "Function.h"
+#include "Layout.h"
 #include "ProtoWrapper.h"
-#include "Segment.h"
-#include "Settings.h"
-#include "Util.h"
 #include "Windows.h"
 
 namespace quokka {
-
-class Operand;
-struct Position;
-
-class Mnemonic;
-class OperandString;
-class Instruction;
-class Structure;
-struct StructureMember;
-class Function;
-class FuncChunk;
-class Block;
-class Function;
-struct Edge;
-class FuncChunkCollection;
-class Structures;
-struct Segment;
-struct Layout;
-class Metadata;
-class ReferenceHolder;
-class Comments;
-
-enum CommentType : short;
-enum ProcName : short;
-enum AddressSize : short;
-enum CallingConvention : short;
-enum Compiler : short;
-enum HashType : short;
-enum Endianness : short;
-// enum StructureType : short;
-enum SegmentType : short;
-enum BlockType : short;
-enum FunctionType : short;
-enum PositionType : short;
-enum State : short;
-enum ExporterMode : short;
 
 // /**
 //  * Convert a function type to the proto associated type
@@ -99,42 +49,6 @@ enum ExporterMode : short;
 // quokka::Quokka::Comment::CommentType ToProtoCommentType(
 //     CommentType comment_type);
 
-/**
- * Convert a function type to the proto associated type
- * @param proc_name Type to convert
- * @return Converted type
- */
-quokka::Quokka::Meta::ISA ToProtoIsa(ProcName proc_name);
-
-/**
- * Convert a function type to the proto associated type
- * @param endianness Type to convert
- * @return Converted type
- */
-quokka::Quokka::Meta::Endianess ToProtoEndianness(Endianness endianness);
-
-/**
- * Convert a function type to the proto associated type
- * @param addr_size Type to convert
- * @return Converted type
- */
-quokka::Quokka::AddressSize ToProtoAddressSize(AddressSize addr_size);
-
-/**
- * Convert a function type to the proto associated type
- * @param cc Type to convert
- * @return Converted type
- */
-quokka::Quokka::CallingConvention ToProtoCallingConvention(
-    CallingConvention cc);
-
-/**
- * Convert a function type to the proto associated type
- * @param hash_type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Meta::Hash::HashType ToProtoHashType(HashType hash_type);
-
 // /**
 //  * Convert a function type to the proto associated type
 //  * @param struct_type Type to convert
@@ -142,20 +56,6 @@ quokka::Quokka::Meta::Hash::HashType ToProtoHashType(HashType hash_type);
 //  */
 // quokka::Quokka::Structure::StructureType ToProtoStructType(
 //     StructureType struct_type);
-
-/**
- * Convert a function type to the proto associated type
- * @param state Type to convert
- * @return Converted type
- */
-quokka::Quokka::Layout::LayoutType GetLayoutTypeByState(State state);
-
-/**
- * Convert a function type to the proto associated type
- * @param type Type to convert
- * @return Converted type
- */
-quokka::Quokka::Segment::Type ToProtoSegmentType(SegmentType type);
 
 // /**
 //  * Write the mnemonics
@@ -189,13 +89,6 @@ quokka::Quokka::Segment::Type ToProtoSegmentType(SegmentType type);
 //  */
 // void WriteInstructions(quokka::Quokka* proto,
 //                        BucketNew<Instruction>& instructions);
-
-/**
- * Convert a mode to the proto associated type
- * @param mode Type to convert
- * @return
- */
-quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode);
 
 // /**
 //  * Write Block identifier
@@ -239,15 +132,14 @@ quokka::Quokka::ExporterMeta::Mode ToProtoModeType(ExporterMode mode);
  * @param proto Protobuf main object
  * @param functions Function collections
  */
-void WriteFunctions(quokka::Quokka* proto,
-                    const std::vector<Function>& functions);
+void WriteFunctions(Quokka* proto, const std::vector<Function>& functions);
 
 /**
  * Write the references
  *
  * @param proto Protobuf main object
  */
-void WriteReferences(quokka::Quokka* proto);
+void WriteReferences(Quokka* proto);
 
 /**
  * Write data
@@ -255,7 +147,7 @@ void WriteReferences(quokka::Quokka* proto);
  * @param proto Protobuf main object
  * @param data_bucket Data bucket
  */
-void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket);
+void WriteData(Quokka* proto, SetBucket<Data>& data_bucket);
 
 // /**
 //  * Write comments
@@ -270,35 +162,35 @@ void WriteData(quokka::Quokka* proto, SetBucket<Data>& data_bucket);
  * @param proto Protobuf main object
  * @param metadata Exported file metadata
  */
-void WriteMetadata(quokka::Quokka* proto, const Metadata& metadata);
+void WriteMetadata(Quokka* proto, const Metadata& metadata);
 
 /**
  * Write all the exported types (composite, enums, primitive)
  *
  * @param proto Protobuf main object
  */
-void WriteTypes(quokka::Quokka* proto);
+void WriteTypes(Quokka* proto);
 
 /**
  * Write all the headers (local types)
  *
  * @param proto Protobuf main object
  */
-void WriteHeaders(quokka::Quokka* proto);
+void WriteHeaders(Quokka* proto);
 
 /**
  * Write the exporter metadata
  *
  * @param proto Protobuf main object
  */
-void WriteExporterMeta(quokka::Quokka* proto);
+void WriteExporterMeta(Quokka* proto);
 
 /**
  * Write the segments
  *
  * @param proto Protobuf main object
  */
-void WriteSegments(quokka::Quokka* proto);
+void WriteSegments(Quokka* proto);
 
 /**
  * Write the layouts
@@ -306,7 +198,7 @@ void WriteSegments(quokka::Quokka* proto);
  * @param proto Protobuf main object
  * @param layouts Layouts collection
  */
-void WriteLayout(quokka::Quokka* proto, const std::deque<Layout>& layouts);
+void WriteLayout(Quokka* proto, const std::deque<Layout>& layouts);
 
 }  // namespace quokka
 

@@ -12,35 +12,85 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Layout.h"
-
+#include <algorithm>
+#include <cassert>
 #include <cstddef>
-#include <stdexcept>
+#include <cstdint>
+#include <deque>
+#include <iterator>
+#include <numeric>
 #include <utility>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
 // clang-format on
-#include "pro.h"
+#include <pro.h>
+#include <bytes.hpp>
+#include <ida.hpp>
 
 #include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
 
-#include "quokka/Block.h"
-// #include "quokka/Comment.h"
 #include "quokka/Data.h"
-#include "quokka/Function.h"
 #include "quokka/Imports.h"
-#include "quokka/Instruction.h"
-#include "quokka/Reference.h"
+#include "quokka/Layout.h"
+#include "quokka/Logger.h"
+#include "quokka/ProtoWrapper.h"
 #include "quokka/Settings.h"
+#include "quokka/Util.h"
 #include "quokka/Writer.h"
 
 namespace quokka {
 
 constexpr const bool LOCAL_TRACE = false;
 
-State GetState(ea_t address) {
+/**
+ * Implementation of a merge adjacent method
+ *
+ * @see http://coliru.stacked-crooked.com/a/0de073866090972d
+ */
+template <typename ForwardIterator, typename OutputIterator, typename Equal,
+          typename Merge>
+static constexpr void MergeAdjacent(ForwardIterator first, ForwardIterator last,
+                                    OutputIterator out, Equal equal,
+                                    Merge merge) {
+  for (auto lb = first, ub = last; lb != last; lb = ub)
+    *out++ = std::accumulate(
+        lb + 1, ub = std::mismatch(lb + 1, last, lb, equal).first, *lb, merge);
+}
+
+static inline void MergeLayouts(std::deque<Layout>& layouts) {
+  std::deque<Layout> merged_layouts;
+  auto should_merge = [](const Layout& left, const Layout& right) -> bool {
+    return left.type == right.type and
+           (right.start + right.size == left.start or
+            left.start + left.size == right.start);
+  };
+
+  auto merge_layout = [](const Layout& left, const Layout& right) -> Layout {
+    return {left.type, std::min(left.start, right.start),
+            left.size + right.size};
+  };
+
+  // TODO(dm) Check if useful (hint: probably not) -> should be improved for
+  //  UNK_WITH_REF
+  MergeAdjacent(begin(layouts), end(layouts),
+                std::back_inserter(merged_layouts), should_merge, merge_layout);
+
+  QLOGD << absl::StrFormat("Previous size: %d", layouts.size());
+  QLOGD << absl::StrFormat("Merged size: %d", merged_layouts.size());
+
+  layouts = merged_layouts;
+}
+
+/**
+ * Compute the state at address
+ *
+ * @param address Address
+ * @return State type
+ */
+static constexpr State GetState(ea_t address) {
   flags_t flags = get_flags(address);
   if (is_code(flags)) {
     return CODE;
@@ -56,7 +106,7 @@ State GetState(ea_t address) {
 HeadIterator::HeadIterator(ea_t start_ea, ea_t max_ea)
     : current_ea(start_ea), max_ea(max_ea) {
   /* Initialize the next heads */
-  InitAddresses(start_ea);
+  this->InitAddresses(start_ea);
 
   /* Init item size*/
   this->item_size = uint64_t(get_item_size(this->current_ea));
@@ -168,120 +218,43 @@ void HeadIterator::Iterate() {
   this->current_ea = this->next_ea;
   this->UpdateNextEa();
   this->item_size = uint64_t(get_item_size(this->current_ea));
-
-  /* Reset instruction */
-  if (this->state != CODE) {
-    this->current_instruction = nullptr;
-  }
 }
 
-bool HeadIterator::IsChunkTail() const {
-  return this->state == CODE &&              // Must be in the code section
-         this->current_chunk.has_value() &&  // Chunk is valid
-         (this->next_ea == this->next_chunk_addr ||  // Next ea is a valid chunk
-          this->current_chunk->end_addr ==
-              this->current_ea +
-                  this->item_size  // We are at the advertised end of the chunk
-         );
-}
+// std::shared_ptr<Instruction> HeadIterator::CreateNewInst() {
+// insn_t instruction;
+// int decoded_size = decode_insn(&instruction, this->current_ea);
+// if (decoded_size != 0) {
+//   this->current_instruction = this->instruction_bucket.emplace(
+//       instruction, this->operand_bucket, this->mnemonic_bucket,
+//       this->operand_string_bucket);
 
-void HeadIterator::CreateNewChunk() {
-  if (this->current_chunk.has_value())
-    throw std::runtime_error(
-        "Trying to create a new chunk while there is still an active one");
+// } else {
+//   this->current_instruction = nullptr;
+//   this->false_decoding = true;
 
-  this->current_chunk.emplace(this->next_func_chunk);
-}
-
-bool HeadIterator::IsBlockTail() const {
-  /* Most of the time, we trust IDA to give block boundaries. However, for
-   * alignment directives IDA considers either DATA or NOP instructions
-   * and is not consistent */
-  return this->state == CODE &&             // Must be in the code section
-         this->current_block != nullptr &&  // There is an active current block
-         (GetState(this->current_ea + this->item_size) !=
-              CODE ||             // Next address is not code
-          this->IsChunkTail() ||  // This is a chunk tail
-          true                    // TODO add end of block
-         );
-}
-
-std::shared_ptr<Block> HeadIterator::CreateNewBlock() {
-  ea_t end_ea = this->current_chunk->block_ends[this->current_ea];
-
-  assert(end_ea != 0x0 && end_ea != BADADDR && "Problem with end address");
-  assert(end_ea > this->current_ea && "Block misformed");
-
-  BlockType block_type =
-      RetrieveBlockType(this->current_chunk->block_types[this->current_ea]);
-  this->blocks.emplace_front(
-      std::make_shared<Block>(this->current_ea, end_ea, block_type));
-  this->current_block = this->blocks.front();
-
-  this->current_chunk->blocks.push_back(this->current_block);
-
-  return this->current_block;
-}
-
-std::shared_ptr<Block> HeadIterator::CreateFakeBlock() {
-  // this->blocks.emplace_front(std::make_shared<Block>(this->current_ea));
-  // this->current_block = this->blocks.front();
-
-  // auto result = this->current_chunk->block_heads.find(this->current_ea);
-  // if (result == this->current_chunk->block_heads.end()) {
-  //   this->current_chunk->block_heads.emplace(this->current_ea);
-  // }
-
-  // this->current_chunk->blocks.push_back(this->current_block);
-
-  // return this->current_block;
-}
-
-// std::shared_ptr<FuncChunk> HeadIterator::CreateFakeChunk() {
-//   this->current_chunk = this->func_chunks.Insert(this->current_ea);
-
-//   if (get_fileregion_offset(this->current_ea) == -1) {
-//     this->current_chunk->in_file = false;
+//   if (not del_items(this->current_ea, DELIT_SIMPLE, this->item_size)) {
+//     QLOGE << "Unable to delete falsy instruction, layout may be
+//     incomplete";
 //   }
 
-//   return this->current_chunk;
+//   return nullptr;
 // }
 
-std::shared_ptr<Instruction> HeadIterator::CreateNewInst() {
-  // insn_t instruction;
-  // int decoded_size = decode_insn(&instruction, this->current_ea);
-  // if (decoded_size != 0) {
-  //   this->current_instruction = this->instruction_bucket.emplace(
-  //       instruction, this->operand_bucket, this->mnemonic_bucket,
-  //       this->operand_string_bucket);
+// // Orphaned instructions : create a fake chunk and a fake block
+// if (this->current_chunk == nullptr) {
+//   this->CreateFakeChunk();
+// }
 
-  // } else {
-  //   this->current_instruction = nullptr;
-  //   this->false_decoding = true;
+// if (this->current_block == nullptr) {
+//   this->CreateFakeBlock();
+// } else {
+//   this->current_instruction->is_block_end =
+//       is_basic_block_end(instruction, false);
+// }
 
-  //   if (not del_items(this->current_ea, DELIT_SIMPLE, this->item_size)) {
-  //     QLOGE << "Unable to delete falsy instruction, layout may be
-  //     incomplete";
-  //   }
-
-  //   return nullptr;
-  // }
-
-  // // Orphaned instructions : create a fake chunk and a fake block
-  // if (this->current_chunk == nullptr) {
-  //   this->CreateFakeChunk();
-  // }
-
-  // if (this->current_block == nullptr) {
-  //   this->CreateFakeBlock();
-  // } else {
-  //   this->current_instruction->is_block_end =
-  //       is_basic_block_end(instruction, false);
-  // }
-
-  // this->current_block->AppendInstruction(this->current_instruction);
-  return this->current_instruction;
-}
+// this->current_block->AppendInstruction(this->current_instruction);
+// return this->current_instruction;
+// }
 
 void HeadIterator::DebugPrint() const {
   QLOGD << "HeadIterator";
@@ -293,30 +266,6 @@ void HeadIterator::DebugPrint() const {
   QLOGD << absl::StrFormat("\tnext_unk_addr: 0x%08x", this->next_unk_addr);
   QLOGD << absl::StrFormat("\tnext_chunk_addr: 0x%08x", this->next_chunk_addr);
   QLOGD << absl::StrFormat("\tnext_ea: 0x%08x\n", this->next_ea);
-}
-
-void MergeLayouts(std::deque<Layout>& layouts) {
-  std::deque<Layout> merged_layouts;
-  auto should_merge = [](const Layout& left, const Layout& right) -> bool {
-    return left.type == right.type and
-           (right.start + right.size == left.start or
-            left.start + left.size == right.start);
-  };
-
-  auto merge_layout = [](const Layout& left, const Layout& right) -> Layout {
-    return {left.type, std::min(left.start, right.start),
-            left.size + right.size};
-  };
-
-  // TODO(dm) Check if useful (hint: probably not) -> should be improved for
-  //  UNK_WITH_REF
-  MergeAdjacent(begin(layouts), end(layouts),
-                std::back_inserter(merged_layouts), should_merge, merge_layout);
-
-  QLOGD << absl::StrFormat("Previous size: %d", layouts.size());
-  QLOGD << absl::StrFormat("Merged size: %d", merged_layouts.size());
-
-  layouts = merged_layouts;
 }
 
 void HeadIterator::Scan(
@@ -445,7 +394,7 @@ void HeadIterator::Scan(
   QLOGD << absl::StrFormat("Found %d orphaned instructions", inst_count);
 }
 
-int ExportLinearScan(quokka::Quokka* proto,
+int ExportLinearScan(Quokka* proto,
                      const std::vector<std::pair<ea_t, ea_t>>& exclude_ranges) {
   bool export_instructions = Settings::GetInstance().ExportInstructions();
 
@@ -453,12 +402,11 @@ int ExportLinearScan(quokka::Quokka* proto,
 
   head_iterator.Scan(export_instructions, std::move(exclude_ranges));
 
-  Timer timer(absl::Now());
-
-  QLOGI << "Starting to write segments...";
-  WriteSegments(proto);
-  QLOGI << absl::StrFormat("Segments written successfully (took: %.2fs)",
-                           timer.ElapsedSeconds(absl::Now()));
+  {
+    SCOPED_STEP("Starting to write segments...",
+                "Segments written successfully");
+    WriteSegments(proto);
+  }
 
   QLOGI << "Start to write layout.";
   MergeLayouts(head_iterator.layouts);
