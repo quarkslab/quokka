@@ -94,6 +94,12 @@ enum BaseType : uint8_t {
 BaseType GetBaseType(const tinfo_t& flags);
 BaseType GetBaseType(flags_t flags);
 
+constexpr bool IsPrimitiveType(BaseType t) {
+  return t == TYPE_UNK || t == TYPE_B || t == TYPE_W || t == TYPE_DW ||
+         t == TYPE_QW || t == TYPE_OW || t == TYPE_FLOAT || t == TYPE_DOUBLE ||
+         t == TYPE_VOID;
+}
+
 /**
  * -----------------------------------------------------------------------------
  * quokka::CompositeTypeMember
@@ -103,7 +109,9 @@ BaseType GetBaseType(flags_t flags);
 class CompositeTypeMember {
  public:
   CompositeTypeMember(ea_t o, std::string&& n, BaseType t, asize_t sz)
-      : offset(o), name(std::forward<std::string>(n)), type(t), size(sz) {}
+      : offset(o), name(std::forward<std::string>(n)), size(sz) {
+    type = t == TYPE_ALIGN ? TYPE_UNK : t;
+  }
 
   ea_t offset;       ///< Field offset (IDA internal)
   std::string name;  ///< Name of the field

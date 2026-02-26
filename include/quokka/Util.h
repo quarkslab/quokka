@@ -34,6 +34,7 @@
 #include <pro.h>
 #include <idp.hpp>
 #include <kernwin.hpp>
+#include <typeinf.hpp>
 #include <ua.hpp>
 
 #include "absl/strings/str_format.h"
@@ -298,6 +299,17 @@ processor_t* GetProcessor();
  * @return A string containing the mnemonic
  */
 std::string GetMnemonic(const insn_t& instruction);
+
+/**
+ * Resolve in-place a typedef or typeref to its final concrete type.
+ *
+ * Follows the typedef/typeref chain and replaces @p tif with the type info of
+ * the underlying concrete type. Does nothing if @p tif is neither a typedef
+ * nor a typeref.
+ *
+ * @param tif The IDA type info to resolve; modified in-place
+ */
+void ResolveTypedef(tinfo_t& tif);
 
 }  // namespace quokka
 

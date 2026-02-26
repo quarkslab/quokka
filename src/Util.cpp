@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <cassert>
 #include <string>
 #include <string_view>
 
@@ -22,6 +23,7 @@
 #include <bytes.hpp>
 #include <idp.hpp>
 #include <name.hpp>
+#include <typeinf.hpp>
 
 #include "absl/strings/str_cat.h"
 
@@ -63,6 +65,15 @@ std::string GetMnemonic(const insn_t& instruction) {
 #else
   return {instruction.get_canon_mnem()};
 #endif
+}
+
+void ResolveTypedef(tinfo_t& tif) {
+  if (tif.is_typedef() || tif.is_typeref()) {
+    uint32_t final_ordinal = tif.get_final_ordinal();
+    assert(final_ordinal > 0 && "Typedef/typeref doesn't have a final ordinal");
+    if (!tif.get_numbered_type(final_ordinal))
+      assert(false && "Cannot get type info for resolved ordinal");
+  }
 }
 
 }  // namespace quokka

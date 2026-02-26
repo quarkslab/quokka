@@ -50,50 +50,84 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
 
   uint32_t member_idx = 0;
   for (const udm_t& udm : udt) {
+    tinfo_t member_tif = udm.type;  // We have more control by copying it
+
+    // Typedef/typeref need to be resolved to the final type
+    ResolveTypedef(member_tif);
+
     uint64_t size = udm.size;
-    if (udm.type.is_varmember()) {
+    if (member_tif.is_varmember()) {
       QLOGD << absl::StrFormat(
-          "Found variable member `%s` that has variable size! Forcing size of "
-          "0.",
+          "Member `%s` is variable-length; forcing size to 0.",
           ConvertIdaString(udm.name));
       size = 0;
     }
 
-    BaseType member_type = GetBaseType(udm.type);
+    BaseType member_base_type = GetBaseType(member_tif);
 
     // Emplace the CompositeTypeMember
     CompositeTypeMember& member = composite_type.members.emplace_back(
-        udm.offset / 8, ConvertIdaString(udm.name), member_type, size);
+        udm.offset / 8, ConvertIdaString(udm.name), member_base_type, size);
 
     // Add the target type if needed
-    if (member_type == TYPE_UNK) {
-      if (udm.type.is_bitfield()) {
-        qstring ida_string;
-        tif.get_type_name(&ida_string);
-        QLOGW << absl::StrFormat(
-            "Found bitfield `%s` in the composite type `%s`. Bitfields are not "
-            "yet supported. Marking it as TYPE_UNK",
-            ConvertIdaString(udm.name), ConvertIdaString(ida_string));
-        member.type = TYPE_UNK;
-        goto member_done;  // fast termination
-      }
+    switch (member_base_type) {
+      case TYPE_UNK: {
+        if (member_tif.is_bitfield()) {
+          qstring ida_string;
+          tif.get_type_name(&ida_string);
+          QLOGW << absl::StrFormat(
+              "Bitfield member `%s` in `%s` is not supported; treating as "
+              "TYPE_UNK.",
+              ConvertIdaString(udm.name), ConvertIdaString(ida_string));
+          member.type = TYPE_UNK;
+          break;
+        }
 
-      // Ask the CompositeTypes manager to give us the relevant struct/union
-      auto it = data_types.find_by_tuid(GetTypeUid(udm.type));
+        // Ask the CompositeTypes manager to give us the relevant struct/union
+        auto it = data_types.find_by_tuid(GetTypeUid(member_tif));
 
-      if (it == data_types.end()) {
-        qstring ida_string;
-        tif.get_type_name(&ida_string);
-        QLOGE << absl::StrFormat(
-            "Member `%s` is of composite type `%s` but it was not found "
-            "within the exported composite types.",
-            ConvertIdaString(udm.name), ConvertIdaString(ida_string));
-      } else {
+        if (it == data_types.end()) {
+          qstring ida_string;
+          tif.get_type_name(&ida_string);
+          QLOGE << absl::StrFormat(
+              "Cannot resolve type for member `%s` in `%s`.",
+              ConvertIdaString(udm.name), ConvertIdaString(ida_string));
+          member.type = TYPE_UNK;
+          break;
+        }
+
         member.target_tuid = it->first;
+        break;
       }
+
+      case TYPE_POINTER:
+        member.target_tuid = ExportPointer(member_tif);
+        break;
+
+      case TYPE_ARRAY:
+        member.target_tuid = ExportArray(member_tif);
+        break;
+
+      case TYPE_STR:  // String literal, No tinfo_t available
+        if (guess_tinfo(&member_tif, member_tif.get_tid()) > 0) {
+          member.target_tuid = ExportArray(member_tif);
+        } else {
+          qstring ida_string;
+          tif.get_type_name(&ida_string);
+          QLOGE << absl::StrFormat(
+              "Cannot recover tinfo_t for string literal member `%s` in `%s`; "
+              "treating as TYPE_UNK.",
+              ConvertIdaString(udm.name), ConvertIdaString(ida_string));
+          member.type = TYPE_UNK;
+        }
+        break;
+
+      default:  // No target type needed
+        break;
     }
 
-  member_done:  // Member was built correctly
+    // Assert that the parsing went well and data type is consistent
+    assert(IsPrimitiveType(member.type) || member.target_tuid.has_value());
 
     /* TODO Retrieve comments */
     ExportSymbolReference(&composite_type, member.xref_to,
@@ -145,9 +179,11 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
 }
 
 static std::variant<type_uid_t, BaseType> ExportInnerElement(
-    const tinfo_t& tif) {
-  if (tif.empty())
+    const tinfo_t& arg_tif) {
+  if (arg_tif.empty())
     return TYPE_UNK;
+  tinfo_t tif = arg_tif;  // Copy it to have a mutable variable
+  ResolveTypedef(tif);
 
   const DataTypes& data_types = DataTypes::GetInstance();
 
