@@ -1,5 +1,6 @@
 third_party/idasdk*/
 quokka.pb.h
+bindings/python/quokka/quokka_pb2.py
 ci/ida*/
 site/
 docs/reference/python/
