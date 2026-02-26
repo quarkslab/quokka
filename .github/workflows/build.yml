@@ -25,12 +25,13 @@ jobs:
         shell: bash
         run: |
           FULL='["74","77","80","81","82","83","84","85","90","90sp1","91","9.2","9.3"]'
+          RELEASE='["91","9.2","9.3"]'
           # LIGHT='["77","85","9.2","9.3"]'
-          LIGHT='["9.2","9.3"]' # Temporarily set to 9.x
+          LIGHT='["91", "9.2","9.3"]' # Temporarily set to 9.x
 
           # Full build for releases (tag pushes)
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            echo "ida_versions=$FULL" >> "$GITHUB_OUTPUT"
+            echo "ida_versions=$RELEASE" >> "$GITHUB_OUTPUT"
             echo "Building all SDK versions (tag push)"
             exit 0
           fi
@@ -51,7 +52,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         ida_sdk: ${{ fromJSON(needs.setup.outputs.ida_versions) }}
         include:
           - os: ubuntu-latest
