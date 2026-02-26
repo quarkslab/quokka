@@ -96,7 +96,10 @@ static Quokka::EdgeType GetXrefType(const xrefblk_t& xref, const insn_t& insn) {
     return Quokka::EdgeType::Quokka_EdgeType_EDGE_JUMP_UNCOND;
   }
 
-  assert(false);  // Catch everything else. We still have to be implemented that
+  // Catch everything else. We probably still need to implement it
+  throw std::runtime_error(absl::StrFormat(
+      "Cannot get the right xref type for {0x%08llx -> 0x%08llx", xref.from,
+      xref.to));
 }
 
 static Quokka::EdgeType GetXrefType(const xrefblk_t& xref) {
@@ -120,7 +123,10 @@ static Quokka::EdgeType GetXrefType(const xrefblk_t& xref) {
     }
   }
 
-  assert(false);  // Catch everything else. We still have to be implemented that
+  // Catch everything else. We probably still need to implement it
+  throw std::runtime_error(absl::StrFormat(
+      "Cannot get the right xref type for {0x%08llx -> 0x%08llx", xref.from,
+      xref.to));
 }
 
 static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
