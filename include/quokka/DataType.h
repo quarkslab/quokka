@@ -370,7 +370,7 @@ class DataTypes {
    * @param args Arguments of the T constructor
    * @return A reference to the newly added object
    */
-  template <IsOneOf<TypeT> T, typename... ArgsT>
+  template <is_one_of_variant_v<TypeT> T, typename... ArgsT>
   T& emplace(type_uid_t tuid, ArgsT&&... args) {
     auto p = std::make_unique<TypeT>(std::in_place_type<T>,
                                      std::forward<ArgsT>(args)...);
@@ -387,7 +387,7 @@ class DataTypes {
    * @param obj object to push into the collection
    * @return A reference to the newly added object
    */
-  template <IsOneOf<TypeT> T>
+  template <is_one_of_variant_v<TypeT> T>
   const T& insert(type_uid_t tuid, T&& obj) {
     using U = std::remove_cvref_t<T>;
     auto p =
@@ -440,7 +440,7 @@ concept visit_callback =
     std::invocable<F&, T&> || std::invocable<F&, const type_uid_t&, T&>;
 
 template <typename... Ts, typename Variant, typename F>
-  requires((IsOneOf<Ts, Variant>) && ...)
+  requires((is_one_of_variant_v<Ts, Variant>) && ...)
 void visit_selected(Variant&& v, F&& fn) {
   std::visit(
       [&]<typename U>(U&& x) {

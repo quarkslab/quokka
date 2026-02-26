@@ -77,14 +77,22 @@ struct filter_type_adaptor_t {};
 template <typename T>
 inline constexpr filter_type_adaptor_t<T> filter_type{};
 
-// Concept for checking that type T is one of the std::variant types not
-// considering cv qualifiers
+// Implementation: default = false (covers non-variant Var types)
 template <typename T, typename Var>
-concept IsOneOf = requires(const Var& var) {
-  []<typename... VarArgsT>
-    requires(std::same_as<std::decay_t<T>, VarArgsT> || ...)
-  (const std::variant<VarArgsT...>) {}(var);
-};
+struct is_one_of_variant : std::false_type {};
+
+// Specialization for std::variant<Ts...>
+template <typename T, typename... Ts>
+struct is_one_of_variant<T, std::variant<Ts...>>
+    : std::bool_constant<(
+          std::same_as<std::remove_cvref_t<T>, std::remove_cvref_t<Ts>> ||
+          ...)> {};
+
+// Concept for checking that type T is one of the std::variant types (not
+// considering cv qualifiers)
+template <typename T, typename Var>
+concept is_one_of_variant_v =
+    is_one_of_variant<T, std::remove_cvref_t<Var>>::value;
 
 /**
  * ---------------------------------------------
