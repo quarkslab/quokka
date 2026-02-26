@@ -37,6 +37,7 @@
 #include "quokka/Layout.h"
 #include "quokka/Logger.h"
 #include "quokka/ProtoWrapper.h"
+#include "quokka/Reference.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
 #include "quokka/Writer.h"
@@ -454,13 +455,19 @@ int ExportLinearScan(Quokka* proto,
   //                            sort_timer.ElapsedSeconds(absl::Now()));
   // }
 
-  // First export the references, then the types, finally the data itself
+  // Freeze the References and assign a protobuf index
+  References::GetInstance().Sort();
+  const References& references = References::GetInstance();
+  for (size_t i = 0; const auto& ref : references.GetSortedView())
+    ref.proto_index = i++;
+
+  // First the types, then the references, finally the data itself
   {
     SCOPED_STEP("Writing references and types in the protobuf message...",
                 "References and types written successfully");
     // References::GetInstance().assert_no_pending_link();
-    WriteReferences(proto);
     WriteTypes(proto);
+    WriteReferences(proto);
   }
 
   {
