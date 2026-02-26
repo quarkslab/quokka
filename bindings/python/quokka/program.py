@@ -35,14 +35,14 @@ import quokka.analysis
 import quokka.backends
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.data_type import (
-    ComplexType,
+    EnumTypeMember,
     StructureTypeMember,
     BaseType,
     ArrayType,
     PointerType,
     StructureType,
     EnumType,
-    TypeTorMember,
+    TypeReference,
     UnionType,
     TypeT
 )
@@ -339,7 +339,7 @@ class Program(dict):
         except KeyError as exc:
             raise KeyError(f"No item at address 0x{addr:x}") from exc
 
-    def get_type(self, type_index: Index, member_index: int = -1) -> TypeTorMember:
+    def get_type_reference(self, type_index: Index, member_index: int = -1) -> TypeReference:
         """Get a type by its index
 
         Arguments:
@@ -361,7 +361,7 @@ class Program(dict):
             
             pb_type = self.proto.types[type_index]
             if pb_type.WhichOneof("OneofType") == "enum_type":
-                self._types[type_index] = EnumType.from_proto(pb_type.enum_type, self)
+                self._types[type_index] = EnumType(pb_type.enum_type, self)
             elif pb_type.WhichOneof("OneofType") == "composite_type":
                 match pb_type.composite_type.type:
                     case Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
@@ -383,6 +383,28 @@ class Program(dict):
                 return typ[member_index]
             else:
                 return typ
+
+    def get_type(self, type_index: Index, member_index: int = -1) -> TypeT:
+        """Get a type by its index with strict typing.
+           For struct or enum members, returns the underlying type.
+
+        Arguments:
+            type_index: Index of the type in the proto
+
+        Returns:
+            The corresponding type
+
+        Raises:
+            KeyError: When the type is not found
+            ValueError: When the type is not of the expected type
+        """
+        typ = self.get_type_reference(type_index, member_index)
+        if isinstance(typ, EnumTypeMember):
+            return typ.base_type
+        elif isinstance(typ, StructureTypeMember):
+            return typ.type   # A member cannot point to another member, so it must be a direct reference to a type
+        else:
+            return typ
 
     # @cached_property
     # def memory(self) -> "quokka.Memory":
@@ -512,8 +534,11 @@ class Program(dict):
 
         Returns:
             A data at the address
+
+        Raises:
+            ValueError: When no data is found at the address
         """
-        return self.data_holder.get_data(address)
+        return self.data_holder[address]
 
     def __repr__(self) -> str:
         """Program representation"""

@@ -1,6 +1,6 @@
 
 import weakref
-from enum import IntEnum, auto, Enum
+from enum import IntEnum, auto, Enum, EnumMeta
 from typing import TYPE_CHECKING, Iterable, Type
 
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
@@ -8,9 +8,59 @@ from quokka.types import AddressT, RefType
 
 if TYPE_CHECKING:
     from quokka import Program, Data
+from abc import ABC, ABCMeta, abstractmethod
 
 
-class BaseType(Enum):
+class CoreType(ABC):
+    """Abstract base class for all types in quokka"""
+
+    @property
+    def is_member(self) -> bool:
+        """Return True if this type is a member (StructureTypeMember or EnumTypeMember)"""
+        return False
+
+    @property
+    def is_base_type(self) -> bool:
+        """Return True if this type is a base type"""
+        return isinstance(self, BaseType)
+
+    @property
+    def is_enum(self) -> bool:
+        """Return True if this type is an enum"""
+        return isinstance(self, EnumType)
+
+    @property
+    def is_struct(self) -> bool:
+        """Return True if this type is a structure"""
+        return isinstance(self, StructureType)
+
+    @property
+    def is_union(self) -> bool:
+        """Return True if this type is a union"""
+        return isinstance(self, UnionType)
+
+    @property
+    def is_array(self) -> bool:
+        """Return True if this type is an array"""
+        return isinstance(self, ArrayType)
+
+    @property
+    def is_pointer(self) -> bool:
+        """Return True if this type is a pointer"""
+        return isinstance(self, PointerType)
+
+    @property
+    def is_composite(self) -> bool:
+        """Return True if this type is a composite type (struct, union, array, pointer)"""
+        return isinstance(self, ComplexType)
+
+
+class EnumABCMeta(EnumMeta, ABCMeta):
+    """Combined metaclass for ABC + Enum compatibility"""
+    pass
+
+
+class BaseType(CoreType, Enum, metaclass=EnumABCMeta):
     """Data Type"""
 
     UNKNOWN = auto()
@@ -53,14 +103,14 @@ class BaseType(Enum):
         return mapping.get(self, 0)
 
 
-class ComplexType(object):
+class ComplexType(CoreType):
     def __init__(self, proto: Pb.CompositeType|Pb.EnumType, program: "Program"):
         self.proto = proto
         self._program = program
 
         self.name: str = proto.name
         # type is not used here
-        self.size = proto.size if proto.HasField("size") else 0
+        self.size = proto.size if hasattr(proto, "size") else 0
         self.c_str = proto.c_str
 
         # Xrefs attached to the type itself
@@ -70,7 +120,7 @@ class ComplexType(object):
     @property
     def comments(self) -> list[str]:
         """Return the type comments"""
-        return self.proto.comments
+        return self.proto.comments if hasattr(self.proto, "comments") else []
 
     @property
     def data_refs_to(self) -> list['Data']:
@@ -96,7 +146,7 @@ class ComplexType(object):
 
 
 
-class EnumTypeMember(object):
+class EnumTypeMember(CoreType):
     """EnumTypeMember
 
     This class represents enum members.
@@ -122,6 +172,11 @@ class EnumTypeMember(object):
         self._xrefs_to = [enum_type._program.proto.references[x] for x in member.xref_to]
 
     @property
+    def base_type(self) -> BaseType:
+        """Return the base type of the enum member"""
+        return self._enum_type().base_type # type: ignore
+
+    @property
     def comments(self) -> list[str]:
         """Return the enum member comments"""
         return self.proto.comments
@@ -145,6 +200,9 @@ class EnumTypeMember(object):
         return [xref.source.address for xref in self._xrefs_to 
                 if xref.reference_type == Pb.Reference.REF_CODE]
 
+    @property
+    def is_member(self) -> bool:
+        return True
 
 
 class EnumType(ComplexType):
@@ -154,11 +212,18 @@ class EnumType(ComplexType):
         """Create an enum from a protobuf enum value"""
         super().__init__(proto, program)
         self.name = proto.name
-        self.size: int = program.get_type(proto.base_type).size
         self._members: dict[str, EnumTypeMember] = {member.name: EnumTypeMember(member, self) 
                                                     for member in proto.values}
         self._members_by_idx = [self._members[x.name] for x in proto.values]
+        self.size = self.base_type.size
 
+    @property
+    def base_type(self) -> BaseType:
+        """Return the base type of the enum"""
+        typ = self._program.get_type(self.proto.base_type)
+        assert isinstance(typ, BaseType)
+        return typ
+    
     @property
     def members(self) -> Iterable[EnumTypeMember]:
         """Return the enum members as a mapping from member names to members"""
@@ -176,11 +241,6 @@ class EnumType(ComplexType):
             return self._members[name]
         else:
             return super().__getattribute__(name)
-
-    @property
-    def comments(self) -> list[str]:
-        """Return the enum comments"""
-        return self.proto.comments
 
 
 class ArrayType(ComplexType):
@@ -227,7 +287,7 @@ class PointerType(ComplexType):
         return self._program.get_type(self.proto.element_type_idx)
 
 
-class StructureTypeMember(object):
+class StructureTypeMember(CoreType):
     """StructureMember
 
     This class represents structure members (fields).
@@ -259,7 +319,7 @@ class StructureTypeMember(object):
         return self.proto.comments
 
     @property
-    def type(self) -> BaseType | EnumType | ComplexType:
+    def type(self) -> 'TypeT':
         """Return the type of the member"""
         return self.parent._program.get_type(self.proto.type_index)
 
@@ -281,6 +341,10 @@ class StructureTypeMember(object):
         # Get protobuf type ids
         return [xref.source.address for xref in self._xrefs_to 
                 if xref.reference_type == Pb.Reference.REF_CODE]
+
+    @property
+    def is_member(self) -> bool:
+        return True
 
 
 class StructureType(dict, ComplexType):
@@ -309,8 +373,6 @@ class StructureType(dict, ComplexType):
             self[member.offset] = StructureTypeMember(member, self)
             self.index_to_offset[index] = member.offset
 
-        self.comments: list[str] = []
-
     def is_variable_size(self) -> bool:
         """Is the structure of variable size?"""
         return self.size <= 0
@@ -329,5 +391,5 @@ class UnionType(StructureType):
 
 
 TypeT = StructureType | BaseType | UnionType | ArrayType | PointerType | EnumType
-TypeTorMember = TypeT | StructureTypeMember | EnumTypeMember
-TypeValue = int | float | str | bytes | EnumType
+TypeReference = TypeT | StructureTypeMember | EnumTypeMember
+TypeValue = int | float | str | bytes

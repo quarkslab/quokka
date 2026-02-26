@@ -19,16 +19,37 @@ A data is a piece of information that isn't code.
 
 from __future__ import annotations
 import logging
-from typing import Mapping
+from typing import Mapping, TYPE_CHECKING
 
 import quokka
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 
 from quokka.types import AddressT, Index, RefType
-from quokka.data_type import EnumType, TypeT, TypeValue
+from quokka.data_type import EnumType, TypeReference, TypeT, TypeValue
+
+if TYPE_CHECKING:
+    from quokka import Program, Function
+
 
 
 logger = logging.getLogger(__name__)
+
+
+def _get_item(program: 'Program', addr: AddressT) -> 'Data | Function | AddressT':
+    """Get the data at the given address
+
+    Arguments:
+        addr: Address to get the data from
+    Returns:
+        The data at the given address
+    """
+    try:
+        return program.data_holder[addr]  # try getting data
+    except ValueError:
+        try:
+            return program[addr]  # try getting function
+        except KeyError:
+            return addr  # Otherwise returns plain address
 
 
 class Data:
@@ -65,10 +86,10 @@ class Data:
         self.name: str = self.proto.name
 
         # Retrieve xrefs (for the data)
-        self._xrefs_from = [self.program.proto.references[x.xref_index] for x in self.proto.xref_from]
+        self._xrefs_from = [self.program.proto.references[x] for x in self.proto.xref_from]
         self._xrefs_from = [(RefType(ref.reference_type), ref) for ref in self._xrefs_from]
         
-        self._xrefs_to = [self.program.proto.references[x.xref_index] for x in self.proto.xref_to]
+        self._xrefs_to = [self.program.proto.references[x] for x in self.proto.xref_to]
         self._xrefs_to = [(RefType(ref.reference_type), ref) for ref in self._xrefs_to]
 
 
@@ -105,37 +126,37 @@ class Data:
         return self.program.get_type(self.proto.type_index)
 
     @property
-    def data_refs_to(self) -> list['Data']:
+    def data_refs_to(self) -> list['Data | Function | AddressT']:
         """Returns all data reference to this data"""
         # If querying refs_to get the source address
-        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t.is_data]
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t.is_data]
 
     @property
-    def data_read_refs_to(self) -> list[quokka.Data]:
+    def data_read_refs_to(self) -> list['Data | Function | AddressT']:
         """Returns all data read reference to this data"""
-        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
 
     @property
-    def data_write_refs_to(self) -> list[quokka.Data]:
+    def data_write_refs_to(self) -> list['Data | Function | AddressT']:
         """Returns all data write reference to this data"""
-        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
     @property
-    def data_refs_from(self) -> list['Data']:
+    def data_refs_from(self) -> list['Data | Function | AddressT']:
         """Returns all data reference from this data"""
         # If querying refs_from get the destination address
-        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t.is_data]
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t.is_data]
 
     @property
-    def data_read_refs_from(self) -> list[quokka.Data]:
+    def data_read_refs_from(self) -> list['Data | Function | AddressT']:
         """Returns all data read reference from this data"""
         # FIXME: Right now consider DATA_INDIR reference as read references (do we want to distinguish R/W ?)
-        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
 
     @property
-    def data_write_refs_from(self) -> list[quokka.Data]:
+    def data_write_refs_from(self) -> list['Data | Function | AddressT']:
         """Returns all data write reference from this data"""
-        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t == RefType.DATA_WRITE]
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t == RefType.DATA_WRITE]
 
 
     @property
@@ -145,12 +166,12 @@ class Data:
         return [xref.source.address for t, xref in self._xrefs_to if t.is_code]
 
     @property
-    def type_refs_from(self) -> list[TypeT]:
+    def type_refs_from(self) -> list[TypeReference]:
         """Returns all type reference from this data"""
         # Get protobuf type ids
         type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol]
         # Resolve type ids to actual types
-        return [self.program.get_type(type_id) for type_id in type_ids]
+        return [self.program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
     
 
 class DataHolder(Mapping):

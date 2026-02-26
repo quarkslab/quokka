@@ -18,7 +18,6 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 
-from collections import defaultdict
 from functools import cached_property
 import capstone
 from typing import TYPE_CHECKING, Any, Iterable, Sequence
@@ -34,12 +33,31 @@ from quokka.types import (
     AccessMode,
     OperandType
 )
-from quokka.data_type import BaseType, TypeT
+from quokka import Data
+from quokka.data_type import BaseType, TypeReference, TypeT
 
 if TYPE_CHECKING:
     import pypcode
+    from quokka import Function, Program
 
 logger: logging.Logger = logging.getLogger(__name__)
+
+
+def _get_item(program: 'Program', addr: AddressT) -> 'Data | Function | AddressT':
+    """Get the data at the given address
+
+    Arguments:
+        addr: Address to get the data from
+    Returns:
+        The data at the given address
+    """
+    try:
+        return program.data_holder[addr]  # try getting data
+    except ValueError:
+        try:
+            return program[addr]  # try getting function
+        except KeyError:
+            return addr  # Otherwise returns plain address
 
 
 class Operand(ABC):
@@ -60,24 +78,24 @@ class Operand(ABC):
     def __init__(self, program: quokka.Program):
         """Constructor"""
         self.program: quokka.Program = program
-        self._data_xrefs_from: list[AddressT] = []
-        self._code_xrefs_from: list[AddressT] = []
-        self._type_xrefs_from: list[tuple[Index, int]] = []
+        self._data_xrefs_from: list[tuple[RefType, AddressT]] = []
+        self._code_xrefs_from: list[tuple[RefType, AddressT]] = []
+        self._type_xrefs_from: list[tuple[RefType, Index, int]] = []
 
     @property
-    def data_refs_from(self) -> list[quokka.Data]:
+    def data_refs_from(self) -> list['Data | Function | AddressT']:
         """Returns all data reference from this instruction"""
-        return [self.program.data_holder[xref] for xref in self._data_xrefs_from]
+        return [_get_item(self.program, addr) for t, addr in self._data_xrefs_from]
 
     @property
     def code_refs_from(self) -> list[AddressT]:
         """Returns all code reference from this instruction"""
-        return [xref for xref in self._code_xrefs_from]
+        return [xref for t, xref in self._code_xrefs_from]
 
     @property
-    def type_refs_from(self) -> list[TypeT]:
+    def type_refs_from(self) -> list[TypeReference]:
         """Returns all type reference from this instruction"""
-        return [self.program.get_type(type_index, member_index) for type_index, member_index in self._type_xrefs_from]
+        return [self.program.get_type_reference(type_index, member_index) for t, type_index, member_index in self._type_xrefs_from]
 
     @property
     @abstractmethod
@@ -387,37 +405,37 @@ class Instruction:
         return pypcode_decode_instruction(self)
 
     @property
-    def data_refs_to(self) -> list[quokka.Data]:
+    def data_refs_to(self) -> list['Data | Function | AddressT']:
         """Returns all data reference to this instruction"""
         # If querying refs_to get the source address
-        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t.is_data]
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t.is_data]
 
     @property
-    def data_read_refs_to(self) -> list[quokka.Data]:
+    def data_read_refs_to(self) -> list['Data | Function | AddressT']:
         """Returns all data read reference to this instruction"""
-        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t == RefType.DATA_READ]
 
     @property
-    def data_write_refs_to(self) -> list[quokka.Data]:
+    def data_write_refs_to(self) -> list['Data | Function | AddressT']:
         """Returns all data write reference to this instruction"""
-        return [self.program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
     @property
-    def data_refs_from(self) -> list[quokka.Data]:
+    def data_refs_from(self) -> list['Data | Function | AddressT']:
         """Returns all data reference from this instruction"""
         # If querying refs_from get the destination address
-        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t.is_data]
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t.is_data]
 
     @property
-    def data_read_refs_from(self) -> list[quokka.Data]:
+    def data_read_refs_from(self) -> list['Data | Function | AddressT']:
         """Returns all data read reference from this instruction"""
         # FIXME: Right now consider DATA_INDIR reference as read references (do we want to distinguish R/W ?)
-        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
 
     @property
-    def data_write_refs_from(self) -> list[quokka.Data]:
+    def data_write_refs_from(self) -> list['Data | Function | AddressT']:
         """Returns all data write reference from this instruction"""
-        return [self.program.data_holder[xref.destination.address] for t, xref in self._xrefs_from if t == RefType.DATA_WRITE]
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t == RefType.DATA_WRITE]
 
     @property
     def code_refs_from(self) -> list[AddressT]:
@@ -432,12 +450,12 @@ class Instruction:
         return [xref.source.address for t, xref in self._xrefs_to if t.is_code]
 
     @property
-    def type_refs_from(self) -> list[TypeT]:
+    def type_refs_from(self) -> list[TypeReference]:
         """Returns all type reference from this instruction"""
         # Get protobuf type ids
         type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol]
         # Resolve type ids to actual types
-        return [self.program.get_type(dtype.type_index, dtype.member_index) for dtype in type_ids]
+        return [self.program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
     
     @property
     def callees(self) -> list[AddressT]:
@@ -511,36 +529,36 @@ class Instruction:
         mem_ops = [x for x in operands if x.type == OperandType.MEMORY]
         imm_ops = [x for x in operands if x.type == OperandType.IMMEDIATE]
 
-        for dxref in (xref.destination.address for t, xref in self._xrefs_from if t.is_data):
+        for t, dxref in ((t, xref.destination.address) for t, xref in self._xrefs_from if t.is_data):
             # If there is only one memory operand assign data ref to it
             if len(operands) == 1:  # Only one operand, assign the data ref to it
-                operands[0]._data_xrefs_from.append(dxref)
+                operands[0]._data_xrefs_from.append((t, dxref))
             elif len(mem_ops) == 1:  # Only one memory operand, assign the data ref to it
-                mem_ops[0]._data_xrefs_from.append(dxref)
+                mem_ops[0]._data_xrefs_from.append((t, dxref))
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the data ref to it
-                imm_ops[0]._data_xrefs_from.append(dxref)
+                imm_ops[0]._data_xrefs_from.append((t, dxref))
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign data refs")
         
-        for cxref in (xref.destination.address for t, xref in self._xrefs_from if t.is_code):
+        for t, cxref in ((t, xref.destination.address) for t, xref in self._xrefs_from if t.is_code):
             # If there is only one memory operand assign code ref to it
             if len(operands) == 1:  # Only one operand, assign the code ref to it
-                operands[0]._code_xrefs_from.append(cxref)
+                operands[0]._code_xrefs_from.append((t, cxref))
             elif len(mem_ops) == 1:  # Only one memory operand, assign the code ref to it
-                mem_ops[0]._code_xrefs_from.append(cxref)
+                mem_ops[0]._code_xrefs_from.append((t, cxref))
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the code ref to it
-                imm_ops[0]._code_xrefs_from.append(cxref)
+                imm_ops[0]._code_xrefs_from.append((t, cxref))
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign code refs")
 
-        for sxref in (xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol):
+        for t, sxref in ((t, xref.destination.data_type_identifier) for t, xref in self._xrefs_from if t.is_symbol):
             # If there is only one memory operand assign symbol ref to it
             if len(operands) == 1:  # Only one operand, assign the symbol ref to it
-                operands[0]._type_xrefs_from.append((sxref.type_index, sxref.member_index))
+                operands[0]._type_xrefs_from.append((t, sxref.type_index, sxref.member_index))
             elif len(mem_ops) == 1:  # Only one memory operand, assign the symbol ref to it
-                mem_ops[0]._type_xrefs_from.append((sxref.type_index, sxref.member_index))
+                mem_ops[0]._type_xrefs_from.append((t, sxref.type_index, sxref.member_index))
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the symbol ref to it
-                imm_ops[0]._type_xrefs_from.append((sxref.type_index, sxref.member_index))
+                imm_ops[0]._type_xrefs_from.append((t, sxref.type_index, sxref.member_index))
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign symbol refs")
 
@@ -573,14 +591,15 @@ class Instruction:
         """Fast accessor for instructions strings not using Capstone."""
         strings = []
         for data in self.data_refs_from:
-            if isinstance(data.type, quokka.ArrayType) and data.is_initialized:
-                if isinstance(data.type.element_type, BaseType.BYTE):  # anything that is an array of bytes is considered
-                    value = data.value
-                    if isinstance(value, bytes):
-                        try:
-                            strings.append(value.decode())
-                        except UnicodeDecodeError:
-                            continue
+            if isinstance(data, quokka.Data):
+                if data.type.is_array and data.is_initialized:
+                    if isinstance(data.type.element_type, BaseType.BYTE):  # anything that is an array of bytes is considered
+                        value = data.value
+                        if isinstance(value, bytes):
+                            try:
+                                strings.append(value.decode())
+                            except UnicodeDecodeError:
+                                continue
         return strings
 
     @cached_property
