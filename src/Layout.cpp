@@ -454,12 +454,13 @@ int ExportLinearScan(Quokka* proto,
   //                            sort_timer.ElapsedSeconds(absl::Now()));
   // }
 
-  // First export the references, then the data itself
+  // First export the references, then the types, finally the data itself
   {
-    SCOPED_STEP("Writing references in the protobuf message...",
-                "References written successfully");
+    SCOPED_STEP("Writing references and types in the protobuf message...",
+                "References and types written successfully");
     // References::GetInstance().assert_no_pending_link();
     WriteReferences(proto);
+    WriteTypes(proto);
   }
 
   {
