@@ -70,9 +70,11 @@ jobs:
     steps:
       - name: Set IDA SDK password
         if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) }}
+        env:
+          IDA_SDK: ${{ matrix.ida_sdk }}
         shell: bash
         run: |
-          case "${{ matrix.ida_sdk }}" in
+          case "$IDA_SDK" in
             74) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK74_PASSWORD }}" >> "$GITHUB_ENV" ;;
             77) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK77_PASSWORD }}" >> "$GITHUB_ENV" ;;
             80) echo "IDA_SDK_PASSWORD=${{ secrets.IDA_SDK80_PASSWORD }}" >> "$GITHUB_ENV" ;;
@@ -89,13 +91,14 @@ jobs:
 
       - name: Set cmake IDA option
         env:
+          IDA_SDK: ${{ matrix.ida_sdk }}
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         shell: bash
         run: |
-          if [[ "${{ matrix.ida_sdk }}" =~ ^(7|8|90|91) ]]; then
+          if [[ "$IDA_SDK" =~ ^(7|8|90|91) ]]; then
             echo "CMAKE_IDA_PARAM=-DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION" >> $GITHUB_ENV
           else
-            echo "CMAKE_IDA_PARAM=-DIDA_VERSION=${{ matrix.ida_sdk }}" >> $GITHUB_ENV
+            echo "CMAKE_IDA_PARAM=-DIDA_VERSION=$IDA_SDK" >> $GITHUB_ENV
           fi
 
       - name: Checkout
@@ -126,10 +129,11 @@ jobs:
           contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
           (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') }}
         env:
+          IDA_SDK: ${{ matrix.ida_sdk }}
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
           cd scripts
-          ./fetch_sdk.sh "${{ matrix.ida_sdk }}"
+          ./fetch_sdk.sh "$IDA_SDK"
           cd ..
           [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
           [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && rm third_party/$IDA_SDK_VERSION/include/regex.h
@@ -140,10 +144,11 @@ jobs:
           contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
           matrix.os == 'windows-latest' }}
         env:
+          IDA_SDK: ${{ matrix.ida_sdk }}
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
         run: |
           cd scripts
-          .\fetch_sdk.bat ${{ matrix.ida_sdk }}
+          .\fetch_sdk.bat $env:IDA_SDK
           cd ..
           7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
           rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
@@ -189,10 +194,13 @@ jobs:
           cmake --install $CMAKE_BUILD_DIR
 
       - name: Rename Plugin
+        env:
+          IDA_SDK: ${{ matrix.ida_sdk }}
+          EXT: ${{ matrix.ext }}
         shell: bash
         run: |
-          mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin64.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
-          [[ -e "build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }}" ]] && mv build${{ matrix.ida_sdk }}/quokka-install/quokka_plugin.${{ matrix.ext }} ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }} || echo "Skipping 32 bit plugin"
+          mv "build${IDA_SDK}/quokka-install/quokka_plugin64.${EXT}" "${IDA_SDK}-quokka_plugin0064.${EXT}"
+          [[ -e "build${IDA_SDK}/quokka-install/quokka_plugin.${EXT}" ]] && mv "build${IDA_SDK}/quokka-install/quokka_plugin.${EXT}" "${IDA_SDK}-quokka_plugin0032.${EXT}" || echo "Skipping 32 bit plugin"
 
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
