@@ -229,6 +229,9 @@ class CommonSortableBucket {
     if (!this->frozen)
       throw std::logic_error(
           "Bucket must be frozen before getting the sorted view");
+    if (!this->sorted)
+      throw std::logic_error(
+          "Bucket must be sorted before getting the sorted view");
 
     return SortedView(storage);
   }
