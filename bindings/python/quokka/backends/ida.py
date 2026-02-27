@@ -60,4 +60,33 @@ def apply_program(program: Program) -> int:
                     errors_count += 1
                 print(f"[{res}] add edge from 0x{src:x} to 0x{dst:x}")
 
+    for data in program.data:
+        edits = data.proto.edits
+
+        # Set name if it has been edited
+        if edits.name_set:
+            res = "x"
+            if ida_name.set_name(data.address, data.name):
+                res = "✓"
+            else:
+                errors_count += 1
+            print(f"[{res}] set name of data at 0x{data.address:x} to {data.name}")
+
+        if edits.type_str:
+            res = "x"
+            if ida_typeinf.apply_cdecl(til, data.address, edits.type_str, ida_typeinf.TINFO_DEFINITE):
+                res = "✓"
+            else:
+                errors_count += 1
+            print(f"[{res}] set type of data at 0x{data.address:x} to {edits.type_str}")
+
+        if edits.comments:
+            cmts = "\n".join(data.proto.comments[x] for x in edits.comments)
+            res = "x"
+            if ida_bytes.set_cmt(data.address, cmts, True):  # set it repeatable
+                res = "✓"
+            else:
+                errors_count += 1
+            print(f"[{res}] set comment of data at 0x{data.address:x}")
+
     return errors_count

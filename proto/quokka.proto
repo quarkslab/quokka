@@ -282,6 +282,12 @@ message Quokka {
   // }
 
   message Data {
+    message DataEdits {
+      bool name_set = 1;
+      string type_str = 2;  // not a type index because the type might not exist yet
+      repeated uint32 comments = 3;
+    }
+
     uint32 segment_index = 1;
     uint32 segment_offset = 2;
     int64 file_offset = 3;
@@ -294,6 +300,7 @@ message Quokka {
     repeated uint64 xref_to = 8;
     repeated uint64 xref_from = 9;
     repeated string comments = 10;
+    DataEdits edits = 11;
   }
 
   message CompositeType {

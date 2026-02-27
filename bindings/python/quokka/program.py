@@ -375,17 +375,17 @@ class Program(dict):
             
             pb_type = self.proto.types[type_index]
             if pb_type.WhichOneof("OneofType") == "enum_type":
-                self._types[type_index] = EnumType(pb_type.enum_type, self)
+                self._types[type_index] = EnumType(type_index, pb_type.enum_type, self)
             elif pb_type.WhichOneof("OneofType") == "composite_type":
                 match pb_type.composite_type.type:
                     case Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
-                        self._types[type_index] = StructureType(pb_type.composite_type, self)
+                        self._types[type_index] = StructureType(type_index, pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_UNION:
-                        self._types[type_index] = UnionType(pb_type.composite_type, self)
+                        self._types[type_index] = UnionType(type_index, pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_ARRAY:
-                        self._types[type_index] = ArrayType(pb_type.composite_type, self)
+                        self._types[type_index] = ArrayType(type_index, pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_POINTER:
-                        self._types[type_index] = PointerType(pb_type.composite_type, self)
+                        self._types[type_index] = PointerType(type_index, pb_type.composite_type, self)
             elif pb_type.WhichOneof("OneofType") == "primitive_type":
                 self._types[type_index] = BaseType.from_proto(pb_type.primitive_type)
             else:

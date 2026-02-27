@@ -83,7 +83,6 @@ class Data:
         self.file_offset: int = data.file_offset
         self.is_initialized: bool = not data.not_initialized
         self.size: int = self.proto.size
-        self.name: str = self.proto.name
 
         # Retrieve xrefs (for the data)
         self._xrefs_from = [self.program.proto.references[x] for x in self.proto.xref_from]
@@ -99,6 +98,17 @@ class Data:
     def __eq__(self, other: "Pb.Data") -> bool:
         """Check equality between two Data instances"""
         return id(self.proto) == id(other.proto)
+
+    @property
+    def name(self) -> str:
+        """Data name"""
+        return self.proto.name
+    
+    @name.setter
+    def name(self, value: str) -> None:
+        """Set the data name and mark it as edited in the protobuf"""
+        self.proto.edits.name_set = True
+        self.proto.name = value
 
     @property
     def comments(self) -> list[str]:
@@ -127,6 +137,19 @@ class Data:
     def type(self) -> TypeT:
         """Data type. Assume one exists for each data"""
         return self.program.get_type(self.proto.type_index)
+
+    @type.setter
+    def type(self, typ: TypeT|str) -> None:
+        """Set the data type and mark it as edited in the protobuf.
+        
+        The final type will only be applied when quokka file regenerated.
+        """
+        if isinstance(typ, str):
+            self.proto.edits.type_str = typ
+        elif isinstance(typ, TypeT):
+            self.proto.edits.type_str = typ.c_str
+        else:
+            assert False, "Invalid type"
 
     @property
     def data_refs_to(self) -> list['Data | Function | AddressT']:

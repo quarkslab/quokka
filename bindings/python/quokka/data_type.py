@@ -4,7 +4,7 @@ from enum import IntEnum, auto, Enum, EnumMeta
 from typing import TYPE_CHECKING, Iterable, Type
 
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
-from quokka.types import AddressT, RefType
+from quokka.types import AddressT, RefType, Index
 
 if TYPE_CHECKING:
     from quokka import Program, Data
@@ -109,9 +109,20 @@ class BaseType(CoreType, IntEnum, metaclass=EnumABCMeta):
         }[self]
         return f"<T:{ts}>"
 
+    @property
+    def type_index(self) -> int:
+        """Return the protobuf type index of this type"""
+        return self.value
+
+    @property
+    def c_str(self) -> str:
+        """Return the C declaration of this type"""
+        return str(self)
+
 
 class ComplexType(CoreType):
-    def __init__(self, proto: Pb.CompositeType|Pb.EnumType, program: "Program"):
+    def __init__(self, proto_index: Index, proto: Pb.CompositeType|Pb.EnumType, program: "Program"):
+        self.type_index = proto_index
         self.proto = proto
         self._program = program
 
@@ -218,9 +229,9 @@ class EnumTypeMember(CoreType):
 class EnumType(ComplexType):
     """Base class for all enums in quokka"""
     
-    def __init__(self, proto: Pb.EnumType, program: "Program") -> None:
+    def __init__(self, index: Index, proto: Pb.EnumType, program: "Program") -> None:
         """Create an enum from a protobuf enum value"""
-        super().__init__(proto, program)
+        super().__init__(index, proto, program)
         self.name = proto.name
         self._members: dict[str, EnumTypeMember] = {member.name: EnumTypeMember(member, self) 
                                                     for member in proto.values}
@@ -267,9 +278,9 @@ class ArrayType(ComplexType):
         size: Type size (if known)
         c_str: C declaration of the type
     """
-    def __init__(self, proto: Pb.CompositeType, program: "Program") -> None:
+    def __init__(self, index: Index, proto: Pb.CompositeType, program: "Program") -> None:
         """Constructor"""
-        super().__init__(proto, program)
+        super().__init__(index, proto, program)
     
     @property
     def element_type(self) -> 'TypeT':
@@ -291,9 +302,9 @@ class PointerType(ComplexType):
         size: Type size (if known)
         c_str: C declaration of the type
     """
-    def __init__(self, proto: Pb.CompositeType, program: "Program") -> None:
+    def __init__(self, index: Index, proto: Pb.CompositeType, program: "Program") -> None:
         """Constructor"""
-        super().__init__(proto, program)
+        super().__init__(index, proto, program)
     
     @property
     def pointed_type(self) -> 'TypeT':
@@ -387,10 +398,10 @@ class StructureType(dict, ComplexType):
         comments: Structure comments
     """
 
-    def __init__(self, proto: "Pb.CompositeType", program: "Program") -> None:
+    def __init__(self, index: Index, proto: "Pb.CompositeType", program: "Program") -> None:
         """Constructor"""
         dict.__init__(self)
-        ComplexType.__init__(self, proto, program)
+        ComplexType.__init__(self, index, proto, program)
 
         self.index_to_offset: dict[int, int] = {}
         for index, member in enumerate(proto.members):
