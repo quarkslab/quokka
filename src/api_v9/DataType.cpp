@@ -357,6 +357,12 @@ type_uid_t ExportPointer(const tinfo_t& tif) {
   else
     pointer_type.element_type = ExportInnerElement(pi.obj_type);
 
+  // Print the type as a C-string if possible
+  qstring decl;
+  if (tif.print(&decl, name.c_str(),
+                PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+    pointer_type.c_str = ConvertIdaString(decl);
+
   return tuid;
 }
 
@@ -386,6 +392,12 @@ type_uid_t ExportArray(const tinfo_t& tif) {
       data_types.emplace<ArrayType>(tuid, ConvertIdaString(name), tid, size);
 
   array_type.element_type = ExportInnerElement(ai.elem_type);
+
+  // Print the type as a C-string if possible
+  qstring decl;
+  if (tif.print(&decl, name.c_str(),
+                PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+    array_type.c_str = ConvertIdaString(decl);
 
   return tuid;
 }
