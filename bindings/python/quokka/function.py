@@ -308,9 +308,10 @@ class Function(dict):
         # Iterate all basic blocks references to find calls to other functions
         # Note do not use basic block object thus does not requires loading them.
         for block in self.proto.blocks:
-            for inst_xref in block.instructions_xrefs_from:
+            for inst_xref in block.instructions_xref_from:
                 xref = self.program.proto.references[inst_xref.xref_index]
-                if xref.type == Pb.Reference.REF_CODE:
+                typ = RefType.from_proto(xref.reference_type)
+                if typ.is_code:  # Keep both jumps and calls
                     if xref.destination.address in self.program:  # Pointing on a function head
                         calls.add(self.program[xref.destination.address])
                 # In all other else cases we are not on a call edge
@@ -323,9 +324,10 @@ class Function(dict):
         if self.has_body:
             block_idx, _ = self._block_data[self.start]
             block = self.proto.blocks[block_idx]
-            for inst_xref in (x for x in block.instructions_xrefs_to if x.instr_bb_idx == 0):
+            for inst_xref in (x for x in block.instructions_xref_to if x.instr_bb_idx == 0):
                 xref = self.program.proto.references[inst_xref.xref_index]
-                if xref.type == Pb.Reference.REF_CODE:
+                typ = RefType.from_proto(xref.reference_type)
+                if typ.is_code:
                     if f := self.program.find_function_by_address(xref.source.address):
                         callers.append(f)
         return callers

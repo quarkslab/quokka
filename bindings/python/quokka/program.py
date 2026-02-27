@@ -367,7 +367,7 @@ class Program(dict):
             KeyError: When the type is not found
         """
         try:
-            return self._types[type_index]
+            typ = self._types[type_index]
         except KeyError:
             # Unless fill the type from the protobuf
             if type_index >= len(self.proto.types):
@@ -390,13 +390,13 @@ class Program(dict):
                 self._types[type_index] = BaseType.from_proto(pb_type.primitive_type)
             else:
                 assert False, "Unknown type"
+            typ = self._types[type_index]  # here should be loaded in _types
 
-            typ = self._types[type_index]
-            if member_index != -1:
-                assert isinstance(typ, (StructureType, UnionType, EnumType))
-                return typ[member_index]
-            else:
-                return typ
+        if member_index != -1:
+            assert isinstance(typ, (StructureType, UnionType, EnumType))
+            return typ[member_index]
+        else:
+            return typ
 
     def get_type(self, type_index: Index, member_index: int = -1) -> TypeT:
         """Get a type by its index with strict typing.

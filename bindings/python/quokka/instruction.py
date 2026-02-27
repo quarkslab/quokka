@@ -453,7 +453,8 @@ class Instruction:
     def type_refs_from(self) -> list[TypeReference]:
         """Returns all type reference from this instruction"""
         # Get protobuf type ids
-        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol]
+        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from 
+                    if t.is_data and xref.destination.HasField("data_type_identifier")]  # Note: do not use SYMBOL enum
         # Resolve type ids to actual types
         return [self.program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
     
@@ -551,7 +552,8 @@ class Instruction:
             else:
                 logger.warning(f"{self.address:#x} inst {str(self)} can't assign code refs")
 
-        for t, sxref in ((t, xref.destination.data_type_identifier) for t, xref in self._xrefs_from if t.is_symbol):
+        for t, sxref in ((t, xref.destination.data_type_identifier) for t, xref in self._xrefs_from
+                         if t.is_data and xref.destination.HasField("data_type_identifier")):  # Note: do not use SYMBOL enum
             # If there is only one memory operand assign symbol ref to it
             if len(operands) == 1:  # Only one operand, assign the symbol ref to it
                 operands[0]._type_xrefs_from.append((t, sxref.type_index, sxref.member_index))
@@ -593,7 +595,7 @@ class Instruction:
         for data in self.data_refs_from:
             if isinstance(data, quokka.Data):
                 if data.type.is_array and data.is_initialized:
-                    if isinstance(data.type.element_type, BaseType.BYTE):  # anything that is an array of bytes is considered
+                    if data.type.element_type == BaseType.BYTE:  # anything that is an array of bytes is considered
                         value = data.value
                         if isinstance(value, bytes):
                             try:

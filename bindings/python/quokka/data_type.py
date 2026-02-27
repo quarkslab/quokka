@@ -1,4 +1,5 @@
 
+from functools import cached_property
 import weakref
 from enum import IntEnum, auto, Enum, EnumMeta
 from typing import TYPE_CHECKING, Iterable, Type
@@ -156,13 +157,6 @@ class ComplexType(CoreType):
         """Returns all data write reference to this instruction"""
         return [self._program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
-    @property
-    def code_refs_to(self) -> list[AddressT]:
-        """Returns all code reference to this type"""
-        # Get protobuf type ids
-        return [xref.source.address for t, xref in self._xrefs_to if t.is_code]
-
-
 
 class EnumTypeMember(CoreType):
     """EnumTypeMember
@@ -209,14 +203,7 @@ class EnumTypeMember(CoreType):
         """Returns all data reference to this type"""
         # Get protobuf type ids
         return [self.parent._program.data_holder[xref.source.address] for xref in self._xrefs_to 
-                if xref.reference_type == Pb.Reference.REF_DATA]
-
-    @property
-    def code_refs_to(self) -> list[AddressT]:
-        """Returns all code reference to this type"""
-        # Get protobuf type ids
-        return [xref.source.address for xref in self._xrefs_to 
-                if xref.reference_type == Pb.Reference.REF_CODE]
+                if RefType.from_proto(xref.reference_type).is_data]
 
     @property
     def is_member(self) -> bool:
@@ -282,6 +269,11 @@ class ArrayType(ComplexType):
         """Constructor"""
         super().__init__(index, proto, program)
     
+    @property
+    def array_size(self) -> int:
+        """Return the number of items in the array"""
+        return self.proto.size // self.element_type.size if self.element_type.size > 0 else 0
+
     @property
     def element_type(self) -> 'TypeT':
         """Return the type of the array elements"""
@@ -357,18 +349,13 @@ class StructureTypeMember(CoreType):
         return self._structure() # type: ignore
 
     @property
-    def data_refs_to(self) -> list['Data']:
-        """Returns all data reference to this type"""
-        # Get protobuf type ids
-        return [self.parent._program.data_holder[xref.source.address] for xref in self._xrefs_to 
-                if xref.reference_type == Pb.Reference.REF_DATA]
-
-    @property
-    def code_refs_to(self) -> list[AddressT]:
-        """Returns all code reference to this type"""
+    def data_refs_to(self) -> list['AddressT']:
+        """Returns all data reference to this type.
+        
+        Addresses can originates from code or data."""
         # Get protobuf type ids
         return [xref.source.address for xref in self._xrefs_to 
-                if xref.reference_type == Pb.Reference.REF_CODE]
+                if RefType.from_proto(xref.reference_type).is_data]
 
     @property
     def is_member(self) -> bool:
@@ -394,7 +381,6 @@ class StructureType(dict, ComplexType):
         name: Structure name
         size: Structure size (if known)
         type: Structure type
-        index_to_offset: Mapping from positional index to bit offset
         comments: Structure comments
     """
 
@@ -403,21 +389,14 @@ class StructureType(dict, ComplexType):
         dict.__init__(self)
         ComplexType.__init__(self, index, proto, program)
 
-        self.index_to_offset: dict[int, int] = {}
+        # self.index_to_offset: dict[int, int] = {}
         for index, member in enumerate(proto.members):
-            m = StructureTypeMember(member, self)
-            self[member.offset] = m
-            self.index_to_offset[index] = member.offset
-        self._members_list: list[StructureTypeMember] = list(map(lambda x: x[1], sorted(self.items())))
+            self[index] = StructureTypeMember(member, self)
 
-    @property
+    @cached_property
     def members(self) -> list[StructureTypeMember]:
         """Return all members in declaration order"""
-        return self._members_list
-
-    def member_at(self, index: int) -> StructureTypeMember:
-        """Get a member by its positional index (0-based)"""
-        return self._members_list[index]
+        return list(x[1] for x in sorted(self.items(), key=lambda x: x[0]))
 
     def is_variable_size(self) -> bool:
         """Is the structure of variable size?"""
@@ -457,4 +436,4 @@ class UnionType(StructureType):
 
 TypeT = StructureType | BaseType | UnionType | ArrayType | PointerType | EnumType
 TypeReference = TypeT | StructureTypeMember | EnumTypeMember
-TypeValue = int | float | str | bytes
+TypeValue = int | float | str | bytes | EnumType  # and later we can add struct instances, arrays, etc.

@@ -126,8 +126,11 @@ class Data:
             return None  # Uninitialized memory has no value
         if self.proto.file_offset <= 0:
             return None  # Not mapped in the file
-
-        return self.program.executable.read_type_value(self.file_offset, self.type)
+        
+        if self.type.size <= 0 and self.size:  # Variable size data with a known size (e.g., string)
+            return self.program.read_bytes(self.file_offset, self.size)
+        else:  # Try reading the value as a type
+            return self.program.executable.read_type_value(self.file_offset, self.type)
 
     def is_variable_size(self) -> bool:
         """Is the data of variable size?"""
@@ -195,7 +198,8 @@ class Data:
     def type_refs_from(self) -> list[TypeReference]:
         """Returns all type reference from this data"""
         # Get protobuf type ids
-        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from if t.is_symbol]
+        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from
+                    if t.is_data and xref.destination.HasField("data_type_identifier")]  # Note: do not use SYMBOL enum
         # Resolve type ids to actual types
         return [self.program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
     

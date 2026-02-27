@@ -20,8 +20,8 @@ import struct
 from typing import TYPE_CHECKING
 
 from quokka.types import Endianness
-from quokka.data_type import BaseType, EnumType, StructureType, TypeT, TypeValue
-
+from quokka.data_type import BaseType, EnumType, StructureType, TypeT, TypeValue, UnionType
+from quokka.exc import QuokkaError
 
 class Executable:
     """The executable class is used to interact with the binary file.
@@ -137,25 +137,38 @@ class Executable:
 
         Returns:
             The data value
+        
+        Raises:
+            ValueError: If the type is not supported or the value cannot be read.
         """
         en = {Endianness.BIG_ENDIAN: ">", Endianness.LITTLE_ENDIAN: "<"}[self.endianness]
 
-        if isinstance(type, BaseType):
-            match type:
-                case BaseType.FLOAT:
-                    return struct.unpack(f"{en}f", self.read_bytes(offset, 4))[0]
-                case BaseType.DOUBLE:
-                    return struct.unpack(f"{en}d", self.read_bytes(offset, 8))[0]
-                case _:
-                    return self.read_int(offset, type.size)
-        elif isinstance(type, StructureType):
-            return self.read_struct(offset, type)
-        elif isinstance(type, EnumType):
-            return self.read_enum(offset, type)
-        else:
-            assert False, f"Unsupported type {type}"
+        try:
+            if type.is_base_type:
+                match type:
+                    case BaseType.FLOAT:
+                        return struct.unpack(f"{en}f", self.read_bytes(offset, 4))[0]
+                    case BaseType.DOUBLE:
+                        return struct.unpack(f"{en}d", self.read_bytes(offset, 8))[0]
+                    case _:
+                        return self.read_int(offset, type.size)
+            elif type.is_array:
+                return self.read_bytes(offset, type.size)
+            elif type.is_pointer:
+                return self.read_int(offset, type.size)
+            elif type.is_struct or type.is_union:
+                assert isinstance(type, (StructureType, UnionType))
+                return self.read_struct(offset, type)
+            elif type.is_enum:
+                assert isinstance(type, EnumType)
+                return self.read_enum(offset, type)
+            else:
+                assert False, f"Unsupported type {type}"
+        except Exception as exc:
+            raise ValueError(f"Unable to read value of type {type} at offset {offset}") from exc
 
-    def read_struct(self, offset: int, struct: StructureType) -> bytes:
+
+    def read_struct(self, offset: int, struct: StructureType | UnionType) -> bytes:
         """Read a struct from the binary.
 
         Arguments:

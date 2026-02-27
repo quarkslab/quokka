@@ -142,11 +142,6 @@ class RefType(enum.IntEnum):
         """Returns True if this edge type is a data reference"""
         return self in {RefType.DATA_READ, RefType.DATA_WRITE, RefType.DATA_INDIR}
     
-    @property
-    def is_symbol(self) -> bool:
-        """Returns True if this edge type is a symbol reference"""
-        return self == RefType.TYPE_SYMBOL
-
 
 class FunctionType(enum.Enum):
     """Function Type"""
