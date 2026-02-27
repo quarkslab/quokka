@@ -241,6 +241,10 @@ constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
     return Quokka_CompositeType_CompositeSubType_TYPE_UNION;
   else if constexpr (std::is_same_v<U, StructureType>)
     return Quokka_CompositeType_CompositeSubType_TYPE_STRUCT;
+  else if constexpr (std::is_same_v<U, PointerType>)
+    return Quokka_CompositeType_CompositeSubType_TYPE_POINTER;
+  else if constexpr (std::is_same_v<U, ArrayType>)
+    return Quokka_CompositeType_CompositeSubType_TYPE_ARRAY;
   else
     static_assert(false, "Mismatch between the CompositeSubTypes");
 }
