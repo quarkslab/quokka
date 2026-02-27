@@ -138,7 +138,7 @@ class Function(dict):
         for block_index, block in enumerate(func.blocks):  # iterate over the block protobuf objects
             block_address: int = program.virtual_address(block.segment_index, block.segment_offset)
             self._block_data[block_address] = (block_index, block.size)
-        self._index_to_address = {v: k for k, v in self._block_data.items()}
+        self._index_to_address = {idx: addr for addr, (idx, _) in self._block_data.items()}
  
         self._data_references: list[quokka.Data] = []
 
