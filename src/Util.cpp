@@ -68,11 +68,21 @@ std::string GetMnemonic(const insn_t& instruction) {
 }
 
 void ResolveTypedef(tinfo_t& tif) {
-  if (tif.is_typedef() || tif.is_typeref()) {
-    uint32_t final_ordinal = tif.get_final_ordinal();
-    assert(final_ordinal > 0 && "Typedef/typeref doesn't have a final ordinal");
+  if (!tif.is_typedef() && !tif.is_typeref())
+    return;
+
+  uint32_t final_ordinal = tif.get_final_ordinal();
+  if (final_ordinal > 0) {
+    assert(final_ordinal > 0 && "");
     if (!tif.get_numbered_type(final_ordinal))
       assert(false && "Cannot get type info for resolved ordinal");
+  } else {  // Sometimes typedef/typeref don't have a final ordinal
+    // Try with the name and pray
+    qstring final_name;
+    bool res = tif.get_final_type_name(&final_name);
+    assert(res && "IDA failed to resolve a typedef");
+    res = tif.get_named_type(final_name.c_str());
+    assert(res && "IDA failed to retrieve a type from a string");
   }
 }
 
