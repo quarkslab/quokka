@@ -144,7 +144,7 @@ jobs:
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
       - name: Upload Artifacts (64)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
           path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
@@ -152,7 +152,7 @@ jobs:
 
       - name: Upload Artifacts (32)
         if: ${{ contains('74,77,80,81,82,83,84', matrix.ida_sdk) }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
           path: ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
@@ -194,7 +194,7 @@ jobs:
 
     steps:
       - name: Download Artefact
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}${{ matrix.bitness }}
 
