@@ -94,6 +94,12 @@ template <typename T, typename Var>
 concept is_one_of_variant_v =
     is_one_of_variant<T, std::remove_cvref_t<Var>>::value;
 
+// True iff remove_cvref_t<T> matches any of remove_cvref_t<Types>...
+template <typename T, typename... Types>
+  requires(sizeof...(Types) >= 1)
+inline constexpr bool is_one_of_t =
+    (std::same_as<std::remove_cvref_t<T>, std::remove_cvref_t<Types>> || ...);
+
 /**
  * ---------------------------------------------
  * quokka::Timer
