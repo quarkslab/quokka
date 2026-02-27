@@ -78,24 +78,15 @@ $(function() {
   <div class="headertitle"><div class="title">Quokka.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;filesystem&gt;</code><br />
-<code>#include &lt;fstream&gt;</code><br />
+<div class="textblock"><code>#include &lt;sys/types.h&gt;</code><br />
+<code>#include &lt;cstdarg&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &quot;<a class="el" href="Compatibility_8h_source.html">Compatibility.h</a>&quot;</code><br />
-<code>#include &lt;auto.hpp&gt;</code><br />
-<code>#include &lt;entry.hpp&gt;</code><br />
+<code>#include &lt;pro.h&gt;</code><br />
 <code>#include &lt;expr.hpp&gt;</code><br />
-<code>#include &lt;gdl.hpp&gt;</code><br />
-<code>#include &lt;graph.hpp&gt;</code><br />
-<code>#include &lt;ida.hpp&gt;</code><br />
 <code>#include &lt;idp.hpp&gt;</code><br />
-<code>#include &lt;loader.hpp&gt;</code><br />
-<code>#include &lt;nalt.hpp&gt;</code><br />
-<code>#include &quot;absl/strings/ascii.h&quot;</code><br />
-<code>#include &quot;absl/strings/escaping.h&quot;</code><br />
-<code>#include &quot;absl/strings/str_cat.h&quot;</code><br />
-<code>#include &quot;absl/strings/str_format.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="ProtoWrapper_8h_source.html">ProtoWrapper.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Settings_8h_source.html">Settings.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Windows_8h_source.html">Windows.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Quokka.h:</div>
@@ -107,131 +98,23 @@ Include dependency graph for Quokka.h:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae61d8a17ea993f67708d86883f48c290" id="r_ae61d8a17ea993f67708d86883f48c290"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Settings_8h.html#ae83d3a308844adbddd5116bf6ff5e753">ExporterMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#ae61d8a17ea993f67708d86883f48c290">quokka::GetModeFromArgument</a> ()</td></tr>
-<tr class="separator:ae61d8a17ea993f67708d86883f48c290"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adef01862c11ca8fcd8f4984a77843372" id="r_adef01862c11ca8fcd8f4984a77843372"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#adef01862c11ca8fcd8f4984a77843372">quokka::GetArgument</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">char</a> *name, <a class="el" href="classquokka_1_1BucketNew.html">bool</a> <a class="el" href="classquokka_1_1BucketNew.html">to_upper</a>)</td></tr>
-<tr class="separator:adef01862c11ca8fcd8f4984a77843372"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a63f1d25f8c766ad1cb154e7228b0e438" id="r_a63f1d25f8c766ad1cb154e7228b0e438"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a63f1d25f8c766ad1cb154e7228b0e438">quokka::GetOutputFileName</a> ()</td></tr>
-<tr class="separator:a63f1d25f8c766ad1cb154e7228b0e438"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52b3ff05a86780e97c2ff0cca85214c4" id="r_a52b3ff05a86780e97c2ff0cca85214c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">ssize_t</a> <a class="el" href="classquokka_1_1BucketNew.html">idaapi</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a52b3ff05a86780e97c2ff0cca85214c4">quokka::UIHook</a> (<a class="el" href="classquokka_1_1BucketNew.html">void</a> *, <a class="el" href="classquokka_1_1BucketNew.html">int</a> <a class="el" href="classquokka_1_1BucketNew.html">event_id</a>, <a class="el" href="classquokka_1_1BucketNew.html">va_list</a>)</td></tr>
+<tr class="memitem:a52b3ff05a86780e97c2ff0cca85214c4" id="r_a52b3ff05a86780e97c2ff0cca85214c4"><td class="memItemLeft" align="right" valign="top">ssize_t idaapi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a52b3ff05a86780e97c2ff0cca85214c4">quokka::UIHook</a> (void *, int event_id, va_list)</td></tr>
 <tr class="separator:a52b3ff05a86780e97c2ff0cca85214c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6b9e3cc245caf0bcb42d8813eb61411" id="r_ac6b9e3cc245caf0bcb42d8813eb61411"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#ac6b9e3cc245caf0bcb42d8813eb61411">quokka::UnsimplifyARM</a> ()</td></tr>
+<tr class="memitem:ac6b9e3cc245caf0bcb42d8813eb61411" id="r_ac6b9e3cc245caf0bcb42d8813eb61411"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#ac6b9e3cc245caf0bcb42d8813eb61411">quokka::UnsimplifyARM</a> ()</td></tr>
 <tr class="separator:ac6b9e3cc245caf0bcb42d8813eb61411"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2103aaa7559ec39ab469fe86097b3596" id="r_a2103aaa7559ec39ab469fe86097b3596"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a2103aaa7559ec39ab469fe86097b3596">quokka::ExportBinary</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> std::string &amp;<a class="el" href="classquokka_1_1BucketNew.html">filename</a>)</td></tr>
-<tr class="separator:a2103aaa7559ec39ab469fe86097b3596"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e57da25c1a9afb70beeec783ce19230" id="r_a3e57da25c1a9afb70beeec783ce19230"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a3e57da25c1a9afb70beeec783ce19230">quokka::SetLogLevel</a> ()</td></tr>
+<tr class="memitem:a3e57da25c1a9afb70beeec783ce19230" id="r_a3e57da25c1a9afb70beeec783ce19230"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a3e57da25c1a9afb70beeec783ce19230">quokka::SetLogLevel</a> ()</td></tr>
 <tr class="separator:a3e57da25c1a9afb70beeec783ce19230"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c9b083337df999e88521f6fb21c6d56" id="r_a2c9b083337df999e88521f6fb21c6d56"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a2c9b083337df999e88521f6fb21c6d56">quokka::PluginInit</a> ()</td></tr>
+<tr class="memitem:a2c9b083337df999e88521f6fb21c6d56" id="r_a2c9b083337df999e88521f6fb21c6d56"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a2c9b083337df999e88521f6fb21c6d56">quokka::PluginInit</a> ()</td></tr>
 <tr class="separator:a2c9b083337df999e88521f6fb21c6d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8af116a82b64feee9046a5d18e56562b" id="r_a8af116a82b64feee9046a5d18e56562b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a> <a class="el" href="classquokka_1_1BucketNew.html">idaapi</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a8af116a82b64feee9046a5d18e56562b">quokka::PluginRun</a> (<a class="el" href="classquokka_1_1BucketNew.html">size_t</a>)</td></tr>
+<tr class="memitem:a8af116a82b64feee9046a5d18e56562b" id="r_a8af116a82b64feee9046a5d18e56562b"><td class="memItemLeft" align="right" valign="top">bool idaapi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a8af116a82b64feee9046a5d18e56562b">quokka::PluginRun</a> (size_t)</td></tr>
 <tr class="separator:a8af116a82b64feee9046a5d18e56562b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c7a943262a9b18b7d516639aae6f504" id="r_a0c7a943262a9b18b7d516639aae6f504"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a> <a class="el" href="classquokka_1_1BucketNew.html">idaapi</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a0c7a943262a9b18b7d516639aae6f504">quokka::PluginTerminate</a> ()</td></tr>
+<tr class="memitem:a0c7a943262a9b18b7d516639aae6f504" id="r_a0c7a943262a9b18b7d516639aae6f504"><td class="memItemLeft" align="right" valign="top">void idaapi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Quokka_8cpp.html#a0c7a943262a9b18b7d516639aae6f504">quokka::PluginTerminate</a> ()</td></tr>
 <tr class="separator:a0c7a943262a9b18b7d516639aae6f504"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Plugin definition</p>
 <p>Handle all the plugin management (arguments, starts, registration) </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a2103aaa7559ec39ab469fe86097b3596" name="a2103aaa7559ec39ab469fe86097b3596"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2103aaa7559ec39ab469fe86097b3596">&#9670;&#160;</a></span>ExportBinary()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int quokka::ExportBinary </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::string &amp;&#160;</td>
-          <td class="paramname"><em>filename</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Export the binary to filename</p>
-<p>Here we are ! Main method of the plugin, will take care of export the loaded binary.</p>
-<dl class="section note"><dt>Note</dt><dd>If the filename is not writable, another try will be made in the /tmp directory. However, this will not works on Windows.</dd></dl>
-<dl class="section return"><dt>Returns</dt><dd>Code for success </dd></dl>
-
-</div>
-</div>
-<a id="adef01862c11ca8fcd8f4984a77843372" name="adef01862c11ca8fcd8f4984a77843372"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adef01862c11ca8fcd8f4984a77843372">&#9670;&#160;</a></span>GetArgument()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string quokka::GetArgument </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">char</a> *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td>
-          <td class="paramname"><em>to_upper</em> = <code><a class="el" href="classquokka_1_1BucketNew.html">false</a></code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieve the argument passed on the command line</p>
-<p>An option may be passed to a plugin using the -O{PluginName}{Option}={Value}</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>Name of the argument </td></tr>
-    <tr><td class="paramname">to_upper</td><td>Should we convert the value to upper case ? </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd></dd></dl>
-
-</div>
-</div>
-<a id="ae61d8a17ea993f67708d86883f48c290" name="ae61d8a17ea993f67708d86883f48c290"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae61d8a17ea993f67708d86883f48c290">&#9670;&#160;</a></span>GetModeFromArgument()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ExporterMode quokka::GetModeFromArgument </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Retrieve the export mode by looking at the argument passed on the command line</p>
-<dl class="section return"><dt>Returns</dt><dd>The correct export mode. By default it is MODE_NORMAL </dd></dl>
-
-</div>
-</div>
-<a id="a63f1d25f8c766ad1cb154e7228b0e438" name="a63f1d25f8c766ad1cb154e7228b0e438"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a63f1d25f8c766ad1cb154e7228b0e438">&#9670;&#160;</a></span>GetOutputFileName()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string quokka::GetOutputFileName </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Return an output filename</p>
-<p>First try to see if the option "File" as been set. Then try to store it in the same directory as input file using "
-.Quokka" extension</p>
-<dl class="section return"><dt>Returns</dt><dd>A potential output file name </dd></dl>
-
-</div>
-</div>
 <a id="a2c9b083337df999e88521f6fb21c6d56" name="a2c9b083337df999e88521f6fb21c6d56"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2c9b083337df999e88521f6fb21c6d56">&#9670;&#160;</a></span>PluginInit()</h2>
 
@@ -261,7 +144,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">bool idaapi quokka::PluginRun </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">size_t</a>&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
@@ -317,19 +200,19 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">ssize_t idaapi quokka::UIHook </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">void</a> *&#160;</td>
+          <td class="paramtype">void *&#160;</td>
           <td class="paramname">, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">int</a>&#160;</td>
+          <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>event_id</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">va_list</a>&#160;</td>
+          <td class="paramtype">va_list&#160;</td>
           <td class="paramname"><em>arguments</em>&#160;</td>
         </tr>
         <tr>

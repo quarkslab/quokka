@@ -80,32 +80,26 @@ $(function() {
   <div class="headertitle"><div class="title">Layout.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cassert&gt;</code><br />
+<div class="textblock"><code>#include &lt;cstddef&gt;</code><br />
 <code>#include &lt;cstdint&gt;</code><br />
-<code>#include &lt;unordered_set&gt;</code><br />
+<code>#include &lt;deque&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="Compatibility_8h_source.html">Compatibility.h</a>&quot;</code><br />
 <code>#include &lt;pro.h&gt;</code><br />
-<code>#include &lt;bytes.hpp&gt;</code><br />
-<code>#include &lt;funcs.hpp&gt;</code><br />
-<code>#include &lt;gdl.hpp&gt;</code><br />
-<code>#include &lt;graph.hpp&gt;</code><br />
-<code>#include &lt;ida.hpp&gt;</code><br />
-<code>#include &lt;kernwin.hpp&gt;</code><br />
-<code>#include &lt;nalt.hpp&gt;</code><br />
-<code>#include &lt;segment.hpp&gt;</code><br />
-<code>#include &lt;ua.hpp&gt;</code><br />
-<code>#include &lt;xref.hpp&gt;</code><br />
-<code>#include &quot;absl/container/btree_set.h&quot;</code><br />
-<code>#include &quot;absl/hash/hash.h&quot;</code><br />
-<code>#include &quot;absl/time/clock.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="Logger_8h_source.html">Logger.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Bucket_8h_source.html">Bucket.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Data_8h_source.html">Data.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="ProtoWrapper_8h_source.html">ProtoWrapper.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Util_8h_source.html">Util.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Windows_8h_source.html">Windows.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Layout.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="Layout_8h__incl.png" border="0" usemap="#ainclude_2quokka_2Layout_8h" alt=""/></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="Layout_8h__dep__incl.png" border="0" usemap="#ainclude_2quokka_2Layout_8hdep" alt=""/></div>
 </div>
 </div>
 <p><a href="Layout_8h_source.html">Go to the source code of this file.</a></p>
@@ -135,10 +129,11 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acae521fa70e512c8c1acf4c476a8a7c0" id="r_acae521fa70e512c8c1acf4c476a8a7c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Layout_8h.html#a628a016044fed1eac52c7522479585eb">State</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Layout_8cpp.html#acae521fa70e512c8c1acf4c476a8a7c0">quokka::GetState</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="el" href="classquokka_1_1BucketNew.html">address</a>)</td></tr>
-<tr class="separator:acae521fa70e512c8c1acf4c476a8a7c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee0e3e13e1de9a6e735659603de061c9" id="r_aee0e3e13e1de9a6e735659603de061c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Layout_8cpp.html#aee0e3e13e1de9a6e735659603de061c9">quokka::ExportLayout</a> (<a class="el" href="classquokka_1_1BucketNew.html">quokka::Quokka</a> *<a class="el" href="classquokka_1_1BucketNew.html">proto</a>)</td></tr>
-<tr class="separator:aee0e3e13e1de9a6e735659603de061c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb23fdd1f60c48b0ea8427a5405b86bd" id="r_afb23fdd1f60c48b0ea8427a5405b86bd"><td class="memItemLeft" align="right" valign="top"><a id="afb23fdd1f60c48b0ea8427a5405b86bd" name="afb23fdd1f60c48b0ea8427a5405b86bd"></a>
+constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::to_string</b> (const <a class="el" href="Layout_8h.html#a628a016044fed1eac52c7522479585eb">State</a> &amp;s) noexcept</td></tr>
+<tr class="separator:afb23fdd1f60c48b0ea8427a5405b86bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48e4e7c94579f91583f44277fb0af9e8" id="r_a48e4e7c94579f91583f44277fb0af9e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Layout_8cpp.html#a48e4e7c94579f91583f44277fb0af9e8">quokka::ExportLinearScan</a> (Quokka *proto, const std::vector&lt; std::pair&lt; ea_t, ea_t &gt; &gt; &amp;exclude_ranges)</td></tr>
+<tr class="separator:a48e4e7c94579f91583f44277fb0af9e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Layout management</p>
@@ -168,56 +163,40 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="aee0e3e13e1de9a6e735659603de061c9" name="aee0e3e13e1de9a6e735659603de061c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee0e3e13e1de9a6e735659603de061c9">&#9670;&#160;</a></span>ExportLayout()</h2>
+<a id="a48e4e7c94579f91583f44277fb0af9e8" name="a48e4e7c94579f91583f44277fb0af9e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48e4e7c94579f91583f44277fb0af9e8">&#9670;&#160;</a></span>ExportLinearScan()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int quokka::ExportLayout </td>
+          <td class="memname">int quokka::ExportLinearScan </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">quokka::Quokka</a> *&#160;</td>
-          <td class="paramname"><em>proto</em></td><td>)</td>
+          <td class="paramtype">Quokka *&#160;</td>
+          <td class="paramname"><em>proto</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; std::pair&lt; ea_t, ea_t &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>exclude_ranges</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Main exporter function</p>
-<p>This will be responsible for iterating through every head and thus exporting Instruction, Data, Blocks and Functions.</p>
+<p>This will be responsible for iterating through every head that is not part of the provided ranges, exporting blocks, instructions and data. Normally the excluded ranges are the function chunks that have been already exported</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">proto</td><td>Main protobuf </td></tr>
+    <tr><td class="paramname">excluded_ranges</td><td>The ranges of addresses that should be skipped during the analysis </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Int for success </dd></dl>
-
-</div>
-</div>
-<a id="acae521fa70e512c8c1acf4c476a8a7c0" name="acae521fa70e512c8c1acf4c476a8a7c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acae521fa70e512c8c1acf4c476a8a7c0">&#9670;&#160;</a></span>GetState()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">State quokka::GetState </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>address</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Compute the state at address</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">address</td><td>Address </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>State type </dd></dl>
 
 </div>
 </div>

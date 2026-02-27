@@ -81,18 +81,29 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="Compatibility_8h_source.html">Compatibility.h</a>&quot;</code><br />
 <code>#include &lt;pro.h&gt;</code><br />
 <code>#include &lt;gdl.hpp&gt;</code><br />
-<code>#include &lt;ida.hpp&gt;</code><br />
+<code>#include &lt;ua.hpp&gt;</code><br />
 <code>#include &quot;absl/container/flat_hash_map.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="Logger_8h_source.html">Logger.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Instruction_8h_source.html">Instruction.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Reference_8h_source.html">Reference.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Segment_8h_source.html">Segment.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Windows_8h_source.html">Windows.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Block.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="Block_8h__incl.png" border="0" usemap="#ainclude_2quokka_2Block_8h" alt=""/></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="Block_8h__dep__incl.png" border="0" usemap="#ainclude_2quokka_2Block_8hdep" alt=""/></div>
 </div>
 </div>
 <p><a href="Block_8h_source.html">Go to the source code of this file.</a></p>
@@ -114,35 +125,93 @@ Enumerations</h2></td></tr>
 , <b>BTYPE_ENORET</b>
 , <b>BTYPE_EXTERN</b>
 , <b>BTYPE_ERROR</b>
-, <br />
-&#160;&#160;<b>BTYPE_FAKE</b>
 <br />
  }</td></tr>
 <tr class="separator:a63028f074a131bb2245103e706d3b767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a98dff75b7a22a960330e4846f754b882" id="r_a98dff75b7a22a960330e4846f754b882"><td class="memItemLeft" align="right" valign="top">BlockType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8cpp.html#a98dff75b7a22a960330e4846f754b882">quokka::RetrieveBlockType</a> (<a class="el" href="classquokka_1_1BucketNew.html">fc_block_type_t</a> block_type)</td></tr>
-<tr class="separator:a98dff75b7a22a960330e4846f754b882"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a312934631902f8470c0856b6091bf112" id="r_a312934631902f8470c0856b6091bf112"><td class="memItemLeft" align="right" valign="top">constexpr BlockType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Block_8h.html#a312934631902f8470c0856b6091bf112">quokka::RetrieveBlockType</a> (fc_block_type_t block_type)</td></tr>
+<tr class="separator:a312934631902f8470c0856b6091bf112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac49620d2b8795b20cf85e24b58b8011b" id="r_ac49620d2b8795b20cf85e24b58b8011b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#ac49620d2b8795b20cf85e24b58b8011b">quokka::ExportCodeReference</a> (const <a class="el" href="classquokka_1_1Block.html">Block</a> &amp;block, size_t instr_idx, ea_t address, const insn_t &amp;insn)</td></tr>
+<tr class="separator:ac49620d2b8795b20cf85e24b58b8011b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <code>Block</code> represents a Basic Block: a sequence of consecutive instructions with no incoming flow.</p>
 <p>The difference between Block and Fake Block is explained more in the FakeChunk (<a class="el" href="Function_8h.html">Function.h</a>) file. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a98dff75b7a22a960330e4846f754b882" name="a98dff75b7a22a960330e4846f754b882"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98dff75b7a22a960330e4846f754b882">&#9670;&#160;</a></span>RetrieveBlockType()</h2>
+<a id="ac49620d2b8795b20cf85e24b58b8011b" name="ac49620d2b8795b20cf85e24b58b8011b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac49620d2b8795b20cf85e24b58b8011b">&#9670;&#160;</a></span>ExportCodeReference()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">BlockType quokka::RetrieveBlockType </td>
+          <td class="memname">void quokka::ExportCodeReference </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">fc_block_type_t</a>&#160;</td>
+          <td class="paramtype">const <a class="el" href="classquokka_1_1Block.html">Block</a> &amp;&#160;</td>
+          <td class="paramname"><em>block</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>instr_idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ea_t&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const insn_t &amp;&#160;</td>
+          <td class="paramname"><em>insn</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Export all code references to an instruction</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">block</td><td>The block in which the address lives </td></tr>
+    <tr><td class="paramname">instr_idx</td><td>The index in the basic block of the instruction </td></tr>
+    <tr><td class="paramname">address</td><td>Address </td></tr>
+    <tr><td class="paramname">insn</td><td>Instruction for which to extract xrefs </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a312934631902f8470c0856b6091bf112" name="a312934631902f8470c0856b6091bf112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a312934631902f8470c0856b6091bf112">&#9670;&#160;</a></span>RetrieveBlockType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr BlockType quokka::RetrieveBlockType </td>
+          <td>(</td>
+          <td class="paramtype">fc_block_type_t&#160;</td>
           <td class="paramname"><em>block_type</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Convert the block type from IDA to the internal enum </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

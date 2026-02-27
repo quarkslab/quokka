@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['offset_0',['offset',['../structquokka_1_1StructureMember.html#a975bf4f5bbe827fd3dbf2e61e36d7853',1,'quokka::StructureMember']]],
-  ['op_5fvalue_5ftype_1',['op_value_type',['../classquokka_1_1Operand.html#adff70d6aa1c4cad2e3b9b9a9de048e9c',1,'quokka::Operand']]],
-  ['operand_5fbucket_2',['operand_bucket',['../classquokka_1_1HeadIterator.html#a62dd0f220fa898fa70d4b19da081de78',1,'quokka::HeadIterator']]],
-  ['operand_5fstring_5fbucket_3',['operand_string_bucket',['../classquokka_1_1HeadIterator.html#a1edc25f554f11a7fefdd80e9430c8e52',1,'quokka::HeadIterator']]],
-  ['operands_4',['operands',['../classquokka_1_1Instruction.html#af48251d36955dc29e8b6cfdb0fb46049',1,'quokka::Instruction']]]
+  ['permissions_0',['permissions',['../structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f',1,'quokka::Segment']]],
+  ['pos_5ftype_1',['pos_type',['../structquokka_1_1Position.html#aadb235e7380367f59c3db3f24034048a',1,'quokka::Position']]],
+  ['proc_5fname_2',['proc_name',['../classquokka_1_1Metadata.html#a515441256261eb315f2605d29d669632',1,'quokka::Metadata']]],
+  ['proto_5findex_3',['proto_index',['../classquokka_1_1ProtoHelper.html#a9703de5547ec1b01898eee93fa4d5cb2',1,'quokka::ProtoHelper']]],
+  ['prototype_4',['prototype',['../classquokka_1_1Function.html#a5a9d93230dfd80dc3a0183124676c91c',1,'quokka::Function']]]
 ];

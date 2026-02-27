@@ -75,25 +75,30 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#concepts">Concepts</a> &#124;
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Util.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<div class="textblock"><code>#include &lt;concepts&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;type_traits&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;variant&gt;</code><br />
 <code>#include &quot;<a class="el" href="Compatibility_8h_source.html">Compatibility.h</a>&quot;</code><br />
 <code>#include &lt;pro.h&gt;</code><br />
-<code>#include &lt;bytes.hpp&gt;</code><br />
 <code>#include &lt;idp.hpp&gt;</code><br />
-<code>#include &lt;name.hpp&gt;</code><br />
+<code>#include &lt;kernwin.hpp&gt;</code><br />
+<code>#include &lt;typeinf.hpp&gt;</code><br />
 <code>#include &lt;ua.hpp&gt;</code><br />
-<code>#include &quot;absl/container/btree_map.h&quot;</code><br />
-<code>#include &quot;absl/container/flat_hash_map.h&quot;</code><br />
-<code>#include &quot;absl/container/flat_hash_set.h&quot;</code><br />
-<code>#include &quot;absl/hash/hash.h&quot;</code><br />
-<code>#include &quot;absl/strings/str_cat.h&quot;</code><br />
+<code>#include &quot;absl/strings/str_format.h&quot;</code><br />
 <code>#include &quot;absl/time/clock.h&quot;</code><br />
+<code>#include &quot;absl/time/time.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="Logger_8h_source.html">Logger.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="ProtoHelper_8h_source.html">ProtoHelper.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Windows_8h_source.html">Windows.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -111,36 +116,149 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1Comparer.html">quokka::Comparer&lt; T &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1is__std__variant.html">quokka::is_std_variant&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1Hasher.html">quokka::Hasher&lt; T &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1is__std__variant_3_01std_1_1variant_3_01Ts_8_8_8_01_4_01_4.html">quokka::is_std_variant&lt; std::variant&lt; Ts... &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1BucketNew.html">quokka::BucketNew&lt; P &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1filter__type__adaptor__t.html">quokka::filter_type_adaptor_t&lt; T &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1is__one__of__variant.html">quokka::is_one_of_variant&lt; T, Var &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1is__one__of__variant_3_01T_00_01std_1_1variant_3_01Ts_8_8_8_01_4_01_4.html">quokka::is_one_of_variant&lt; T, std::variant&lt; Ts... &gt; &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Timer.html">quokka::Timer</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1scope__exit__guard.html">quokka::scope_exit_guard&lt; F &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
+Concepts</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptquokka_1_1StdVariant.html">quokka::StdVariant</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptquokka_1_1is__one__of__variant__v.html">quokka::is_one_of_variant_v</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="conceptquokka_1_1AllVariantDeriveFrom.html">quokka::AllVariantDeriveFrom</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:aec90e80ffa0437c4fe87c83a57dc8ecd" id="r_aec90e80ffa0437c4fe87c83a57dc8ecd"><td class="memItemLeft" align="right" valign="top"><a id="aec90e80ffa0437c4fe87c83a57dc8ecd" name="aec90e80ffa0437c4fe87c83a57dc8ecd"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>QK_CONCAT2</b>(a,  b)&#160;&#160;&#160;a##b</td></tr>
+<tr class="separator:aec90e80ffa0437c4fe87c83a57dc8ecd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34d5b485ea7a05668b63c29486aec105" id="r_a34d5b485ea7a05668b63c29486aec105"><td class="memItemLeft" align="right" valign="top"><a id="a34d5b485ea7a05668b63c29486aec105" name="a34d5b485ea7a05668b63c29486aec105"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>QK_CONCAT</b>(a,  b)&#160;&#160;&#160;QK_CONCAT2(a, b)</td></tr>
+<tr class="separator:a34d5b485ea7a05668b63c29486aec105"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae066308fffaf7a2e80fcbb0aafbce9ea" id="r_ae066308fffaf7a2e80fcbb0aafbce9ea"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8h.html#ae066308fffaf7a2e80fcbb0aafbce9ea">SCOPED_STEP</a>(start_msg,  done_msg)</td></tr>
+<tr class="separator:ae066308fffaf7a2e80fcbb0aafbce9ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77f2f1d8774b305551714c9e8c6d2cc2" id="r_a77f2f1d8774b305551714c9e8c6d2cc2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8h.html#a77f2f1d8774b305551714c9e8c6d2cc2">SCOPED_BOX_STEP</a>(wait_box_msg,  start_msg,  done_msg)</td></tr>
+<tr class="separator:a77f2f1d8774b305551714c9e8c6d2cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a8a1dcd4952c603f579b8c011065508a3" id="r_a8a1dcd4952c603f579b8c011065508a3"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classquokka_1_1BucketNew.html">typename</a> <a class="el" href="classquokka_1_1BucketNew.html">ForwardIterator</a> , <a class="el" href="classquokka_1_1BucketNew.html">typename</a> <a class="el" href="classquokka_1_1BucketNew.html">OutputIterator</a> , <a class="el" href="classquokka_1_1BucketNew.html">typename</a> <a class="el" href="classquokka_1_1BucketNew.html">Equal</a> , <a class="el" href="classquokka_1_1BucketNew.html">typename</a> <a class="el" href="classquokka_1_1BucketNew.html">Merge</a> &gt; </td></tr>
-<tr class="memitem:a8a1dcd4952c603f579b8c011065508a3"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="Util_8h.html#a8a1dcd4952c603f579b8c011065508a3">quokka::MergeAdjacent</a> (<a class="el" href="classquokka_1_1BucketNew.html">ForwardIterator</a> <a class="el" href="classquokka_1_1BucketNew.html">first</a>, <a class="el" href="classquokka_1_1BucketNew.html">ForwardIterator</a> <a class="el" href="classquokka_1_1BucketNew.html">last</a>, <a class="el" href="classquokka_1_1BucketNew.html">OutputIterator</a> <a class="el" href="classquokka_1_1BucketNew.html">out</a>, <a class="el" href="classquokka_1_1BucketNew.html">Equal</a> <a class="el" href="classquokka_1_1BucketNew.html">equal</a>, <a class="el" href="classquokka_1_1BucketNew.html">Merge</a> <a class="el" href="classquokka_1_1BucketNew.html">merge</a>)</td></tr>
-<tr class="separator:a8a1dcd4952c603f579b8c011065508a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a69679ba5a6178f46e37b915f1c4b67" id="r_a6a69679ba5a6178f46e37b915f1c4b67"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a6a69679ba5a6178f46e37b915f1c4b67">quokka::GetName</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="el" href="classquokka_1_1BucketNew.html">address</a>, <a class="el" href="classquokka_1_1BucketNew.html">bool</a> <a class="el" href="classquokka_1_1BucketNew.html">mangled</a>)</td></tr>
+<tr class="memitem:abc434932311066434d68dbd5b768d3de" id="r_abc434932311066434d68dbd5b768d3de"><td class="memItemLeft" align="right" valign="top"><a id="abc434932311066434d68dbd5b768d3de" name="abc434932311066434d68dbd5b768d3de"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::scoped_step</b> (std::string_view start_msg, std::string_view done_msg, std::optional&lt; std::string_view &gt; wait_box=std::nullopt)</td></tr>
+<tr class="separator:abc434932311066434d68dbd5b768d3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65a2d2e393a2035608619251d07750f1" id="r_a65a2d2e393a2035608619251d07750f1"><td class="memTemplParams" colspan="2"><a id="a65a2d2e393a2035608619251d07750f1" name="a65a2d2e393a2035608619251d07750f1"></a>
+template&lt;typename B , StdVariant V&gt; </td></tr>
+<tr class="memitem:a65a2d2e393a2035608619251d07750f1"><td class="memTemplItemLeft" align="right" valign="top">B &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>quokka::UpcastVariant</b> (V &amp;variant)</td></tr>
+<tr class="separator:a65a2d2e393a2035608619251d07750f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15532ffe6a84c54773d5c12619de647b" id="r_a15532ffe6a84c54773d5c12619de647b"><td class="memTemplParams" colspan="2"><a id="a15532ffe6a84c54773d5c12619de647b" name="a15532ffe6a84c54773d5c12619de647b"></a>
+template&lt;typename B , StdVariant V&gt; </td></tr>
+<tr class="memitem:a15532ffe6a84c54773d5c12619de647b"><td class="memTemplItemLeft" align="right" valign="top">const B &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>quokka::UpcastVariant</b> (const V &amp;variant)</td></tr>
+<tr class="separator:a15532ffe6a84c54773d5c12619de647b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a69679ba5a6178f46e37b915f1c4b67" id="r_a6a69679ba5a6178f46e37b915f1c4b67"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a6a69679ba5a6178f46e37b915f1c4b67">quokka::GetName</a> (ea_t address, bool mangled)</td></tr>
 <tr class="separator:a6a69679ba5a6178f46e37b915f1c4b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3fe8fef39abf48cf6a44bbfe2b1c6e9" id="r_ae3fe8fef39abf48cf6a44bbfe2b1c6e9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#ae3fe8fef39abf48cf6a44bbfe2b1c6e9">quokka::ConvertIdaString</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">qstring</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">ida_string</a>)</td></tr>
+<tr class="memitem:ae3fe8fef39abf48cf6a44bbfe2b1c6e9" id="r_ae3fe8fef39abf48cf6a44bbfe2b1c6e9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#ae3fe8fef39abf48cf6a44bbfe2b1c6e9">quokka::ConvertIdaString</a> (const qstring &amp;ida_string)</td></tr>
 <tr class="separator:ae3fe8fef39abf48cf6a44bbfe2b1c6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50fe002c98dc07d78cb191042669b9b3" id="r_a50fe002c98dc07d78cb191042669b9b3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a50fe002c98dc07d78cb191042669b9b3">quokka::ReplaceFileExtension</a> (absl::string_view <a class="el" href="classquokka_1_1BucketNew.html">path</a>, absl::string_view <a class="el" href="classquokka_1_1BucketNew.html">new_extension</a>)</td></tr>
-<tr class="separator:a50fe002c98dc07d78cb191042669b9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb82fbd093c165c61a9cff31254bb70b" id="r_aeb82fbd093c165c61a9cff31254bb70b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#aeb82fbd093c165c61a9cff31254bb70b">quokka::StrToBoolean</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> std::string &amp;<a class="el" href="classquokka_1_1BucketNew.html">option</a>)</td></tr>
-<tr class="separator:aeb82fbd093c165c61a9cff31254bb70b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a692289bf48b27192246a574da6661d10" id="r_a692289bf48b27192246a574da6661d10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">processor_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a692289bf48b27192246a574da6661d10">quokka::GetProcessor</a> ()</td></tr>
+<tr class="memitem:aab96faa2d77b104df42d252e72a8177f" id="r_aab96faa2d77b104df42d252e72a8177f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#aab96faa2d77b104df42d252e72a8177f">quokka::ReplaceFileExtension</a> (std::string_view path, std::string_view new_extension)</td></tr>
+<tr class="separator:aab96faa2d77b104df42d252e72a8177f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a692289bf48b27192246a574da6661d10" id="r_a692289bf48b27192246a574da6661d10"><td class="memItemLeft" align="right" valign="top">processor_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a692289bf48b27192246a574da6661d10">quokka::GetProcessor</a> ()</td></tr>
 <tr class="separator:a692289bf48b27192246a574da6661d10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5407a750d7601c91caadba29afc3f8aa" id="r_a5407a750d7601c91caadba29afc3f8aa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a5407a750d7601c91caadba29afc3f8aa">quokka::GetMnemonic</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">insn_t</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">instruction</a>)</td></tr>
+<tr class="memitem:a5407a750d7601c91caadba29afc3f8aa" id="r_a5407a750d7601c91caadba29afc3f8aa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a5407a750d7601c91caadba29afc3f8aa">quokka::GetMnemonic</a> (const insn_t &amp;instruction)</td></tr>
 <tr class="separator:a5407a750d7601c91caadba29afc3f8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a018978f383d79e41fc650bf7613aaa69" id="r_a018978f383d79e41fc650bf7613aaa69"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a018978f383d79e41fc650bf7613aaa69">quokka::ResolveTypedef</a> (tinfo_t &amp;tif)</td></tr>
+<tr class="separator:a018978f383d79e41fc650bf7613aaa69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:acdfd7d79786476152cda4769a8d1fb10" id="r_acdfd7d79786476152cda4769a8d1fb10"><td class="memTemplParams" colspan="2"><a id="acdfd7d79786476152cda4769a8d1fb10" name="acdfd7d79786476152cda4769a8d1fb10"></a>
+template&lt;typename T &gt; </td></tr>
+<tr class="memitem:acdfd7d79786476152cda4769a8d1fb10"><td class="memTemplItemLeft" align="right" valign="top">constexpr <a class="el" href="structquokka_1_1filter__type__adaptor__t.html">filter_type_adaptor_t</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><b>quokka::filter_type</b> {}</td></tr>
+<tr class="separator:acdfd7d79786476152cda4769a8d1fb10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61071f76a9540b9ce99da1a3fb9485d9" id="r_a61071f76a9540b9ce99da1a3fb9485d9"><td class="memTemplParams" colspan="2">template&lt;typename T , typename... Types&gt; </td></tr>
+<tr class="memitem:a61071f76a9540b9ce99da1a3fb9485d9"><td class="memTemplItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="Util_8h.html#a61071f76a9540b9ce99da1a3fb9485d9">quokka::is_one_of_t</a></td></tr>
+<tr class="separator:a61071f76a9540b9ce99da1a3fb9485d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utilities function for quokka </p>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a77f2f1d8774b305551714c9e8c6d2cc2" name="a77f2f1d8774b305551714c9e8c6d2cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77f2f1d8774b305551714c9e8c6d2cc2">&#9670;&#160;</a></span>SCOPED_BOX_STEP</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SCOPED_BOX_STEP</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">wait_box_msg, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">start_msg, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">done_msg&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  [[maybe_unused]] <span class="keyword">auto</span> QK_CONCAT(_scoped_step_, __COUNTER__) = \</div>
+<div class="line">      scoped_step((start_msg), (done_msg), (wait_box_msg))</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae066308fffaf7a2e80fcbb0aafbce9ea" name="ae066308fffaf7a2e80fcbb0aafbce9ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae066308fffaf7a2e80fcbb0aafbce9ea">&#9670;&#160;</a></span>SCOPED_STEP</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SCOPED_STEP</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">start_msg, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">done_msg&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">  [[maybe_unused]] <span class="keyword">auto</span> QK_CONCAT(_scoped_step_, __COUNTER__) = \</div>
+<div class="line">      scoped_step((start_msg), (done_msg))</div>
+</div><!-- fragment -->
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
 <a id="ae3fe8fef39abf48cf6a44bbfe2b1c6e9" name="ae3fe8fef39abf48cf6a44bbfe2b1c6e9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae3fe8fef39abf48cf6a44bbfe2b1c6e9">&#9670;&#160;</a></span>ConvertIdaString()</h2>
 
@@ -150,7 +268,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">std::string quokka::ConvertIdaString </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">qstring</a> &amp;&#160;</td>
+          <td class="paramtype">const qstring &amp;&#160;</td>
           <td class="paramname"><em>ida_string</em></td><td>)</td>
           <td></td>
         </tr>
@@ -176,7 +294,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">std::string quokka::GetMnemonic </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">insn_t</a> &amp;&#160;</td>
+          <td class="paramtype">const insn_t &amp;&#160;</td>
           <td class="paramname"><em>instruction</em></td><td>)</td>
           <td></td>
         </tr>
@@ -203,14 +321,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">std::string quokka::GetName </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
+          <td class="paramtype">ea_t&#160;</td>
           <td class="paramname"><em>address</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td>
-          <td class="paramname"><em>mangled</em> = <code><a class="el" href="classquokka_1_1BucketNew.html">false</a></code>&#160;</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>mangled</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -251,58 +369,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8a1dcd4952c603f579b8c011065508a3" name="a8a1dcd4952c603f579b8c011065508a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a1dcd4952c603f579b8c011065508a3">&#9670;&#160;</a></span>MergeAdjacent()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ForwardIterator , typename OutputIterator , typename Equal , typename Merge &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::MergeAdjacent </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ForwardIterator</a>&#160;</td>
-          <td class="paramname"><em>first</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ForwardIterator</a>&#160;</td>
-          <td class="paramname"><em>last</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">OutputIterator</a>&#160;</td>
-          <td class="paramname"><em>out</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">Equal</a>&#160;</td>
-          <td class="paramname"><em>equal</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">Merge</a>&#160;</td>
-          <td class="paramname"><em>merge</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Implementation of a merge adjacent method</p>
-<dl class="section see"><dt>See also</dt><dd><a href="http://coliru.stacked-crooked.com/a/0de073866090972d">http://coliru.stacked-crooked.com/a/0de073866090972d</a> </dd></dl>
-
-</div>
-</div>
-<a id="a50fe002c98dc07d78cb191042669b9b3" name="a50fe002c98dc07d78cb191042669b9b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50fe002c98dc07d78cb191042669b9b3">&#9670;&#160;</a></span>ReplaceFileExtension()</h2>
+<a id="aab96faa2d77b104df42d252e72a8177f" name="aab96faa2d77b104df42d252e72a8177f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab96faa2d77b104df42d252e72a8177f">&#9670;&#160;</a></span>ReplaceFileExtension()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -310,13 +378,13 @@ template&lt;typename ForwardIterator , typename OutputIterator , typename Equal 
         <tr>
           <td class="memname">std::string quokka::ReplaceFileExtension </td>
           <td>(</td>
-          <td class="paramtype">absl::string_view&#160;</td>
+          <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>path</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">absl::string_view&#160;</td>
+          <td class="paramtype">std::string_view&#160;</td>
           <td class="paramname"><em>new_extension</em>&#160;</td>
         </tr>
         <tr>
@@ -339,30 +407,57 @@ template&lt;typename ForwardIterator , typename OutputIterator , typename Equal 
 
 </div>
 </div>
-<a id="aeb82fbd093c165c61a9cff31254bb70b" name="aeb82fbd093c165c61a9cff31254bb70b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb82fbd093c165c61a9cff31254bb70b">&#9670;&#160;</a></span>StrToBoolean()</h2>
+<a id="a018978f383d79e41fc650bf7613aaa69" name="a018978f383d79e41fc650bf7613aaa69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a018978f383d79e41fc650bf7613aaa69">&#9670;&#160;</a></span>ResolveTypedef()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool quokka::StrToBoolean </td>
+          <td class="memname">void quokka::ResolveTypedef </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::string &amp;&#160;</td>
-          <td class="paramname"><em>option</em></td><td>)</td>
+          <td class="paramtype">tinfo_t &amp;&#160;</td>
+          <td class="paramname"><em>tif</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Check if the option set will yield to true</p>
+<p>Resolve in-place a typedef or typeref to its final concrete type.</p>
+<p>Follows the typedef/typeref chain and replaces <code>tif</code> with the type info of the underlying concrete type. Does nothing if <code>tif</code> is neither a typedef nor a typeref.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">option</td><td>Parameter to check </td></tr>
+    <tr><td class="paramname">tif</td><td>The IDA type info to resolve; modified in-place </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>True if option is not empty </dd></dl>
 
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a61071f76a9540b9ce99da1a3fb9485d9" name="a61071f76a9540b9ce99da1a3fb9485d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61071f76a9540b9ce99da1a3fb9485d9">&#9670;&#160;</a></span>is_one_of_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , typename... Types&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool quokka::is_one_of_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">    (std::same_as&lt;std::remove_cvref_t&lt;T&gt;, std::remove_cvref_t&lt;Types&gt;&gt; || ...)</div>
+</div><!-- fragment -->
 </div>
 </div>
 </div><!-- contents -->

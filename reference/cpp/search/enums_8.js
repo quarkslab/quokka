@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['referencetype_0',['ReferenceType',['../Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a',1,'quokka']]]
+  ['segmenttype_0',['SegmentType',['../Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede',1,'quokka']]],
+  ['state_1',['State',['../Layout_8h.html#a628a016044fed1eac52c7522479585eb',1,'quokka']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['data_0',['Data',['../classquokka_1_1Data.html#a51d7e604c5fa1d14b7215c6b1d8ead85',1,'quokka::Data']]]
+  ['datatypes_0',['DataTypes',['../classquokka_1_1DataTypes.html#a8dc25f82dbef86856379c785b1a3eb65',1,'quokka::DataTypes']]]
 ];

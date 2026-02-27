@@ -98,75 +98,136 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#ifndef QUOKKA_SEGMENT_H</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#define QUOKKA_SEGMENT_H</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;loader.hpp&gt;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;name.hpp&gt;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;segment.hpp&gt;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;absl/strings/str_format.h&quot;</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &quot;<a class="code" href="Logger_8h.html">Logger.h</a>&quot;</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;<a class="code" href="ProtoWrapper_8h.html">ProtoWrapper.h</a>&quot;</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;<a class="code" href="Util_8h.html">Util.h</a>&quot;</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">// clang-format off: Compatibility.h must come before ida headers</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">// clang-format on</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;pro.h&gt;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;segment.hpp&gt;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &quot;absl/hash/hash.h&quot;</span></div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">namespace </span>quokka {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">AddressSize</a> : short;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">   42</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">SegmentType</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  SEGMENT_UNK = 0,</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  SEGMENT_CODE,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  SEGMENT_DATA,</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  SEGMENT_BSS,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  SEGMENT_NULL,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  SEGMENT_EXTERN,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  SEGMENT_NORMAL,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  SEG_ABSOLUTE_SYMBOLS,</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &quot;<a class="code" href="Bucket_8h.html">Bucket.h</a>&quot;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &quot;<a class="code" href="FileMetadata_8h.html">FileMetadata.h</a>&quot;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &quot;<a class="code" href="ProtoHelper_8h.html">ProtoHelper.h</a>&quot;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">   45</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">SegmentType</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  SEGMENT_UNK = 0,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  SEGMENT_CODE,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  SEGMENT_DATA,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  SEGMENT_BSS,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  SEGMENT_NULL,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  SEGMENT_EXTERN,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  SEGMENT_NORMAL,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  SEG_ABSOLUTE_SYMBOLS,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
 </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html">   59</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a> {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a7b14f6cd3c859c15a6e5f2b1006b397d">   60</a></span>  std::string <a class="code hl_variable" href="structquokka_1_1Segment.html#a7b14f6cd3c859c15a6e5f2b1006b397d">name</a>;  </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">   62</a></span>  <a class="code hl_class" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">start_addr</a>;  </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">   63</a></span>  <a class="code hl_class" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">end_addr</a>;    </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html">   62</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a> : <span class="keyword">public</span> <a class="code hl_class" href="classquokka_1_1ProtoHelper.html">ProtoHelper</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a7b14f6cd3c859c15a6e5f2b1006b397d">   63</a></span>  std::string <a class="code hl_variable" href="structquokka_1_1Segment.html#a7b14f6cd3c859c15a6e5f2b1006b397d">name</a>;  </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">   65</a></span>  <a class="code hl_class" href="classquokka_1_1BucketNew.html">uint8</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">permissions</a> = 0;  </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a388b4cf73eb2e2f289b4d643f198a2ca">   67</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">AddressSize</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#a388b4cf73eb2e2f289b4d643f198a2ca">address_size</a>;        </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#aedbbffa0747c3b7b421c33c59fab8203">   68</a></span>  <a class="code hl_enumeration" href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">SegmentType</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#aedbbffa0747c3b7b421c33c59fab8203">type</a> = SEGMENT_UNK;  </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">   65</a></span>  ea_t <a class="code hl_variable" href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">start_addr</a>;  </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">   66</a></span>  ea_t <a class="code hl_variable" href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">end_addr</a>;    </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">   68</a></span>  uint8 <a class="code hl_variable" href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">permissions</a> = 0;  </div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">   73</a></span>  <a class="code hl_class" href="classquokka_1_1BucketNew.html">int64</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">file_offset</a>;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keyword">explicit</span> <a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a>(<a class="code hl_class" href="classquokka_1_1BucketNew.html">segment_t</a>* <a class="code hl_class" href="classquokka_1_1BucketNew.html">segment</a>);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a388b4cf73eb2e2f289b4d643f198a2ca">   70</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">AddressSize</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#a388b4cf73eb2e2f289b4d643f198a2ca">address_size</a>;        </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#aedbbffa0747c3b7b421c33c59fab8203">   71</a></span>  <a class="code hl_enumeration" href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">SegmentType</a> <a class="code hl_variable" href="structquokka_1_1Segment.html#aedbbffa0747c3b7b421c33c59fab8203">type</a> = SEGMENT_UNK;  </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">   76</a></span>  int64 <a class="code hl_variable" href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">file_offset</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  <span class="keyword">explicit</span> <a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a>(segment_t* segment);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00090" data-start="{" data-end="}">
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a2831a26d9c94d04553ec063a11bdaff2">   90</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="structquokka_1_1Segment.html#a2831a26d9c94d04553ec063a11bdaff2">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a>&amp; rhs)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">start_addr</a> == rhs.<a class="code hl_variable" href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">start_addr</a> &amp;&amp; <a class="code hl_variable" href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">end_addr</a> == rhs.<a class="code hl_variable" href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">end_addr</a> &amp;&amp;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>           <a class="code hl_variable" href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">permissions</a> == rhs.<a class="code hl_variable" href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">permissions</a> &amp;&amp; <a class="code hl_variable" href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">file_offset</a> == rhs.<a class="code hl_variable" href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">file_offset</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  }</div>
 </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><a class="code hl_enumeration" href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">SegmentType</a> GetSegmentType(<a class="code hl_class" href="classquokka_1_1BucketNew.html">uchar</a> <a class="code hl_class" href="classquokka_1_1BucketNew.html">seg_type</a>);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keywordtype">int</span> ExportSegments(<a class="code hl_class" href="classquokka_1_1BucketNew.html">quokka::Quokka</a>* <a class="code hl_class" href="classquokka_1_1BucketNew.html">proto</a>);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}  <span class="comment">// namespace quokka</span></div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_SEGMENT_H</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  <span class="keywordtype">bool</span> operator!=(<span class="keyword">const</span> <a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a>&amp; rhs)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !(rhs == *<span class="keyword">this</span>); }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> H&gt;</div>
+<div class="foldopen" id="foldopen00105" data-start="{" data-end="};">
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structquokka_1_1Segment.html#a9c073e94b5697cf06fe090e231fec40e">  105</a></span>  <span class="keyword">friend</span> H <a class="code hl_friend" href="structquokka_1_1Segment.html#a9c073e94b5697cf06fe090e231fec40e">AbslHashValue</a>(H h, <span class="keyword">const</span> <a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a>&amp; m) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">return</span> H::combine(std::move(h), m.<a class="code hl_variable" href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">start_addr</a>, m.<a class="code hl_variable" href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">end_addr</a>, m.<a class="code hl_variable" href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">permissions</a>,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                      m.<a class="code hl_variable" href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">file_offset</a>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  }</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>};</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="};">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classquokka_1_1Segments.html">  121</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classquokka_1_1MultiMapBucket.html">MultiMapBucket</a>&lt;sel_t, Segment&gt; {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  <span class="keyword">explicit</span> <a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  <span class="keyword">using </span><a class="code hl_class" href="classquokka_1_1MultiMapBucket.html">MultiMapBucket</a>&lt;sel_t, <a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a>&gt;::MultiMapBucket;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="foldopen" id="foldopen00133" data-start="{" data-end="}">
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classquokka_1_1Segments.html#ab6df43c41acfe58284bb3a2d9c1b8867">  133</a></span>  <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a>&amp; <a class="code hl_function" href="classquokka_1_1Segments.html#ab6df43c41acfe58284bb3a2d9c1b8867">GetInstance</a>() {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a> instance;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  }</div>
+</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a>(<a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>  <span class="keywordtype">void</span> operator=(<a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  <a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a>(<a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  <span class="keywordtype">void</span> operator=(<a class="code hl_class" href="classquokka_1_1Segments.html">Segments</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classquokka_1_1Segments.html#a955347307b20825fa92378a07547f384">  152</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classquokka_1_1Segments.html#a955347307b20825fa92378a07547f384">contains</a>(<span class="keyword">const</span> sel_t sel, <span class="keyword">const</span> ea_t start, <span class="keyword">const</span> ea_t end)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">auto</span> [first, last] = <a class="code hl_variable" href="classquokka_1_1CommonSortableBucket.html#a1af6531b773f199c0d3ce00a6bdf0413">storage</a>-&gt;bucket.equal_range(sel);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">return</span> std::any_of(first, last, [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; pair) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      <span class="keywordflow">return</span> pair.second-&gt;start_addr == start &amp;&amp; pair.second-&gt;end_addr == end;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    });</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>  }</div>
+</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  <span class="keyword">const</span> <a class="code hl_struct" href="structquokka_1_1Segment.html">Segment</a>&amp; <a class="code hl_function" href="classquokka_1_1Segments.html#ac49e256c181a62a9ea1fb5e931fccb87">get_exact</a>(sel_t sel, ea_t start, ea_t end) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>};</div>
+</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="keyword">const</span> Segment&amp; GetSegment(ea_t addr);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="keywordtype">int</span> ExportSegments();</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_SEGMENT_H</span></div>
+<div class="ttc" id="aBucket_8h_html"><div class="ttname"><a href="Bucket_8h.html">Bucket.h</a></div></div>
 <div class="ttc" id="aCompatibility_8h_html"><div class="ttname"><a href="Compatibility_8h.html">Compatibility.h</a></div></div>
-<div class="ttc" id="aFileMetadata_8h_html_af113e33cf81f3acb9d7880abbc247dc6"><div class="ttname"><a href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">quokka::AddressSize</a></div><div class="ttdeci">AddressSize</div><div class="ttdef"><b>Definition</b> FileMetadata.h:65</div></div>
-<div class="ttc" id="aLogger_8h_html"><div class="ttname"><a href="Logger_8h.html">Logger.h</a></div></div>
-<div class="ttc" id="aProtoWrapper_8h_html"><div class="ttname"><a href="ProtoWrapper_8h.html">ProtoWrapper.h</a></div></div>
-<div class="ttc" id="aSegment_8h_html_ad5b8a38b40c134ca24e5d7e7433ceede"><div class="ttname"><a href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">quokka::SegmentType</a></div><div class="ttdeci">SegmentType</div><div class="ttdef"><b>Definition</b> Segment.h:42</div></div>
-<div class="ttc" id="aUtil_8h_html"><div class="ttname"><a href="Util_8h.html">Util.h</a></div></div>
+<div class="ttc" id="aFileMetadata_8h_html"><div class="ttname"><a href="FileMetadata_8h.html">FileMetadata.h</a></div></div>
+<div class="ttc" id="aFileMetadata_8h_html_af113e33cf81f3acb9d7880abbc247dc6"><div class="ttname"><a href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">quokka::AddressSize</a></div><div class="ttdeci">AddressSize</div><div class="ttdef"><b>Definition</b> FileMetadata.h:68</div></div>
+<div class="ttc" id="aProtoHelper_8h_html"><div class="ttname"><a href="ProtoHelper_8h.html">ProtoHelper.h</a></div></div>
+<div class="ttc" id="aSegment_8h_html_ad5b8a38b40c134ca24e5d7e7433ceede"><div class="ttname"><a href="Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede">quokka::SegmentType</a></div><div class="ttdeci">SegmentType</div><div class="ttdef"><b>Definition</b> Segment.h:45</div></div>
 <div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
-<div class="ttc" id="aclassquokka_1_1BucketNew_html"><div class="ttname"><a href="classquokka_1_1BucketNew.html">quokka::BucketNew</a></div><div class="ttdef"><b>Definition</b> Util.h:94</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html"><div class="ttname"><a href="structquokka_1_1Segment.html">quokka::Segment</a></div><div class="ttdef"><b>Definition</b> Segment.h:59</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html_a0d9b4df3388bf58fedf4df604d24cd2e"><div class="ttname"><a href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">quokka::Segment::end_addr</a></div><div class="ttdeci">ea_t end_addr</div><div class="ttdoc">End address.</div><div class="ttdef"><b>Definition</b> Segment.h:63</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html_a388b4cf73eb2e2f289b4d643f198a2ca"><div class="ttname"><a href="structquokka_1_1Segment.html#a388b4cf73eb2e2f289b4d643f198a2ca">quokka::Segment::address_size</a></div><div class="ttdeci">AddressSize address_size</div><div class="ttdoc">Address size for the segment.</div><div class="ttdef"><b>Definition</b> Segment.h:67</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html_a7b14f6cd3c859c15a6e5f2b1006b397d"><div class="ttname"><a href="structquokka_1_1Segment.html#a7b14f6cd3c859c15a6e5f2b1006b397d">quokka::Segment::name</a></div><div class="ttdeci">std::string name</div><div class="ttdoc">Name of the segment.</div><div class="ttdef"><b>Definition</b> Segment.h:60</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html_ab3e45d631f3c3e1823a93f18bc9e58d9"><div class="ttname"><a href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">quokka::Segment::file_offset</a></div><div class="ttdeci">int64 file_offset</div><div class="ttdef"><b>Definition</b> Segment.h:73</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html_ae12020b6a62c11f3b5a1c8d09adff05f"><div class="ttname"><a href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">quokka::Segment::permissions</a></div><div class="ttdeci">uint8 permissions</div><div class="ttdoc">Segment permissions.</div><div class="ttdef"><b>Definition</b> Segment.h:65</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html_aedbbffa0747c3b7b421c33c59fab8203"><div class="ttname"><a href="structquokka_1_1Segment.html#aedbbffa0747c3b7b421c33c59fab8203">quokka::Segment::type</a></div><div class="ttdeci">SegmentType type</div><div class="ttdoc">Segment type.</div><div class="ttdef"><b>Definition</b> Segment.h:68</div></div>
-<div class="ttc" id="astructquokka_1_1Segment_html_af8b2890ef15c517cc498a354584fc6e5"><div class="ttname"><a href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">quokka::Segment::start_addr</a></div><div class="ttdeci">ea_t start_addr</div><div class="ttdoc">Start address.</div><div class="ttdef"><b>Definition</b> Segment.h:62</div></div>
+<div class="ttc" id="aclassquokka_1_1CommonSortableBucket_html_a1af6531b773f199c0d3ce00a6bdf0413"><div class="ttname"><a href="classquokka_1_1CommonSortableBucket.html#a1af6531b773f199c0d3ce00a6bdf0413">quokka::CommonSortableBucket::storage</a></div><div class="ttdeci">std::shared_ptr&lt; StorageT &gt; storage</div><div class="ttdef"><b>Definition</b> Bucket.h:177</div></div>
+<div class="ttc" id="aclassquokka_1_1MultiMapBucket_html"><div class="ttname"><a href="classquokka_1_1MultiMapBucket.html">quokka::MultiMapBucket</a></div><div class="ttdef"><b>Definition</b> Bucket.h:394</div></div>
+<div class="ttc" id="aclassquokka_1_1ProtoHelper_html"><div class="ttname"><a href="classquokka_1_1ProtoHelper.html">quokka::ProtoHelper</a></div><div class="ttdef"><b>Definition</b> ProtoHelper.h:32</div></div>
+<div class="ttc" id="aclassquokka_1_1Segments_html"><div class="ttname"><a href="classquokka_1_1Segments.html">quokka::Segments</a></div><div class="ttdef"><b>Definition</b> Segment.h:121</div></div>
+<div class="ttc" id="aclassquokka_1_1Segments_html_a955347307b20825fa92378a07547f384"><div class="ttname"><a href="classquokka_1_1Segments.html#a955347307b20825fa92378a07547f384">quokka::Segments::contains</a></div><div class="ttdeci">bool contains(const sel_t sel, const ea_t start, const ea_t end) const</div><div class="ttdef"><b>Definition</b> Segment.h:152</div></div>
+<div class="ttc" id="aclassquokka_1_1Segments_html_ab6df43c41acfe58284bb3a2d9c1b8867"><div class="ttname"><a href="classquokka_1_1Segments.html#ab6df43c41acfe58284bb3a2d9c1b8867">quokka::Segments::GetInstance</a></div><div class="ttdeci">static Segments &amp; GetInstance()</div><div class="ttdef"><b>Definition</b> Segment.h:133</div></div>
+<div class="ttc" id="aclassquokka_1_1Segments_html_ac49e256c181a62a9ea1fb5e931fccb87"><div class="ttname"><a href="classquokka_1_1Segments.html#ac49e256c181a62a9ea1fb5e931fccb87">quokka::Segments::get_exact</a></div><div class="ttdeci">const Segment &amp; get_exact(sel_t sel, ea_t start, ea_t end) const</div><div class="ttdef"><b>Definition</b> Segment.cpp:99</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html"><div class="ttname"><a href="structquokka_1_1Segment.html">quokka::Segment</a></div><div class="ttdef"><b>Definition</b> Segment.h:62</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_a0d9b4df3388bf58fedf4df604d24cd2e"><div class="ttname"><a href="structquokka_1_1Segment.html#a0d9b4df3388bf58fedf4df604d24cd2e">quokka::Segment::end_addr</a></div><div class="ttdeci">ea_t end_addr</div><div class="ttdoc">End address.</div><div class="ttdef"><b>Definition</b> Segment.h:66</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_a2831a26d9c94d04553ec063a11bdaff2"><div class="ttname"><a href="structquokka_1_1Segment.html#a2831a26d9c94d04553ec063a11bdaff2">quokka::Segment::operator==</a></div><div class="ttdeci">bool operator==(const Segment &amp;rhs) const</div><div class="ttdef"><b>Definition</b> Segment.h:90</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_a388b4cf73eb2e2f289b4d643f198a2ca"><div class="ttname"><a href="structquokka_1_1Segment.html#a388b4cf73eb2e2f289b4d643f198a2ca">quokka::Segment::address_size</a></div><div class="ttdeci">AddressSize address_size</div><div class="ttdoc">Address size for the segment.</div><div class="ttdef"><b>Definition</b> Segment.h:70</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_a7b14f6cd3c859c15a6e5f2b1006b397d"><div class="ttname"><a href="structquokka_1_1Segment.html#a7b14f6cd3c859c15a6e5f2b1006b397d">quokka::Segment::name</a></div><div class="ttdeci">std::string name</div><div class="ttdoc">Name of the segment.</div><div class="ttdef"><b>Definition</b> Segment.h:63</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_a9c073e94b5697cf06fe090e231fec40e"><div class="ttname"><a href="structquokka_1_1Segment.html#a9c073e94b5697cf06fe090e231fec40e">quokka::Segment::AbslHashValue</a></div><div class="ttdeci">friend H AbslHashValue(H h, const Segment &amp;m)</div><div class="ttdef"><b>Definition</b> Segment.h:105</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_ab3e45d631f3c3e1823a93f18bc9e58d9"><div class="ttname"><a href="structquokka_1_1Segment.html#ab3e45d631f3c3e1823a93f18bc9e58d9">quokka::Segment::file_offset</a></div><div class="ttdeci">int64 file_offset</div><div class="ttdef"><b>Definition</b> Segment.h:76</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_ae12020b6a62c11f3b5a1c8d09adff05f"><div class="ttname"><a href="structquokka_1_1Segment.html#ae12020b6a62c11f3b5a1c8d09adff05f">quokka::Segment::permissions</a></div><div class="ttdeci">uint8 permissions</div><div class="ttdoc">Segment permissions.</div><div class="ttdef"><b>Definition</b> Segment.h:68</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_aedbbffa0747c3b7b421c33c59fab8203"><div class="ttname"><a href="structquokka_1_1Segment.html#aedbbffa0747c3b7b421c33c59fab8203">quokka::Segment::type</a></div><div class="ttdeci">SegmentType type</div><div class="ttdoc">Segment type.</div><div class="ttdef"><b>Definition</b> Segment.h:71</div></div>
+<div class="ttc" id="astructquokka_1_1Segment_html_af8b2890ef15c517cc498a354584fc6e5"><div class="ttname"><a href="structquokka_1_1Segment.html#af8b2890ef15c517cc498a354584fc6e5">quokka::Segment::start_addr</a></div><div class="ttdeci">ea_t start_addr</div><div class="ttdoc">Start address.</div><div class="ttdef"><b>Definition</b> Segment.h:65</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

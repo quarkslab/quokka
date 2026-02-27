@@ -75,6 +75,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
 <a href="classquokka_1_1Data-members.html">List of all members</a>  </div>
@@ -96,62 +97,74 @@ Collaboration diagram for quokka::Data:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a51d7e604c5fa1d14b7215c6b1d8ead85" id="r_a51d7e604c5fa1d14b7215c6b1d8ead85"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a51d7e604c5fa1d14b7215c6b1d8ead85">Data</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="el" href="classquokka_1_1BucketNew.html">addr_</a>, <a class="el" href="Data_8h.html#a567bfe86edc23230a05fd0925897fe2d">DataType</a> <a class="el" href="classquokka_1_1BucketNew.html">data_type_</a>, <a class="el" href="classquokka_1_1BucketNew.html">uint64_t</a> <a class="el" href="classquokka_1_1BucketNew.html">size_</a>)</td></tr>
-<tr class="separator:a51d7e604c5fa1d14b7215c6b1d8ead85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10d542e4a5b677caf57012607d3fa4c2" id="r_a10d542e4a5b677caf57012607d3fa4c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a10d542e4a5b677caf57012607d3fa4c2">HasVariableSize</a> () <a class="el" href="classquokka_1_1BucketNew.html">const</a></td></tr>
-<tr class="separator:a10d542e4a5b677caf57012607d3fa4c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a704f23197641cd6de14c541ddf7d698b" id="r_a704f23197641cd6de14c541ddf7d698b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a704f23197641cd6de14c541ddf7d698b">HasName</a> (<a class="el" href="classquokka_1_1BucketNew.html">bool</a> <a class="el" href="classquokka_1_1BucketNew.html">any_name</a>) <a class="el" href="classquokka_1_1BucketNew.html">const</a></td></tr>
-<tr class="separator:a704f23197641cd6de14c541ddf7d698b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af32c93f17395057dcec6ea0625338815" id="r_af32c93f17395057dcec6ea0625338815"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#af32c93f17395057dcec6ea0625338815">SetName</a> ()</td></tr>
-<tr class="separator:af32c93f17395057dcec6ea0625338815"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f9af2d347a2e94aec69ad6925b765d5" id="r_a5f9af2d347a2e94aec69ad6925b765d5"><td class="memItemLeft" align="right" valign="top">absl::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a5f9af2d347a2e94aec69ad6925b765d5">GetName</a> () <a class="el" href="classquokka_1_1BucketNew.html">const</a></td></tr>
-<tr class="separator:a5f9af2d347a2e94aec69ad6925b765d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe0525ec8ec01914b4bfff8455a4bdfa" id="r_afe0525ec8ec01914b4bfff8455a4bdfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#afe0525ec8ec01914b4bfff8455a4bdfa">IsInitialized</a> () <a class="el" href="classquokka_1_1BucketNew.html">const</a></td></tr>
+<tr class="memitem:a466396d62e732dbd5ff63374f18254bf" id="r_a466396d62e732dbd5ff63374f18254bf"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a466396d62e732dbd5ff63374f18254bf">GetName</a> () const</td></tr>
+<tr class="separator:a466396d62e732dbd5ff63374f18254bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe0525ec8ec01914b4bfff8455a4bdfa" id="r_afe0525ec8ec01914b4bfff8455a4bdfa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#afe0525ec8ec01914b4bfff8455a4bdfa">IsInitialized</a> () const</td></tr>
 <tr class="separator:afe0525ec8ec01914b4bfff8455a4bdfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5483ec0827deb7430ce1cbceb17c814e" id="r_a5483ec0827deb7430ce1cbceb17c814e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a5483ec0827deb7430ce1cbceb17c814e">operator==</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">rhs</a>) <a class="el" href="classquokka_1_1BucketNew.html">const</a></td></tr>
+<tr class="memitem:a5483ec0827deb7430ce1cbceb17c814e" id="r_a5483ec0827deb7430ce1cbceb17c814e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a5483ec0827deb7430ce1cbceb17c814e">operator==</a> (const <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;rhs) const</td></tr>
 <tr class="separator:a5483ec0827deb7430ce1cbceb17c814e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49f9a09b2e8c4664d9f1934ebe687605" id="r_a49f9a09b2e8c4664d9f1934ebe687605"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a49f9a09b2e8c4664d9f1934ebe687605">operator!=</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">rhs</a>) <a class="el" href="classquokka_1_1BucketNew.html">const</a></td></tr>
+<tr class="memitem:a49f9a09b2e8c4664d9f1934ebe687605" id="r_a49f9a09b2e8c4664d9f1934ebe687605"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a49f9a09b2e8c4664d9f1934ebe687605">operator!=</a> (const <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;rhs) const</td></tr>
 <tr class="separator:a49f9a09b2e8c4664d9f1934ebe687605"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a2f645e69e82f6badb519dc66e4aa0c37" id="r_a2f645e69e82f6badb519dc66e4aa0c37"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classquokka_1_1Data.html">Data</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#a2f645e69e82f6badb519dc66e4aa0c37">Make</a> (ea_t <a class="el" href="classquokka_1_1Data.html#a6ba94ac2c361fd787c2b575dca1f47a4">addr</a>, uint32_t <a class="el" href="classquokka_1_1Data.html#a763eb2d8f0018e7ee61b3799e16c236d">size</a>)</td></tr>
+<tr class="separator:a2f645e69e82f6badb519dc66e4aa0c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a6ba94ac2c361fd787c2b575dca1f47a4" id="r_a6ba94ac2c361fd787c2b575dca1f47a4"><td class="memItemLeft" align="right" valign="top"><a id="a6ba94ac2c361fd787c2b575dca1f47a4" name="a6ba94ac2c361fd787c2b575dca1f47a4"></a>
-<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>addr</b> = <a class="el" href="classquokka_1_1BucketNew.html">BADADDR</a></td></tr>
+ea_t&#160;</td><td class="memItemRight" valign="bottom"><b>addr</b> = BADADDR</td></tr>
 <tr class="memdesc:a6ba94ac2c361fd787c2b575dca1f47a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Address attached to the data. <br /></td></tr>
 <tr class="separator:a6ba94ac2c361fd787c2b575dca1f47a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad073f2176f2340fed128da0d046c3246" id="r_ad073f2176f2340fed128da0d046c3246"><td class="memItemLeft" align="right" valign="top"><a id="ad073f2176f2340fed128da0d046c3246" name="ad073f2176f2340fed128da0d046c3246"></a>
-<a class="el" href="Data_8h.html#a567bfe86edc23230a05fd0925897fe2d">DataType</a>&#160;</td><td class="memItemRight" valign="bottom"><b>data_type</b> = TYPE_UNK</td></tr>
-<tr class="memdesc:ad073f2176f2340fed128da0d046c3246"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classquokka_1_1Data.html">Data</a> type. <br /></td></tr>
-<tr class="separator:ad073f2176f2340fed128da0d046c3246"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a752b79b89105225ac1e98a31d1c4e9dc" id="r_a752b79b89105225ac1e98a31d1c4e9dc"><td class="memItemLeft" align="right" valign="top"><a id="a752b79b89105225ac1e98a31d1c4e9dc" name="a752b79b89105225ac1e98a31d1c4e9dc"></a>
-<a class="el" href="classquokka_1_1BucketNew.html">uint64_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>size</b></td></tr>
-<tr class="memdesc:a752b79b89105225ac1e98a31d1c4e9dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the data (not always redundant for certain types) <br /></td></tr>
-<tr class="separator:a752b79b89105225ac1e98a31d1c4e9dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2a0c1f587178c0a2f385a544a064c68" id="r_ac2a0c1f587178c0a2f385a544a064c68"><td class="memItemLeft" align="right" valign="top"><a id="ac2a0c1f587178c0a2f385a544a064c68" name="ac2a0c1f587178c0a2f385a544a064c68"></a>
+<a class="el" href="DataType_8h.html#a87a69ff8de5474bc76a0e30719598af6">BaseType</a>&#160;</td><td class="memItemRight" valign="bottom"><b>base_type</b> = TYPE_UNK</td></tr>
+<tr class="memdesc:ac2a0c1f587178c0a2f385a544a064c68"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classquokka_1_1Data.html">Data</a> type. <br /></td></tr>
+<tr class="separator:ac2a0c1f587178c0a2f385a544a064c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a763eb2d8f0018e7ee61b3799e16c236d" id="r_a763eb2d8f0018e7ee61b3799e16c236d"><td class="memItemLeft" align="right" valign="top"><a id="a763eb2d8f0018e7ee61b3799e16c236d" name="a763eb2d8f0018e7ee61b3799e16c236d"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b></td></tr>
+<tr class="memdesc:a763eb2d8f0018e7ee61b3799e16c236d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the data (not always redundant for certain types) <br /></td></tr>
+<tr class="separator:a763eb2d8f0018e7ee61b3799e16c236d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d69ae79e7523316f35a5ae444005b98" id="r_a4d69ae79e7523316f35a5ae444005b98"><td class="memItemLeft" align="right" valign="top"><a id="a4d69ae79e7523316f35a5ae444005b98" name="a4d69ae79e7523316f35a5ae444005b98"></a>
+const <a class="el" href="structquokka_1_1Segment.html">Segment</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>segment</b></td></tr>
+<tr class="memdesc:a4d69ae79e7523316f35a5ae444005b98"><td class="mdescLeft">&#160;</td><td class="mdescRight">IDA segment. It has to outlive <a class="el" href="classquokka_1_1Data.html">Data</a>. <br /></td></tr>
+<tr class="separator:a4d69ae79e7523316f35a5ae444005b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28f80713c25c7946e09a03c7af22d269" id="r_a28f80713c25c7946e09a03c7af22d269"><td class="memItemLeft" align="right" valign="top"><a id="a28f80713c25c7946e09a03c7af22d269" name="a28f80713c25c7946e09a03c7af22d269"></a>
+int64&#160;</td><td class="memItemRight" valign="bottom"><b>file_offset</b></td></tr>
+<tr class="memdesc:a28f80713c25c7946e09a03c7af22d269"><td class="mdescLeft">&#160;</td><td class="mdescRight">File offset, if &lt;0 then there is none. <br /></td></tr>
+<tr class="separator:a28f80713c25c7946e09a03c7af22d269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6a57c6244ddc167629f8023f2a46552" id="r_ab6a57c6244ddc167629f8023f2a46552"><td class="memItemLeft" align="right" valign="top"><a id="ab6a57c6244ddc167629f8023f2a46552" name="ab6a57c6244ddc167629f8023f2a46552"></a>
+<a class="el" href="structquokka_1_1Xref.html">Xref</a>&#160;</td><td class="memItemRight" valign="bottom"><b>xrefs</b></td></tr>
+<tr class="separator:ab6a57c6244ddc167629f8023f2a46552"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fe0523b278ce36831da0854096592fa" id="r_a2fe0523b278ce36831da0854096592fa"><td class="memItemLeft" align="right" valign="top"><a id="a2fe0523b278ce36831da0854096592fa" name="a2fe0523b278ce36831da0854096592fa"></a>
+std::optional&lt; <a class="el" href="structquokka_1_1type__uid__t.html">type_uid_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>target_tuid</b></td></tr>
+<tr class="memdesc:a2fe0523b278ce36831da0854096592fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">type UID when the data not of a base type <br /></td></tr>
+<tr class="separator:a2fe0523b278ce36831da0854096592fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classquokka_1_1ProtoHelper"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classquokka_1_1ProtoHelper')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classquokka_1_1ProtoHelper.html">quokka::ProtoHelper</a></td></tr>
 <tr class="memitem:a11b9f268fe1c06556d8b8fd883bfb179 inherit pub_attribs_classquokka_1_1ProtoHelper" id="r_a11b9f268fe1c06556d8b8fd883bfb179"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classquokka_1_1BucketNew.html">uint32_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ref_count</b> = 0</td></tr>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>ref_count</b> = 0</td></tr>
 <tr class="memdesc:a11b9f268fe1c06556d8b8fd883bfb179 inherit pub_attribs_classquokka_1_1ProtoHelper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ref counter. <br /></td></tr>
 <tr class="separator:a11b9f268fe1c06556d8b8fd883bfb179 inherit pub_attribs_classquokka_1_1ProtoHelper"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9703de5547ec1b01898eee93fa4d5cb2 inherit pub_attribs_classquokka_1_1ProtoHelper" id="r_a9703de5547ec1b01898eee93fa4d5cb2"><td class="memItemLeft" align="right" valign="top">
-<a class="el" href="classquokka_1_1BucketNew.html">int</a>&#160;</td><td class="memItemRight" valign="bottom"><b>proto_index</b> = 0</td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>proto_index</b> = 0</td></tr>
 <tr class="memdesc:a9703de5547ec1b01898eee93fa4d5cb2 inherit pub_attribs_classquokka_1_1ProtoHelper"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index in the protobuf file. <br /></td></tr>
 <tr class="separator:a9703de5547ec1b01898eee93fa4d5cb2 inherit pub_attribs_classquokka_1_1ProtoHelper"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
-<tr class="memitem:aae22a6e433f078844bf7bfc325af4ac9" id="r_aae22a6e433f078844bf7bfc325af4ac9"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classquokka_1_1BucketNew.html">typename</a> <a class="el" href="classquokka_1_1BucketNew.html">H</a> &gt; </td></tr>
-<tr class="memitem:aae22a6e433f078844bf7bfc325af4ac9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">H</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#aae22a6e433f078844bf7bfc325af4ac9">AbslHashValue</a> (<a class="el" href="classquokka_1_1BucketNew.html">H</a> <a class="el" href="classquokka_1_1BucketNew.html">h</a>, <a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">m</a>)</td></tr>
+<tr class="memitem:aae22a6e433f078844bf7bfc325af4ac9" id="r_aae22a6e433f078844bf7bfc325af4ac9"><td class="memTemplParams" colspan="2">template&lt;typename H &gt; </td></tr>
+<tr class="memitem:aae22a6e433f078844bf7bfc325af4ac9"><td class="memTemplItemLeft" align="right" valign="top">H&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classquokka_1_1Data.html#aae22a6e433f078844bf7bfc325af4ac9">AbslHashValue</a> (H h, const <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;m)</td></tr>
 <tr class="separator:aae22a6e433f078844bf7bfc325af4ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><hr  />
- <h2><a class="anchor" id="autotoc_md7"></a>
+ <h2><a class="anchor" id="autotoc_md13"></a>
 quokka::Data</h2>
 <p><a class="el" href="classquokka_1_1Data.html">Data</a> representation</p>
 <p><code><a class="el" href="classquokka_1_1Data.html">Data</a></code> represents everything IDA considers to be data. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a51d7e604c5fa1d14b7215c6b1d8ead85" name="a51d7e604c5fa1d14b7215c6b1d8ead85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51d7e604c5fa1d14b7215c6b1d8ead85">&#9670;&#160;</a></span>Data()</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a466396d62e732dbd5ff63374f18254bf" name="a466396d62e732dbd5ff63374f18254bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a466396d62e732dbd5ff63374f18254bf">&#9670;&#160;</a></span>GetName()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -160,59 +173,7 @@ quokka::Data</h2>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">quokka::Data::Data </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>addr_</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="Data_8h.html#a567bfe86edc23230a05fd0925897fe2d">DataType</a>&#160;</td>
-          <td class="paramname"><em>data_type_</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">uint64_t</a>&#160;</td>
-          <td class="paramname"><em>size_</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Constructor</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">addr_</td><td>Address where the data has been found </td></tr>
-    <tr><td class="paramname">data_type_</td><td>Type of the data </td></tr>
-    <tr><td class="paramname">size_</td><td>Size of the data </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5f9af2d347a2e94aec69ad6925b765d5" name="a5f9af2d347a2e94aec69ad6925b765d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f9af2d347a2e94aec69ad6925b765d5">&#9670;&#160;</a></span>GetName()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">absl::string_view quokka::Data::GetName </td>
+          <td class="memname">const std::string &amp; quokka::Data::GetName </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -224,52 +185,7 @@ quokka::Data</h2>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Accessor for the name </p><dl class="section return"><dt>Returns</dt><dd>A string_view of the name </dd></dl>
-
-</div>
-</div>
-<a id="a704f23197641cd6de14c541ddf7d698b" name="a704f23197641cd6de14c541ddf7d698b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a704f23197641cd6de14c541ddf7d698b">&#9670;&#160;</a></span>HasName()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classquokka_1_1BucketNew.html">bool</a> quokka::Data::HasName </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">bool</a>&#160;</td>
-          <td class="paramname"><em>any_name</em> = <code><a class="el" href="classquokka_1_1BucketNew.html">false</a></code></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Has the data a name ?</p>
-<p>Answers using the flags associated to the address.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">any_name</td><td>Check any name or juste the user_name </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a10d542e4a5b677caf57012607d3fa4c2" name="a10d542e4a5b677caf57012607d3fa4c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a10d542e4a5b677caf57012607d3fa4c2">&#9670;&#160;</a></span>HasVariableSize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classquokka_1_1BucketNew.html">bool</a> quokka::Data::HasVariableSize </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Has the data a variable size ?</p>
-<dl class="section return"><dt>Returns</dt><dd>True for ASCII, STRUCT, ALIGN and UNKNOWN. False otherwise </dd></dl>
+<p>Accessor for the name </p><dl class="section return"><dt>Returns</dt><dd>The name </dd></dl>
 
 </div>
 </div>
@@ -280,7 +196,7 @@ quokka::Data</h2>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classquokka_1_1BucketNew.html">bool</a> quokka::Data::IsInitialized </td>
+          <td class="memname">bool quokka::Data::IsInitialized </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -289,6 +205,51 @@ quokka::Data</h2>
 </div><div class="memdoc">
 <p>Tells if the data referenced is initialized or not (like in .bss segment) using the flags associated to the address.</p>
 <dl class="section return"><dt>Returns</dt><dd>True if the data is initialized, False otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a2f645e69e82f6badb519dc66e4aa0c37" name="a2f645e69e82f6badb519dc66e4aa0c37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f645e69e82f6badb519dc66e4aa0c37">&#9670;&#160;</a></span>Make()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classquokka_1_1Data.html">Data</a> quokka::Data::Make </td>
+          <td>(</td>
+          <td class="paramtype">ea_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Static method to build a <a class="el" href="classquokka_1_1Data.html">Data</a> object</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">addr</td><td>The address at which the data is located </td></tr>
+    <tr><td class="paramname">size</td><td>The size of the data object </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The newly built <a class="el" href="classquokka_1_1Data.html">Data</a> object </dd></dl>
 
 </div>
 </div>
@@ -302,9 +263,9 @@ quokka::Data</h2>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classquokka_1_1BucketNew.html">bool</a> quokka::Data::operator!= </td>
+          <td class="memname">bool quokka::Data::operator!= </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;&#160;</td>
           <td class="paramname"><em>rhs</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -329,9 +290,9 @@ quokka::Data</h2>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classquokka_1_1BucketNew.html">bool</a> quokka::Data::operator== </td>
+          <td class="memname">bool quokka::Data::operator== </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;&#160;</td>
           <td class="paramname"><em>rhs</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -342,25 +303,8 @@ quokka::Data</h2>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Equality operator </p>
-
-</div>
-</div>
-<a id="af32c93f17395057dcec6ea0625338815" name="af32c93f17395057dcec6ea0625338815"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af32c93f17395057dcec6ea0625338815">&#9670;&#160;</a></span>SetName()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classquokka_1_1BucketNew.html">void</a> quokka::Data::SetName </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set the name of the data </p>
+<p>Equality operator</p>
+<p>Two objects are considered equal when they are at the same address and have the same size </p>
 
 </div>
 </div>
@@ -371,21 +315,21 @@ quokka::Data</h2>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;<a class="el" href="classquokka_1_1BucketNew.html">typename</a> <a class="el" href="classquokka_1_1BucketNew.html">H</a> &gt; </div>
+template&lt;typename H &gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classquokka_1_1BucketNew.html">H</a> AbslHashValue </td>
+          <td class="memname">H AbslHashValue </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">H</a>&#160;</td>
+          <td class="paramtype">H&#160;</td>
           <td class="paramname"><em>h</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classquokka_1_1Data.html">Data</a> &amp;&#160;</td>
           <td class="paramname"><em>m</em>&#160;</td>
         </tr>
         <tr>

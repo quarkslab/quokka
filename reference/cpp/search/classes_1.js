@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['chunkedge_0',['ChunkEdge',['../structquokka_1_1ChunkEdge.html',1,'quokka']]],
-  ['chunklocalization_1',['ChunkLocalization',['../structquokka_1_1ChunkLocalization.html',1,'quokka']]],
-  ['comment_2',['Comment',['../structquokka_1_1Comment.html',1,'quokka']]],
-  ['comments_3',['Comments',['../classquokka_1_1Comments.html',1,'quokka']]],
-  ['comparer_4',['Comparer',['../structquokka_1_1Comparer.html',1,'quokka']]]
+  ['block_0',['Block',['../classquokka_1_1Block.html',1,'quokka']]],
+  ['bucketeq_1',['BucketEq',['../structquokka_1_1detail_1_1SetStorage_1_1BucketEq.html',1,'quokka::detail::SetStorage']]],
+  ['buckethash_2',['BucketHash',['../structquokka_1_1detail_1_1SetStorage_1_1BucketHash.html',1,'quokka::detail::SetStorage']]]
 ];

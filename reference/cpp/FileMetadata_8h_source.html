@@ -98,120 +98,124 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#ifndef FILEMETADATA_H</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#define FILEMETADATA_H</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;pro.h&gt;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;ida.hpp&gt;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;kernwin.hpp&gt;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;nalt.hpp&gt;</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;typeinf.hpp&gt;</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &quot;absl/flags/internal/path_util.h&quot;</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;absl/strings/ascii.h&quot;</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;absl/strings/escaping.h&quot;</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &quot;absl/strings/str_format.h&quot;</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &quot;<a class="code" href="ProtoWrapper_8h.html">ProtoWrapper.h</a>&quot;</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">namespace </span>quokka {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">   43</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">ProcName</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  PROC_NONE = 0,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  PROC_X86,</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  PROC_ARM,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  PROC_PPC,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  PROC_MIPS,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  PROC_GENERIC,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  PROC_DALVIK,</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// clang-format off: Compatibility.h must come before ida headers</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">// clang-format on</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;pro.h&gt;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;<a class="code" href="ProtoWrapper_8h.html">ProtoWrapper.h</a>&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">using namespace </span>std::string_view_literals;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">// Protobuf backend codename</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">constexpr</span> <span class="keyword">const</span> std::string_view BACKEND_NAME = <span class="stringliteral">&quot;IDA&quot;</span>sv;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">   46</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">ProcName</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  PROC_NONE = 0,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  PROC_X86,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  PROC_ARM,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  PROC_PPC,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  PROC_MIPS,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  PROC_GENERIC,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  PROC_DALVIK,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
 </div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">   56</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">Endianness</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  END_UNK = 0,</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5">   58</a></span>  <a class="code hl_enumvalue" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5">END_LE</a>,  </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0">   59</a></span>  <a class="code hl_enumvalue" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0">END_BE</a>,  </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">   59</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">Endianness</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  END_UNK = 0,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5">   61</a></span>  <a class="code hl_enumvalue" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5">END_LE</a>,  </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0">   62</a></span>  <a class="code hl_enumvalue" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0">END_BE</a>,  </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
 </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="foldopen" id="foldopen00065" data-start="{" data-end="};">
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">   65</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">AddressSize</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  ADDR_UNK = 0,</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  ADDR_64,</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  ADDR_32,</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="};">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">   68</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">AddressSize</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  ADDR_UNK = 0,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  ADDR_64,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  ADDR_32,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>};</div>
 </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="foldopen" id="foldopen00075" data-start="{" data-end="};">
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">   75</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">Compiler</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  COMPILER_UNK = 0,</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  COMPILER_GCC,</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  COMPILER_MS,</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  COMPILER_BC,</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  COMPILER_WATCOM,</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  COMPILER_VISAGE,</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  COMPILER_BP,</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="};">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">   78</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">Compiler</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  COMPILER_UNK = 0,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  COMPILER_GCC,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  COMPILER_MS,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  COMPILER_BC,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  COMPILER_WATCOM,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  COMPILER_VISAGE,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  COMPILER_BP,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
 </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="foldopen" id="foldopen00090" data-start="{" data-end="};">
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">   90</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">CallingConvention</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  CC_UNK = 0,</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  CC_CDECL,</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  CC_ELLIPSIS,</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  CC_STDCALL,</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  CC_PASCAL,</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  CC_FASTCALL,</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  CC_THISCALL,</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>};</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="};">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">   93</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">CallingConvention</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>  CC_UNK = 0,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  CC_CDECL,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  CC_ELLIPSIS,</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  CC_STDCALL,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  CC_PASCAL,</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  CC_FASTCALL,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  CC_THISCALL,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  CC_SWIFT,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  CC_GOLANG,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  CC_GOSTK,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>};</div>
 </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="foldopen" id="foldopen00103" data-start="{" data-end="};">
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">  103</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">HashType</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  HASH_NONE = 0,</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  HASH_MD5,</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  HASH_SHA256,</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>};</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="foldopen" id="foldopen00109" data-start="{" data-end="};">
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">  109</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">HashType</a> : <span class="keywordtype">short</span> {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  HASH_NONE = 0,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  HASH_MD5,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  HASH_SHA256,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>};</div>
 </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="foldopen" id="foldopen00116" data-start="{" data-end="};">
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="structquokka_1_1Hash.html">  116</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Hash.html">Hash</a> {</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="structquokka_1_1Hash.html#a5b3457d9bfa91b9016f329b8fc61f131">  117</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">HashType</a> <a class="code hl_variable" href="structquokka_1_1Hash.html#a5b3457d9bfa91b9016f329b8fc61f131">type</a> = HASH_NONE;  </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="structquokka_1_1Hash.html#a30d183d809980ca65deb9db92afc7d7c">  118</a></span>  std::string <a class="code hl_variable" href="structquokka_1_1Hash.html#a30d183d809980ca65deb9db92afc7d7c">value</a>;          </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>};</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="foldopen" id="foldopen00122" data-start="{" data-end="};">
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="structquokka_1_1Hash.html">  122</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Hash.html">Hash</a> {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="structquokka_1_1Hash.html#a5b3457d9bfa91b9016f329b8fc61f131">  123</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">HashType</a> <a class="code hl_variable" href="structquokka_1_1Hash.html#a5b3457d9bfa91b9016f329b8fc61f131">type</a> = HASH_NONE;  </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="structquokka_1_1Hash.html#a30d183d809980ca65deb9db92afc7d7c">  124</a></span>  std::string <a class="code hl_variable" href="structquokka_1_1Hash.html#a30d183d809980ca65deb9db92afc7d7c">value</a>;          </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>};</div>
 </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="foldopen" id="foldopen00127" data-start="{" data-end="};">
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html">  127</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1Metadata.html">Metadata</a> {</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a8d2b070b46d21e92bc78bbe6c7ee3511">  129</a></span>  <a class="code hl_struct" href="structquokka_1_1Hash.html">Hash</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a8d2b070b46d21e92bc78bbe6c7ee3511">file_hash</a>;         </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#aba8c3ca252770825f2b5ce2551defe40">  130</a></span>  std::string <a class="code hl_variable" href="classquokka_1_1Metadata.html#aba8c3ca252770825f2b5ce2551defe40">file_name</a>;  </div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#abe88d9b6cb03fd561db700a71ad5afda">  137</a></span>  ea_t <a class="code hl_variable" href="classquokka_1_1Metadata.html#abe88d9b6cb03fd561db700a71ad5afda">base_addr</a> = BADADDR;</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a515441256261eb315f2605d29d669632">  139</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">ProcName</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a515441256261eb315f2605d29d669632">proc_name</a> = PROC_NONE;                 </div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a37e5457fc7c5bf89ec6183c8763aa0e4">  140</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">AddressSize</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a37e5457fc7c5bf89ec6183c8763aa0e4">address_size</a> = ADDR_UNK;            </div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a82d512fc7c2c6c59557fdde464b80762">  141</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">Endianness</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a82d512fc7c2c6c59557fdde464b80762">endianness</a> = END_UNK;                </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a0765ced43301bcc8aafcdf8ae5d55e38">  142</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">Compiler</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a0765ced43301bcc8aafcdf8ae5d55e38">compiler</a> = COMPILER_UNK;               </div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a1a4b26b0376329f09e2766ed8b487ff9">  143</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">CallingConvention</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a1a4b26b0376329f09e2766ed8b487ff9">calling_convention</a> = CC_UNK;  </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="foldopen" id="foldopen00133" data-start="{" data-end="};">
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html">  133</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1Metadata.html">Metadata</a> {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a8d2b070b46d21e92bc78bbe6c7ee3511">  135</a></span>  <a class="code hl_struct" href="structquokka_1_1Hash.html">Hash</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a8d2b070b46d21e92bc78bbe6c7ee3511">file_hash</a>;         </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#aba8c3ca252770825f2b5ce2551defe40">  136</a></span>  std::string <a class="code hl_variable" href="classquokka_1_1Metadata.html#aba8c3ca252770825f2b5ce2551defe40">file_name</a>;  </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#abe88d9b6cb03fd561db700a71ad5afda">  143</a></span>  ea_t <a class="code hl_variable" href="classquokka_1_1Metadata.html#abe88d9b6cb03fd561db700a71ad5afda">base_addr</a> = BADADDR;</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a90bedede7c54b1673078448197f1ba23">  145</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a90bedede7c54b1673078448197f1ba23">ida_version</a> = 0;  </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#aa5666cced8a2d79a525902d7b2bf23c4">  147</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classquokka_1_1Metadata.html#aa5666cced8a2d79a525902d7b2bf23c4">decompilation_activated</a> = <span class="keyword">false</span>;  </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#ac8de8a04997bf813435adf8227a41946">SetHash</a>();</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a515441256261eb315f2605d29d669632">  145</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">ProcName</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a515441256261eb315f2605d29d669632">proc_name</a> = PROC_NONE;                 </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a37e5457fc7c5bf89ec6183c8763aa0e4">  146</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">AddressSize</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a37e5457fc7c5bf89ec6183c8763aa0e4">address_size</a> = ADDR_UNK;            </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a82d512fc7c2c6c59557fdde464b80762">  147</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">Endianness</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a82d512fc7c2c6c59557fdde464b80762">endianness</a> = END_UNK;                </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a0765ced43301bcc8aafcdf8ae5d55e38">  148</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">Compiler</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a0765ced43301bcc8aafcdf8ae5d55e38">compiler</a> = COMPILER_UNK;               </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a1a4b26b0376329f09e2766ed8b487ff9">  149</a></span>  <a class="code hl_enumeration" href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">CallingConvention</a> <a class="code hl_variable" href="classquokka_1_1Metadata.html#a1a4b26b0376329f09e2766ed8b487ff9">calling_convention</a> = CC_UNK;  </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#a0411c886c269ea2be25b04a9eeaeab9c">  151</a></span>  std::string <a class="code hl_variable" href="classquokka_1_1Metadata.html#a0411c886c269ea2be25b04a9eeaeab9c">ida_version</a>;  </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classquokka_1_1Metadata.html#aa5666cced8a2d79a525902d7b2bf23c4">  153</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classquokka_1_1Metadata.html#aa5666cced8a2d79a525902d7b2bf23c4">decompilation_activated</a> = <span class="keyword">false</span>;  </div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#a32d4cdbe6138b2a3865836ea3c0aeabc">SetArchitecture</a>();</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#a59100a5d5b38ba0b0758b3c5ab16e9f8">SetEndianness</a>();</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#aa2f9984394e0f624e94934eaa8bf9760">SetAddressSize</a>();</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#a73646f666124f078fec8a87c760b7648">SetFileName</a>();</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#a854511671bfea314c29c50061b79fa46">SetCompiler</a>();</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#ac8de8a04997bf813435adf8227a41946">SetHash</a>();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#a32d4cdbe6138b2a3865836ea3c0aeabc">SetArchitecture</a>();</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#a59100a5d5b38ba0b0758b3c5ab16e9f8">SetEndianness</a>();</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#aa2f9984394e0f624e94934eaa8bf9760">SetAddressSize</a>();</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#a73646f666124f078fec8a87c760b7648">SetFileName</a>();</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Metadata.html#af1f78cf9d495fbbe3ad267d46c23d299">SetCallingConvention</a>();</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
@@ -223,49 +227,44 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>};</div>
 </div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="keyword">inline</span> std::string GetInputFileSha256();</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="keyword">inline</span> std::string GetInputFileMd5();</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="keywordtype">int</span> ExportMeta(quokka::Quokka* proto);</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>}  <span class="comment">// namespace quokka</span></div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="FileMetadata_8h.html#a032b430fc1c6153c1f795d5c3c4a3f82">  213</a></span><span class="keywordtype">int</span> ExportMeta(Quokka* proto);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aCompatibility_8h_html"><div class="ttname"><a href="Compatibility_8h.html">Compatibility.h</a></div></div>
-<div class="ttc" id="aFileMetadata_8h_html_a6b365c171c1dfd8768dcf730a08efcc9"><div class="ttname"><a href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">quokka::CallingConvention</a></div><div class="ttdeci">CallingConvention</div><div class="ttdef"><b>Definition</b> FileMetadata.h:90</div></div>
-<div class="ttc" id="aFileMetadata_8h_html_a880cfc97c6e8282fdb16ea0590b933e9"><div class="ttname"><a href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">quokka::Compiler</a></div><div class="ttdeci">Compiler</div><div class="ttdef"><b>Definition</b> FileMetadata.h:75</div></div>
-<div class="ttc" id="aFileMetadata_8h_html_aecaf1f7d57b6005e894afca6281e6127"><div class="ttname"><a href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">quokka::Endianness</a></div><div class="ttdeci">Endianness</div><div class="ttdef"><b>Definition</b> FileMetadata.h:56</div></div>
-<div class="ttc" id="aFileMetadata_8h_html_aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0"><div class="ttname"><a href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0">quokka::END_BE</a></div><div class="ttdeci">@ END_BE</div><div class="ttdoc">Big endian.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:59</div></div>
-<div class="ttc" id="aFileMetadata_8h_html_aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5"><div class="ttname"><a href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5">quokka::END_LE</a></div><div class="ttdeci">@ END_LE</div><div class="ttdoc">Little endian.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:58</div></div>
-<div class="ttc" id="aFileMetadata_8h_html_aeec91ee34144ca8b0a42ecac9195f9d1"><div class="ttname"><a href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">quokka::ProcName</a></div><div class="ttdeci">ProcName</div><div class="ttdef"><b>Definition</b> FileMetadata.h:43</div></div>
-<div class="ttc" id="aFileMetadata_8h_html_af113e33cf81f3acb9d7880abbc247dc6"><div class="ttname"><a href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">quokka::AddressSize</a></div><div class="ttdeci">AddressSize</div><div class="ttdef"><b>Definition</b> FileMetadata.h:65</div></div>
-<div class="ttc" id="aFileMetadata_8h_html_af5f6745106bcb8e76451aae1bbc923e1"><div class="ttname"><a href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">quokka::HashType</a></div><div class="ttdeci">HashType</div><div class="ttdef"><b>Definition</b> FileMetadata.h:103</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_a6b365c171c1dfd8768dcf730a08efcc9"><div class="ttname"><a href="FileMetadata_8h.html#a6b365c171c1dfd8768dcf730a08efcc9">quokka::CallingConvention</a></div><div class="ttdeci">CallingConvention</div><div class="ttdef"><b>Definition</b> FileMetadata.h:93</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_a880cfc97c6e8282fdb16ea0590b933e9"><div class="ttname"><a href="FileMetadata_8h.html#a880cfc97c6e8282fdb16ea0590b933e9">quokka::Compiler</a></div><div class="ttdeci">Compiler</div><div class="ttdef"><b>Definition</b> FileMetadata.h:78</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_aecaf1f7d57b6005e894afca6281e6127"><div class="ttname"><a href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127">quokka::Endianness</a></div><div class="ttdeci">Endianness</div><div class="ttdef"><b>Definition</b> FileMetadata.h:59</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0"><div class="ttname"><a href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127a2362619075993ad89d70450cd5a034b0">quokka::END_BE</a></div><div class="ttdeci">@ END_BE</div><div class="ttdoc">Big endian.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:62</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5"><div class="ttname"><a href="FileMetadata_8h.html#aecaf1f7d57b6005e894afca6281e6127ab0f88fbd70a56243e3bb0de28de480f5">quokka::END_LE</a></div><div class="ttdeci">@ END_LE</div><div class="ttdoc">Little endian.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:61</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_aeec91ee34144ca8b0a42ecac9195f9d1"><div class="ttname"><a href="FileMetadata_8h.html#aeec91ee34144ca8b0a42ecac9195f9d1">quokka::ProcName</a></div><div class="ttdeci">ProcName</div><div class="ttdef"><b>Definition</b> FileMetadata.h:46</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_af113e33cf81f3acb9d7880abbc247dc6"><div class="ttname"><a href="FileMetadata_8h.html#af113e33cf81f3acb9d7880abbc247dc6">quokka::AddressSize</a></div><div class="ttdeci">AddressSize</div><div class="ttdef"><b>Definition</b> FileMetadata.h:68</div></div>
+<div class="ttc" id="aFileMetadata_8h_html_af5f6745106bcb8e76451aae1bbc923e1"><div class="ttname"><a href="FileMetadata_8h.html#af5f6745106bcb8e76451aae1bbc923e1">quokka::HashType</a></div><div class="ttdeci">HashType</div><div class="ttdef"><b>Definition</b> FileMetadata.h:109</div></div>
 <div class="ttc" id="aProtoWrapper_8h_html"><div class="ttname"><a href="ProtoWrapper_8h.html">ProtoWrapper.h</a></div></div>
 <div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html"><div class="ttname"><a href="classquokka_1_1Metadata.html">quokka::Metadata</a></div><div class="ttdef"><b>Definition</b> FileMetadata.h:127</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a05376b1473f99c57e25b6c55bd780723"><div class="ttname"><a href="classquokka_1_1Metadata.html#a05376b1473f99c57e25b6c55bd780723">quokka::Metadata::SetBaseAddr</a></div><div class="ttdeci">void SetBaseAddr()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:175</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a0765ced43301bcc8aafcdf8ae5d55e38"><div class="ttname"><a href="classquokka_1_1Metadata.html#a0765ced43301bcc8aafcdf8ae5d55e38">quokka::Metadata::compiler</a></div><div class="ttdeci">Compiler compiler</div><div class="ttdoc">Detected processor.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:142</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a1a4b26b0376329f09e2766ed8b487ff9"><div class="ttname"><a href="classquokka_1_1Metadata.html#a1a4b26b0376329f09e2766ed8b487ff9">quokka::Metadata::calling_convention</a></div><div class="ttdeci">CallingConvention calling_convention</div><div class="ttdoc">Detected calling conv.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:143</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a32d4cdbe6138b2a3865836ea3c0aeabc"><div class="ttname"><a href="classquokka_1_1Metadata.html#a32d4cdbe6138b2a3865836ea3c0aeabc">quokka::Metadata::SetArchitecture</a></div><div class="ttdeci">void SetArchitecture()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:41</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a37e5457fc7c5bf89ec6183c8763aa0e4"><div class="ttname"><a href="classquokka_1_1Metadata.html#a37e5457fc7c5bf89ec6183c8763aa0e4">quokka::Metadata::address_size</a></div><div class="ttdeci">AddressSize address_size</div><div class="ttdoc">Detected address size.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:140</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a515441256261eb315f2605d29d669632"><div class="ttname"><a href="classquokka_1_1Metadata.html#a515441256261eb315f2605d29d669632">quokka::Metadata::proc_name</a></div><div class="ttdeci">ProcName proc_name</div><div class="ttdoc">Detected processor.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:139</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a59100a5d5b38ba0b0758b3c5ab16e9f8"><div class="ttname"><a href="classquokka_1_1Metadata.html#a59100a5d5b38ba0b0758b3c5ab16e9f8">quokka::Metadata::SetEndianness</a></div><div class="ttdeci">void SetEndianness()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:60</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a73646f666124f078fec8a87c760b7648"><div class="ttname"><a href="classquokka_1_1Metadata.html#a73646f666124f078fec8a87c760b7648">quokka::Metadata::SetFileName</a></div><div class="ttdeci">void SetFileName()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:130</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a82d512fc7c2c6c59557fdde464b80762"><div class="ttname"><a href="classquokka_1_1Metadata.html#a82d512fc7c2c6c59557fdde464b80762">quokka::Metadata::endianness</a></div><div class="ttdeci">Endianness endianness</div><div class="ttdoc">Detected endianness.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:141</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a854511671bfea314c29c50061b79fa46"><div class="ttname"><a href="classquokka_1_1Metadata.html#a854511671bfea314c29c50061b79fa46">quokka::Metadata::SetCompiler</a></div><div class="ttdeci">void SetCompiler()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:137</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a8d2b070b46d21e92bc78bbe6c7ee3511"><div class="ttname"><a href="classquokka_1_1Metadata.html#a8d2b070b46d21e92bc78bbe6c7ee3511">quokka::Metadata::file_hash</a></div><div class="ttdeci">Hash file_hash</div><div class="ttdoc">File hash data.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:129</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a90bedede7c54b1673078448197f1ba23"><div class="ttname"><a href="classquokka_1_1Metadata.html#a90bedede7c54b1673078448197f1ba23">quokka::Metadata::ida_version</a></div><div class="ttdeci">int ida_version</div><div class="ttdoc">Ida version for this export.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:145</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_a94d825bfd1f09e33381d5dfaffb843d1"><div class="ttname"><a href="classquokka_1_1Metadata.html#a94d825bfd1f09e33381d5dfaffb843d1">quokka::Metadata::SetDecompilationActivated</a></div><div class="ttdeci">void SetDecompilationActivated(bool activated)</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:183</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_aa2f9984394e0f624e94934eaa8bf9760"><div class="ttname"><a href="classquokka_1_1Metadata.html#aa2f9984394e0f624e94934eaa8bf9760">quokka::Metadata::SetAddressSize</a></div><div class="ttdeci">void SetAddressSize()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:64</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_aa5666cced8a2d79a525902d7b2bf23c4"><div class="ttname"><a href="classquokka_1_1Metadata.html#aa5666cced8a2d79a525902d7b2bf23c4">quokka::Metadata::decompilation_activated</a></div><div class="ttdeci">bool decompilation_activated</div><div class="ttdoc">Whether decompilation was activated during export.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:147</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_aba8c3ca252770825f2b5ce2551defe40"><div class="ttname"><a href="classquokka_1_1Metadata.html#aba8c3ca252770825f2b5ce2551defe40">quokka::Metadata::file_name</a></div><div class="ttdeci">std::string file_name</div><div class="ttdoc">Name of the input file.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:130</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_abe88d9b6cb03fd561db700a71ad5afda"><div class="ttname"><a href="classquokka_1_1Metadata.html#abe88d9b6cb03fd561db700a71ad5afda">quokka::Metadata::base_addr</a></div><div class="ttdeci">ea_t base_addr</div><div class="ttdef"><b>Definition</b> FileMetadata.h:137</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_ac8af9672709ac073a1321637cd1cc264"><div class="ttname"><a href="classquokka_1_1Metadata.html#ac8af9672709ac073a1321637cd1cc264">quokka::Metadata::SetIdaVersion</a></div><div class="ttdeci">void SetIdaVersion()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:180</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_ac8de8a04997bf813435adf8227a41946"><div class="ttname"><a href="classquokka_1_1Metadata.html#ac8de8a04997bf813435adf8227a41946">quokka::Metadata::SetHash</a></div><div class="ttdeci">void SetHash()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:111</div></div>
-<div class="ttc" id="aclassquokka_1_1Metadata_html_af1f78cf9d495fbbe3ad267d46c23d299"><div class="ttname"><a href="classquokka_1_1Metadata.html#af1f78cf9d495fbbe3ad267d46c23d299">quokka::Metadata::SetCallingConvention</a></div><div class="ttdeci">void SetCallingConvention()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:78</div></div>
-<div class="ttc" id="astructquokka_1_1Hash_html"><div class="ttname"><a href="structquokka_1_1Hash.html">quokka::Hash</a></div><div class="ttdef"><b>Definition</b> FileMetadata.h:116</div></div>
-<div class="ttc" id="astructquokka_1_1Hash_html_a30d183d809980ca65deb9db92afc7d7c"><div class="ttname"><a href="structquokka_1_1Hash.html#a30d183d809980ca65deb9db92afc7d7c">quokka::Hash::value</a></div><div class="ttdeci">std::string value</div><div class="ttdoc">Hexdigest of the hash.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:118</div></div>
-<div class="ttc" id="astructquokka_1_1Hash_html_a5b3457d9bfa91b9016f329b8fc61f131"><div class="ttname"><a href="structquokka_1_1Hash.html#a5b3457d9bfa91b9016f329b8fc61f131">quokka::Hash::type</a></div><div class="ttdeci">HashType type</div><div class="ttdoc">Type of hash.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:117</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html"><div class="ttname"><a href="classquokka_1_1Metadata.html">quokka::Metadata</a></div><div class="ttdef"><b>Definition</b> FileMetadata.h:133</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a0411c886c269ea2be25b04a9eeaeab9c"><div class="ttname"><a href="classquokka_1_1Metadata.html#a0411c886c269ea2be25b04a9eeaeab9c">quokka::Metadata::ida_version</a></div><div class="ttdeci">std::string ida_version</div><div class="ttdoc">Stringified Ida version for this export.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:151</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a05376b1473f99c57e25b6c55bd780723"><div class="ttname"><a href="classquokka_1_1Metadata.html#a05376b1473f99c57e25b6c55bd780723">quokka::Metadata::SetBaseAddr</a></div><div class="ttdeci">void SetBaseAddr()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:161</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a0765ced43301bcc8aafcdf8ae5d55e38"><div class="ttname"><a href="classquokka_1_1Metadata.html#a0765ced43301bcc8aafcdf8ae5d55e38">quokka::Metadata::compiler</a></div><div class="ttdeci">Compiler compiler</div><div class="ttdoc">Detected processor.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:148</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a1a4b26b0376329f09e2766ed8b487ff9"><div class="ttname"><a href="classquokka_1_1Metadata.html#a1a4b26b0376329f09e2766ed8b487ff9">quokka::Metadata::calling_convention</a></div><div class="ttdeci">CallingConvention calling_convention</div><div class="ttdoc">Detected calling conv.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:149</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a32d4cdbe6138b2a3865836ea3c0aeabc"><div class="ttname"><a href="classquokka_1_1Metadata.html#a32d4cdbe6138b2a3865836ea3c0aeabc">quokka::Metadata::SetArchitecture</a></div><div class="ttdeci">void SetArchitecture()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:65</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a37e5457fc7c5bf89ec6183c8763aa0e4"><div class="ttname"><a href="classquokka_1_1Metadata.html#a37e5457fc7c5bf89ec6183c8763aa0e4">quokka::Metadata::address_size</a></div><div class="ttdeci">AddressSize address_size</div><div class="ttdoc">Detected address size.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:146</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a515441256261eb315f2605d29d669632"><div class="ttname"><a href="classquokka_1_1Metadata.html#a515441256261eb315f2605d29d669632">quokka::Metadata::proc_name</a></div><div class="ttdeci">ProcName proc_name</div><div class="ttdoc">Detected processor.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:145</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a59100a5d5b38ba0b0758b3c5ab16e9f8"><div class="ttname"><a href="classquokka_1_1Metadata.html#a59100a5d5b38ba0b0758b3c5ab16e9f8">quokka::Metadata::SetEndianness</a></div><div class="ttdeci">void SetEndianness()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:84</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a73646f666124f078fec8a87c760b7648"><div class="ttname"><a href="classquokka_1_1Metadata.html#a73646f666124f078fec8a87c760b7648">quokka::Metadata::SetFileName</a></div><div class="ttdeci">void SetFileName()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:154</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a82d512fc7c2c6c59557fdde464b80762"><div class="ttname"><a href="classquokka_1_1Metadata.html#a82d512fc7c2c6c59557fdde464b80762">quokka::Metadata::endianness</a></div><div class="ttdeci">Endianness endianness</div><div class="ttdoc">Detected endianness.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:147</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a8d2b070b46d21e92bc78bbe6c7ee3511"><div class="ttname"><a href="classquokka_1_1Metadata.html#a8d2b070b46d21e92bc78bbe6c7ee3511">quokka::Metadata::file_hash</a></div><div class="ttdeci">Hash file_hash</div><div class="ttdoc">File hash data.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:135</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_a94d825bfd1f09e33381d5dfaffb843d1"><div class="ttname"><a href="classquokka_1_1Metadata.html#a94d825bfd1f09e33381d5dfaffb843d1">quokka::Metadata::SetDecompilationActivated</a></div><div class="ttdeci">void SetDecompilationActivated(bool activated)</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:171</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_aa2f9984394e0f624e94934eaa8bf9760"><div class="ttname"><a href="classquokka_1_1Metadata.html#aa2f9984394e0f624e94934eaa8bf9760">quokka::Metadata::SetAddressSize</a></div><div class="ttdeci">void SetAddressSize()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:88</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_aa5666cced8a2d79a525902d7b2bf23c4"><div class="ttname"><a href="classquokka_1_1Metadata.html#aa5666cced8a2d79a525902d7b2bf23c4">quokka::Metadata::decompilation_activated</a></div><div class="ttdeci">bool decompilation_activated</div><div class="ttdoc">Whether decompilation was activated during export.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:153</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_aba8c3ca252770825f2b5ce2551defe40"><div class="ttname"><a href="classquokka_1_1Metadata.html#aba8c3ca252770825f2b5ce2551defe40">quokka::Metadata::file_name</a></div><div class="ttdeci">std::string file_name</div><div class="ttdoc">Name of the input file.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:136</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_abe88d9b6cb03fd561db700a71ad5afda"><div class="ttname"><a href="classquokka_1_1Metadata.html#abe88d9b6cb03fd561db700a71ad5afda">quokka::Metadata::base_addr</a></div><div class="ttdeci">ea_t base_addr</div><div class="ttdef"><b>Definition</b> FileMetadata.h:143</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_ac8af9672709ac073a1321637cd1cc264"><div class="ttname"><a href="classquokka_1_1Metadata.html#ac8af9672709ac073a1321637cd1cc264">quokka::Metadata::SetIdaVersion</a></div><div class="ttdeci">void SetIdaVersion()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:166</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_ac8de8a04997bf813435adf8227a41946"><div class="ttname"><a href="classquokka_1_1Metadata.html#ac8de8a04997bf813435adf8227a41946">quokka::Metadata::SetHash</a></div><div class="ttdeci">void SetHash()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:135</div></div>
+<div class="ttc" id="aclassquokka_1_1Metadata_html_af1f78cf9d495fbbe3ad267d46c23d299"><div class="ttname"><a href="classquokka_1_1Metadata.html#af1f78cf9d495fbbe3ad267d46c23d299">quokka::Metadata::SetCallingConvention</a></div><div class="ttdeci">void SetCallingConvention()</div><div class="ttdef"><b>Definition</b> FileMetadata.cpp:102</div></div>
+<div class="ttc" id="astructquokka_1_1Hash_html"><div class="ttname"><a href="structquokka_1_1Hash.html">quokka::Hash</a></div><div class="ttdef"><b>Definition</b> FileMetadata.h:122</div></div>
+<div class="ttc" id="astructquokka_1_1Hash_html_a30d183d809980ca65deb9db92afc7d7c"><div class="ttname"><a href="structquokka_1_1Hash.html#a30d183d809980ca65deb9db92afc7d7c">quokka::Hash::value</a></div><div class="ttdeci">std::string value</div><div class="ttdoc">Hexdigest of the hash.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:124</div></div>
+<div class="ttc" id="astructquokka_1_1Hash_html_a5b3457d9bfa91b9016f329b8fc61f131"><div class="ttname"><a href="structquokka_1_1Hash.html#a5b3457d9bfa91b9016f329b8fc61f131">quokka::Hash::type</a></div><div class="ttdeci">HashType type</div><div class="ttdoc">Type of hash.</div><div class="ttdef"><b>Definition</b> FileMetadata.h:123</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -75,26 +75,26 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Reference.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<div class="textblock"><code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
 <code>#include &lt;utility&gt;</code><br />
 <code>#include &lt;variant&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;<a class="el" href="Compatibility_8h_source.html">Compatibility.h</a>&quot;</code><br />
 <code>#include &lt;pro.h&gt;</code><br />
-<code>#include &lt;bytes.hpp&gt;</code><br />
-<code>#include &lt;funcs.hpp&gt;</code><br />
-<code>#include &lt;ida.hpp&gt;</code><br />
-<code>#include &lt;xref.hpp&gt;</code><br />
+<code>#include &lt;typeinf.hpp&gt;</code><br />
 <code>#include &quot;absl/hash/hash.h&quot;</code><br />
-<code>#include &quot;<a class="el" href="Localization_8h_source.html">Localization.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Util_8h_source.html">Util.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Windows_8h_source.html">Windows.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Bucket_8h_source.html">Bucket.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ProtoHelper_8h_source.html">ProtoHelper.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ProtoWrapper_8h_source.html">ProtoWrapper.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Reference.h:</div>
 <div class="dyncontent">
@@ -110,114 +110,56 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1Reference.html">quokka::Reference</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1Reference.html">quokka::Reference</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1ReferenceHolder.html">quokka::ReferenceHolder</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1References.html">quokka::References</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a5b25359f8f5dcf628d75dd04eb1caf4a" id="r_a5b25359f8f5dcf628d75dd04eb1caf4a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">quokka::ReferenceType</a> : short { <br />
-&#160;&#160;<b>REF_FLOW</b> = 0
-, <a class="el" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa8d342de8e91f588b9d4f436c0375f442">quokka::REF_CALL</a>
-, <b>REF_DATA</b>
-, <b>REF_ENUM</b>
-, <br />
-&#160;&#160;<a class="el" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aab0c21d2d6013a750f113eb0210a8fb13">quokka::REF_STRUC</a>
-, <a class="el" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa93992c9fb6d576f54eb7641eeb2fe52b">quokka::REF_INVALID</a>
-<br />
- }</td></tr>
-<tr class="separator:a5b25359f8f5dcf628d75dd04eb1caf4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1Xref.html">quokka::Xref</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a26d2063ad6ae5cb4b12a59cb5d6bfdf1" id="r_a26d2063ad6ae5cb4b12a59cb5d6bfdf1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a26d2063ad6ae5cb4b12a59cb5d6bfdf1">quokka::ResolveEdges</a> (<a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">chunks</a>, <a class="el" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">reference_holder</a>)</td></tr>
-<tr class="separator:a26d2063ad6ae5cb4b12a59cb5d6bfdf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeec28220ee966b2a14d3834abb8aa0ce" id="r_aeec28220ee966b2a14d3834abb8aa0ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#aeec28220ee966b2a14d3834abb8aa0ce">quokka::ExportFlowGraph</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> current_ea, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1FuncChunk.html">FuncChunk</a> &gt; &amp;current_chunk, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::vector&lt; <a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">flow_refs</a>)</td></tr>
-<tr class="separator:aeec28220ee966b2a14d3834abb8aa0ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08c6b9150bc1e2f7d01f5a8cd645c764" id="r_a08c6b9150bc1e2f7d01f5a8cd645c764"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a08c6b9150bc1e2f7d01f5a8cd645c764">quokka::ExportCodeReference</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> current_ea, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1FuncChunk.html">FuncChunk</a> &gt; &amp;current_chunk, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1Block.html">Block</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">block_p</a>, <a class="el" href="classquokka_1_1BucketNew.html">int</a> <a class="el" href="classquokka_1_1BucketNew.html">inst_idx</a>, <a class="el" href="classquokka_1_1BucketNew.html">BucketNew</a>&lt; <a class="el" href="classquokka_1_1Data.html">Data</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">data_bucket</a>)</td></tr>
-<tr class="separator:a08c6b9150bc1e2f7d01f5a8cd645c764"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c039071a1124629c3ca611a8d380ec1" id="r_a8c039071a1124629c3ca611a8d380ec1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">uint32_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a8c039071a1124629c3ca611a8d380ec1">quokka::ExportDataReferences</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> current_ea, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1Data.html">Data</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">data</a>)</td></tr>
-<tr class="separator:a8c039071a1124629c3ca611a8d380ec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80adf7aa0809a991abc8d2d2e4298a9b" id="r_a80adf7aa0809a991abc8d2d2e4298a9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a80adf7aa0809a991abc8d2d2e4298a9b">quokka::ExportUnkReferences</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> current_ea, <a class="el" href="classquokka_1_1BucketNew.html">BucketNew</a>&lt; <a class="el" href="classquokka_1_1Data.html">Data</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">data_bucket</a>)</td></tr>
-<tr class="separator:a80adf7aa0809a991abc8d2d2e4298a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac47ae0991b9e0596ea3b89347efe5849" id="r_ac47ae0991b9e0596ea3b89347efe5849"><td class="memItemLeft" align="right" valign="top">Location&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="api__v8_2Reference_8cpp.html#ac47ae0991b9e0596ea3b89347efe5849">quokka::ResolveStructure</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> addr, <a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Structures.html">Structures</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">structures</a>)</td></tr>
-<tr class="separator:ac47ae0991b9e0596ea3b89347efe5849"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ed79e22b8d70aae91a677048ad97908" id="r_a3ed79e22b8d70aae91a677048ad97908"><td class="memItemLeft" align="right" valign="top">Location&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a3ed79e22b8d70aae91a677048ad97908">quokka::ResolveAddr</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> addr, <a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a> &amp;<a class="el" href="classquokka_1_1BucketNew.html">chunks</a>, <a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">BucketNew</a>&lt; <a class="el" href="classquokka_1_1Instruction.html">Instruction</a> &gt; &amp;instructions)</td></tr>
-<tr class="separator:a3ed79e22b8d70aae91a677048ad97908"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07a3d4c8ba32eb85044bc22664bc31c4" id="r_a07a3d4c8ba32eb85044bc22664bc31c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a07a3d4c8ba32eb85044bc22664bc31c4">quokka::ExportStructureReference</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="el" href="classquokka_1_1BucketNew.html">sid</a>, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1Structure.html">Structure</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">structure</a>, <a class="el" href="Data_8h.html#a453bb1c09f06046c9d4615e153888e61">StructureType</a> <a class="el" href="classquokka_1_1BucketNew.html">struct_type</a>)</td></tr>
-<tr class="separator:a07a3d4c8ba32eb85044bc22664bc31c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f14dff1efd9ca8a49bce2a427b1c2d6" id="r_a0f14dff1efd9ca8a49bce2a427b1c2d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a0f14dff1efd9ca8a49bce2a427b1c2d6">quokka::ExportStructureMemberReference</a> (<a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="el" href="classquokka_1_1BucketNew.html">sid</a>, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="structquokka_1_1StructureMember.html">StructureMember</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">member</a>, <a class="el" href="Data_8h.html#a453bb1c09f06046c9d4615e153888e61">StructureType</a> <a class="el" href="classquokka_1_1BucketNew.html">struct_type</a>)</td></tr>
-<tr class="separator:a0f14dff1efd9ca8a49bce2a427b1c2d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2b061bbd0f64a47b4e9b9bc0129ac1e" id="r_af2b061bbd0f64a47b4e9b9bc0129ac1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">ReferenceType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#af2b061bbd0f64a47b4e9b9bc0129ac1e">quokka::GetCodeRefType</a> (<a class="el" href="classquokka_1_1BucketNew.html">uchar</a> <a class="el" href="classquokka_1_1BucketNew.html">ref_type</a>, <a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="el" href="classquokka_1_1BucketNew.html">target</a>, <a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1FuncChunk.html">FuncChunk</a> &gt; &amp;chunk)</td></tr>
-<tr class="separator:af2b061bbd0f64a47b4e9b9bc0129ac1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6dc58de6710eaa66871d939c410c3c8" id="r_ae6dc58de6710eaa66871d939c410c3c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">ReferenceType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#ae6dc58de6710eaa66871d939c410c3c8">quokka::GetDataRefType</a> (<a class="el" href="classquokka_1_1BucketNew.html">uchar</a> <a class="el" href="classquokka_1_1BucketNew.html">ref_type</a>, <a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> <a class="el" href="classquokka_1_1BucketNew.html">target</a>)</td></tr>
-<tr class="separator:ae6dc58de6710eaa66871d939c410c3c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c1515a91cef5734f7433054c280e413" id="r_a9c1515a91cef5734f7433054c280e413"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classquokka_1_1BucketNew.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a9c1515a91cef5734f7433054c280e413">quokka::GetCodeRefFrom</a> (std::vector&lt; <a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> &gt; &amp;<a class="el" href="classquokka_1_1BucketNew.html">code_refs</a>, <a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> start_addr)</td></tr>
-<tr class="separator:a9c1515a91cef5734f7433054c280e413"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6099548950b1f0414879a4de4a743536" id="r_a6099548950b1f0414879a4de4a743536"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Reference_8cpp.html#a6099548950b1f0414879a4de4a743536">quokka::ExportSymbolReference</a> (const <a class="el" href="classquokka_1_1ProtoHelper.html">ProtoHelper</a> *type, std::vector&lt; const <a class="el" href="classquokka_1_1Reference.html">Reference</a> * &gt; &amp;xref_to, const tid_t &amp;tid, int32_t index)</td></tr>
+<tr class="separator:a6099548950b1f0414879a4de4a743536"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:aaa282112728cff6d68896eca1b470c82" id="r_aaa282112728cff6d68896eca1b470c82"><td class="memItemLeft" align="right" valign="top"><a id="aaa282112728cff6d68896eca1b470c82" name="aaa282112728cff6d68896eca1b470c82"></a>
+constexpr int32_t&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::reference::WHOLE_TYPE</b> = -1</td></tr>
+<tr class="separator:aaa282112728cff6d68896eca1b470c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Management of references </p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="a5b25359f8f5dcf628d75dd04eb1caf4a" name="a5b25359f8f5dcf628d75dd04eb1caf4a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b25359f8f5dcf628d75dd04eb1caf4a">&#9670;&#160;</a></span>ReferenceType</h2>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a6099548950b1f0414879a4de4a743536" name="a6099548950b1f0414879a4de4a743536"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6099548950b1f0414879a4de4a743536">&#9670;&#160;</a></span>ExportSymbolReference()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">quokka::ReferenceType</a> : short</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reference type </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5b25359f8f5dcf628d75dd04eb1caf4aa8d342de8e91f588b9d4f436c0375f442" name="a5b25359f8f5dcf628d75dd04eb1caf4aa8d342de8e91f588b9d4f436c0375f442"></a>REF_CALL&#160;</td><td class="fielddoc"><p>Code reference. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a5b25359f8f5dcf628d75dd04eb1caf4aab0c21d2d6013a750f113eb0210a8fb13" name="a5b25359f8f5dcf628d75dd04eb1caf4aab0c21d2d6013a750f113eb0210a8fb13"></a>REF_STRUC&#160;</td><td class="fielddoc"><p><a class="el" href="classquokka_1_1Data.html">Data</a> reference. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a5b25359f8f5dcf628d75dd04eb1caf4aa93992c9fb6d576f54eb7641eeb2fe52b" name="a5b25359f8f5dcf628d75dd04eb1caf4aa93992c9fb6d576f54eb7641eeb2fe52b"></a>REF_INVALID&#160;</td><td class="fielddoc"><p>Invalid. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a08c6b9150bc1e2f7d01f5a8cd645c764" name="a08c6b9150bc1e2f7d01f5a8cd645c764"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08c6b9150bc1e2f7d01f5a8cd645c764">&#9670;&#160;</a></span>ExportCodeReference()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::ExportCodeReference </td>
+          <td class="memname">void quokka::ExportSymbolReference </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>current_ea</em>, </td>
+          <td class="paramtype">const <a class="el" href="classquokka_1_1ProtoHelper.html">ProtoHelper</a> *&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1FuncChunk.html">FuncChunk</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>current_chunk</em>, </td>
+          <td class="paramtype">std::vector&lt; const <a class="el" href="classquokka_1_1Reference.html">Reference</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>xref_to</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1Block.html">Block</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>block_p</em>, </td>
+          <td class="paramtype">const tid_t &amp;&#160;</td>
+          <td class="paramname"><em>tid</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">int</a>&#160;</td>
-          <td class="paramname"><em>inst_idx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">BucketNew</a>&lt; <a class="el" href="classquokka_1_1Data.html">Data</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data_bucket</em>&#160;</td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -226,457 +168,14 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Export all code references coming from current_ea</p>
+<p>Export all references towards a enum</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">current_ea</td><td>Address </td></tr>
-    <tr><td class="paramname">current_chunk</td><td>Chunks collections </td></tr>
-    <tr><td class="paramname">block_p</td><td>Current block </td></tr>
-    <tr><td class="paramname">inst_idx</td><td>Current instruction index </td></tr>
-    <tr><td class="paramname">data_bucket</td><td>Data bucket </td></tr>
+    <tr><td class="paramname">type</td><td>The type for which to export the references </td></tr>
+    <tr><td class="paramname">enum_tid</td><td>Ida type ID </td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="a8c039071a1124629c3ca611a8d380ec1" name="a8c039071a1124629c3ca611a8d380ec1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c039071a1124629c3ca611a8d380ec1">&#9670;&#160;</a></span>ExportDataReferences()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t quokka::ExportDataReferences </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>current_ea</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1Data.html">Data</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Export all the references towards the data at <code>current_ea</code></p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">current_ea</td><td>Address </td></tr>
-    <tr><td class="paramname">data</td><td>Data </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The number of references found towards this data </dd></dl>
-
-</div>
-</div>
-<a id="aeec28220ee966b2a14d3834abb8aa0ce" name="aeec28220ee966b2a14d3834abb8aa0ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeec28220ee966b2a14d3834abb8aa0ce">&#9670;&#160;</a></span>ExportFlowGraph()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::ExportFlowGraph </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>current_ea</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1FuncChunk.html">FuncChunk</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>current_chunk</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::vector&lt; <a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>flow_refs</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Export the flow graph at <code>current_ea</code></p>
-<p>This is a bit tricky because it is hard to distinguish normal flow and unconditional jumps</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">current_ea</td><td>Address </td></tr>
-    <tr><td class="paramname">current_chunk</td><td>Chunks collection </td></tr>
-    <tr><td class="paramname">flow_refs</td><td>List of flow references </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a0f14dff1efd9ca8a49bce2a427b1c2d6" name="a0f14dff1efd9ca8a49bce2a427b1c2d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f14dff1efd9ca8a49bce2a427b1c2d6">&#9670;&#160;</a></span>ExportStructureMemberReference()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::ExportStructureMemberReference </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>sid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="structquokka_1_1StructureMember.html">StructureMember</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>member</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="Data_8h.html#a453bb1c09f06046c9d4615e153888e61">StructureType</a>&#160;</td>
-          <td class="paramname"><em>struct_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Export all references towards a structure member</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">sid</td><td>Structure id (actually an address) </td></tr>
-    <tr><td class="paramname">member</td><td>StructureMember </td></tr>
-    <tr><td class="paramname">struct_type</td><td>Type of structure </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a07a3d4c8ba32eb85044bc22664bc31c4" name="a07a3d4c8ba32eb85044bc22664bc31c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07a3d4c8ba32eb85044bc22664bc31c4">&#9670;&#160;</a></span>ExportStructureReference()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::ExportStructureReference </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>sid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1Structure.html">Structure</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>structure</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="Data_8h.html#a453bb1c09f06046c9d4615e153888e61">StructureType</a>&#160;</td>
-          <td class="paramname"><em>struct_type</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Export all references towards this structure</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">sid</td><td>Structure id (actually an address) </td></tr>
-    <tr><td class="paramname">structure</td><td>Structure </td></tr>
-    <tr><td class="paramname">struct_type</td><td>Type of structure </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a80adf7aa0809a991abc8d2d2e4298a9b" name="a80adf7aa0809a991abc8d2d2e4298a9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80adf7aa0809a991abc8d2d2e4298a9b">&#9670;&#160;</a></span>ExportUnkReferences()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::ExportUnkReferences </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>current_ea</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">BucketNew</a>&lt; <a class="el" href="classquokka_1_1Data.html">Data</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>data_bucket</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Export all the references towards the unknown at current_ea</p>
-<p>This is a special case from DataReferences has the data does not really exist but will be put in the DataBucket if we find some references towards it (the resulting data will be of size 1 and type UNKNOWN).</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">current_ea</td><td>Address </td></tr>
-    <tr><td class="paramname">data_bucket</td><td>Data holder </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a9c1515a91cef5734f7433054c280e413" name="a9c1515a91cef5734f7433054c280e413"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c1515a91cef5734f7433054c280e413">&#9670;&#160;</a></span>GetCodeRefFrom()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::GetCodeRefFrom </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classquokka_1_1BucketNew.html">ea_t</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>code_refs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>start_addr</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get the code reference from the start address</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">code_refs</td><td>(Out) A list of references </td></tr>
-    <tr><td class="paramname">start_addr</td><td>Starting address </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="af2b061bbd0f64a47b4e9b9bc0129ac1e" name="af2b061bbd0f64a47b4e9b9bc0129ac1e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2b061bbd0f64a47b4e9b9bc0129ac1e">&#9670;&#160;</a></span>GetCodeRefType()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ReferenceType quokka::GetCodeRefType </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">uchar</a>&#160;</td>
-          <td class="paramname"><em>ref_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>target</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> std::shared_ptr&lt; <a class="el" href="classquokka_1_1FuncChunk.html">FuncChunk</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>chunk</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Compute the type of the code reference</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ref_type</td><td>Type of reference (fl_ ) </td></tr>
-    <tr><td class="paramname">target</td><td>Target of the reference </td></tr>
-    <tr><td class="paramname">chunk</td><td>Chunk from the current source </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A reference type </dd></dl>
-
-</div>
-</div>
-<a id="ae6dc58de6710eaa66871d939c410c3c8" name="ae6dc58de6710eaa66871d939c410c3c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae6dc58de6710eaa66871d939c410c3c8">&#9670;&#160;</a></span>GetDataRefType()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ReferenceType quokka::GetDataRefType </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">uchar</a>&#160;</td>
-          <td class="paramname"><em>ref_type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>target</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Compute the type of the data reference</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">ref_type</td><td>Type of reference (dr_) </td></tr>
-    <tr><td class="paramname">target</td><td>Target of the reference </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Reference type </dd></dl>
-
-</div>
-</div>
-<a id="a3ed79e22b8d70aae91a677048ad97908" name="a3ed79e22b8d70aae91a677048ad97908"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ed79e22b8d70aae91a677048ad97908">&#9670;&#160;</a></span>ResolveAddr()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Location quokka::ResolveAddr </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>addr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a> &amp;&#160;</td>
-          <td class="paramname"><em>chunks</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1BucketNew.html">BucketNew</a>&lt; <a class="el" href="classquokka_1_1Instruction.html">Instruction</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>instructions</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Try to resolve addr as a Instruction Instance Location</p>
-<dl class="section note"><dt>Note</dt><dd><code>addr</code> must be less than BADADDR (otherwise it's a structure Location)</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">addr</td><td>Address </td></tr>
-    <tr><td class="paramname">chunks</td><td>Chunks collection </td></tr>
-    <tr><td class="paramname">instructions</td><td>Instruction bucket </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>BADADDR or InstructionInstance </dd></dl>
-
-</div>
-</div>
-<a id="a26d2063ad6ae5cb4b12a59cb5d6bfdf1" name="a26d2063ad6ae5cb4b12a59cb5d6bfdf1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a26d2063ad6ae5cb4b12a59cb5d6bfdf1">&#9670;&#160;</a></span>ResolveEdges()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void quokka::ResolveEdges </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a> &amp;&#160;</td>
-          <td class="paramname"><em>chunks</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a> &amp;&#160;</td>
-          <td class="paramname"><em>reference_holder</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Resolve edges in chunks or in-between</p>
-<p>This is a bit more tricky than expected. We have first to check if the block exists (e.g to be in blocks, not in block_heads) to have an inner edge. Otherwise, the choice we made was wrong and the reference is a in fact a <em>CALL</em>. So we need to transfer them to the ReferenceHolder.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">chunks</td><td>Chunks collections </td></tr>
-    <tr><td class="paramname">reference_holder</td><td>Reference collections </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac47ae0991b9e0596ea3b89347efe5849" name="ac47ae0991b9e0596ea3b89347efe5849"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac47ae0991b9e0596ea3b89347efe5849">&#9670;&#160;</a></span>ResolveStructure()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Location quokka::ResolveStructure </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">ea_t</a>&#160;</td>
-          <td class="paramname"><em>addr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="classquokka_1_1BucketNew.html">const</a> <a class="el" href="classquokka_1_1Structures.html">Structures</a> &amp;&#160;</td>
-          <td class="paramname"><em>structures</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Try to resolve <code>addr</code> as a structure Location</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">addr</td><td>Address </td></tr>
-    <tr><td class="paramname">structures</td><td>Structure collections </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Either a Structure, StructureMember or BADADDR </dd></dl>
 
 </div>
 </div>

@@ -98,187 +98,194 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#ifndef QUOKKA_REFERENCE_H</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#define QUOKKA_REFERENCE_H</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;pro.h&gt;</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;bytes.hpp&gt;</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &lt;funcs.hpp&gt;</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &lt;ida.hpp&gt;</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;xref.hpp&gt;</span></div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &quot;absl/hash/hash.h&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;cassert&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">// clang-format off: Compatibility.h must come before ida headers</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">// clang-format on</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &lt;pro.h&gt;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &lt;typeinf.hpp&gt;</span></div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;<a class="code" href="Localization_8h.html">Localization.h</a>&quot;</span>  <span class="comment">//Kept for Location</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &quot;<a class="code" href="Util_8h.html">Util.h</a>&quot;</span>          <span class="comment">//Kept for BucketNew</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;absl/hash/hash.h&quot;</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#include &quot;<a class="code" href="Bucket_8h.html">Bucket.h</a>&quot;</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &quot;<a class="code" href="ProtoHelper_8h.html">ProtoHelper.h</a>&quot;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#include &quot;<a class="code" href="ProtoWrapper_8h.html">ProtoWrapper.h</a>&quot;</span></div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">class </span>Block;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">class </span>Data;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">class </span>Structures;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">class </span>Structure;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">enum</span> <a class="code hl_enumeration" href="Data_8h.html#a453bb1c09f06046c9d4615e153888e61">StructureType</a> : short;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">struct </span>StructureMember;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keyword">class </span>FuncChunkCollection;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">class </span>Instruction;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">class </span>FuncChunk;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">   57</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">ReferenceType</a> : <span class="keywordtype">short</span> {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  REF_FLOW = 0,</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa8d342de8e91f588b9d4f436c0375f442">   59</a></span>  <a class="code hl_enumvalue" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa8d342de8e91f588b9d4f436c0375f442">REF_CALL</a>,  </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  REF_DATA,</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  REF_ENUM,</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aab0c21d2d6013a750f113eb0210a8fb13">   62</a></span>  <a class="code hl_enumvalue" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aab0c21d2d6013a750f113eb0210a8fb13">REF_STRUC</a>,    </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa93992c9fb6d576f54eb7641eeb2fe52b">   63</a></span>  <a class="code hl_enumvalue" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa93992c9fb6d576f54eb7641eeb2fe52b">REF_INVALID</a>,  </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">namespace </span>reference {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keyword">inline</span> <span class="keyword">constexpr</span> int32_t WHOLE_TYPE = -1;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}  <span class="comment">// namespace reference</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classquokka_1_1Reference.html">   59</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a> : <span class="keyword">public</span> <a class="code hl_class" href="classquokka_1_1ProtoHelper.html">ProtoHelper</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="comment">// Either an address or a pair {Type*, member_index/-1 if no member}.</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  <span class="keyword">using </span>Location = std::variant&lt;ea_t, std::pair&lt;const ProtoHelper*, int32_t&gt;&gt;;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keyword">using </span>EdgeType = Quokka::EdgeType;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classquokka_1_1Reference.html#a50fbca0676c6392e8cced4899f25098d">   65</a></span>  Location <a class="code hl_variable" href="classquokka_1_1Reference.html#a50fbca0676c6392e8cced4899f25098d">source</a>;       </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classquokka_1_1Reference.html#a8a2b55f71f042ba2a0d5defc43455c72">   66</a></span>  Location <a class="code hl_variable" href="classquokka_1_1Reference.html#a8a2b55f71f042ba2a0d5defc43455c72">destination</a>;  </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classquokka_1_1Reference.html#ac55d488ba1ca29b1b6a4860737cb9dbe">   67</a></span>  EdgeType <a class="code hl_variable" href="classquokka_1_1Reference.html#ac55d488ba1ca29b1b6a4860737cb9dbe">type</a>;         </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classquokka_1_1Reference.html#aec656f76e100d14b68a5ed6f08757dc2">   75</a></span>  <a class="code hl_function" href="classquokka_1_1Reference.html#aec656f76e100d14b68a5ed6f08757dc2">Reference</a>(Location source_, Location destination_, EdgeType type_)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>      : <a class="code hl_variable" href="classquokka_1_1Reference.html#a50fbca0676c6392e8cced4899f25098d">source</a>(std::move(source_)),</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_variable" href="classquokka_1_1Reference.html#a8a2b55f71f042ba2a0d5defc43455c72">destination</a>(std::move(destination_)),</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <a class="code hl_variable" href="classquokka_1_1Reference.html#ac55d488ba1ca29b1b6a4860737cb9dbe">type</a>(type_) {}</div>
 </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="foldopen" id="foldopen00075" data-start="{" data-end="};">
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structquokka_1_1Reference.html">   75</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Reference.html">Reference</a> {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structquokka_1_1Reference.html#a76e3d0a7d23a9abb3e82da4c77c00c74">   76</a></span>  Location <a class="code hl_variable" href="structquokka_1_1Reference.html#a76e3d0a7d23a9abb3e82da4c77c00c74">source_</a>;       </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structquokka_1_1Reference.html#a6f0cdaa53d28deea46e888eda1b9a5f8">   77</a></span>  Location <a class="code hl_variable" href="structquokka_1_1Reference.html#a6f0cdaa53d28deea46e888eda1b9a5f8">destination_</a>;  </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structquokka_1_1Reference.html#a9afdf47fb9d9227a3218146e94a6d1e0">   78</a></span>  <a class="code hl_enumeration" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">ReferenceType</a> <a class="code hl_variable" href="structquokka_1_1Reference.html#a9afdf47fb9d9227a3218146e94a6d1e0">type</a>;     </div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structquokka_1_1Reference.html#a88e2af6d9447cfe4f4f2c9cbf444917b">   86</a></span>  <a class="code hl_function" href="structquokka_1_1Reference.html#a88e2af6d9447cfe4f4f2c9cbf444917b">Reference</a>(Location source, Location destination, <a class="code hl_enumeration" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">ReferenceType</a> ref_type)</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>      : <a class="code hl_variable" href="structquokka_1_1Reference.html#a76e3d0a7d23a9abb3e82da4c77c00c74">source_</a>(std::move(source)),</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_variable" href="structquokka_1_1Reference.html#a6f0cdaa53d28deea46e888eda1b9a5f8">destination_</a>(std::move(destination)),</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <a class="code hl_variable" href="structquokka_1_1Reference.html#a9afdf47fb9d9227a3218146e94a6d1e0">type</a>(ref_type){};</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a>&amp; other) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classquokka_1_1Reference.html#a50fbca0676c6392e8cced4899f25098d">source</a> == other.source &amp;&amp; <a class="code hl_variable" href="classquokka_1_1Reference.html#a8a2b55f71f042ba2a0d5defc43455c72">destination</a> == other.destination &amp;&amp;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>           <a class="code hl_variable" href="classquokka_1_1Reference.html#ac55d488ba1ca29b1b6a4860737cb9dbe">type</a> == other.type;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> H&gt;</div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="};">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classquokka_1_1Reference.html#adf46e08b67bccc4401934cc641844541">   93</a></span>  <span class="keyword">friend</span> H <a class="code hl_friend" href="classquokka_1_1Reference.html#adf46e08b67bccc4401934cc641844541">AbslHashValue</a>(H h, <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a>&amp; m) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> H::combine(std::move(h), m.<a class="code hl_variable" href="classquokka_1_1Reference.html#a50fbca0676c6392e8cced4899f25098d">source</a>, m.<a class="code hl_variable" href="classquokka_1_1Reference.html#a8a2b55f71f042ba2a0d5defc43455c72">destination</a>, m.<a class="code hl_variable" href="classquokka_1_1Reference.html#ac55d488ba1ca29b1b6a4860737cb9dbe">type</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  }</div>
 </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> H&gt;</div>
-<div class="foldopen" id="foldopen00099" data-start="{" data-end="};">
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structquokka_1_1Reference.html#adf46e08b67bccc4401934cc641844541">   99</a></span>  <span class="keyword">friend</span> H <a class="code hl_friend" href="structquokka_1_1Reference.html#adf46e08b67bccc4401934cc641844541">AbslHashValue</a>(H h, <span class="keyword">const</span> <a class="code hl_struct" href="structquokka_1_1Reference.html">Reference</a>&amp; m) {</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">return</span> H::combine(std::move(h), m.<a class="code hl_variable" href="structquokka_1_1Reference.html#a76e3d0a7d23a9abb3e82da4c77c00c74">source_</a>, m.<a class="code hl_variable" href="structquokka_1_1Reference.html#a6f0cdaa53d28deea46e888eda1b9a5f8">destination_</a>, m.<a class="code hl_variable" href="structquokka_1_1Reference.html#a9afdf47fb9d9227a3218146e94a6d1e0">type</a>);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>};</div>
 </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>};</div>
-</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="foldopen" id="foldopen00110" data-start="{" data-end="};">
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classquokka_1_1ReferenceHolder.html">  110</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a> {</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  <span class="keyword">explicit</span> <a class="code hl_class" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="};">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classquokka_1_1References.html">  104</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1References.html">References</a> : <span class="keyword">public</span> <a class="code hl_class" href="classquokka_1_1SetBucket.html">SetBucket</a>&lt;Reference&gt; {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="keyword">using </span><a class="code hl_class" href="classquokka_1_1SetBucket.html">Base</a> = <a class="code hl_class" href="classquokka_1_1SetBucket.html">SetBucket&lt;Reference&gt;</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  std::unordered_multimap&lt;Reference, std::vector&lt;const Reference*&gt;*,</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                          absl::Hash&lt;Reference&gt;&gt;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>      pending_links;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  <span class="keyword">explicit</span> <a class="code hl_class" href="classquokka_1_1References.html">References</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  <span class="keyword">using </span><a class="code hl_class" href="classquokka_1_1SetBucket.html">SetBucket</a>&lt;<a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a>&gt;::SetBucket;</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  absl::flat_hash_map&lt;ea_t, std::shared_ptr&lt;Data&gt;&gt; data_addresses = {};</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  std::vector&lt;Reference&gt; references = {};</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> <span class="keyword">public</span>:</div>
-<div class="foldopen" id="foldopen00132" data-start="{" data-end="}">
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classquokka_1_1ReferenceHolder.html#aa3b7d16c55feed0eab5093725a15715b">  132</a></span>  <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a>&amp; <a class="code hl_function" href="classquokka_1_1ReferenceHolder.html#aa3b7d16c55feed0eab5093725a15715b">GetInstance</a>() {</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a> instance;</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">return</span> instance;</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  }</div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="}">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classquokka_1_1References.html#a19a3f98bebd4157d4a77d350f363efa1">  121</a></span>  <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1References.html">References</a>&amp; <a class="code hl_function" href="classquokka_1_1References.html#a19a3f98bebd4157d4a77d350f363efa1">GetInstance</a>() {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1References.html">References</a> instance;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  }</div>
 </div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="classquokka_1_1ReferenceHolder.html#ae04a758f07f1d2522a0446c811a8f6bd">  140</a></span>  <a class="code hl_function" href="classquokka_1_1ReferenceHolder.html#ae04a758f07f1d2522a0446c811a8f6bd">ReferenceHolder</a>(<a class="code hl_class" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;  <span class="comment">// Don&#39;t implement</span></div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  <span class="keywordtype">void</span> operator=(<a class="code hl_class" href="classquokka_1_1ReferenceHolder.html">ReferenceHolder</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;   <span class="comment">// Don&#39;t implement</span></div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
-<div class="foldopen" id="foldopen00150" data-start="{" data-end="}">
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classquokka_1_1ReferenceHolder.html#ae008e71a8636ab6b745afb1fb9d9ca67">  150</a></span>  <a class="code hl_struct" href="structquokka_1_1Reference.html">Reference</a>&amp; <a class="code hl_function" href="classquokka_1_1ReferenceHolder.html#ae008e71a8636ab6b745afb1fb9d9ca67">emplace_back</a>(Args&amp;&amp;... args) {</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">return</span> this-&gt;references.emplace_back(std::forward&lt;Args&gt;(args)...);</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>  }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classquokka_1_1References.html#a2e2be5e8fc52c5cb2e61964f5439c982">  129</a></span>  <a class="code hl_function" href="classquokka_1_1References.html#a2e2be5e8fc52c5cb2e61964f5439c982">References</a>(<a class="code hl_class" href="classquokka_1_1References.html">References</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  <a class="code hl_class" href="classquokka_1_1References.html">References</a>(<a class="code hl_class" href="classquokka_1_1References.html">References</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>  <span class="keywordtype">void</span> operator=(<a class="code hl_class" href="classquokka_1_1References.html">References</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>  <span class="keywordtype">void</span> operator=(<a class="code hl_class" href="classquokka_1_1References.html">References</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  <span class="keywordtype">bool</span> contains(<span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a>&amp; ref) {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="classquokka_1_1CommonSortableBucket.html#a1af6531b773f199c0d3ce00a6bdf0413">storage</a>-&gt;bucket.contains(ref);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>  }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a>&amp; get(<span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a>&amp; ref) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">auto</span> it = this-&gt;<a class="code hl_variable" href="classquokka_1_1CommonSortableBucket.html#a1af6531b773f199c0d3ce00a6bdf0413">storage</a>-&gt;bucket.find(ref);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">if</span> (it != this-&gt;<a class="code hl_variable" href="classquokka_1_1CommonSortableBucket.html#a1af6531b773f199c0d3ce00a6bdf0413">storage</a>-&gt;bucket.end())</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>      <span class="keywordflow">return</span> **it;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>      <span class="keywordflow">throw</span> std::out_of_range(<span class="stringliteral">&quot;Reference does not exist&quot;</span>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  }</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>  <span class="comment">// Overload emplace function</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  <span class="keyword">const</span> Reference&amp; emplace(Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">const</span> Reference&amp; ref = <a class="code hl_function" href="classquokka_1_1SetBucket.html#abd88546a9abb10c41b598a0298efe9b8">Base::emplace</a>(std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keyword">auto</span> [it, end] = this-&gt;pending_links.equal_range(ref);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">while</span> (it != end) {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>      it-&gt;second-&gt;push_back(&amp;ref);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>      it = this-&gt;pending_links.erase(it);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">return</span> ref;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>  }</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>  <span class="comment">// Overload insert function</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span>... Args&gt;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>  <span class="keyword">const</span> Reference&amp; insert(Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">const</span> Reference&amp; ref = <a class="code hl_function" href="classquokka_1_1SetBucket.html#ac66ae4b8361be92393c3ce6f68f62fe3">Base::insert</a>(std::forward&lt;Args&gt;(args)...);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">auto</span> [it, end] = this-&gt;pending_links.equal_range(ref);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">while</span> (it != end) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>      it-&gt;second-&gt;push_back(&amp;ref);</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>      it = this-&gt;pending_links.erase(it);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">return</span> ref;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>  }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  <span class="keywordtype">void</span> assert_no_pending_link()<span class="keyword"> const </span>{ assert(this-&gt;pending_links.empty()); }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00181" data-start="{" data-end="}">
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno"><a class="line" href="classquokka_1_1References.html#a2f6e43aa389c108b81df60b108dda014">  181</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1References.html#a2f6e43aa389c108b81df60b108dda014">attach_link</a>(std::vector&lt;const Reference*&gt;* ref_vector,</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                   <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Reference.html">Reference</a>&amp; ref) {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">if</span> (this-&gt;contains(ref))</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>      ref_vector-&gt;push_back(std::addressof(this-&gt;get(ref)));</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>      this-&gt;pending_links.insert({ref, ref_vector});</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>  }</div>
 </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>  Location <a class="code hl_function" href="classquokka_1_1ReferenceHolder.html#ad1b10e823e60c49aa550aefaf0ada2d3">ResolveData</a>(ea_t addr, <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1BucketNew.html">BucketNew&lt;Data&gt;</a>&amp; data_bucket);</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>  Location <a class="code hl_function" href="classquokka_1_1ReferenceHolder.html#aa33c361940e88520b315b01504891443">ResolveLocation</a>(Location location,</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>                           <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1BucketNew.html">BucketNew&lt;Instruction&gt;</a>&amp; instructions,</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                           ea_t max_ea, <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Structures.html">Structures</a>&amp; structures,</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                           <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a>&amp; chunks,</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                           <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1BucketNew.html">BucketNew&lt;Data&gt;</a>&amp; data_bucket);</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1ReferenceHolder.html#a49532f3b92b52ce1253a4e4d8c8e11ac">RemoveMissingAddr</a>(<span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a>&amp; chunks,</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                         <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1BucketNew.html">BucketNew&lt;Instruction&gt;</a>&amp; instructions,</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                         <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1BucketNew.html">BucketNew&lt;Data&gt;</a>&amp; data_bucket,</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                         <span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Structures.html">Structures</a>&amp; structures);</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="classquokka_1_1ReferenceHolder.html#a8c0d28e098cd1fd1abff5704fc689482">  209</a></span>  [[nodiscard]] std::size_t <a class="code hl_function" href="classquokka_1_1ReferenceHolder.html#a8c0d28e098cd1fd1abff5704fc689482">size</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> references.size(); }</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>  <span class="comment">/* Iterators proxy */</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>  <span class="keyword">using </span>iterator = std::vector&lt;Reference&gt;::iterator;</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>  <span class="keyword">using </span>const_iterator = std::vector&lt;Reference&gt;::const_iterator;</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>  iterator begin() { <span class="keywordflow">return</span> references.begin(); }</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>  iterator end() { <span class="keywordflow">return</span> references.end(); }</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>  [[nodiscard]] const_iterator begin()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> references.begin(); }</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>  [[nodiscard]] const_iterator end()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> references.end(); }</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>};</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>};</div>
 </div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="keywordtype">void</span> ResolveEdges(<span class="keyword">const</span> FuncChunkCollection&amp; chunks,</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                  ReferenceHolder&amp; reference_holder);</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="keywordtype">void</span> ExportFlowGraph(ea_t current_ea,</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                     <span class="keyword">const</span> std::shared_ptr&lt;FuncChunk&gt;&amp; current_chunk,</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                     <span class="keyword">const</span> std::vector&lt;ea_t&gt;&amp; flow_refs);</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="keywordtype">void</span> ExportCodeReference(ea_t current_ea,</div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>                         <span class="keyword">const</span> std::shared_ptr&lt;FuncChunk&gt;&amp; current_chunk,</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                         <span class="keyword">const</span> std::shared_ptr&lt;Block&gt;&amp; block_p, <span class="keywordtype">int</span> inst_idx,</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                         BucketNew&lt;Data&gt;&amp; data_bucket);</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>uint32_t ExportDataReferences(ea_t current_ea,</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                              <span class="keyword">const</span> std::shared_ptr&lt;Data&gt;&amp; data);</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span> </div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="keywordtype">void</span> ExportUnkReferences(ea_t current_ea, BucketNew&lt;Data&gt;&amp; data_bucket);</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>Location ResolveStructure(ea_t addr, <span class="keyword">const</span> Structures&amp; structures);</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>Location ResolveAddr(ea_t addr, <span class="keyword">const</span> FuncChunkCollection&amp; chunks,</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                     <span class="keyword">const</span> BucketNew&lt;Instruction&gt;&amp; instructions);</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span><span class="keywordtype">void</span> ExportStructureReference(ea_t sid,</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>                              <span class="keyword">const</span> std::shared_ptr&lt;Structure&gt;&amp; structure,</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>                              StructureType struct_type);</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span><span class="keywordtype">void</span> ExportStructureMemberReference(</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    ea_t sid, <span class="keyword">const</span> std::shared_ptr&lt;StructureMember&gt;&amp; member,</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    StructureType struct_type);</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span><a class="code hl_enumeration" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">ReferenceType</a> GetCodeRefType(uchar ref_type, ea_t target,</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>                             <span class="keyword">const</span> std::shared_ptr&lt;FuncChunk&gt;&amp; chunk);</div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span> </div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span><a class="code hl_enumeration" href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">ReferenceType</a> GetDataRefType(uchar ref_type, ea_t target);</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span> </div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span><span class="keywordtype">void</span> GetCodeRefFrom(std::vector&lt;ea_t&gt;&amp; code_refs, ea_t start_addr);</div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span> </div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>}  <span class="comment">// namespace quokka</span></div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_REFERENCE_H</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="foldopen" id="foldopen00190" data-start="{" data-end="};">
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="structquokka_1_1Xref.html">  190</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Xref.html">Xref</a> {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>  std::vector&lt;const Reference*&gt; to, from;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>};</div>
+</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="comment">// /**</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="comment">//  * Export all the references towards the unknown at current_ea</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="comment">//  *</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="comment">//  * This is a special case from DataReferences has the data does not really</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="comment">//  * exist but will be put in the DataBucket if we find some references</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="comment">//  towards</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="comment">//  * it (the resulting data will be of size 1 and type UNKNOWN).</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="comment">//  *</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="comment">//  * @param current_ea Address</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="comment">//  * @param data_bucket Data holder</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="comment">//  */</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="comment">// void ExportUnkReferences(ea_t current_ea, BucketNew&lt;Data&gt;&amp; data_bucket);</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="keywordtype">void</span> ExportSymbolReference(<span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1ProtoHelper.html">ProtoHelper</a>* type,</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                           std::vector&lt;const Reference*&gt;&amp; xref_to,</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                           <span class="keyword">const</span> tid_t&amp; tid, int32_t index);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="comment">// /**</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="comment">//  * Get the code reference from the start address</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span><span class="comment">//  *</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="comment">//  * @param code_refs (Out) A list of references</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="comment">//  * @param start_addr Starting address</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="comment">//  */</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="comment">// void GetCodeRefFrom(std::vector&lt;ea_t&gt;&amp; code_refs, ea_t start_addr);</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_REFERENCE_H</span></div>
+<div class="ttc" id="aBucket_8h_html"><div class="ttname"><a href="Bucket_8h.html">Bucket.h</a></div></div>
 <div class="ttc" id="aCompatibility_8h_html"><div class="ttname"><a href="Compatibility_8h.html">Compatibility.h</a></div></div>
-<div class="ttc" id="aData_8h_html_a453bb1c09f06046c9d4615e153888e61"><div class="ttname"><a href="Data_8h.html#a453bb1c09f06046c9d4615e153888e61">quokka::StructureType</a></div><div class="ttdeci">StructureType</div><div class="ttdef"><b>Definition</b> Data.h:230</div></div>
-<div class="ttc" id="aLocalization_8h_html"><div class="ttname"><a href="Localization_8h.html">Localization.h</a></div></div>
-<div class="ttc" id="aReference_8h_html_a5b25359f8f5dcf628d75dd04eb1caf4a"><div class="ttname"><a href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4a">quokka::ReferenceType</a></div><div class="ttdeci">ReferenceType</div><div class="ttdef"><b>Definition</b> Reference.h:57</div></div>
-<div class="ttc" id="aReference_8h_html_a5b25359f8f5dcf628d75dd04eb1caf4aa8d342de8e91f588b9d4f436c0375f442"><div class="ttname"><a href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa8d342de8e91f588b9d4f436c0375f442">quokka::REF_CALL</a></div><div class="ttdeci">@ REF_CALL</div><div class="ttdoc">Code reference.</div><div class="ttdef"><b>Definition</b> Reference.h:59</div></div>
-<div class="ttc" id="aReference_8h_html_a5b25359f8f5dcf628d75dd04eb1caf4aa93992c9fb6d576f54eb7641eeb2fe52b"><div class="ttname"><a href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aa93992c9fb6d576f54eb7641eeb2fe52b">quokka::REF_INVALID</a></div><div class="ttdeci">@ REF_INVALID</div><div class="ttdoc">Invalid.</div><div class="ttdef"><b>Definition</b> Reference.h:63</div></div>
-<div class="ttc" id="aReference_8h_html_a5b25359f8f5dcf628d75dd04eb1caf4aab0c21d2d6013a750f113eb0210a8fb13"><div class="ttname"><a href="Reference_8h.html#a5b25359f8f5dcf628d75dd04eb1caf4aab0c21d2d6013a750f113eb0210a8fb13">quokka::REF_STRUC</a></div><div class="ttdeci">@ REF_STRUC</div><div class="ttdoc">Data reference.</div><div class="ttdef"><b>Definition</b> Reference.h:62</div></div>
-<div class="ttc" id="aUtil_8h_html"><div class="ttname"><a href="Util_8h.html">Util.h</a></div></div>
-<div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
-<div class="ttc" id="aclassquokka_1_1BucketNew_html"><div class="ttname"><a href="classquokka_1_1BucketNew.html">quokka::BucketNew</a></div><div class="ttdef"><b>Definition</b> Util.h:94</div></div>
-<div class="ttc" id="aclassquokka_1_1FuncChunkCollection_html"><div class="ttname"><a href="classquokka_1_1FuncChunkCollection.html">quokka::FuncChunkCollection</a></div><div class="ttdef"><b>Definition</b> Function.h:381</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html">quokka::ReferenceHolder</a></div><div class="ttdef"><b>Definition</b> Reference.h:110</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html_a49532f3b92b52ce1253a4e4d8c8e11ac"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html#a49532f3b92b52ce1253a4e4d8c8e11ac">quokka::ReferenceHolder::RemoveMissingAddr</a></div><div class="ttdeci">void RemoveMissingAddr(const FuncChunkCollection &amp;chunks, const BucketNew&lt; Instruction &gt; &amp;instructions, const BucketNew&lt; Data &gt; &amp;data_bucket, const Structures &amp;structures)</div><div class="ttdef"><b>Definition</b> Reference.cpp:138</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html_a8c0d28e098cd1fd1abff5704fc689482"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html#a8c0d28e098cd1fd1abff5704fc689482">quokka::ReferenceHolder::size</a></div><div class="ttdeci">std::size_t size() const</div><div class="ttdef"><b>Definition</b> Reference.h:209</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html_aa33c361940e88520b315b01504891443"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html#aa33c361940e88520b315b01504891443">quokka::ReferenceHolder::ResolveLocation</a></div><div class="ttdeci">Location ResolveLocation(Location location, const BucketNew&lt; Instruction &gt; &amp;instructions, ea_t max_ea, const Structures &amp;structures, const FuncChunkCollection &amp;chunks, const BucketNew&lt; Data &gt; &amp;data_bucket)</div><div class="ttdef"><b>Definition</b> Reference.cpp:118</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html_aa3b7d16c55feed0eab5093725a15715b"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html#aa3b7d16c55feed0eab5093725a15715b">quokka::ReferenceHolder::GetInstance</a></div><div class="ttdeci">static ReferenceHolder &amp; GetInstance()</div><div class="ttdef"><b>Definition</b> Reference.h:132</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html_ad1b10e823e60c49aa550aefaf0ada2d3"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html#ad1b10e823e60c49aa550aefaf0ada2d3">quokka::ReferenceHolder::ResolveData</a></div><div class="ttdeci">Location ResolveData(ea_t addr, const BucketNew&lt; Data &gt; &amp;data_bucket)</div><div class="ttdef"><b>Definition</b> Reference.cpp:108</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html_ae008e71a8636ab6b745afb1fb9d9ca67"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html#ae008e71a8636ab6b745afb1fb9d9ca67">quokka::ReferenceHolder::emplace_back</a></div><div class="ttdeci">Reference &amp; emplace_back(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> Reference.h:150</div></div>
-<div class="ttc" id="aclassquokka_1_1ReferenceHolder_html_ae04a758f07f1d2522a0446c811a8f6bd"><div class="ttname"><a href="classquokka_1_1ReferenceHolder.html#ae04a758f07f1d2522a0446c811a8f6bd">quokka::ReferenceHolder::ReferenceHolder</a></div><div class="ttdeci">ReferenceHolder(ReferenceHolder const &amp;)=delete</div></div>
-<div class="ttc" id="aclassquokka_1_1Structures_html"><div class="ttname"><a href="classquokka_1_1Structures.html">quokka::Structures</a></div><div class="ttdef"><b>Definition</b> Data.h:265</div></div>
-<div class="ttc" id="astructquokka_1_1Reference_html"><div class="ttname"><a href="structquokka_1_1Reference.html">quokka::Reference</a></div><div class="ttdef"><b>Definition</b> Reference.h:75</div></div>
-<div class="ttc" id="astructquokka_1_1Reference_html_a6f0cdaa53d28deea46e888eda1b9a5f8"><div class="ttname"><a href="structquokka_1_1Reference.html#a6f0cdaa53d28deea46e888eda1b9a5f8">quokka::Reference::destination_</a></div><div class="ttdeci">Location destination_</div><div class="ttdoc">Destination.</div><div class="ttdef"><b>Definition</b> Reference.h:77</div></div>
-<div class="ttc" id="astructquokka_1_1Reference_html_a76e3d0a7d23a9abb3e82da4c77c00c74"><div class="ttname"><a href="structquokka_1_1Reference.html#a76e3d0a7d23a9abb3e82da4c77c00c74">quokka::Reference::source_</a></div><div class="ttdeci">Location source_</div><div class="ttdoc">Source of the reference.</div><div class="ttdef"><b>Definition</b> Reference.h:76</div></div>
-<div class="ttc" id="astructquokka_1_1Reference_html_a88e2af6d9447cfe4f4f2c9cbf444917b"><div class="ttname"><a href="structquokka_1_1Reference.html#a88e2af6d9447cfe4f4f2c9cbf444917b">quokka::Reference::Reference</a></div><div class="ttdeci">Reference(Location source, Location destination, ReferenceType ref_type)</div><div class="ttdef"><b>Definition</b> Reference.h:86</div></div>
-<div class="ttc" id="astructquokka_1_1Reference_html_a9afdf47fb9d9227a3218146e94a6d1e0"><div class="ttname"><a href="structquokka_1_1Reference.html#a9afdf47fb9d9227a3218146e94a6d1e0">quokka::Reference::type</a></div><div class="ttdeci">ReferenceType type</div><div class="ttdoc">Type of reference.</div><div class="ttdef"><b>Definition</b> Reference.h:78</div></div>
-<div class="ttc" id="astructquokka_1_1Reference_html_adf46e08b67bccc4401934cc641844541"><div class="ttname"><a href="structquokka_1_1Reference.html#adf46e08b67bccc4401934cc641844541">quokka::Reference::AbslHashValue</a></div><div class="ttdeci">friend H AbslHashValue(H h, const Reference &amp;m)</div><div class="ttdef"><b>Definition</b> Reference.h:99</div></div>
+<div class="ttc" id="aProtoHelper_8h_html"><div class="ttname"><a href="ProtoHelper_8h.html">ProtoHelper.h</a></div></div>
+<div class="ttc" id="aProtoWrapper_8h_html"><div class="ttname"><a href="ProtoWrapper_8h.html">ProtoWrapper.h</a></div></div>
+<div class="ttc" id="aclassquokka_1_1CommonSortableBucket_html_a1af6531b773f199c0d3ce00a6bdf0413"><div class="ttname"><a href="classquokka_1_1CommonSortableBucket.html#a1af6531b773f199c0d3ce00a6bdf0413">quokka::CommonSortableBucket&lt; P, detail::SetStorage&lt; P &gt; &gt;::storage</a></div><div class="ttdeci">std::shared_ptr&lt; StorageT &gt; storage</div><div class="ttdef"><b>Definition</b> Bucket.h:177</div></div>
+<div class="ttc" id="aclassquokka_1_1ProtoHelper_html"><div class="ttname"><a href="classquokka_1_1ProtoHelper.html">quokka::ProtoHelper</a></div><div class="ttdef"><b>Definition</b> ProtoHelper.h:32</div></div>
+<div class="ttc" id="aclassquokka_1_1Reference_html"><div class="ttname"><a href="classquokka_1_1Reference.html">quokka::Reference</a></div><div class="ttdef"><b>Definition</b> Reference.h:59</div></div>
+<div class="ttc" id="aclassquokka_1_1Reference_html_a50fbca0676c6392e8cced4899f25098d"><div class="ttname"><a href="classquokka_1_1Reference.html#a50fbca0676c6392e8cced4899f25098d">quokka::Reference::source</a></div><div class="ttdeci">Location source</div><div class="ttdoc">Source of the reference.</div><div class="ttdef"><b>Definition</b> Reference.h:65</div></div>
+<div class="ttc" id="aclassquokka_1_1Reference_html_a8a2b55f71f042ba2a0d5defc43455c72"><div class="ttname"><a href="classquokka_1_1Reference.html#a8a2b55f71f042ba2a0d5defc43455c72">quokka::Reference::destination</a></div><div class="ttdeci">Location destination</div><div class="ttdoc">Destination.</div><div class="ttdef"><b>Definition</b> Reference.h:66</div></div>
+<div class="ttc" id="aclassquokka_1_1Reference_html_ac55d488ba1ca29b1b6a4860737cb9dbe"><div class="ttname"><a href="classquokka_1_1Reference.html#ac55d488ba1ca29b1b6a4860737cb9dbe">quokka::Reference::type</a></div><div class="ttdeci">EdgeType type</div><div class="ttdoc">Type of reference.</div><div class="ttdef"><b>Definition</b> Reference.h:67</div></div>
+<div class="ttc" id="aclassquokka_1_1Reference_html_adf46e08b67bccc4401934cc641844541"><div class="ttname"><a href="classquokka_1_1Reference.html#adf46e08b67bccc4401934cc641844541">quokka::Reference::AbslHashValue</a></div><div class="ttdeci">friend H AbslHashValue(H h, const Reference &amp;m)</div><div class="ttdef"><b>Definition</b> Reference.h:93</div></div>
+<div class="ttc" id="aclassquokka_1_1Reference_html_aec656f76e100d14b68a5ed6f08757dc2"><div class="ttname"><a href="classquokka_1_1Reference.html#aec656f76e100d14b68a5ed6f08757dc2">quokka::Reference::Reference</a></div><div class="ttdeci">Reference(Location source_, Location destination_, EdgeType type_)</div><div class="ttdef"><b>Definition</b> Reference.h:75</div></div>
+<div class="ttc" id="aclassquokka_1_1References_html"><div class="ttname"><a href="classquokka_1_1References.html">quokka::References</a></div><div class="ttdef"><b>Definition</b> Reference.h:104</div></div>
+<div class="ttc" id="aclassquokka_1_1References_html_a19a3f98bebd4157d4a77d350f363efa1"><div class="ttname"><a href="classquokka_1_1References.html#a19a3f98bebd4157d4a77d350f363efa1">quokka::References::GetInstance</a></div><div class="ttdeci">static References &amp; GetInstance()</div><div class="ttdef"><b>Definition</b> Reference.h:121</div></div>
+<div class="ttc" id="aclassquokka_1_1References_html_a2e2be5e8fc52c5cb2e61964f5439c982"><div class="ttname"><a href="classquokka_1_1References.html#a2e2be5e8fc52c5cb2e61964f5439c982">quokka::References::References</a></div><div class="ttdeci">References(References const &amp;)=delete</div></div>
+<div class="ttc" id="aclassquokka_1_1References_html_a2f6e43aa389c108b81df60b108dda014"><div class="ttname"><a href="classquokka_1_1References.html#a2f6e43aa389c108b81df60b108dda014">quokka::References::attach_link</a></div><div class="ttdeci">void attach_link(std::vector&lt; const Reference * &gt; *ref_vector, const Reference &amp;ref)</div><div class="ttdef"><b>Definition</b> Reference.h:181</div></div>
+<div class="ttc" id="aclassquokka_1_1SetBucket_html"><div class="ttname"><a href="classquokka_1_1SetBucket.html">quokka::SetBucket</a></div><div class="ttdef"><b>Definition</b> Bucket.h:256</div></div>
+<div class="ttc" id="aclassquokka_1_1SetBucket_html_abd88546a9abb10c41b598a0298efe9b8"><div class="ttname"><a href="classquokka_1_1SetBucket.html#abd88546a9abb10c41b598a0298efe9b8">quokka::SetBucket&lt; Reference &gt;::emplace</a></div><div class="ttdeci">const P &amp; emplace(Args &amp;&amp;... args)</div><div class="ttdef"><b>Definition</b> Bucket.h:268</div></div>
+<div class="ttc" id="aclassquokka_1_1SetBucket_html_ac66ae4b8361be92393c3ce6f68f62fe3"><div class="ttname"><a href="classquokka_1_1SetBucket.html#ac66ae4b8361be92393c3ce6f68f62fe3">quokka::SetBucket&lt; Reference &gt;::insert</a></div><div class="ttdeci">const P &amp; insert(P obj)</div><div class="ttdef"><b>Definition</b> Bucket.h:284</div></div>
+<div class="ttc" id="astructquokka_1_1Xref_html"><div class="ttname"><a href="structquokka_1_1Xref.html">quokka::Xref</a></div><div class="ttdef"><b>Definition</b> Reference.h:190</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

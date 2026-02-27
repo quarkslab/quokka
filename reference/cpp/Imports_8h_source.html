@@ -98,84 +98,97 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#ifndef QUOKKA_IMPORTS_H</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#define QUOKKA_IMPORTS_H</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;pro.h&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;nalt.hpp&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;absl/container/flat_hash_map.h&gt;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">// clang-format off: Compatibility.h must come before ida headers</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;<a class="code" href="Compatibility_8h.html">Compatibility.h</a>&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// clang-format on</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;pro.h&gt;</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;absl/container/flat_hash_map.h&gt;</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structquokka_1_1Import.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Import.html">Import</a> {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  std::string name;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  uint64_t ord;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <a class="code hl_struct" href="structquokka_1_1Import.html">Import</a>(std::string name_, uint64_t ord_)</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      : name(std::move(name_)), ord(ord_) {}</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
-</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &quot;<a class="code" href="Windows_8h.html">Windows.h</a>&quot;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">namespace </span>quokka {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structquokka_1_1Import.html">   39</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Import.html">Import</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  std::string name;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  uint64_t ord;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structquokka_1_1Range.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Range.html">Range</a> {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  ea_t start = BADADDR64;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  ea_t end = BADADDR64;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="keywordtype">bool</span> operator&lt;(<span class="keyword">const</span> <a class="code hl_struct" href="structquokka_1_1Range.html">Range</a>&amp; other)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> start &lt; other.start; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <a class="code hl_struct" href="structquokka_1_1Import.html">Import</a>(std::string name_, uint64_t ord_)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>      : name(std::move(name_)), ord(ord_) {}</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>};</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structquokka_1_1Range.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structquokka_1_1Range.html">Range</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  ea_t start = BADADDR;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  ea_t end = BADADDR;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  [[nodiscard]] <span class="keywordtype">bool</span> InRange(<span class="keyword">const</span> ea_t value)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> start &lt;= value and value &lt; end;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  }</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  <span class="keyword">explicit</span> <a class="code hl_struct" href="structquokka_1_1Range.html">Range</a>(ea_t start_, ea_t end_) : start(start_), end(end_){};</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="keywordtype">bool</span> operator&lt;(<span class="keyword">const</span> <a class="code hl_struct" href="structquokka_1_1Range.html">Range</a>&amp; other)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> start &lt; other.start; }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  [[nodiscard]] <span class="keywordtype">bool</span> InRange(<span class="keyword">const</span> ea_t value)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> start &lt;= value and value &lt; end;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  <span class="keyword">explicit</span> <a class="code hl_struct" href="structquokka_1_1Range.html">Range</a>(ea_t start_, ea_t end_) : start(start_), end(end_) {};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
 </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html">   58</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a> {</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  std::vector&lt;Range&gt; ranges;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="comment">// absl::btree_set&lt;Range&gt; ranges;</span></div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html#a5953bb5f19402c3f1bfd1f8d2f74e6e3">   70</a></span>  absl::flat_hash_map&lt;ea_t, Import&gt; <a class="code hl_variable" href="classquokka_1_1ImportManager.html#a5953bb5f19402c3f1bfd1f8d2f74e6e3">imports</a>;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <span class="keyword">explicit</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#ac03b109b57d5d75b03980f0c296cd4b1">ImportManager</a>();</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#a8c25052b4fa1008f03698cbc94e5b843">InImport</a>(ea_t address) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="foldopen" id="foldopen00089" data-start="{" data-end="}">
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html#a052a229a2db4058d102944e16db8b66e">   89</a></span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#a052a229a2db4058d102944e16db8b66e">IsImport</a>(<span class="keyword">const</span> ea_t address)<span class="keyword"> const </span>{</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> this-&gt;imports.find(address) != this-&gt;imports.end();</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="};">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html">   60</a></span><span class="keyword">class </span><a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  std::vector&lt;Range&gt; ranges;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <span class="comment">// absl::btree_set&lt;Range&gt; ranges;</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a>();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html#a5953bb5f19402c3f1bfd1f8d2f74e6e3">   74</a></span>  absl::flat_hash_map&lt;ea_t, Import&gt; <a class="code hl_variable" href="classquokka_1_1ImportManager.html#a5953bb5f19402c3f1bfd1f8d2f74e6e3">imports</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html#a42129d6dcc7a42300bbd13fa0cf11726">   81</a></span>  <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a>&amp; <a class="code hl_function" href="classquokka_1_1ImportManager.html#a42129d6dcc7a42300bbd13fa0cf11726">GetInstance</a>() {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a> instance;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  }</div>
 </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#aa6d7887f40386a06f0d91398dfe00131">AddImport</a>(ea_t address, std::string name, uint64_t ord);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html#ad51c378d6b3d97e7bbdac93e9b12fa5a">   89</a></span>  <a class="code hl_function" href="classquokka_1_1ImportManager.html#ad51c378d6b3d97e7bbdac93e9b12fa5a">ImportManager</a>(<a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a>(<a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  <span class="keywordtype">void</span> operator=(<a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a> <span class="keyword">const</span>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="keywordtype">void</span> operator=(<a class="code hl_class" href="classquokka_1_1ImportManager.html">ImportManager</a>&amp;&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#a8c25052b4fa1008f03698cbc94e5b843">InImport</a>(ea_t address) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#aed55d93efeb1b1b595ccc611f68622f9">AddMissingChunks</a>(<a class="code hl_class" href="classquokka_1_1FuncChunkCollection.html">FuncChunkCollection</a>&amp; chunks);</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classquokka_1_1ImportManager.html#a052a229a2db4058d102944e16db8b66e">  106</a></span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#a052a229a2db4058d102944e16db8b66e">IsImport</a>(<span class="keyword">const</span> ea_t address)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> this-&gt;imports.find(address) != this-&gt;imports.end();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  }</div>
 </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}  <span class="comment">// namespace quokka</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_IMPORTS_H</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1ImportManager.html#aa6d7887f40386a06f0d91398dfe00131">AddImport</a>(ea_t address, std::string name, uint64_t ord);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  <span class="comment">// void AddMissingChunks(FuncChunkCollection&amp; chunks);</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>};</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_IMPORTS_H</span></div>
 <div class="ttc" id="aCompatibility_8h_html"><div class="ttname"><a href="Compatibility_8h.html">Compatibility.h</a></div></div>
 <div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
-<div class="ttc" id="aclassquokka_1_1FuncChunkCollection_html"><div class="ttname"><a href="classquokka_1_1FuncChunkCollection.html">quokka::FuncChunkCollection</a></div><div class="ttdef"><b>Definition</b> Function.h:381</div></div>
-<div class="ttc" id="aclassquokka_1_1ImportManager_html"><div class="ttname"><a href="classquokka_1_1ImportManager.html">quokka::ImportManager</a></div><div class="ttdef"><b>Definition</b> Imports.h:58</div></div>
-<div class="ttc" id="aclassquokka_1_1ImportManager_html_a052a229a2db4058d102944e16db8b66e"><div class="ttname"><a href="classquokka_1_1ImportManager.html#a052a229a2db4058d102944e16db8b66e">quokka::ImportManager::IsImport</a></div><div class="ttdeci">bool IsImport(const ea_t address) const</div><div class="ttdef"><b>Definition</b> Imports.h:89</div></div>
-<div class="ttc" id="aclassquokka_1_1ImportManager_html_a5953bb5f19402c3f1bfd1f8d2f74e6e3"><div class="ttname"><a href="classquokka_1_1ImportManager.html#a5953bb5f19402c3f1bfd1f8d2f74e6e3">quokka::ImportManager::imports</a></div><div class="ttdeci">absl::flat_hash_map&lt; ea_t, Import &gt; imports</div><div class="ttdef"><b>Definition</b> Imports.h:70</div></div>
-<div class="ttc" id="aclassquokka_1_1ImportManager_html_a8c25052b4fa1008f03698cbc94e5b843"><div class="ttname"><a href="classquokka_1_1ImportManager.html#a8c25052b4fa1008f03698cbc94e5b843">quokka::ImportManager::InImport</a></div><div class="ttdeci">bool InImport(ea_t address) const</div><div class="ttdef"><b>Definition</b> Imports.cpp:53</div></div>
-<div class="ttc" id="aclassquokka_1_1ImportManager_html_aa6d7887f40386a06f0d91398dfe00131"><div class="ttname"><a href="classquokka_1_1ImportManager.html#aa6d7887f40386a06f0d91398dfe00131">quokka::ImportManager::AddImport</a></div><div class="ttdeci">void AddImport(ea_t address, std::string name, uint64_t ord)</div><div class="ttdef"><b>Definition</b> Imports.cpp:59</div></div>
-<div class="ttc" id="aclassquokka_1_1ImportManager_html_ac03b109b57d5d75b03980f0c296cd4b1"><div class="ttname"><a href="classquokka_1_1ImportManager.html#ac03b109b57d5d75b03980f0c296cd4b1">quokka::ImportManager::ImportManager</a></div><div class="ttdeci">ImportManager()</div><div class="ttdef"><b>Definition</b> Imports.cpp:22</div></div>
-<div class="ttc" id="aclassquokka_1_1ImportManager_html_aed55d93efeb1b1b595ccc611f68622f9"><div class="ttname"><a href="classquokka_1_1ImportManager.html#aed55d93efeb1b1b595ccc611f68622f9">quokka::ImportManager::AddMissingChunks</a></div><div class="ttdeci">void AddMissingChunks(FuncChunkCollection &amp;chunks)</div><div class="ttdef"><b>Definition</b> Imports.cpp:63</div></div>
-<div class="ttc" id="astructquokka_1_1Import_html"><div class="ttname"><a href="structquokka_1_1Import.html">quokka::Import</a></div><div class="ttdef"><b>Definition</b> Imports.h:35</div></div>
-<div class="ttc" id="astructquokka_1_1Range_html"><div class="ttname"><a href="structquokka_1_1Range.html">quokka::Range</a></div><div class="ttdef"><b>Definition</b> Imports.h:45</div></div>
+<div class="ttc" id="aclassquokka_1_1ImportManager_html"><div class="ttname"><a href="classquokka_1_1ImportManager.html">quokka::ImportManager</a></div><div class="ttdef"><b>Definition</b> Imports.h:60</div></div>
+<div class="ttc" id="aclassquokka_1_1ImportManager_html_a052a229a2db4058d102944e16db8b66e"><div class="ttname"><a href="classquokka_1_1ImportManager.html#a052a229a2db4058d102944e16db8b66e">quokka::ImportManager::IsImport</a></div><div class="ttdeci">bool IsImport(const ea_t address) const</div><div class="ttdef"><b>Definition</b> Imports.h:106</div></div>
+<div class="ttc" id="aclassquokka_1_1ImportManager_html_a42129d6dcc7a42300bbd13fa0cf11726"><div class="ttname"><a href="classquokka_1_1ImportManager.html#a42129d6dcc7a42300bbd13fa0cf11726">quokka::ImportManager::GetInstance</a></div><div class="ttdeci">static ImportManager &amp; GetInstance()</div><div class="ttdef"><b>Definition</b> Imports.h:81</div></div>
+<div class="ttc" id="aclassquokka_1_1ImportManager_html_a5953bb5f19402c3f1bfd1f8d2f74e6e3"><div class="ttname"><a href="classquokka_1_1ImportManager.html#a5953bb5f19402c3f1bfd1f8d2f74e6e3">quokka::ImportManager::imports</a></div><div class="ttdeci">absl::flat_hash_map&lt; ea_t, Import &gt; imports</div><div class="ttdef"><b>Definition</b> Imports.h:74</div></div>
+<div class="ttc" id="aclassquokka_1_1ImportManager_html_a8c25052b4fa1008f03698cbc94e5b843"><div class="ttname"><a href="classquokka_1_1ImportManager.html#a8c25052b4fa1008f03698cbc94e5b843">quokka::ImportManager::InImport</a></div><div class="ttdeci">bool InImport(ea_t address) const</div><div class="ttdef"><b>Definition</b> Imports.cpp:63</div></div>
+<div class="ttc" id="aclassquokka_1_1ImportManager_html_aa6d7887f40386a06f0d91398dfe00131"><div class="ttname"><a href="classquokka_1_1ImportManager.html#aa6d7887f40386a06f0d91398dfe00131">quokka::ImportManager::AddImport</a></div><div class="ttdeci">void AddImport(ea_t address, std::string name, uint64_t ord)</div><div class="ttdef"><b>Definition</b> Imports.cpp:69</div></div>
+<div class="ttc" id="aclassquokka_1_1ImportManager_html_ad51c378d6b3d97e7bbdac93e9b12fa5a"><div class="ttname"><a href="classquokka_1_1ImportManager.html#ad51c378d6b3d97e7bbdac93e9b12fa5a">quokka::ImportManager::ImportManager</a></div><div class="ttdeci">ImportManager(ImportManager const &amp;)=delete</div></div>
+<div class="ttc" id="astructquokka_1_1Import_html"><div class="ttname"><a href="structquokka_1_1Import.html">quokka::Import</a></div><div class="ttdef"><b>Definition</b> Imports.h:39</div></div>
+<div class="ttc" id="astructquokka_1_1Range_html"><div class="ttname"><a href="structquokka_1_1Range.html">quokka::Range</a></div><div class="ttdef"><b>Definition</b> Imports.h:47</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['mangled_5fname_0',['mangled_name',['../classquokka_1_1Function.html#a71c1ab6585253dfc43603271cd13ee3f',1,'quokka::Function']]],
-  ['members_1',['members',['../classquokka_1_1Structure.html#a2ddfbeeb0497bb08e7c03cab7b5dbdb4',1,'quokka::Structure']]],
-  ['mnemonic_2',['mnemonic',['../classquokka_1_1Mnemonic.html#af4fc80de2ce9627b57ffe8fcd1e93602',1,'quokka::Mnemonic::mnemonic'],['../classquokka_1_1Instruction.html#a5e5d2ee87ca32c0e264c7da93d0c34d5',1,'quokka::Instruction::mnemonic']]],
-  ['mnemonic_5fbucket_3',['mnemonic_bucket',['../classquokka_1_1HeadIterator.html#a06497c5bcbe50b9c12b4b8f9fd647ba8',1,'quokka::HeadIterator']]]
+  ['name_0',['name',['../classquokka_1_1CompositeTypeMember.html#a8d6c6779152ccf50d2ccdb16df3c2299',1,'quokka::CompositeTypeMember::name'],['../classquokka_1_1CompositeType.html#a53137d2f0e00c0c13721ac927756a522',1,'quokka::CompositeType::name'],['../classquokka_1_1EnumType.html#acd833e826c3531e1f8e5271617a4695e',1,'quokka::EnumType::name'],['../classquokka_1_1Function.html#abfe0c2f1b439e7c6ce5b851e7e3ea8b1',1,'quokka::Function::name'],['../structquokka_1_1Segment.html#a7b14f6cd3c859c15a6e5f2b1006b397d',1,'quokka::Segment::name']]]
 ];

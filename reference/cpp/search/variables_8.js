@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['layouts_0',['layouts',['../classquokka_1_1HeadIterator.html#acb61a161aae004a817518be3a1e5c6fc',1,'quokka::HeadIterator']]],
-  ['location_1',['location',['../structquokka_1_1Comment.html#a60aaa846aa1de72d99cab84ea66cfd61',1,'quokka::Comment']]]
+  ['mangled_5fname_0',['mangled_name',['../classquokka_1_1Function.html#a71c1ab6585253dfc43603271cd13ee3f',1,'quokka::Function']]],
+  ['members_1',['members',['../classquokka_1_1CompositeType.html#abfdc049976ed82982a014e1a02598892',1,'quokka::CompositeType']]]
 ];
