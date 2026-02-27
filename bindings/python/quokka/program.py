@@ -557,7 +557,7 @@ class Program(dict):
         debug: bool = False,
         override: bool = True,
         timeout: int|None = 0,
-        mode: ExporterMode = ExporterMode.NORMAL,
+        mode: ExporterMode = ExporterMode.LIGHT,
     ) -> Program|None:
         """Generate an export file directly from the binary.
 
@@ -618,7 +618,7 @@ class Program(dict):
         debug: bool = False,
         override: bool = True,
         timeout: int|None = 600,
-        mode: ExporterMode = ExporterMode.NORMAL,
+        mode: ExporterMode = ExporterMode.LIGHT,
     ) -> Path:
         """Generate an export file directly from the binary.
 

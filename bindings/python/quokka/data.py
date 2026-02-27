@@ -92,6 +92,9 @@ class Data:
         self._xrefs_to = [self.program.proto.references[x] for x in self.proto.xref_to]
         self._xrefs_to = [(RefType(ref.reference_type), ref) for ref in self._xrefs_to]
 
+    def __str__(self) -> str:
+        """Data representation"""
+        return f"<Data {self.name} at {self.address:#x}>"
 
     def __eq__(self, other: "Pb.Data") -> bool:
         """Check equality between two Data instances"""

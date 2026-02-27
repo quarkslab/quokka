@@ -38,6 +38,13 @@ class AccessMode(enum.IntFlag):
     READ = enum.auto()
     WRITE = enum.auto()
 
+class Perm(enum.IntFlag):
+    """Segment permissions"""
+
+    R = 4
+    W = 2
+    X = 1
+
 
 class AddressSize(enum.Enum):
     """Address size"""

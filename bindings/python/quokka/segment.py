@@ -16,7 +16,7 @@
 import quokka
 
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
-from quokka.types import AddressT, SegmentType
+from quokka.types import AddressT, SegmentType, Perm
 
 
 class Segment:
@@ -43,7 +43,7 @@ class Segment:
         """Constructor"""
         self.name: str = segment.name
         self.address: AddressT = segment.virtual_addr
-        self.permissions: int = segment.permissions
+        self.permissions: Perm = Perm(segment.permissions)
         self.size: int = segment.size
         self.type: "SegmentType" = SegmentType.from_proto(segment.type)
 

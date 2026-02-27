@@ -94,6 +94,21 @@ class BaseType(CoreType, IntEnum, metaclass=EnumABCMeta):
 
         return mapping.get(self, 0)
 
+    def __str__(self) -> str:
+        """String representation of the data type"""
+        ts = {
+            BaseType.UNKNOWN: "unknown",
+            BaseType.BYTE: "char",
+            BaseType.WORD: "short",
+            BaseType.DOUBLE_WORD: "int",
+            BaseType.QUAD_WORD: "int64_t",
+            BaseType.OCTO_WORD: "int128_t",
+            BaseType.FLOAT: "float",
+            BaseType.DOUBLE: "double",
+            BaseType.VOID: "void",
+        }[self]
+        return f"<T:{ts}>"
+
 
 class ComplexType(CoreType):
     def __init__(self, proto: Pb.CompositeType|Pb.EnumType, program: "Program"):
@@ -196,6 +211,9 @@ class EnumTypeMember(CoreType):
     def is_member(self) -> bool:
         return True
 
+    def __str__(self) -> str:
+        return f"<TEnumTypeMember: {self.parent.name}.{self.name}>"
+
 
 class EnumType(ComplexType):
     """Base class for all enums in quokka"""
@@ -234,6 +252,8 @@ class EnumType(ComplexType):
         else:
             return super().__getattribute__(name)
 
+    def __str__(self) -> str:
+        return f"<TEnum: {self.name}>"
 
 class ArrayType(ComplexType):
     """Array type
@@ -256,6 +276,8 @@ class ArrayType(ComplexType):
         """Return the type of the array elements"""
         return self._program.get_type(self.proto.element_type_idx)
 
+    def __str__(self) -> str:
+        return f"<TArray: {self.name} {self.element_type}[{self.size}]>"
 
 class PointerType(ComplexType):
     """Pointer type
@@ -277,6 +299,9 @@ class PointerType(ComplexType):
     def pointed_type(self) -> 'TypeT':
         """Return the type of the pointed element"""
         return self._program.get_type(self.proto.element_type_idx)
+
+    def __str__(self) -> str:
+        return f"<TPtr: {self.name}->{self.pointed_type}*>"
 
 
 class StructureTypeMember(CoreType):
@@ -338,6 +363,10 @@ class StructureTypeMember(CoreType):
     def is_member(self) -> bool:
         return True
 
+    def __str__(self) -> str:
+        t = "Struct" if self.parent.is_struct else "Union"
+        return f"<T{t}Member: {self.parent.name}.{self.name}>"
+
 
 class StructureType(dict, ComplexType):
     """Structure
@@ -369,6 +398,9 @@ class StructureType(dict, ComplexType):
         """Is the structure of variable size?"""
         return self.size <= 0
 
+    def __str__(self) -> str:
+        return f"<TStruct: {self.name}>"
+
 
 class UnionType(StructureType):
     """Union
@@ -379,7 +411,9 @@ class UnionType(StructureType):
         structure: Structure protobuf data
         program: Program back reference
     """
-    pass
+
+    def __str__(self) -> str:
+        return f"<TUnion: {self.name}>"
 
 
 TypeT = StructureType | BaseType | UnionType | ArrayType | PointerType | EnumType
