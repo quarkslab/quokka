@@ -68,7 +68,7 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
 
     // Emplace the CompositeTypeMember
     CompositeTypeMember& member = composite_type.members.emplace_back(
-        udm.offset / 8, ConvertIdaString(udm.name), member_base_type, size);
+        udm.offset, ConvertIdaString(udm.name), member_base_type, size);
 
     if (member_tif.is_from_subtil()) {
       qstring ida_string;

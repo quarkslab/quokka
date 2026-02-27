@@ -315,9 +315,9 @@ class StructureTypeMember(CoreType):
 
     Attributes:
         name: Member name
-        size: Member size (if known)
+        offset: Bit offset within the parent composite type
+        size: Member size in bits (0 for variable-length members)
         type: Member data type
-        value: Member value
         comments: Member comments
     """
 
@@ -325,8 +325,8 @@ class StructureTypeMember(CoreType):
         """Constructor"""
         self.proto = member
         self.name: str = member.name
-        self.offset: int = member.offset
-        self.size: int = member.size
+        self.offset: int = member.offset  # Bit offset within composite
+        self.size: int = member.size  # Size in bits
         self._structure: weakref.ref[StructureType] = weakref.ref(structure)
         self._xrefs_to = [structure._program.proto.references[x] for x in member.xref_to]
 
@@ -371,6 +371,9 @@ class StructureTypeMember(CoreType):
 class StructureType(dict, ComplexType):
     """Structure
 
+    Members are stored in a dict keyed by **bit offset** and also in an ordered
+    list (``_members_list``) for positional access.
+
     Arguments:
         structure: Structure protobuf data
         program: Program back reference
@@ -380,7 +383,7 @@ class StructureType(dict, ComplexType):
         name: Structure name
         size: Structure size (if known)
         type: Structure type
-        index_to_offset: Mapping from offsets to structure members
+        index_to_offset: Mapping from positional index to bit offset
         comments: Structure comments
     """
 
@@ -391,8 +394,19 @@ class StructureType(dict, ComplexType):
 
         self.index_to_offset: dict[int, int] = {}
         for index, member in enumerate(proto.members):
-            self[member.offset] = StructureTypeMember(member, self)
+            m = StructureTypeMember(member, self)
+            self[member.offset] = m
             self.index_to_offset[index] = member.offset
+        self._members_list: list[StructureTypeMember] = list(map(lambda x: x[1], sorted(self.items())))
+
+    @property
+    def members(self) -> list[StructureTypeMember]:
+        """Return all members in declaration order"""
+        return self._members_list
+
+    def member_at(self, index: int) -> StructureTypeMember:
+        """Get a member by its positional index (0-based)"""
+        return self._members_list[index]
 
     def is_variable_size(self) -> bool:
         """Is the structure of variable size?"""
@@ -406,11 +420,25 @@ class UnionType(StructureType):
     """Union
 
     This class represents a union. It is a special case of structure where all members are at the same offset.
+    To avoid dict-key collisions the
+    dict is keyed by **positional index** instead of offset.
 
-     Arguments:
+    Arguments:
         structure: Structure protobuf data
         program: Program back reference
     """
+
+    def __init__(self, proto: "Pb.CompositeType", program: "Program") -> None:
+        dict.__init__(self)
+        ComplexType.__init__(self, proto, program)
+
+        self._members_list: list[StructureTypeMember] = []
+        self.index_to_offset: dict[int, int] = {}
+        for index, member in enumerate(proto.members):
+            m = StructureTypeMember(member, self)
+            self._members_list.append(m)
+            self[index] = m
+            self.index_to_offset[index] = member.offset
 
     def __str__(self) -> str:
         return f"<TUnion: {self.name}>"
