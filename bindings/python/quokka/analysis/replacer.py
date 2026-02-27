@@ -14,7 +14,7 @@
 
 from __future__ import annotations
 import quokka
-from quokka.types import List, Dict, Any, RegType
+from quokka.types import Any, RegType
 
 
 class Replacer:
@@ -24,14 +24,14 @@ class Replacer:
     removed because it does not belong to the project.
     """
 
-    ignored_registers: List[str]
-    ignored_mnemonics: List[str]
+    ignored_registers: list[str]
+    ignored_mnemonics: list[str]
 
     regs: RegType
-    compared_mnemonics: List[str]
-    calling_registers: List[RegType]
+    compared_mnemonics: list[str]
+    calling_registers: list[RegType]
 
-    replacement: Dict[RegType, RegType]
+    replacement: dict[RegType, RegType]
 
     @staticmethod
     def norm_mnemonic(mnemonic: str) -> str:
@@ -73,9 +73,9 @@ class Replacer:
         assert self.compared_mnemonics is not None
         return self.norm_mnemonic(mnemonic) in self.compared_mnemonics
 
-    def calling_convention(self) -> List[RegType]:
+    def calling_convention(self) -> list[RegType]:
         assert self.calling_registers is not None
         return self.calling_registers
 
-    def argument_registers(self, platform: quokka.analysis.Platform) -> List:
+    def argument_registers(self, platform: quokka.analysis.Platform) -> list:
         return []

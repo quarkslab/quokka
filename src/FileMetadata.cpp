@@ -12,30 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/FileMetadata.h"
+#include <cassert>
+#include <string>
+#include <string_view>
 
+// clang-format off: Compatibility.h must come before ida headers
+#include "quokka/Compatibility.h"
+// clang-format on
+#include <pro.h>
+#include <ida.hpp>
+#include <nalt.hpp>
+#include <typeinf.hpp>
+
+#include "absl/strings/escaping.h"
+#include "absl/strings/str_format.h"
+#include "absl/time/clock.h"
+
+#include "quokka/FileMetadata.h"
+#include "quokka/Util.h"
 #include "quokka/Writer.h"
 #include "quokka/Settings.h"
 
 namespace quokka {
 
-std::string GetInputFileSha256() {
+/**
+ * Retrieve the input file sha256 hash
+ * @return The lowercase hexdigest of the hash
+ */
+static inline std::string GetInputFileSha256() {
   unsigned char sha256[32];
   if (!retrieve_input_file_sha256(sha256)) {
     return "";
   }
 
   return absl::AsciiStrToLower(absl::BytesToHexString(
-      absl::string_view(reinterpret_cast<const char*>(sha256), 32)));
+      std::string_view(reinterpret_cast<const char*>(sha256), 32)));
 }
 
-std::string GetInputFileMd5() {
+/**
+ * Retrieve the input file MD5 hash
+ * @return The lowercase hexdigest of the hash
+ */
+static std::string GetInputFileMd5() {
   unsigned char hash[16];
   if (!retrieve_input_file_md5(hash)) {
     return "";
   }
   return absl::AsciiStrToLower(absl::BytesToHexString(
-      absl::string_view(reinterpret_cast<const char*>(hash), 16)));
+      std::string_view(reinterpret_cast<const char*>(hash), 16)));
 }
 
 void Metadata::SetArchitecture() {
@@ -134,50 +158,14 @@ void Metadata::SetFileName() {
   this->file_name = std::string(root_filename);
 }
 
-void Metadata::SetCompiler() {
-  comp_t compiler_id = inf_get_cc_id();
-
-  if (compiler_id & COMP_UNSURE) {
-    this->compiler = COMPILER_UNK;
-    return;
-  }
-  switch (compiler_id) {
-    case COMP_GNU:  // Visual C++
-      this->compiler = COMPILER_GCC;
-      break;
-
-    case COMP_MS:  // Visual C++
-      this->compiler = COMPILER_MS;
-      break;
-
-    case COMP_VISAGE:  // Visual C++
-      this->compiler = COMPILER_VISAGE;
-      break;
-
-    case COMP_BC:  // Borland C++
-      this->compiler = COMPILER_BC;
-      break;
-
-    case COMP_BP:  // Delphi
-      this->compiler = COMPILER_BP;
-      break;
-
-    case COMP_WATCOM:  // Watcom C++
-      this->compiler = COMPILER_WATCOM;
-      break;
-
-    default:
-      this->compiler = COMPILER_UNK;
-      break;
-  }
-}
-
 void Metadata::SetBaseAddr() {
   this->base_addr = get_imagebase();
   assert(this->base_addr != BADADDR && "Problem with the base address");
 }
 
-void Metadata::SetIdaVersion() { this->ida_version = IDA_SDK_VERSION; }
+void Metadata::SetIdaVersion() {
+  this->ida_version = std::to_string(IDA_SDK_VERSION);
+}
 
 
 void Metadata::SetDecompilationActivated(bool activated) {
@@ -196,7 +184,6 @@ int ExportMeta(quokka::Quokka* proto) {
   metadata.SetEndianness();
   metadata.SetAddressSize();
   metadata.SetFileName();
-  metadata.SetCompiler();
   metadata.SetCallingConvention();
   metadata.SetBaseAddr();
   metadata.SetIdaVersion();
@@ -205,7 +192,7 @@ int ExportMeta(quokka::Quokka* proto) {
   metadata.SetDecompilationActivated(Settings::GetInstance().ExportDecompiledCode());
 
   WriteMetadata(proto, metadata);
-  QLOG_INFO << absl::StrFormat("FileMetadata exported (took %.2fs)",
+  QLOG_INFO << absl::StrFormat("FileMetadata exported (took: %.2fs)",
                                timer.ElapsedSeconds(absl::Now()));
 
   return eOk;

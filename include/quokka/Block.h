@@ -25,21 +25,29 @@
 #define QUOKKA_BLOCK_H
 
 #include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <vector>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
 #include <gdl.hpp>
-#include <ida.hpp>
+#include <ua.hpp>
 
 #include "absl/container/flat_hash_map.h"
 
-#include "Logger.h"
+#include "Instruction.h"
+#include "Reference.h"
+#include "Segment.h"
 #include "Windows.h"
 
 namespace quokka {
 
-class Instruction;
+// class Instruction;
 
 enum BlockType : short {
   BTYPE_NORMAL = 0,
@@ -50,7 +58,6 @@ enum BlockType : short {
   BTYPE_ENORET,
   BTYPE_EXTERN,
   BTYPE_ERROR,
-  BTYPE_FAKE,
 };
 
 /**
@@ -58,7 +65,27 @@ enum BlockType : short {
  * @param block_type Type of block (IDA)
  * @return Block type
  */
-BlockType RetrieveBlockType(fc_block_type_t block_type);
+constexpr BlockType RetrieveBlockType(fc_block_type_t block_type) {
+  switch (block_type) {
+    case fcb_normal:
+      return BTYPE_NORMAL;
+    case fcb_indjump:
+      return BTYPE_INDJUMP;
+    case fcb_ret:
+      return BTYPE_RET;
+    case fcb_cndret:
+      return BTYPE_CNDRET;
+    case fcb_noret:
+      return BTYPE_NORET;
+    case fcb_enoret:
+      return BTYPE_ENORET;
+    case fcb_extern:
+      return BTYPE_EXTERN;
+    case fcb_error:
+      return BTYPE_ERROR;
+  }
+  assert(false && "Invalid block type");
+}
 
 /**
  * -----------------------------------------------------------------------------
@@ -67,10 +94,19 @@ BlockType RetrieveBlockType(fc_block_type_t block_type);
  * Representation of a basic block.
  */
 class Block {
+ private:
+  void ExportInstructions();
+
  public:
   ea_t start_addr;  ///< Start address
   ea_t end_addr;    ///< End address (may be equal to `BADADDR`)
   BlockType block_type;
+  const Segment* segment;  ///< The segment in which the block lives
+  int64 file_offset;  ///< File offset of the function, if <0 then there is none
+  size_t instr_count = 0;  ///< How many instructions. Useful for light mode
+  bool is_thumb;           ///< Is it a ARM thumb block
+
+  mutable absl::flat_hash_map<uint32_t, std::unique_ptr<Xref>> xrefs;
 
   /**
    * List of instructions. Container of all instructions referenced in
@@ -79,30 +115,21 @@ class Block {
    */
   std::vector<std::shared_ptr<Instruction>> instructions;
 
-  bool is_fake = false;  ///< Boolean for fake blocks
-
   /**
    * Construct Block
    *
    * @param addr Start address of the block
    * @param eaddr End address of the block
    */
-  Block(ea_t addr, ea_t eaddr, BlockType block_type)
-      : start_addr(addr), end_addr(eaddr), block_type(block_type) {
-    current_address = start_addr;
-  }
+  Block(ea_t addr, ea_t eaddr, BlockType block_type);
 
-  /**
-   * Construct a fake block
-   * @param addr Start address
-   */
-  explicit Block(ea_t addr)
-      : start_addr(addr),
-        end_addr(BADADDR),
-        block_type(BTYPE_FAKE),
-        is_fake(true) {
-    current_address = start_addr;
-  }
+  // Delete copy semantic
+  Block(const Block&) noexcept = delete;
+  Block& operator=(const Block&) noexcept = delete;
+
+  // Keep move semantic
+  Block(Block&&) noexcept = default;
+  Block& operator=(Block&&) noexcept = default;
 
   /**
    * Check if `addr` belongs to the block
@@ -145,6 +172,17 @@ class Block {
    */
   absl::flat_hash_map<ea_t, int> address_to_index;
 };
+
+/**
+ * Export all code references to an instruction
+ *
+ * @param block The block in which the address lives
+ * @param instr_idx The index in the basic block of the instruction
+ * @param address Address
+ * @param insn Instruction for which to extract xrefs
+ */
+void ExportCodeReference(const Block& block, size_t instr_idx, ea_t address,
+                         const insn_t& insn);
 
 }  // namespace quokka
 

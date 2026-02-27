@@ -21,11 +21,7 @@ itself.
 
 from quokka.version import __version__
 
-import quokka.analysis
-import quokka.backends
 import quokka.quokka_pb2 as pb
-
-from quokka.addresser import Addresser
 
 from quokka.block import Block
 
@@ -34,7 +30,6 @@ from quokka.data import Data, DataHolder
 from quokka.exc import (
     QuokkaError,
     NotInFileError,
-    ChunkMissingError,
     FunctionMissingError,
     ThunkMissingError,
     InstructionError,
@@ -46,9 +41,7 @@ from quokka.executable import Executable
 
 from quokka.function import (
     dereference_thunk,
-    get_degrees,
-    Chunk,
-    SuperChunk,
+    resolve_effective_degrees,
     Function,
 )
 
@@ -56,11 +49,18 @@ from quokka.instruction import Operand, Instruction
 
 from quokka.program import Program
 
-from quokka.reference import Reference, ReferencesLocation, References
-
 from quokka.segment import Segment
 
-from quokka.structure import Structure, StructureMember
+from quokka.data_type import (
+    BaseType,
+    ArrayType,
+    PointerType,
+    EnumType,
+    UnionType,
+    StructureType,
+    StructureTypeMember,
+    TypeT
+)
 
 from quokka.utils import (
     md5_file,
@@ -73,17 +73,24 @@ from quokka.utils import (
 )
 
 __all__ = [
-    # From addresser.py
-    "Addresser",
+    "pb",
     # From block.py
     "Block",
     # From data.py
     "Data",
     "DataHolder",
+    # From data_type.py
+    "BaseType",
+    "ArrayType",
+    "PointerType",
+    "EnumType",
+    "UnionType",
+    "StructureType",
+    "StructureTypeMember",
+    "TypeT",
     # From exc.py
     "QuokkaError",
     "NotInFileError",
-    "ChunkMissingError",
     "FunctionMissingError",
     "ThunkMissingError",
     "InstructionError",
@@ -93,24 +100,15 @@ __all__ = [
     "Executable",
     # From functions.py
     "dereference_thunk",
-    "get_degrees",
-    "Chunk",
-    "SuperChunk",
+    "resolve_effective_degrees",
     "Function",
     # From instructions;py
     "Operand",
     "Instruction",
     # From program.py
     "Program",
-    # From reference.py
-    "Reference",
-    "References",
-    "ReferencesLocation",
     # From segment.py
     "Segment",
-    # From structure.py
-    "Structure",
-    "StructureMember",
     # From utils.py
     "md5_file",
     "sha256_file",

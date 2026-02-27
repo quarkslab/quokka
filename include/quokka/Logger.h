@@ -20,15 +20,20 @@
 #ifndef QUOKKA_LOGGER_H
 #define QUOKKA_LOGGER_H
 
-#include <ctime>
-#include <utility>
+#include <cstddef>
+#include <cstdio>
+#include <string>
+#include <string_view>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
 #include <kernwin.hpp>
 
 #include "absl/strings/str_cat.h"
 #include "absl/time/clock.h"
+#include "absl/time/time.h"
 
 #include "Windows.h"
 
@@ -60,7 +65,7 @@ class Record {
    * @param line Line pointed
    */
   Record(LogLevel level, const char* func, size_t line)
-      : m_level(level), m_line(line), m_func(func){};
+      : m_level(level), m_line(line), m_func(func) {};
 
   /**
    * Return an pointer of self
@@ -73,7 +78,7 @@ class Record {
    * @param data Message to add
    * @return A reference of self
    */
-  Record& operator<<(const std::string& data) {
+  Record& operator<<(const std::string_view& data) {
     m_message.append(data);
     return *this;
   }
@@ -124,7 +129,7 @@ class Logger {
    * @param level Log level
    * @return Value
    */
-  static const char* LogLevelToString(LogLevel level) {
+  static constexpr const char* LogLevelToString(LogLevel level) {
     switch (level) {
       case DEBUG:
         return "DEBUG";

@@ -12,7 +12,7 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Targeting MacOS Version" FO
 
 project(quokka
         DESCRIPTION "Quokka: A Fast and Accurate Binary Exporter"
-        VERSION 0.6.2
+        VERSION 1.0.0
         LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -33,7 +33,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Build type" FORCE)
 endif ()
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_PREFIX ${quokka_BINARY_DIR})
@@ -75,9 +75,16 @@ if (IDA_VERSION)
     # Checkout the correct tag inside the submodule
     execute_process(
         COMMAND git -C ${IDA_SDK_PATH} fetch --tags
-        COMMAND git -C ${IDA_SDK_PATH} checkout v${IDA_VERSION}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         RESULT_VARIABLE GIT_RESULT
+    )
+    if (NOT GIT_RESULT EQUAL 0)
+        message(FATAL_ERROR "Failed to fetch new tags from IDA SDK")
+    endif()
+    execute_process(
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE GIT_RESULT
+        COMMAND git -C ${IDA_SDK_PATH} checkout v${IDA_VERSION}
     )
     if (NOT GIT_RESULT EQUAL 0)
         message(FATAL_ERROR "Failed to checkout IDA SDK version ${IDA_VERSION}")
@@ -142,6 +149,12 @@ elseif(WIN32)
 endif()
 
 if (NOT NO_BUILD)
+    set(GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated/include")
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/quokka/Version.h.in"
+        "${GENERATED_INCLUDE_DIR}/quokka/Version.h"
+        @ONLY
+    )
 
     if (ENABLE_SANITIZER)
         add_compile_options(-fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls)
@@ -164,6 +177,7 @@ if (NOT NO_BUILD)
             GIT_TAG v30.2
     )
     set(protobuf_BUILD_TESTS OFF CACHE INTERNAL "")
+    set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
     set(protobuf_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
     set(protobuf_BUILD_PROTOBUF_BINARIES ON CACHE BOOL "" FORCE)
     set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)

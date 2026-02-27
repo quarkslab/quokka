@@ -49,8 +49,6 @@ from quokka.analysis.env import (
 
 from quokka.analysis.replacer import Replacer
 
-from quokka.analysis.utils import split_chunk
-
 __all__ = [
     # From arch.py
     "QuokkaArch",
@@ -77,8 +75,6 @@ __all__ = [
     "get_calling_convention_for_arch_platform",
     "Environment",
     "Platform",
-    # From utils.py
-    "split_chunk",
     # From replacer.py
     "Replacer",
 ]

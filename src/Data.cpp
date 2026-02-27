@@ -12,117 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Data.h"
+#include <cassert>
+#include <cstdint>
+#include <stdexcept>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
+// clang-format on
+#include <pro.h>
+#include <bytes.hpp>
+#include <loader.hpp>
+#include <nalt.hpp>
+#include <name.hpp>
+#include <segment.hpp>
+#include <typeinf.hpp>
 
-#include "quokka/Writer.h"
+#include "absl/strings/str_format.h"
 
-#if IDA_SDK_VERSION < 850
-#include "api_v8/Data.cpp"
-#else
-#include "api_v9/Data.cpp"
-#endif
+#include "quokka/Data.h"
+#include "quokka/DataType.h"
+#include "quokka/Logger.h"
+#include "quokka/Segment.h"
+#include "quokka/Util.h"
+
+// #if IDA_SDK_VERSION < 850
+// #include "api_v8/Data.cpp"
+// #else
+// #include "api_v9/Data.cpp"
+// #endif
 
 namespace quokka {
-
-DataType GetDataType(flags_t flags) {
-  if (is_byte(flags)) {
-    return TYPE_B;
-  } else if (is_word(flags)) {
-    return TYPE_W;
-  } else if (is_dword(flags)) {
-    return TYPE_DW;
-  } else if (is_qword(flags)) {
-    return TYPE_QW;
-  } else if (is_oword(flags)) {
-    return TYPE_OW;
-  } else if (is_float(flags)) {
-    return TYPE_FLOAT;
-  } else if (is_double(flags)) {
-    return TYPE_DOUBLE;
-  } else if (is_struct(flags)) {
-    return TYPE_STRUCT;
-  } else if (is_strlit(flags)) {
-    return TYPE_ASCII;
-  } else if (is_align(flags)) {
-    return TYPE_ALIGN;
-  }
-
-  return TYPE_UNK;
-}
-
-DataType GetDataType(const tinfo_t& tinf) {
-  auto int_from_tinfo_size = [&tinf]() {
-    switch (tinf.get_unpadded_size()) {
-      case 1:
-        return TYPE_B;
-      case 2:
-        return TYPE_W;
-      case 4:
-        return TYPE_DW;
-      case 8:
-        return TYPE_QW;
-      default:
-        return TYPE_UNK;
-    }
-  };
-
-  switch (tinf.get_realtype() & TYPE_BASE_MASK) {
-    case BT_UNK:
-      return TYPE_UNK;
-    case BT_INT8:
-      return TYPE_B;
-    case BT_INT16:
-      return TYPE_W;
-    case BT_INT32:
-      return TYPE_DW;
-    case BT_INT64:
-      return TYPE_QW;
-    case BT_INT128:
-      return TYPE_OW;
-    case BT_INT:  // natural int. Query for size
-      return int_from_tinfo_size();
-    case BT_BOOL:
-      switch (tinf.get_realtype() & TYPE_FLAGS_MASK) {
-        case BTMT_DEFBOOL:  // size is model specific or unknown. Query for size
-          return int_from_tinfo_size();
-        case BTMT_BOOL1:
-          return TYPE_B;
-        case BTMT_BOOL2:  // BTMT_BOOL8
-          return (inf_is_64bit() ? TYPE_QW : TYPE_W);
-        case BTMT_BOOL4:
-          return TYPE_DW;
-        default:
-          return TYPE_UNK;
-      }
-    case BT_FLOAT:
-      switch (tinf.get_realtype() & TYPE_FLAGS_MASK) {
-        case BTMT_FLOAT:
-          return TYPE_FLOAT;
-        case BTMT_DOUBLE:
-          return TYPE_DOUBLE;
-        default:  // Could actually be a long double or other len
-          return TYPE_DOUBLE;
-      }
-      return TYPE_POINTER;
-    case BT_COMPLEX:
-      switch (tinf.get_realtype() & TYPE_FLAGS_MASK) {
-        case BTMT_STRUCT | BTMT_UNION | BTMT_ENUM:
-          return TYPE_STRUCT;
-        default:
-          return TYPE_UNK;
-      }
-      // TODO TYPE_ALIGN is missing
-    default:
-      return TYPE_UNK;
-  }
-}
-
-bool Data::HasVariableSize() const {
-  return this->data_type == TYPE_STRUCT || this->data_type == TYPE_ASCII ||
-         this->data_type == TYPE_ALIGN || this->data_type == TYPE_UNK;
-}
 
 bool Data::HasName(bool any_name = false) const {
   if (any_name) {
@@ -143,17 +62,117 @@ bool Data::IsInitialized() const {
   return has_value(get_full_flags(this->addr));
 }
 
-void ExportEnumAndStructures(quokka::Quokka* proto) {
-  Structures& structures = Structures::GetInstance();
+Data Data::Make(ea_t addr, uint32_t size) {
+  const DataTypes& data_types = DataTypes::GetInstance();
+  BaseType data_type;
+  tinfo_t tinf;
+  tid_t tid = BADADDR;
 
-  QLOGI << "Start export enums and structures";
-  Timer timer(absl::Now());
-  ExportStructures(structures);
-  ExportEnums(structures);
-  WriteStructures(proto, structures);
+  if (has_ti(addr)) {  // Try to obtain the tinfo descriptor
+    if (!get_tinfo(&tinf, addr))
+      assert(false);
 
-  QLOGI << absl::StrFormat("Enum and structures written (took %.2fs)",
-                           timer.ElapsedSeconds(absl::Now()));
+    // Resolve the typedef/typeref to final type
+    if (tinf.is_typeref() || tinf.is_typedef()) {
+      uint32_t final_ordinal = tinf.get_final_ordinal();
+      assert(final_ordinal > 0 &&
+             "Got a typedef/typeref type without a final ordinal");
+      if (!tinf.get_numbered_type(final_ordinal))
+        assert(false && "Cannot retrieve the final ordinal tinfo_t");
+    }
+    tid = tinf.get_tid();
+    data_type = GetBaseType(tinf);
+  } else {  // No tinfo, fall back on the flags
+    data_type = GetBaseType(get_flags(addr));
+  }
+
+  // TYPE_POINTER => !tinfo.empty()
+  assert(data_type != TYPE_POINTER || !tinf.empty());
+  // TYPE_ARRAY => !tinfo.empty()
+  assert(data_type != TYPE_POINTER || !tinf.empty());
+
+  const Segments& segments = Segments::GetInstance();
+
+  segment_t* ida_seg = getseg(addr);
+  if (!ida_seg ||
+      !segments.contains(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea)) {
+    throw std::runtime_error(absl::StrFormat(
+        "Data at address 0x%x doesn't belong to any segment", addr));
+  }
+
+  // Address must always be inside the boundaries of the segment
+  const auto& segment =
+      segments.get_exact(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea);
+  assert(addr >= segment.start_addr && addr < segment.end_addr);
+
+  Data data(addr, data_type, size, get_fileregion_offset(addr), &segment);
+
+  // Ignore types that come from a different TIL library
+  if (!tinf.empty() && tinf.is_from_subtil()) {
+    data.base_type = TYPE_UNK;
+    QLOGW << absl::StrFormat(
+        "Data at address 0x%08llx has a type coming from a different library. "
+        "Marking it as TYPE_UNK",
+        addr);
+    goto data_exported;
+  }
+
+  if (data_type == TYPE_POINTER) {
+    data.target_tuid = ExportPointer(tinf);
+
+  } else if (data_type == TYPE_ARRAY) {
+    data.target_tuid = ExportArray(tinf);
+
+  } else if (data_type == TYPE_STR) {  // String literal, No tinfo_t available
+    if (guess_tinfo(&tinf, addr) > 0) {
+      data.target_tuid = ExportArray(tinf);
+    } else {
+      QLOGE << absl::StrFormat(
+          "Couldn't recover the tinfo_t from the string literal at address "
+          "0x%08llx. Marking it as TYPE_UNK",
+          addr);
+      data.base_type = TYPE_UNK;
+    }
+
+  } else if (data_type == TYPE_ALIGN) {
+    data.base_type = TYPE_UNK;  // This is useless data. Mark it as unknown
+
+  } else if (data_type == TYPE_UNK) {  // Most likely a enum/struct/union
+    // Sometimes IDA fails at giving us the correct tinfo_t. Try to recover it
+    // through unconventional means
+    if (tid == BADADDR) {
+      tid = get_strid(addr);
+      if (tid == BADADDR) {
+        QLOGE << absl::StrFormat(
+            "Cannot correctly identify the type of data at address 0x%08llx. "
+            "Marking it as TYPE_UNK",
+            addr);
+        data.base_type = TYPE_UNK;
+        goto data_exported;  // Skip to the end
+      }
+    }
+
+    // Failing to resolve the data type at this point is really bad
+    // Note: here tid is guaranteed to be valid but tinf might not be
+    const auto& it = data_types.find_by_tuid(GetTypeUid(tid));
+
+    if (it == data_types.end()) {
+      QLOGE << absl::StrFormat(
+          "Data at address 0x%x is of type composite but the "
+          "associated composite type was not exported",
+          addr);
+      // Change the type to TYPE_UNK to avoid breaking the protobuf
+      data.base_type = TYPE_UNK;
+    } else {
+      data.target_tuid = it->first;
+    }
+  }
+
+data_exported:
+  // Increment the ref-counter of the segment
+  segment.ref_count++;
+
+  return data;
 }
 
 }  // namespace quokka

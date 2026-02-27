@@ -20,22 +20,25 @@
 #ifndef FILEMETADATA_H
 #define FILEMETADATA_H
 
-#include "Compatibility.h"
-#include <pro.h>
-#include <ida.hpp>
-#include <kernwin.hpp>
-#include <nalt.hpp>
-#include <typeinf.hpp>
+#include <string>
+#include <string_view>
 
-#include "absl/flags/internal/path_util.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/escaping.h"
-#include "absl/strings/str_format.h"
+// clang-format off: Compatibility.h must come before ida headers
+#include "Compatibility.h"
+// clang-format on
+#include <pro.h>
 
 #include "ProtoWrapper.h"
 #include "Windows.h"
 
 namespace quokka {
+
+namespace {
+using namespace std::string_view_literals;
+
+// Protobuf backend codename
+constexpr const std::string_view BACKEND_NAME = "IDA"sv;
+}  // namespace
 
 /**
  * Processor types
@@ -95,6 +98,9 @@ enum CallingConvention : short {
   CC_PASCAL,
   CC_FASTCALL,
   CC_THISCALL,
+  CC_SWIFT,
+  CC_GOLANG,
+  CC_GOSTK,
 };
 
 /**
@@ -142,7 +148,7 @@ class Metadata {
   Compiler compiler = COMPILER_UNK;               ///< Detected processor
   CallingConvention calling_convention = CC_UNK;  ///< Detected calling conv
 
-  int ida_version = 0;  ///< Ida version for this export
+  std::string ida_version;  ///< Stringified Ida version for this export
 
   bool decompilation_activated = false;  ///< Whether decompilation was activated during export
 
@@ -173,12 +179,6 @@ class Metadata {
   inline void SetFileName();
 
   /**
-   * Detect compiler using `inf_get_cc_id`
-   * Conservative detection, if IDA is unsure, will set `COMPILER_UNK`
-   */
-  inline void SetCompiler();
-
-  /**
    * Detect calling convention using `inf_get_cc_cm`
    */
   inline void SetCallingConvention();
@@ -200,18 +200,6 @@ class Metadata {
 };
 
 /**
- * Retrieve the input file sha256 hash
- * @return The lowercase hexdigest of the hash
- */
-inline std::string GetInputFileSha256();
-
-/**
- * Retrieve the input file MD5 hash
- * @return The lowercase hexdigest of the hash
- */
-inline std::string GetInputFileMd5();
-
-/**
  * Export all the metadata of the input file
  *
  * This will mostly iterate through the inf structure of IDA and retrieve
@@ -222,7 +210,7 @@ inline std::string GetInputFileMd5();
  * @param proto Main protobuf pointer
  * @return
  */
-int ExportMeta(quokka::Quokka* proto);
+int ExportMeta(Quokka* proto);
 
 }  // namespace quokka
 #endif

@@ -20,155 +20,85 @@
 #ifndef QUOKKA_UTIL_H
 #define QUOKKA_UTIL_H
 
-#include <cstdint>
+#include <concepts>
+#include <optional>
 #include <string>
-#include <unordered_map>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <variant>
 
+// clang-format off: Compatibility.h must come before ida headers
 #include "Compatibility.h"
+// clang-format on
 #include <pro.h>
-#include <bytes.hpp>
 #include <idp.hpp>
-#include <name.hpp>
+#include <kernwin.hpp>
+#include <typeinf.hpp>
 #include <ua.hpp>
 
-#include "absl/container/btree_map.h"
-#include "absl/container/flat_hash_map.h"
-#include "absl/container/flat_hash_set.h"
-#include "absl/hash/hash.h"
-#include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
+#include "absl/time/time.h"
 
+#include "Logger.h"
 #include "ProtoHelper.h"
 #include "Windows.h"
 
 namespace quokka {
 
-/**
- * Comparer struct
- * @tparam T A generic type
- */
+// two steps needed to force preprocessor to expand macro arguments
+#define QK_CONCAT2(a, b) a##b
+#define QK_CONCAT(a, b) QK_CONCAT2(a, b)
+
+#define SCOPED_STEP(start_msg, done_msg)                        \
+  [[maybe_unused]] auto QK_CONCAT(_scoped_step_, __COUNTER__) = \
+      scoped_step((start_msg), (done_msg))
+
+#define SCOPED_BOX_STEP(wait_box_msg, start_msg, done_msg)      \
+  [[maybe_unused]] auto QK_CONCAT(_scoped_step_, __COUNTER__) = \
+      scoped_step((start_msg), (done_msg), (wait_box_msg))
+
 template <typename T>
-struct Comparer {
-  /**
-   * Compare the two shared pointed elements by looking at their pointee
-   * objects
-   * @param a First element
-   * @param b Second element
-   * @return Boolean
-   */
-  bool operator()(const std::shared_ptr<T>& a,
-                  const std::shared_ptr<T>& b) const {
-    return *a == *b;
-  }
-};
+struct is_std_variant : std::false_type {};
 
-/**
- * Hasher
- * @tparam T Generic type (must implement hashable)
- */
+template <typename... Ts>
+struct is_std_variant<std::variant<Ts...>> : std::true_type {};
+
 template <typename T>
-struct Hasher {
-  /**
-   * Retrieve the hash of element
-   * @param elem Element to hash
-   * @return
-   */
-  size_t operator()(const std::shared_ptr<T>& elem) const {
-    return absl::Hash<T>()(*elem);
-  }
-};
+concept StdVariant = is_std_variant<std::remove_cvref_t<T>>::value;
 
-/**
- * ---------------------------------------------
- * quokka::BucketNew
- * ---------------------------------------------
- * Bucket representation
- *
- * A bucket is a deduplicated container where every element is only stored
- * once and everytime a new element already existing is added, the reference
- * count is incremented.
- *
- * @tparam P A descendant of ProtoHelper type
- */
-template <typename P>
-class BucketNew {
- private:
-  using custom_set =
-      absl::flat_hash_set<std::shared_ptr<P>, Hasher<P>, Comparer<P>>;
+template <typename...>
+static constexpr bool always_false_v = false;
 
-  /**
-   * The bucket where elements are kept
-   */
-  custom_set bucket;
+template <typename T>
+struct filter_type_adaptor_t {};
 
- public:
-  using iterator = typename custom_set::iterator;
-  using const_iterator = typename custom_set::const_iterator;
+template <typename T>
+inline constexpr filter_type_adaptor_t<T> filter_type{};
 
-  /**
-   * Add P to the bucket
-   *
-   * This creates P if it does not exists or increment the reference counter.
-   *
-   * @tparam Args Arguments
-   * @param args arguments
-   * @return A pointer to P
-   */
-  template <typename... Args>
-  std::shared_ptr<P> emplace(Args&&... args) {
-    static_assert(std::is_base_of<ProtoHelper, P>::value,
-                  "P must inherit from ProtoHelper");
-    auto [it, result] =
-        bucket.emplace(std::make_shared<P>(std::forward<Args>(args)...));
-    (*it)->ref_count++;
-    return *it;
-  }
+// Implementation: default = false (covers non-variant Var types)
+template <typename T, typename Var>
+struct is_one_of_variant : std::false_type {};
 
-  /* Iterators proxy */
-  iterator begin() { return bucket.begin(); }
-  iterator end() { return bucket.end(); }
-  [[nodiscard]] const_iterator begin() const { return bucket.begin(); }
-  [[nodiscard]] const_iterator end() const { return bucket.end(); }
+// Specialization for std::variant<Ts...>
+template <typename T, typename... Ts>
+struct is_one_of_variant<T, std::variant<Ts...>>
+    : std::bool_constant<(
+          std::same_as<std::remove_cvref_t<T>, std::remove_cvref_t<Ts>> ||
+          ...)> {};
 
-  /**
-   * Size proxy
-   * @return Size of the bucket
-   */
-  [[nodiscard]] size_t size() const { return bucket.size(); }
+// Concept for checking that type T is one of the std::variant types (not
+// considering cv qualifiers)
+template <typename T, typename Var>
+concept is_one_of_variant_v =
+    is_one_of_variant<T, std::remove_cvref_t<Var>>::value;
 
-  using frequency_map =
-      absl::btree_multimap<uint64_t, std::shared_ptr<P>, std::greater<>>;
-
-  /**
-   * Sort the element in the bucket by frequency
-   *
-   * This is used to retrieve first the most common elements.
-   *
-   * @return A mapping between the reference count and a pointer to its
-   * element
-   */
-  [[nodiscard]] frequency_map SortByFrequency() const {
-    frequency_map ordered_map;
-    // ordered_map.reserve(bucket.size());
-    for (auto const element : bucket) {
-      ordered_map.emplace(element->ref_count, element);
-    }
-
-    return ordered_map;
-  }
-
-  /**
-   * Proxy to clear the bucket
-   */
-  void clear() { this->bucket.clear(); }
-
-  /**
-   * Remove an element from the bucket
-   *
-   * @param key Element to remove
-   */
-  void erase(const std::shared_ptr<P>& key) { this->bucket.erase(key); }
-};
+// True iff remove_cvref_t<T> matches any of remove_cvref_t<Types>...
+template <typename T, typename... Types>
+  requires(sizeof...(Types) >= 1)
+inline constexpr bool is_one_of_t =
+    (std::same_as<std::remove_cvref_t<T>, std::remove_cvref_t<Types>> || ...);
 
 /**
  * ---------------------------------------------
@@ -207,6 +137,12 @@ class Timer {
   void Reset() {
     start = absl::Now();
     stop = absl::InfiniteFuture();
+  }
+
+  double ElapsedSecondsAndReset() {
+    auto seconds = this->ElapsedSeconds(absl::Now());
+    this->Reset();
+    return seconds;
   }
 
   /**
@@ -248,18 +184,85 @@ class Timer {
   }
 };
 
+// Concept for checking that all the std::variant types are derived from T
+template <typename T, typename Var>
+concept AllVariantDeriveFrom = requires(const Var& var) {
+  []<typename... VarArgsT>
+    requires(std::derived_from<VarArgsT, T> && ...)
+  (const std::variant<VarArgsT...>) {}(var);
+};
+
+template <std::invocable F>
+class scope_exit_guard {
+ public:
+  explicit scope_exit_guard(F&& f) noexcept(
+      std::is_nothrow_move_constructible_v<F>)
+      : f_(std::forward<F>(f)) {}
+
+  scope_exit_guard(scope_exit_guard&& other) noexcept(
+      std::is_nothrow_move_constructible_v<F>)
+      : f_(std::move(other.f_)), active_(std::exchange(other.active_, false)) {}
+
+  scope_exit_guard(const scope_exit_guard&) = delete;
+  scope_exit_guard& operator=(const scope_exit_guard&) = delete;
+  scope_exit_guard& operator=(scope_exit_guard&&) = delete;
+
+  void release() noexcept { active_ = false; }
+
+  ~scope_exit_guard() noexcept {
+    if (!active_)
+      return;
+    try {
+      f_();
+    } catch (...) {  // never throw from dtors
+    }
+  }
+
+ private:
+  F f_;
+  bool active_ = true;
+};
+
+[[nodiscard]] inline auto scoped_step(
+    std::string_view start_msg, std::string_view done_msg,
+    std::optional<std::string_view> wait_box = std::nullopt) {
+  Timer timer(absl::Now());
+
+  if (wait_box && !wait_box->empty()) {
+    replace_wait_box("%.*s", static_cast<int>(wait_box->size()),
+                     wait_box->data());
+  }
+  QLOGI << start_msg;
+
+  // Own strings so passing temporaries is always safe.
+  std::string done = std::string(done_msg);
+
+  return scope_exit_guard(
+      [timer = std::move(timer), done = std::move(done)]() mutable noexcept {
+        const auto secs = timer.ElapsedSeconds(absl::Now());
+        QLOGI << absl::StrFormat("%s (took: %.2fs)", done, secs);
+      });
+}
+
 /**
- * Implementation of a merge adjacent method
- *
- * @see http://coliru.stacked-crooked.com/a/0de073866090972d
+ * Syntax sugar for iterating over a collection of std::variant
  */
-template <typename ForwardIterator, typename OutputIterator, typename Equal,
-          typename Merge>
-void MergeAdjacent(ForwardIterator first, ForwardIterator last,
-                   OutputIterator out, Equal equal, Merge merge) {
-  for (auto lb = first, ub = last; lb != last; lb = ub)
-    *out++ = std::accumulate(
-        lb + 1, ub = std::mismatch(lb + 1, last, lb, equal).first, *lb, merge);
+static constexpr inline void for_each_visit(auto& collection, auto lambda) {
+  for (auto& element : collection) std::visit(lambda, element);
+}
+static constexpr inline void for_each_ptr_visit(auto& collection, auto lambda) {
+  for (auto& element : collection) std::visit(lambda, *element);
+}
+
+template <typename B, StdVariant V>
+B& UpcastVariant(V& variant) {
+  return std::visit([](auto& x) -> B& { return static_cast<B&>(x); }, variant);
+}
+template <typename B, StdVariant V>
+const B& UpcastVariant(const V& variant) {
+  return std::visit(
+      [](const auto& x) -> const B& { return static_cast<const B&>(x); },
+      variant);
 }
 
 /**
@@ -289,16 +292,8 @@ std::string ConvertIdaString(const qstring& ida_string);
  * @param new_extension Extension to set
  * @return New file name
  */
-std::string ReplaceFileExtension(absl::string_view path,
-                                 absl::string_view new_extension);
-
-/**
- * Check if the option set will yield to true
- *
- * @param option Parameter to check
- * @return True if option is not empty
- */
-bool StrToBoolean(const std::string& option);
+std::string ReplaceFileExtension(std::string_view path,
+                                 std::string_view new_extension);
 
 /**
  * Get the processor "ph" variable
@@ -318,6 +313,17 @@ processor_t* GetProcessor();
  * @return A string containing the mnemonic
  */
 std::string GetMnemonic(const insn_t& instruction);
+
+/**
+ * Resolve in-place a typedef or typeref to its final concrete type.
+ *
+ * Follows the typedef/typeref chain and replaces @p tif with the type info of
+ * the underlying concrete type. Does nothing if @p tif is neither a typedef
+ * nor a typeref.
+ *
+ * @param tif The IDA type info to resolve; modified in-place
+ */
+void ResolveTypedef(tinfo_t& tif);
 
 }  // namespace quokka
 

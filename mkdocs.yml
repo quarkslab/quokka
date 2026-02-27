@@ -56,8 +56,8 @@ markdown_extensions:
   - tables
   - attr_list
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - footnotes
 
 plugins:
@@ -72,8 +72,10 @@ plugins:
       type: date
       fallback_to_build_date: true
   - mkdocstrings:
-      watch:
-        - bindings/python/quokka
+      handlers:
+        python:
+          paths:
+            - bindings/python
   - mkdocs-simple-hooks:
       hooks:
         on_post_build: "docs.doxygen:generate_cpp_documentation"

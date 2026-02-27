@@ -19,20 +19,37 @@ A data is a piece of information that isn't code.
 
 from __future__ import annotations
 import logging
+from typing import Mapping, TYPE_CHECKING
 
 import quokka
+from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 
-from quokka.types import (
-    AddressT,
-    Any,
-    DataType,
-    Index,
-    List,
-    Mapping,
-    Optional,
-)
+from quokka.types import AddressT, Index, RefType
+from quokka.data_type import EnumType, TypeReference, TypeT, TypeValue
+
+if TYPE_CHECKING:
+    from quokka import Program, Function
+
+
 
 logger = logging.getLogger(__name__)
+
+
+def _get_item(program: 'Program', addr: AddressT) -> 'Data | Function | AddressT':
+    """Get the data at the given address
+
+    Arguments:
+        addr: Address to get the data from
+    Returns:
+        The data at the given address
+    """
+    try:
+        return program.data_holder[addr]  # try getting data
+    except ValueError:
+        try:
+            return program[addr]  # try getting function
+        except KeyError:
+            return addr  # Otherwise returns plain address
 
 
 class Data:
@@ -57,81 +74,135 @@ class Data:
     """
 
     def __init__(
-        self, proto_index: Index, data: "quokka.pb.Quokka.Data", program: quokka.Program
+        self, proto_index: Index, data: "Pb.Data", program: quokka.Program
     ):
         """Constructor"""
-        self.proto_index: Index = proto_index
-        self.address: AddressT = program.addresser.absolute(data.offset)
-        self.type: "DataType" = DataType.from_proto(data.type)
+        self.proto: "Pb.Data" = program.proto.data[proto_index]
+        self.address: AddressT = program.virtual_address(data.segment_index, data.segment_offset)
         self.program: quokka.Program = program
-
+        self.file_offset: int = data.file_offset
         self.is_initialized: bool = not data.not_initialized
+        self.size: int = self.proto.size
 
-        self.size: Optional[int] = (
-            data.size if data.WhichOneof("DataSize") != "no_size" else None
-        )
-        self._value: Optional[str] = (
-            self.program.proto.string_table[data.value_index]
-            if data.value_index > 0
-            else None
-        )
-        self.name: Optional[str] = (
-            self.program.proto.string_table[data.name_index]
-            if data.name_index > 0
-            else None
-        )
+        # Retrieve xrefs (for the data)
+        self._xrefs_from = [self.program.proto.references[x] for x in self.proto.xref_from]
+        self._xrefs_from = [(RefType(ref.reference_type), ref) for ref in self._xrefs_from]
+        
+        self._xrefs_to = [self.program.proto.references[x] for x in self.proto.xref_to]
+        self._xrefs_to = [(RefType(ref.reference_type), ref) for ref in self._xrefs_to]
 
-    def __eq__(self, other: Any) -> bool:
+    def __str__(self) -> str:
+        """Data representation"""
+        return f"<Data {self.name} at {self.address:#x}>"
+
+    def __eq__(self, other: "Pb.Data") -> bool:
         """Check equality between two Data instances"""
-        return type(other) is type(self) and other.proto_index == self.proto_index
+        return id(self.proto) == id(other.proto)
 
     @property
-    def value(self) -> Any:
+    def name(self) -> str:
+        """Data name"""
+        return self.proto.name
+    
+    @name.setter
+    def name(self, value: str) -> None:
+        """Set the data name and mark it as edited in the protobuf"""
+        self.proto.edits.name_set = True
+        self.proto.name = value
+
+    @property
+    def comments(self) -> list[str]:
+        """Return the data comments"""
+        return self.proto.comments
+
+    @property
+    def value(self) -> TypeValue | None:
         """Data value.
 
         The value is read in the program binary file.
         """
 
-        # Uninitialized memory
         if not self.is_initialized:
-            return None
+            return None  # Uninitialized memory has no value
+        if self.proto.file_offset <= 0:
+            return None  # Not mapped in the file
+        
+        if self.type.size <= 0 and self.size:  # Variable size data with a known size (e.g., string)
+            return self.program.read_bytes(self.file_offset, self.size)
+        else:  # Try reading the value as a type
+            return self.program.executable.read_type_value(self.file_offset, self.type)
 
-        address = self.program.addresser.file(self.address)
+    def is_variable_size(self) -> bool:
+        """Is the data of variable size?"""
+        return self.size == -1
+    
+    @property
+    def type(self) -> TypeT:
+        """Data type. Assume one exists for each data"""
+        return self.program.get_type(self.proto.type_index)
 
-        if self.type in (
-            DataType.ALIGN,
-            DataType.POINTER,
-            DataType.STRUCT,
-            DataType.UNKNOWN,
-        ):
-            return self._value
-
-        if self.type == DataType.ASCII:
-            try:
-                return self.program.executable.read_data(
-                    address, self.type, size=self.size
-                )
-            except quokka.exc.NotInFileError:
-                logger.error("Try to read a string which is not in file")
-                return ""
+    @type.setter
+    def type(self, typ: TypeT|str) -> None:
+        """Set the data type and mark it as edited in the protobuf.
+        
+        The final type will only be applied when quokka file regenerated.
+        """
+        if isinstance(typ, str):
+            self.proto.edits.type_str = typ
+        elif isinstance(typ, TypeT):
+            self.proto.edits.type_str = typ.c_str
         else:
-            return self.program.executable.read_data(address, self.type)
+            assert False, "Invalid type"
 
     @property
-    def references(self) -> List[quokka.Reference]:
-        """References to/from this data"""
-        return self.program.references.resolve_data(self.proto_index)
+    def data_refs_to(self) -> list['Data | Function | AddressT']:
+        """Returns all data reference to this data"""
+        # If querying refs_to get the source address
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t.is_data]
 
     @property
-    def code_references(self) -> List[quokka.Reference]:
-        """Returns code referencing this Data"""
-        return [ref for ref in self.references if isinstance(ref.destination, tuple)]
+    def data_read_refs_to(self) -> list['Data | Function | AddressT']:
+        """Returns all data read reference to this data"""
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
 
     @property
-    def data_references(self) -> List[quokka.Reference]:
-        """Returns data references to/from this Data"""
-        return [ref for ref in self.references if isinstance(ref.destination, Data)]
+    def data_write_refs_to(self) -> list['Data | Function | AddressT']:
+        """Returns all data write reference to this data"""
+        return [_get_item(self.program, xref.source.address) for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
+    @property
+    def data_refs_from(self) -> list['Data | Function | AddressT']:
+        """Returns all data reference from this data"""
+        # If querying refs_from get the destination address
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t.is_data]
+
+    @property
+    def data_read_refs_from(self) -> list['Data | Function | AddressT']:
+        """Returns all data read reference from this data"""
+        # FIXME: Right now consider DATA_INDIR reference as read references (do we want to distinguish R/W ?)
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+
+    @property
+    def data_write_refs_from(self) -> list['Data | Function | AddressT']:
+        """Returns all data write reference from this data"""
+        return [_get_item(self.program, xref.destination.address) for t, xref in self._xrefs_from if t == RefType.DATA_WRITE]
+
+
+    @property
+    def code_refs_to(self) -> list[AddressT]:
+        """Returns all code reference to this data"""
+        # If querying refs_to get the source address
+        return [xref.source.address for t, xref in self._xrefs_to if t.is_code]
+
+    @property
+    def type_refs_from(self) -> list[TypeReference]:
+        """Returns all type reference from this data"""
+        # Get protobuf type ids
+        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from
+                    if t.is_data and xref.destination.HasField("data_type_identifier")]  # Note: do not use SYMBOL enum
+        # Resolve type ids to actual types
+        return [self.program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
+    
 
 class DataHolder(Mapping):
     """Data bucket
@@ -140,15 +211,12 @@ class DataHolder(Mapping):
     only once.
 
     Attributes:
-        proto_data: The protobuf data themselves
+        proto: The protobuf data themselves
         program: A reference to the Program
 
     Arguments:
         proto: The protobuf data
         program: The program
-
-    TODO:
-        Type hinting for proto parameter (RepeatedCompositeFieldContainer)
     """
 
     def __init__(self, proto, program: quokka.Program):
@@ -158,8 +226,12 @@ class DataHolder(Mapping):
             proto: List of data in the protobuf
             program: Backref to the program
         """
-        self.proto_data = proto.data
+        self.proto = proto.data
         self.program: quokka.Program = program
+        self._addr_to_idx: dict[AddressT, Index] = {
+            program.virtual_address(data.segment_index, data.segment_offset): index 
+            for index, data in enumerate(proto.data)
+        }
 
     def __setitem__(self, key: Index, value: Data) -> None:
         """Set a data"""
@@ -169,43 +241,25 @@ class DataHolder(Mapping):
         """Remove a data from the bucket"""
         raise ValueError("Should not be accessed")
 
-    def __getitem__(self, key: Index) -> Data:
+    def __getitem__(self, address: AddressT) -> Data:
         """Get a data from the bucket.
 
         Arguments:
-            key: Data Index
-
+            address: Data address
         Returns:
             A Data
         """
-        return Data(key, self.proto_data[key], self.program)
-
-    def get_data(self, address: AddressT) -> Data:
-        """Find a data by address
-
-        Iterates over the data to find the one at a specified offset
-
-        Arguments:
-            address: Offset to query
-
-        Returns:
-            A Data
-
-        Raises:
-            ValueError: if no data is found
-        """
-
-        # We have to iterate over every data because they are not sorted by offset
-        for index, data_proto in enumerate(self.proto_data):
-            if data_proto.offset + self.program.base_address == address:
-                return self[index]
-
-        raise ValueError(f"No data at offset 0x{address:x}")
+        key = self._addr_to_idx.get(address)
+        if key is None:
+            raise ValueError(f"No data at address 0x{address:x}")
+        # Right now we create a new Data object each time, but we could cache them if needed
+        return Data(key, self.proto[key], self.program)
 
     def __len__(self) -> int:
         """Number of data in the program"""
-        return len(self.proto_data)
+        return len(self._addr_to_idx)
 
     def __iter__(self):
         """Do not allow the iteration over the data"""
-        raise ValueError("Should not be accessed")
+        for addr, idx in self._addr_to_idx.items():
+            yield self[addr]

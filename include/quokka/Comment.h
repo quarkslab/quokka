@@ -32,7 +32,6 @@
 
 #include "absl/container/flat_hash_map.h"
 
-#include "Localization.h"  //Kept for Location
 #include "Util.h"
 #include "Windows.h"
 
@@ -67,6 +66,8 @@ enum CommentType : short {
  * A single comment structure.
  */
 struct Comment {
+  using Location = std::variant<ea_t>;  // TODO
+
   int indice;        ///< Index of the comment in the `Comments.comment_strings`
   CommentType type;  ///< Type of the comment
 

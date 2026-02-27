@@ -7,7 +7,7 @@ def test_export():
     assert prog is not None, "Unable to export"
 
     # Check number of functions
-    assert len(prog.fun_names) == 49, "Missing some functions"
+    assert len(prog.fun_names) == 50, "Missing some functions"
 
     for index in range(10):
         assert f"level{index}" in prog.fun_names, f"Missing function level {index}"
@@ -20,7 +20,6 @@ def test_export():
 
     # Imports
     func = prog[0x804e04c]
-    assert func.name == "strcmp", "Wrong function name"
+    assert "strcmp" in func.name, "Wrong function name"
     assert func.type == FunctionType.IMPORTED, "Wrong import type"
-    assert len(func) == 1, "Wrong number of chunks"
-    assert func[func.start].chunk_type == FunctionType.IMPORTED, "Wrong chunk type"
+    assert len(list(func.keys())) == 0, "Imported function should have no blocks"

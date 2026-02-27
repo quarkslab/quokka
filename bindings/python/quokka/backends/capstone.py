@@ -19,7 +19,8 @@ import capstone
 import quokka
 import quokka.analysis
 
-from quokka.types import AddressT, Endianness, Type, Optional
+from typing import Type
+from quokka.types import AddressT, Endianness
 
 
 def get_capstone_context(
@@ -78,7 +79,7 @@ def get_capstone_context(
 
 def _decode(
     context: capstone.Cs, opcode: bytes, address: AddressT, count: int = 1
-) -> Optional[capstone.CsInsn]:
+) -> list[capstone.CsInsn]:
     """Inner method to decode with capstone
 
     Arguments:
@@ -88,13 +89,13 @@ def _decode(
         count: Number of instructions to decode
 
     Returns:
-        A capstone instruction if any are found
+        A list of capstone instructions if any are found
     """
     capstone_insts = context.disasm(opcode, address, count)
-    return next(capstone_insts, None)
+    return list(capstone_insts)
 
 
-def update_capstone_context(program: quokka.Program, is_thumb: bool) -> capstone.Cs:
+def _update_capstone_context(program: quokka.Program, is_thumb: bool) -> capstone.Cs:
     """Returns an appropriate context for Capstone instructions
 
     For ARM architecture, if the instruction is Thumb, we must use a different context.
@@ -120,9 +121,36 @@ def update_capstone_context(program: quokka.Program, is_thumb: bool) -> capstone
     return program.capstone
 
 
-def capstone_decode_instruction(
-    inst: quokka.Instruction,
-) -> Optional[capstone.CsInsn]:
+def capstone_decode_block(
+    block: quokka.Block,
+) -> list[capstone.CsInsn]:
+    """Decode a basic block with capstone
+
+    Decode an block and retry for ARM to check if the Thumb mode was activated
+    The decoding logic is done by the inner method `_decode`.
+
+    Arguments:
+        inst: Block to translate
+
+    Returns:
+        A list of capstone instructions if they have been decoded
+    """
+
+    context: capstone.Cs = _update_capstone_context(block.program, block.is_thumb)
+    capstone_inst = _decode(context, block.bytes, block.address, count=0)
+
+    if not capstone_inst and context.arch == capstone.CS_ARCH_ARM:
+        if context.mode == capstone.CS_MODE_THUMB:
+            new_context = get_capstone_context(quokka.analysis.ArchARM)
+        else:
+            new_context = get_capstone_context(quokka.analysis.ArchARMThumb)
+
+        capstone_inst = _decode(new_context, block.bytes, block.address, count=0)
+    return capstone_inst
+
+
+
+def capstone_decode_instruction(inst: quokka.Instruction) -> capstone.CsInsn|None:
     """Decode an instruction with capstone
 
     Decode an instruction and retry for ARM to check if the Thumb mode was activated
@@ -135,10 +163,10 @@ def capstone_decode_instruction(
         A capstone instruction if it has been decoded
     """
 
-    context: capstone.Cs = update_capstone_context(inst.program, inst.thumb)
+    context: capstone.Cs = _update_capstone_context(inst.program, inst.is_thumb)
     capstone_inst = _decode(context, inst.bytes, inst.address, count=1)
 
-    if capstone_inst is None and context.arch == capstone.CS_ARCH_ARM:
+    if not capstone_inst and context.arch == capstone.CS_ARCH_ARM:
         if context.mode == capstone.CS_MODE_THUMB:
             new_context = get_capstone_context(quokka.analysis.ArchARM)
         else:
@@ -146,4 +174,4 @@ def capstone_decode_instruction(
 
         capstone_inst = _decode(new_context, inst.bytes, inst.address, count=1)
 
-    return capstone_inst
+    return capstone_inst[0] if capstone_inst else None

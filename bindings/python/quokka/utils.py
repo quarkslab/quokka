@@ -19,9 +19,10 @@ import functools
 import hashlib
 import logging
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Type
 
 import quokka
+from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.analysis import (
     QuokkaArch,
     ArchEnum,
@@ -36,7 +37,7 @@ from quokka.analysis import (
     ArchPPC64,
 )
 
-from quokka.types import Type, RegAccessMode
+from quokka.types import AccessMode
 
 if TYPE_CHECKING:
     import pathlib
@@ -65,7 +66,7 @@ def sha256_file(file_path: pathlib.Path) -> str:
     return sha.hexdigest()
 
 
-def check_hash(hash_proto: quokka.pb.Quokka.Meta.Hash, file_path: pathlib.Path) -> bool:
+def check_hash(hash_proto: Pb.Meta.Hash, file_path: pathlib.Path) -> bool:
     """Check if the hash is valid
 
     This method computes the appropriate hash based on what is available in the export
@@ -79,8 +80,8 @@ def check_hash(hash_proto: quokka.pb.Quokka.Meta.Hash, file_path: pathlib.Path) 
         Boolean for success
     """
     hash_methods = {
-        quokka.pb.Quokka.Meta.Hash.HASH_MD5: md5_file,
-        quokka.pb.Quokka.Meta.Hash.HASH_SHA256: sha256_file,
+        Pb.Meta.Hash.HASH_MD5: md5_file,
+        Pb.Meta.Hash.HASH_SHA256: sha256_file,
     }
 
     hash_method = hash_methods.get(hash_proto.hash_type)
@@ -93,21 +94,25 @@ def check_hash(hash_proto: quokka.pb.Quokka.Meta.Hash, file_path: pathlib.Path) 
 
 
 def get_isa(
-    proto_isa: "quokka.pb.Quokka.Meta.ISAValue",
+    proto_isa: "Pb.Meta.ISAValue",
 ) -> ArchEnum:
     """Convert a proto isa to an architecture"""
     mapping = {
-        quokka.pb.Quokka.Meta.PROC_INTEL: ArchEnum.X86,
-        quokka.pb.Quokka.Meta.PROC_ARM: ArchEnum.ARM,
-        quokka.pb.Quokka.Meta.PROC_PPC: ArchEnum.PPC,
-        quokka.pb.Quokka.Meta.PROC_MIPS: ArchEnum.MIPS,
+        Pb.Meta.PROC_INTEL: ArchEnum.X86,
+        Pb.Meta.PROC_ARM: ArchEnum.ARM,
+        # Pb.Meta.PROC_DALVIK: # Currenlty not supported by capstone
+        Pb.Meta.PROC_PPC: ArchEnum.PPC,
+        Pb.Meta.PROC_MIPS: ArchEnum.MIPS,
     }
 
     return mapping.get(proto_isa, ArchEnum.UNKNOWN)
 
 
+def get_cc(proto_cc: "Pb.CallingConvention") -> quokka.CallingConvention:
+    raise NotImplementedError("Calling convention parsing is not implemented yet.")
+
 def convert_address_size(
-    proto_address_size: "quokka.pb.Quokka.AddressSizeValue",
+    proto_address_size: "Pb.AddressSizeValue",
 ) -> int:
     """Convert the proto address size to an int value
 
@@ -120,9 +125,9 @@ def convert_address_size(
     Raises:
         ValueError: When the address size is not known
     """
-    if proto_address_size == quokka.pb.Quokka.ADDR_32:
+    if proto_address_size == Pb.ADDR_32:
         return 32
-    if proto_address_size == quokka.pb.Quokka.ADDR_64:
+    if proto_address_size == Pb.ADDR_64:
         return 64
 
     raise ValueError("Address size not known")
@@ -186,15 +191,13 @@ def parse_version(version: str) -> tuple[int, int, int]:
 
 
 def find_register_access(
-    register: int | str, access_mode: RegAccessMode, instructions: Iterable[Instruction]
+    register: str, access_mode: AccessMode, instructions: Iterable[Instruction]
 ) -> Instruction | None:
     """Traverse the list of instructions searching for the first one that access
     the specified register with the required access mode.
 
     Arguments:
-        reg: The identifier of the register we are targeting, that can either be
-            the capstone register ID (ex: capstone.x86_const.X86_REG_EAX) or the
-            register name (ex: "eax")
+        register: The identifier of the register as a string
         access_mode: The access mode to the register (read or write)
         instructions: An iterable of instructions to analyze
 
@@ -202,25 +205,12 @@ def find_register_access(
         The first instruction that access the register in the specified mode.
         Return None if no such instruction is found.
     """
+    r = register.lower()
 
     for instr in instructions:
-        # Retrieve the list of all registers read or modified by the instruction using capstone
-        regs_read, regs_write = instr.cs_inst.regs_access()
-
-        # Remap registers to the correct type
-        if isinstance(register, str):
-            register = register.lower()
-            regs_read = [instr.cs_inst.reg_name(r) for r in regs_read]
-            regs_write = [instr.cs_inst.reg_name(r) for r in regs_write]
-
-        # Check if it is accessing the target register in the correct mode
-        if (
-            register in regs_write
-            and (access_mode == RegAccessMode.WRITE or access_mode == RegAccessMode.ANY)
-        ) or (
-            register in regs_read
-            and (access_mode == RegAccessMode.READ or access_mode == RegAccessMode.ANY)
-        ):
+        # Retrieve the list of all registers read or written depending on query
+        if any(str(op).lower() == r and access_mode in op.access for op in instr.operands):
             return instr
+        # Otherwise continue
 
     return None

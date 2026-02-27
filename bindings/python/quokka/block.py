@@ -18,20 +18,14 @@ from __future__ import annotations
 import logging
 import collections
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, MutableMapping
 
 import quokka
 from quokka.types import (
     AddressT,
     BlockType,
-    DataType,
-    Dict,
-    Index,
-    Iterator,
-    List,
-    MutableMapping,
-    ReferenceType,
-    Set,
+    ExporterMode,
+    Index
 )
 
 if TYPE_CHECKING:
@@ -54,60 +48,75 @@ class Block(MutableMapping):
     Arguments:
         block_idx: Index in the protobuf file of the block
         start_address: Starting address of the block
-        chunk: Parent chunk (e.g. function) of the block.
+        function: Parent function of the block.
 
     Attributes:
-        proto_index: Index inside the protobuf
-        parent: A reference to the parent Chunk
+        proto: Protobuf object
+        parent: A reference to the parent Function
         program: A reference to the parent Program
         start: Start address
-        fake: Is it a fake block (e.g. belongs to a fake chunk)
         type: Block type
         address_to_index: A mapping of addresses to instruction indexes
         end: End address
         comments: List of comments attached to the block
-        references: References mapping attached to the block (TODO(dm): remove me?)
     """
 
     def __init__(
         self,
         block_idx: Index,
         start_address: AddressT,
-        chunk: quokka.Chunk,
+        function: quokka.Function,
     ):
         """Constructor"""
-        self.proto_index: Index = block_idx
-        self.parent: quokka.Chunk = chunk
-        self.program: quokka.Program = chunk.program
+        self._proto_index: Index = block_idx
+        self.parent: quokka.Function = function
 
-        block: "quokka.pb.Quokka.FunctionChunk.Block"
-        block = self.program.proto.function_chunks[chunk.proto_index].blocks[block_idx]
+        self.proto = function.proto.blocks[block_idx]
 
         self.start: int = start_address
-        self.fake: bool = block.is_fake
-        self.type: BlockType = BlockType.from_proto(block.block_type)
+        self.type: BlockType = BlockType.from_proto(self.proto.block_type)
+        self.size: int = self.proto.size
+        self.file_offset = self.proto.file_offset
 
-        self.address_to_index: Dict[AddressT, Index] = {}
-        self._raw_dict: Dict[AddressT, Index] = {}
+        self.is_thumb = self.proto.is_thumb
 
-        current_address: AddressT = self.start
-        for instruction_index, instruction_proto_index in enumerate(
-            block.instructions_index
-        ):
-            self.address_to_index[current_address] = instruction_index
-            self._raw_dict[current_address] = instruction_proto_index
-            current_address += self.program.proto.instructions[
-                instruction_proto_index
-            ].size
+        self.address_to_index: dict[AddressT, Index] = {}
+        self._raw_dict: dict[AddressT, quokka.Instruction] = {}
 
-        self.end: int = current_address
+        if self.program.mode == ExporterMode.FULL:
+            current_address: AddressT = self.start
+            for inst_idx, inst_pb_idx in enumerate(self.proto.instructions_index):
+                ins =  quokka.Instruction(inst_pb_idx, inst_idx, current_address, self)
+                self._raw_dict[current_address] = ins
+                current_address += ins.size
 
-        self.comments: Dict[AddressT, str] = {}
-        self.references: Dict[str, List[int]] = {"src": [], "dst": []}
+        elif self.program.mode == ExporterMode.LIGHT:
+            insts = quokka.backends.capstone.capstone_decode_block(self)
+            if len(insts) != self.proto.n_instr:
+                logger.warning(
+                    f"Decoded {len(insts)} instructions for block at 0x{self.start:x} but expected {self.proto.n_instr}."
+                )
+            for i, inst in enumerate(insts):  
+                ins = quokka.Instruction(-1, i, inst.address, self, backend_inst=inst)
+                self._raw_dict[ins.address] = ins
+        else:
+            assert False, "Unknown exporter mode"
 
-    def __setitem__(self, k: AddressT, v: Index) -> None:
+        self.comments: dict[AddressT, str] = {}
+
+    @property
+    def address(self) -> AddressT:
+        """Direct accessor of the block address"""
+        return self.start
+
+    @property
+    def program(self) -> quokka.Program:
+        """Return the parent program"""
+        return self.parent.program
+
+    def __setitem__(self, k: AddressT, ins: Instruction) -> None:
         """Update the instructions mapping"""
-        self._raw_dict.__setitem__(k, v)
+        self._raw_dict.__setitem__(k, ins)
 
     def __delitem__(self, v: AddressT) -> None:
         """Remove an instruction from the mapping"""
@@ -122,36 +131,9 @@ class Block(MutableMapping):
         """
         self.comments[addr] = value
 
-    @cached_property
-    def strings(self) -> List[str]:
-        """Compute the list of strings used in this block."""
-
-        strings: Set[str] = set()
-
-        for reference in self.program.references.resolve_block_references(
-            self.parent.proto_index,
-            self.proto_index,
-            ReferenceType.DATA,
-            towards=True,
-        ):
-            reference_source = reference.source
-            if (
-                isinstance(reference_source, quokka.data.Data)
-                and reference_source.type == DataType.ASCII
-            ):
-                strings.add(reference_source.value)
-
-        return list(strings)
-
     def __getitem__(self, address: AddressT) -> quokka.Instruction:
         """Retrieve an instruction at `address`."""
-        item = self._raw_dict.__getitem__(address)
-        return quokka.Instruction(
-            proto_index=item,
-            inst_index=self.address_to_index[address],
-            address=address,
-            block=self,
-        )
+        return self._raw_dict.__getitem__(address)
 
     def __len__(self) -> int:
         """Number of instruction in the block"""
@@ -162,31 +144,31 @@ class Block(MutableMapping):
         return iter(self._raw_dict)
 
     @property
-    def data_references(self):
-        """Return (and compute if needed) the data referenced by this block."""
-        data_references: List[quokka.Data] = []
-        for instruction in self.values():
-            data_references.extend(instruction.data_references)
-
-        return data_references
-
-    @property
-    def size(self) -> int:
+    def end(self) -> int:
         """Size of the block.
 
         This number is the number of instruction * the size of an instruction for
         architecture with fixed length instructions (e.g. ARM).
         """
-        return self.end - self.start
+        return self.start + self.size
 
     @cached_property
-    def constants(self) -> List[int]:
+    def constants(self) -> list[int]:
         """Constants used by the block"""
-        constants: List[int] = []
+        constants: list[int] = []
         for instruction in self.values():
             constants.extend(instruction.constants)
 
         return constants
+
+    @cached_property
+    def strings(self) -> list[str]:
+        """Strings used by the block"""
+        strings: list[str] = []
+        for instruction in self.values():
+            strings.extend(instruction.strings)
+
+        return strings
 
     @property
     def instructions(self) -> Iterator[Instruction]:
@@ -208,7 +190,7 @@ class Block(MutableMapping):
         TODO(dm):
             Check this
         """
-        return self.proto_index
+        return self._proto_index
 
     def successors(self) -> Iterator[AddressT]:
         """(Addresses of the) Successors of the current block."""
@@ -231,22 +213,20 @@ class Block(MutableMapping):
         All bytes for the block are read at once in the file but the result is not
         cached.
         """
-        try:
-            file_offset: int = self.program.addresser.file(self.start)
-        except quokka.NotInFileError:
+        if self.file_offset is None:
             logger.warning("Trying to get the bytes for a block not in file.")
             return b""
 
-        # Read all block at once
+        # Read the whole block at once
         block_bytes = self.program.executable.read_bytes(
-            offset=file_offset,
+            offset=self.file_offset,
             size=self.size,
         )
 
         return block_bytes
 
     @cached_property
-    def pcode_insts(self) -> List[pypcode.PcodeOp]:
+    def pcode_insts(self) -> list[pypcode.PcodeOp]:
         """Generate PCode instructions for the block
 
         This method will call the backend Pypcode and generate the instruction for the

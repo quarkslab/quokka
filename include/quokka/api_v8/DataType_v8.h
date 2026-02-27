@@ -13,12 +13,12 @@
 // limitations under the License.
 
 /**
- * @file Comment_v8.h
+ * @file DataType_v8.h
  * Management of comments specific for the old IDA API (v8).
  */
 
-#ifndef QUOKKA_COMMENT_V8_H
-#define QUOKKA_COMMENT_V8_H
+#ifndef QUOKKA_DATATYPE_V8_H
+#define QUOKKA_DATATYPE_V8_H
 
 #include <memory>
 
@@ -27,10 +27,8 @@
 // clang-format on
 #include <enum.hpp>
 
-#include "../Data.h"
-
 #if IDA_SDK_VERSION >= 850
-#error "DataType_v8.h can only be used with IDA SDK < 8.5"
+#error "Comment_v8.h can only be used with IDA SDK < 8.5"
 #endif
 
 namespace quokka {

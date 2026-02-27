@@ -12,14 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "quokka/Segment.h"
+#include <algorithm>
+#include <iterator>
+#include <stdexcept>
+
+// clang-format off: Compatibility.h must come before ida headers
+#include "quokka/Compatibility.h"
+// clang-format on
+#include <pro.h>
+#include <loader.hpp>
+#include <name.hpp>
+#include <segment.hpp>
+
+#include "absl/strings/str_format.h"
 
 #include "quokka/FileMetadata.h"
-#include "quokka/Writer.h"
+#include "quokka/Logger.h"
+#include "quokka/Segment.h"
+#include "quokka/Util.h"
 
 namespace quokka {
 
-SegmentType GetSegmentType(uchar seg_type) {
+/**
+ * Retrieve the type of a segment
+ *
+ * @param seg_type IDA segment type
+ * @return
+ */
+static constexpr SegmentType GetSegmentType(uchar seg_type) {
   switch (seg_type) {
     case SEG_CODE:
       return SegmentType::SEGMENT_CODE;
@@ -44,7 +64,7 @@ SegmentType GetSegmentType(uchar seg_type) {
 Segment::Segment(segment_t* segment) {
   qstring segment_name;
   if (get_segm_name(&segment_name, segment, GN_VISIBLE) != -1) {
-    name = std::move(ConvertIdaString(segment_name));
+    name = ConvertIdaString(segment_name);
   }
 
   start_addr = segment->start_ea;
@@ -76,12 +96,47 @@ Segment::Segment(segment_t* segment) {
   file_offset = get_fileregion_offset(segment->start_ea);
 }
 
-int ExportSegments(quokka::Quokka* proto) {
-  Timer timer(absl::Now());
-  QLOG_INFO << "Start to export segments";
+const Segment& Segments::get_exact(sel_t sel, ea_t start, ea_t end) const {
+  auto [first, last] = storage->bucket.equal_range(sel);
 
-  std::vector<Segment> segments;
-  segments.reserve(get_segm_qty());
+  // The iterator with filtering
+  auto check_range = [&](const auto& pair) {
+    return pair.second->start_addr == start && pair.second->end_addr == end;
+  };
+  auto it = std::ranges::find_if(first, last, check_range);
+
+  // No element, throw exception
+  if (it == last)
+    throw std::out_of_range(
+        absl::StrFormat("No matching Segment with sel=%d and range [0x%08x; "
+                        "0x%08x] in the collection",
+                        sel, start, end));
+
+  assert(std::ranges::find_if(std::next(it), last, check_range) == last &&
+         "Found multiple Segments with the same [sel, start, end]");
+
+  return *it->second;
+}
+
+const Segment& GetSegment(ea_t addr) {
+  const Segments& segments = Segments::GetInstance();
+
+  segment_t* ida_seg = getseg(addr);
+  if (!ida_seg ||
+      !segments.contains(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea)) {
+    throw std::out_of_range(
+        absl::StrFormat("Address 0x%x doesn't belong to any segment", addr));
+  }
+
+  const auto& segment =
+      segments.get_exact(ida_seg->sel, ida_seg->start_ea, ida_seg->end_ea);
+  assert(addr >= segment.start_addr && addr < segment.end_addr);
+
+  return segment;
+}
+
+int ExportSegments() {
+  Segments& segments = Segments::GetInstance();
 
   segment_t* seg = get_first_seg();
   while (seg != nullptr) {
@@ -89,16 +144,14 @@ int ExportSegments(quokka::Quokka* proto) {
     // reference it. See https://github.com/quarkslab/quokka/issues/29
     if (seg->is_header_segm() ||
         (is_visible_segm(seg) && !is_ephemeral_segm(seg->start_ea))) {
-      segments.emplace_back(seg);
+      segments.emplace(seg->sel, seg);
     }
 
     seg = get_next_seg(seg->start_ea);
   }
 
-  WriteSegments(proto, segments);
-  QLOG_INFO << absl::StrFormat("Segments exported (took %.2fs)",
-                               timer.ElapsedSeconds(absl::Now()));
+  segments.Freeze();  // Freezing guarantees stable pointers
 
-  return eOk;
+  return 0;
 }
 }  // namespace quokka
