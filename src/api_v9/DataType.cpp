@@ -16,6 +16,7 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <stdexcept>
 #include <variant>
 
 // clang-format off: Compatibility.h must come before ida headers
@@ -68,6 +69,17 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
     // Emplace the CompositeTypeMember
     CompositeTypeMember& member = composite_type.members.emplace_back(
         udm.offset / 8, ConvertIdaString(udm.name), member_base_type, size);
+
+    if (member_tif.is_from_subtil()) {
+      qstring ida_string;
+      tif.get_type_name(&ida_string);
+      QLOGW << absl::StrFormat(
+          "Member `%s` in `%s` comes from a different library. Treating it as "
+          "TYPE_UNK",
+          member.name, ida_string.c_str());
+      member.type = TYPE_UNK;
+      goto member_created;
+    }
 
     // Add the target type if needed
     switch (member_base_type) {
@@ -126,6 +138,8 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
         break;
     }
 
+  member_created:  // Here the member is valid and safe to use
+
     // Assert that the parsing went well and data type is consistent
     assert(IsPrimitiveType(member.type) || member.target_tuid.has_value());
 
@@ -182,6 +196,17 @@ static std::variant<type_uid_t, BaseType> ExportInnerElement(
     const tinfo_t& arg_tif) {
   if (arg_tif.empty())
     return TYPE_UNK;
+
+  if (arg_tif.is_from_subtil()) {
+    qstring name;
+    arg_tif.get_type_name(&name);
+    QLOGW << absl::StrFormat(
+        "Data type `%s` comes from a different library. Treating it as "
+        "TYPE_UNK",
+        name.c_str());
+    return TYPE_UNK;
+  }
+
   tinfo_t tif = arg_tif;  // Copy it to have a mutable variable
   ResolveTypedef(tif);
 
@@ -306,6 +331,9 @@ void ExportEnums() {
 type_uid_t ExportPointer(const tinfo_t& tif) {
   DataTypes& data_types = DataTypes::GetInstance();
 
+  if (tif.is_from_subtil())
+    throw std::invalid_argument("Type cannot come from an external library");
+
   // First check if it has already been exported
   type_uid_t tuid = GetTypeUid(tif);
   auto it = data_types.find_by_tuid(tuid);
@@ -334,6 +362,9 @@ type_uid_t ExportPointer(const tinfo_t& tif) {
 
 type_uid_t ExportArray(const tinfo_t& tif) {
   DataTypes& data_types = DataTypes::GetInstance();
+
+  if (tif.is_from_subtil())
+    throw std::invalid_argument("Type cannot come from an external library");
 
   // First check if it has already been exported
   type_uid_t tuid = GetTypeUid(tif);

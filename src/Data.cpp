@@ -63,6 +63,7 @@ bool Data::IsInitialized() const {
 }
 
 Data Data::Make(ea_t addr, uint32_t size) {
+  const DataTypes& data_types = DataTypes::GetInstance();
   BaseType data_type;
   tinfo_t tinf;
   tid_t tid = BADADDR;
@@ -106,7 +107,15 @@ Data Data::Make(ea_t addr, uint32_t size) {
 
   Data data(addr, data_type, size, get_fileregion_offset(addr), &segment);
 
-  const DataTypes& data_types = DataTypes::GetInstance();
+  // Ignore types that come from a different TIL library
+  if (!tinf.empty() && tinf.is_from_subtil()) {
+    data.base_type = TYPE_UNK;
+    QLOGW << absl::StrFormat(
+        "Data at address 0x%08llx has a type coming from a different library. "
+        "Marking it as TYPE_UNK",
+        addr);
+    goto data_exported;
+  }
 
   if (data_type == TYPE_POINTER) {
     data.target_tuid = ExportPointer(tinf);
