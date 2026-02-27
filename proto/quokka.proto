@@ -32,15 +32,15 @@ message Quokka {
   }
 
   enum EdgeType {
-    EDGE_JUMP_UNCOND = 0;  /* IDA:fl_JN        Ghidra:UNCONDITIONAL_JUMP   */
-    EDGE_JUMP_COND = 1;    /* IDA:fl_JN(+idp)  Ghidra:CONDITIONAL_JUMP     */
-    EDGE_JUMP_INDIR = 2;   /* IDA:fl_JN(+idp)  Ghidra:COMPUTED_JUMP        */
-    EDGE_CALL = 3;         /* IDA:fl_CN        Ghidra:CALL                 */
-    EDGE_CALL_INDIR = 4;   /* IDA:fl_CN(+idp)  Ghidra:COMPUTED_CALL        */
-    EDGE_DATA_READ = 5;    /* IDA:dr_R         Ghidra:READ                 */
-    EDGE_DATA_WRITE = 6;   /* IDA:dr_W         Ghidra:WRITE                */
-    EDGE_DATA_INDIR = 7;   /* IDA:dr_O         Ghidra:DATA                 */
-    EDGE_TYPE_SYMBOL = 8;  /* IDA:dr_S         Ghidra:-                    */
+    EDGE_JUMP_UNCOND = 0; /* IDA:fl_JN        Ghidra:UNCONDITIONAL_JUMP   */
+    EDGE_JUMP_COND = 1;   /* IDA:fl_JN(+idp)  Ghidra:CONDITIONAL_JUMP     */
+    EDGE_JUMP_INDIR = 2;  /* IDA:fl_JN(+idp)  Ghidra:COMPUTED_JUMP        */
+    EDGE_CALL = 3;        /* IDA:fl_CN        Ghidra:CALL                 */
+    EDGE_CALL_INDIR = 4;  /* IDA:fl_CN(+idp)  Ghidra:COMPUTED_CALL        */
+    EDGE_DATA_READ = 5;   /* IDA:dr_R         Ghidra:READ                 */
+    EDGE_DATA_WRITE = 6;  /* IDA:dr_W         Ghidra:WRITE                */
+    EDGE_DATA_INDIR = 7;  /* IDA:dr_O         Ghidra:DATA                 */
+    EDGE_TYPE_SYMBOL = 8; /* IDA:dr_S         Ghidra:-                    */
     EDGE_UNKNOWN = 9;
   }
 
@@ -278,7 +278,7 @@ message Quokka {
     int64 file_offset = 3;
     uint32 type_index = 4;
 
-    int32 size = 5;  // 0 if has no size | -1 if variable size
+    int32 size = 5;  // In bytes; 0 = no size, -1 = variable size
 
     string name = 6;
     bool not_initialized = 7;
@@ -289,10 +289,10 @@ message Quokka {
 
   message CompositeType {
     message Member {
-      uint32 offset = 1;
+      uint32 offset = 1;  // Bit offset within the composite
       string name = 2;
       uint32 type_index = 3;
-      uint32 size = 4;
+      uint32 size = 4;  // In bits. 0 if variable-length member
       repeated uint64 xref_to = 5;
       repeated string comments = 6;
     }
@@ -306,6 +306,7 @@ message Quokka {
 
     string name = 1;
     CompositeSubType type = 2;
+    // In bytes. 0 if forward decl or variable size
     uint32 size = 3;
     optional uint32 element_type_idx = 4;  // Only for pointer and array
     repeated Member members = 5;           // Only for union and struct
@@ -338,7 +339,6 @@ message Quokka {
   }
 
   message Reference {
-
     message Location {
       oneof Type {
         uint64 address = 1;
