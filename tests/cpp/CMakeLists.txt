@@ -11,13 +11,27 @@ add_executable(QuokkaTest_UnitTesting
 add_dependencies(QuokkaTest_UnitTesting quokka_proto)
 
 target_link_libraries(QuokkaTest_UnitTesting
-        PUBLIC ${IdaSdk_DIR}/lib/x64_linux_gcc_64/libida64.so)
+        PUBLIC ida64)
 
 target_include_directories(QuokkaTest_UnitTesting
         PRIVATE "${quokka_SOURCE_DIR}/include"
-        "${quokka_BINARY_DIR}/proto")
+        "${quokka_BINARY_DIR}/proto"
+        "${IdaSdk_INCLUDE_DIRS}")
+
+target_compile_definitions(QuokkaTest_UnitTesting
+        PUBLIC __EA64__ ${IdaSdk_PLATFORM} __X64__ __IDP__
+               USE_DANGEROUS_FUNCTIONS USE_STANDARD_FILE_FUNCTIONS)
 
 target_link_libraries(QuokkaTest_UnitTesting
         PRIVATE gtest gtest_main quokka_shared protobuf::libprotobuf)
 
 gtest_discover_tests(QuokkaTest_UnitTesting)
+
+# Standalone test for the key-snapshot iteration pattern (no IDA SDK needed)
+add_executable(QuokkaTest_DataType
+        DataType_test.cpp)
+
+target_link_libraries(QuokkaTest_DataType
+        PRIVATE gtest gtest_main absl::flat_hash_map)
+
+gtest_discover_tests(QuokkaTest_DataType)

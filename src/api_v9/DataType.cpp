@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <variant>
+#include <vector>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
@@ -245,31 +246,47 @@ void ExportCompositeDataTypes() {
     ExportStructOrUnion(tif);
   }
 
-  // After Exporting all the composite types, export the members of the
-  // composite types. We need to do it in this order or we won't be able to have
-  // members referencing structures that have yet to be exported or are
-  // incomplete.
+  // After exporting all the composite types, export their members.
+  // We need to do it in this order or we won't be able to have members
+  // referencing structures that have yet to be exported or are incomplete.
   // For ex: struct A { A *a; };
+  //
+  // IMPORTANT: We snapshot the keys before iterating because
+  // ExportCompositeMembers() may call ExportPointer()/ExportArray() which
+  // insert new entries into the same map, invalidating iterators.
+  DataTypes& data_types = DataTypes::GetInstance();
+  std::vector<type_uid_t> composite_keys;
   for_each_visit<StructureType, UnionType>(
-      DataTypes::GetInstance(),
-      [](const type_uid_t& tuid, auto& data_type) -> void {
-        assert(tuid.is_real_tid);  // We should never ever have a fake tid here
-        tinfo_t tif;
-        bool res = tif.get_type_by_tid(tuid.tid);
-        assert(res && "Couldn't retrieve the tinfo_t object from the tid_t");
-
-        // Print the enum as a C-string if possible
-        qstring composite_name;
-        tif.get_type_name(&composite_name);
-        qstring decl;
-        if (tif.print(&decl, composite_name.c_str(),
-                      PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
-          data_type.c_str = ConvertIdaString(decl);
-
-        // Export the members of the struct/union
-        if (!tif.is_empty_udt() && !tif.is_forward_decl())
-          ExportCompositeMembers(data_type, tif);
+      data_types,
+      [&composite_keys](const type_uid_t& tuid, auto&) {
+        composite_keys.push_back(tuid);
       });
+
+  for (const auto& tuid : composite_keys) {
+    auto it = data_types.find_by_tuid(tuid);
+    assert(it != data_types.end());
+
+    assert(tuid.is_real_tid);  // We should never ever have a fake tid here
+    tinfo_t tif;
+    bool res = tif.get_type_by_tid(tuid.tid);
+    assert(res && "Couldn't retrieve the tinfo_t object from the tid_t");
+
+    qstring composite_name;
+    tif.get_type_name(&composite_name);
+    qstring decl;
+
+    visit_selected<StructureType, UnionType>(
+        it->second, [&](auto& data_type) {
+          // Print the type as a C-string if possible
+          if (tif.print(&decl, composite_name.c_str(),
+                        PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+            data_type.c_str = ConvertIdaString(decl);
+
+          // Export the members of the struct/union
+          if (!tif.is_empty_udt() && !tif.is_forward_decl())
+            ExportCompositeMembers(data_type, tif);
+        });
+  }
 }
 
 void ExportEnums() {
