@@ -208,22 +208,22 @@ class Instruction : public ProtoHelper {
   //               BucketNew<OperandString>& operand_string_bucket);
 
   //   /**
-  //    * Hash implementation of the object using absl::Hash
-  //    * @tparam H Hash
-  //    * @param h Hash value
-  //    * @param m Instruction object
-  //    * @return An hash value for the object
-  //    */
-  //   template <typename H>
-  //   friend H AbslHashValue(H h, const Instruction& m) {
-  //     return H::combine(std::move(h), m.inst_size, m.mnemonic, m.operands);
-  //   }
-
-  //   /**
   //    * Operator overloading
   //    */
   //   bool operator==(const Instruction& rhs) const;
   //   bool operator!=(const Instruction& rhs) const;
+
+  /**
+   * Hash implementation of the object using absl::Hash
+   * @tparam H Hash
+   * @param h Hash value
+   * @param m Instruction object
+   * @return An hash value for the object
+   */
+  template <typename H>
+  friend H AbslHashValue(H h, const Instruction& m) {
+    return H::combine(std::move(h));
+  }
 };
 
 /**
