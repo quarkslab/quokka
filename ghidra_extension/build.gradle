@@ -1,0 +1,50 @@
+// Quokka Ghidra Extension - exports Ghidra analysis to .quokka protobuf files
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
+    }
+}
+
+// buildExtension.gradle applies 'java-library' and sets up Ghidra classpath.
+// It requires GHIDRA_INSTALL_DIR to point to a Ghidra installation (>= 12.0.3).
+def ghidraInstallDir = System.getenv("GHIDRA_INSTALL_DIR")
+if (ghidraInstallDir == null || ghidraInstallDir.isEmpty()) {
+    throw new GradleException(
+        "GHIDRA_INSTALL_DIR is not set. " +
+        "Point it to a Ghidra installation (>= 12.0.3) to build this extension.")
+}
+
+apply from: new File(ghidraInstallDir, "support/buildExtension.gradle").getAbsolutePath()
+apply plugin: 'com.google.protobuf'
+
+repositories {
+    mavenCentral()
+}
+
+// Ghidra 12.0.3 bundles protobuf-java 4.31.0 at runtime.
+// Use compileOnly so we compile against the same version without packaging it.
+def protobufVersion = '4.31.0'
+
+dependencies {
+    compileOnly "com.google.protobuf:protobuf-java:${protobufVersion}"
+
+    testImplementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    testImplementation 'junit:junit:4.13.2'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+}
+
+// Ensure proto generation runs before compilation
+compileJava.dependsOn 'generateProto'
+
+test {
+    useJUnit()
+}
