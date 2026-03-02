@@ -30,6 +30,10 @@ nav:
   - Installation: installation.md
   - Usage: usage.md
   - Features: features.md
+  - Decompilation: decompilation.md
+  - Write Features: write_feature.md
+  - Types: types.md
+  - Cross-References: xrefs.md
   - Tutorials:
       - First steps: tutorials/qb-crackme/
       - Features extraction: tutorials/features/
