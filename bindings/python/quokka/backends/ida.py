@@ -8,7 +8,7 @@ from quokka import Program
 
 
 
-def apply_program(program: Program) -> int:
+def apply_quokka(program: Program) -> int:
     """Apply the program to the IDA current database.
     
     Returns:
