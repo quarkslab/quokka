@@ -3,4 +3,3 @@
 # Only track files > 500K. Add new entries one by one as needed.
 
 # Test binaries
-tests/dataset/puraUpdate filter=lfs diff=lfs merge=lfs -text
