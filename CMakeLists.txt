@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
 
-find_program(CCACHE_PROGRAM ccache
+find_program(COMPILER_CACHE NAMES ccache sccache
         PATHS /opt/ccache)
 
-if (CCACHE_PROGRAM)
-    message(STATUS "Enable ccache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+if (COMPILER_CACHE)
+    message(STATUS "Enable compiler cache: ${COMPILER_CACHE}")
+    set(CMAKE_C_COMPILER_LAUNCHER "${COMPILER_CACHE}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${COMPILER_CACHE}")
 endif ()
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Targeting MacOS Version" FORCE)

@@ -31,6 +31,23 @@ abstracts the disassembler's API to expose a clean interface to the users.
 Quokka is heavily inspired by [BinExport](https://github.com/google/binexport),
 the binary exporter used by BinDiff.
 
+## Architecture
+
+```
+     IDA Pro               Ghidra
+        │                      │
+IDA Plugin (C++)    Ghidra Plugin (Java)
+        │                      │
+        └─── quokka.proto ─────┘
+          (protobuf schema)
+                   │
+             .quokka files
+                   │
+   Python bindings (quokka.Program)
+   ├── Capstone backend (primary)
+   └── Pypcode backend (optional)
+```
+
 ## Installation
 
 ### Python plugin
