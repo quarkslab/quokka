@@ -106,8 +106,8 @@ void Function::ExportPrototype(ea_t addr) {
   tinfo_t tif;
   qstring decl;
 
-  QLOGI << absl::StrFormat("Exporting prototype for function at address 0x%08x",
-                           this->start_addr);
+  // QLOGI << absl::StrFormat("Exporting prototype for function at address 0x%08x",
+  //                          this->start_addr);
 
   func_t* func = get_func(addr);
 
