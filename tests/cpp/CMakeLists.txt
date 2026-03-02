@@ -1,43 +1,13 @@
 include_guard()
 
-# Standalone tests (no IDA SDK runtime needed — always built)
-add_executable(QuokkaTest_DataType
-        DataType_test.cpp)
+# Standalone tests (no IDA SDK needed) - always built
+add_subdirectory(standalone)
 
-target_link_libraries(QuokkaTest_DataType
-        PRIVATE gtest gtest_main absl::flat_hash_map)
-
-gtest_discover_tests(QuokkaTest_DataType)
-
-# IDA-dependent tests (currently broken — IDA SDK kernel symbols
-# like msg(), error(), replace_wait_box() are not available outside
-# the plugin runtime). Enable with -DBUILD_IDA_TESTS=On once fixed.
+# IDA-dependent tests - only when explicitly enabled.
+# Currently broken: IDA SDK kernel symbols (msg(), error(),
+# replace_wait_box()) are not available outside the plugin runtime.
+# Enable with -DBUILD_IDA_TESTS=On once fixed.
 option(BUILD_IDA_TESTS "Build tests that require IDA SDK runtime" OFF)
 if(BUILD_IDA_TESTS)
-    protobuf_set_generated(quokka_proto)
-
-    add_executable(QuokkaTest_UnitTesting
-            Quokka_test.cpp
-            Bucket_test.cpp
-            # Block_test.cpp
-            "${quokka_BINARY_DIR}/proto/quokka.pb.cc")
-
-    add_dependencies(QuokkaTest_UnitTesting quokka_proto)
-
-    target_link_libraries(QuokkaTest_UnitTesting
-            PUBLIC ida64)
-
-    target_include_directories(QuokkaTest_UnitTesting
-            PRIVATE "${quokka_SOURCE_DIR}/include"
-            "${quokka_BINARY_DIR}/proto"
-            "${IdaSdk_INCLUDE_DIRS}")
-
-    target_compile_definitions(QuokkaTest_UnitTesting
-            PUBLIC __EA64__ ${IdaSdk_PLATFORM} __X64__ __IDP__
-                   USE_DANGEROUS_FUNCTIONS USE_STANDARD_FILE_FUNCTIONS)
-
-    target_link_libraries(QuokkaTest_UnitTesting
-            PRIVATE gtest gtest_main quokka_shared protobuf::libprotobuf)
-
-    gtest_discover_tests(QuokkaTest_UnitTesting)
+    add_subdirectory(ida)
 endif()

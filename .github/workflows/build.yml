@@ -120,7 +120,6 @@ jobs:
           cmake -B build-deps -S $GITHUB_WORKSPACE -G Ninja \
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
                 -DIDA_VERSION=9.3 \
-                -DBUILD_TEST=On \
                 -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR \
                 ${LLVM_ROOT_PARAM}
 
@@ -128,6 +127,93 @@ jobs:
         if: steps.ccache-cache.outputs.cache-hit != 'true'
         shell: bash
         run: cmake --build build-deps --config $BUILD_TYPE
+
+      - name: Show ccache stats
+        if: always()
+        shell: bash
+        run: ccache -sv || true
+
+  cpp-tests:
+    name: C++ standalone tests (${{ matrix.os }})
+    needs: [warm-cache]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@3a6cbe35ba64df7ca70c51365c4aff65db9a9037 # v2.1.1
+        with:
+          cmake-version: "latest"
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
+
+      - name: Install ccache
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install ccache
+          else
+            sudo apt-get update && sudo apt-get install -y ccache
+          fi
+
+      - name: Set up build caching
+        shell: bash
+        run: |
+          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
+          echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
+
+      - name: Cache FetchContent dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.fetchcontent
+          key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            fetchcontent-${{ runner.os }}-
+
+      - name: Cache ccache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.ccache
+          key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ccache-${{ runner.os }}-
+
+      - name: Configure ccache
+        shell: bash
+        run: |
+          ccache --set-config=max_size=500M
+          ccache --set-config=compression=true
+          ccache -z
+
+      - name: Set LLVM_ROOT (macOS)
+        if: ${{ runner.os == 'macOS' }}
+        shell: bash
+        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> $GITHUB_ENV
+
+      - name: Configure cmake
+        shell: bash
+        run: |
+          cmake -B build-tests -S $GITHUB_WORKSPACE -G Ninja \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DNO_BUILD=On \
+                -DBUILD_TEST=On \
+                -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR \
+                ${LLVM_ROOT_PARAM}
+
+      - name: Build tests
+        shell: bash
+        run: cmake --build build-tests --config Debug
+
+      - name: Run C++ standalone tests
+        shell: bash
+        run: ctest --test-dir build-tests --output-on-failure
 
       - name: Show ccache stats
         if: always()
@@ -290,7 +376,6 @@ jobs:
         run: |
           cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja \
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "$CMAKE_IDA_PARAM" \
-                -DBUILD_TEST=On \
                 -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR
 
       # We need to differentiate MacOS build from Linux because we want to use a specific compiler on MacOS
@@ -305,7 +390,6 @@ jobs:
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
                 $CMAKE_IDA_PARAM \
-                -DBUILD_TEST=On \
                 -DLLVM_ROOT=$(brew --prefix llvm@18) \
                 -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR
 
@@ -317,7 +401,6 @@ jobs:
         shell: bash
         run: |
           cmake -B "$CMAKE_BUILD_DIR" -S "$GITHUB_WORKSPACE" -DCMAKE_BUILD_TYPE=${BUILD_TYPE} $CMAKE_IDA_PARAM \
-                -DBUILD_TEST=On \
                 ${FETCHCONTENT_BASE_DIR:+-DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR}
 
       - name: Build
@@ -327,12 +410,6 @@ jobs:
         run: |
           cmake --build $CMAKE_BUILD_DIR --config $BUILD_TYPE
           cmake --install $CMAKE_BUILD_DIR
-
-      - name: Run C++ tests
-        env:
-          CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
-        shell: bash
-        run: ctest --test-dir $CMAKE_BUILD_DIR --output-on-failure
 
       - name: Show ccache stats
         if: always()
