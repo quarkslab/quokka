@@ -68,9 +68,14 @@ jobs:
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
-      - name: Install ccache (macOS)
-        if: runner.os == 'macOS'
-        run: brew install ccache
+      - name: Install ccache
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install ccache
+          else
+            sudo apt-get update && sudo apt-get install -y ccache
+          fi
 
       - name: Set up build caching
         shell: bash
@@ -201,9 +206,14 @@ jobs:
       # reference sources at the same path so ccache gets hits across SDK versions.
       # When adding Windows support, use sccache instead of ccache (MSVC compatible).
 
-      - name: Install ccache (macOS)
-        if: runner.os == 'macOS'
-        run: brew install ccache
+      - name: Install ccache
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install ccache
+          else
+            sudo apt-get update && sudo apt-get install -y ccache
+          fi
 
       - name: Set up build caching
         shell: bash
