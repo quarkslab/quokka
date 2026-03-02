@@ -389,14 +389,20 @@ class StructureType(dict, ComplexType):
         dict.__init__(self)
         ComplexType.__init__(self, index, proto, program)
 
-        # self.index_to_offset: dict[int, int] = {}
-        for index, member in enumerate(proto.members):
-            self[index] = StructureTypeMember(member, self)
+        self._members_list: list[StructureTypeMember] = []
+        for member in proto.members:
+            m = StructureTypeMember(member, self)
+            self._members_list.append(m)
+            self[m.offset] = m
 
     @cached_property
     def members(self) -> list[StructureTypeMember]:
         """Return all members in declaration order"""
-        return list(x[1] for x in sorted(self.items(), key=lambda x: x[0]))
+        return list(self._members_list)
+
+    def member_at(self, index: int) -> StructureTypeMember:
+        """Return a member by positional index (declaration order)."""
+        return self._members_list[index]
 
     def is_variable_size(self) -> bool:
         """Is the structure of variable size?"""
@@ -418,9 +424,9 @@ class UnionType(StructureType):
         program: Program back reference
     """
 
-    def __init__(self, proto: "Pb.CompositeType", program: "Program") -> None:
+    def __init__(self, index: Index, proto: "Pb.CompositeType", program: "Program") -> None:
         dict.__init__(self)
-        ComplexType.__init__(self, proto, program)
+        ComplexType.__init__(self, index, proto, program)
 
         self._members_list: list[StructureTypeMember] = []
         self.index_to_offset: dict[int, int] = {}
