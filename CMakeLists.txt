@@ -116,7 +116,7 @@ if (UNIX)
         endif()
 
         add_compile_options(
-            -gfull
+            "$<$<CONFIG:Debug>:-gfull>"
             -Wno-nullability-completeness
         )
 
