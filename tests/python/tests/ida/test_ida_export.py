@@ -70,7 +70,7 @@ class TestPuraUpdateExport:
         assert self.prog is not None
 
     def test_function_count(self):
-        assert len(self.prog.fun_names) == 74
+        assert len(self.prog.fun_names) == 113
 
     def test_has_types(self):
         types_list = list(self.prog.types)
@@ -88,9 +88,9 @@ class TestPuraUpdateExport:
         assert self.prog.address_size == 32
 
     def test_main_function_exists(self):
-        main_func = self.prog.get_function("main")
+        main_func = self.prog.get_function("main", approximative=False)
         assert main_func is not None, "main function should exist"
 
     def test_main_has_multiple_blocks(self):
-        main_func = self.prog.get_function("main")
+        main_func = self.prog.get_function("main", approximative=False)
         assert len(main_func.graph) > 1, "main should have multiple blocks"
