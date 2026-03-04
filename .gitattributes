@@ -1,0 +1,5 @@
+# Git LFS tracking rules
+#
+# Only track files > 500K. Add new entries one by one as needed.
+
+# Test binaries

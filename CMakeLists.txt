@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
 
-find_program(CCACHE_PROGRAM ccache
+find_program(COMPILER_CACHE NAMES ccache sccache
         PATHS /opt/ccache)
 
-if (CCACHE_PROGRAM)
-    message(STATUS "Enable ccache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+if (COMPILER_CACHE)
+    message(STATUS "Enable compiler cache: ${COMPILER_CACHE}")
+    set(CMAKE_C_COMPILER_LAUNCHER "${COMPILER_CACHE}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${COMPILER_CACHE}")
 endif ()
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Targeting MacOS Version" FORCE)
@@ -115,7 +116,7 @@ if (UNIX)
         endif()
 
         add_compile_options(
-            -gfull
+            "$<$<CONFIG:Debug>:-gfull>"
             -Wno-nullability-completeness
         )
 
@@ -148,6 +149,18 @@ if (UNIX)
 elseif(WIN32)
 endif()
 
+# Abseil is needed by both the plugin and standalone tests
+if (NOT NO_BUILD OR BUILD_TEST)
+    set(ABSL_PROPAGATE_CXX_STD ON)
+
+    FetchContent_Declare(
+            abseil
+            GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
+            GIT_TAG 20250127.0
+    )
+    FetchContent_MakeAvailable(abseil)
+endif ()
+
 if (NOT NO_BUILD)
     set(GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated/include")
     configure_file(
@@ -161,15 +174,6 @@ if (NOT NO_BUILD)
         add_link_options(-fsanitize=address)
 
     endif ()
-
-    set(ABSL_PROPAGATE_CXX_STD ON)
-
-    FetchContent_Declare(
-            abseil
-            GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
-            GIT_TAG 20250127.0
-    )
-    FetchContent_MakeAvailable(abseil)
 
     FetchContent_Declare(
             protobuf

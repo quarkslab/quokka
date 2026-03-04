@@ -348,7 +348,7 @@ class MapBucket
     }
 
     // Otherwise insert it
-    auto [it, ok] = this->storage->bucket.insert(
+    auto [it, ok] = this->storage->bucket.emplace(
         key, std::make_unique<P>(std::forward<Args>(args)...));
     it->second->ref_count++;
     return *it->second;

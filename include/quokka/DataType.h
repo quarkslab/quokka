@@ -405,9 +405,15 @@ class DataTypes {
    * @return An iterator to the requested element. If no such element is found,
    * past-the-end (see end()) iterator is returned.
    */
+  iterator find_by_tuid(const type_uid_t& tuid) {
+    return iterator{collection.find(tuid)};
+  }
+
   const_iterator find_by_tuid(const type_uid_t& tuid) const {
     return const_iterator{collection.find(tuid)};
   }
+
+  void clear() { collection.clear(); }
 
   size_t size() const { return collection.size(); }
 };

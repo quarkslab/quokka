@@ -676,6 +676,12 @@ class Program(dict):
 
         if not database_file.is_file():
             database_path = database_file.with_suffix("")
+            # Clean up stale IDA database files to prevent IDA from
+            # failing in autonomous mode when a database already exists.
+            for suffix in (".i64", ".idb"):
+                stale_db = database_path.with_suffix(suffix)
+                if stale_db.is_file():
+                    stale_db.unlink()
         else:
             exec_path = database_file
             database_path = None

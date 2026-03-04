@@ -15,18 +15,9 @@
 import pytest
 from pathlib import Path
 
-import quokka
 
-
-@pytest.fixture(scope="module")
-def root_directory(request) -> Path:
-    """Return the
-    """
-    return Path(request.fspath).parent.parent.parent.parent
-
-
-@pytest.fixture
-def prog(root_directory: Path):
-    binary_path = root_directory / "docs/samples/qb-crackme"
-    return quokka.Program(binary_path.with_suffix(".quokka"), binary_path)
+@pytest.fixture(scope="session")
+def root_directory() -> Path:
+    """Return the repository root directory."""
+    return Path(__file__).resolve().parent.parent.parent.parent
 

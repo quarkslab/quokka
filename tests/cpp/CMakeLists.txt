@@ -1,23 +1,31 @@
+# Standalone tests (no IDA SDK needed) - always built
 include_guard()
 
-protobuf_set_generated(quokka_proto)
+add_executable(QuokkaTest_DataType
+        DataType_test.cpp)
 
-add_executable(QuokkaTest_UnitTesting
-        Quokka_test.cpp
-        Bucket_test.cpp
-        # Block_test.cpp
-        "${quokka_BINARY_DIR}/proto/quokka.pb.cc")
+target_link_libraries(QuokkaTest_DataType
+        PRIVATE gtest gtest_main absl::flat_hash_map)
 
-add_dependencies(QuokkaTest_UnitTesting quokka_proto)
+gtest_discover_tests(QuokkaTest_DataType)
 
-target_link_libraries(QuokkaTest_UnitTesting
-        PUBLIC ${IdaSdk_DIR}/lib/x64_linux_gcc_64/libida64.so)
+# Util tests (standalone copies of utility logic)
+add_executable(QuokkaTest_Util
+        Util_test.cpp)
 
-target_include_directories(QuokkaTest_UnitTesting
-        PRIVATE "${quokka_SOURCE_DIR}/include"
-        "${quokka_BINARY_DIR}/proto")
+target_link_libraries(QuokkaTest_Util
+        PRIVATE gtest gtest_main absl::time absl::strings)
 
-target_link_libraries(QuokkaTest_UnitTesting
-        PRIVATE gtest gtest_main quokka_shared protobuf::libprotobuf)
+gtest_discover_tests(QuokkaTest_Util)
 
-gtest_discover_tests(QuokkaTest_UnitTesting)
+# Bucket tests (uses actual Bucket.h/ProtoHelper.h headers, no IDA needed)
+add_executable(QuokkaTest_Bucket
+        Bucket_test.cpp)
+
+target_include_directories(QuokkaTest_Bucket
+        PRIVATE ${PROJECT_SOURCE_DIR}/include/quokka)
+
+target_link_libraries(QuokkaTest_Bucket
+        PRIVATE gtest gtest_main absl::flat_hash_set absl::btree absl::hash)
+
+gtest_discover_tests(QuokkaTest_Bucket)
