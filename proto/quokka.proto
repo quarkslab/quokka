@@ -244,6 +244,9 @@ message Quokka {
     repeated string comments = 13;
 
     FunctionEdits edits = 14;
+
+    // Whether the function is exported (visible in the binary's export table)
+    bool is_exported = 15;
   }
 
   message Layout {

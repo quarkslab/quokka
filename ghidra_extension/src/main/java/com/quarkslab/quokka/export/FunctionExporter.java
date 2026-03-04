@@ -80,6 +80,10 @@ public class FunctionExporter {
                 funcBuilder.setPrototype(prototype);
             }
 
+            // Exported symbol detection
+            funcBuilder.setIsExported(
+                    program.getSymbolTable().isExternalEntryPoint(entry));
+
             // Blocks and edges (only for non-external functions with bodies)
             if (!func.isExternal() && func.getBody() != null
                     && !func.getBody().isEmpty()) {

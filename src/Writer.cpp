@@ -649,6 +649,7 @@ void WriteFunctions(Quokka* proto, const std::vector<Function>& functions) {
 
     proto_func->set_file_offset(function.file_offset);
     proto_func->set_function_type(ToProtoFuncType(function.func_type));
+    proto_func->set_is_exported(function.is_exported);
 
     // Reserve capacity
     int blocks_size = static_cast<int>(function.blocks.size());
