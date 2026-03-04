@@ -37,7 +37,6 @@ def test_pypcode_decode_instruction(mocker):
     assert isinstance(inst_decoded[0], pypcode.PcodeOp)
 
 
-@pytest.mark.skip(reason="Must rewrite this because using a generator is a pain")
 def test_pypcode_decode_block(mocker):
 
     block_bytes = [b"\x55", b"\x48\x89\xe5", b"\xc9", b"\xc3"]
@@ -47,8 +46,15 @@ def test_pypcode_decode_block(mocker):
     block.start = 0x1000
     block.__len__ = lambda _: len(block_bytes)
 
-    instructions = [mocker.MagicMock(size=len(inst_bytes)) for inst_bytes in block_bytes]
-    block.instructions = instructions
+    instructions = [
+        mocker.MagicMock(size=len(inst_bytes), is_thumb=False)
+        for inst_bytes in block_bytes
+    ]
+    # block.instructions is a property returning an iterator; mock it as such
+    type(block).instructions = mocker.PropertyMock(
+        return_value=iter(instructions)
+    )
+    block.program.arch = quokka.analysis.ArchX64
     block.program.pypcode = pypcode_backend.get_pypcode_context(
         quokka.analysis.ArchX64
     )
