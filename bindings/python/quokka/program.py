@@ -386,6 +386,9 @@ class Program(dict):
                         self._types[type_index] = ArrayType(type_index, pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_POINTER:
                         self._types[type_index] = PointerType(type_index, pb_type.composite_type, self)
+                    case _:
+                        # Unknown CompositeSubType -- degrade to TYPE_UNK for forward compat
+                        self._types[type_index] = BaseType.UNKNOWN
             elif pb_type.WhichOneof("OneofType") == "primitive_type":
                 self._types[type_index] = BaseType.from_proto(pb_type.primitive_type)
             else:

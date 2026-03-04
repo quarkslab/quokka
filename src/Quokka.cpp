@@ -168,6 +168,7 @@ static int ExportBinary(const std::string& filename) {
     ExportSegments();
     ExportEnums();  // First enums
     ExportCompositeDataTypes();
+    ExportTypedefs();  // After composites so target types exist
     WriteHeaders(&quokka_protobuf);
   }
 

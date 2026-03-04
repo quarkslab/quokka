@@ -167,12 +167,12 @@ static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
     if (it == data_types.end()) {
       tif.get_numbered_type(ord);
 
-      if (tif.is_typedef() || tif.is_typeref()) {
+      if (tif.is_typeref() && !tif.is_typedef()) {
         QLOGE << absl::StrFormat(
-            "Dropping xref from 0x%08llx to typedef/typeref %08llx "
+            "Dropping xref from 0x%08llx to typeref %08llx "
             "(specifically it is 0x%08llx)",
             address, parent_tid, xref.to);
-        continue;  // It's kinda ok to lose references to typerefs
+        continue;  // Typerefs (non-typedef) may not be in the table
       }
 
       // It's not ok to lose xrefs on real types

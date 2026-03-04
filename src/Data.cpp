@@ -72,14 +72,9 @@ Data Data::Make(ea_t addr, uint32_t size) {
     if (!get_tinfo(&tinf, addr))
       assert(false);
 
-    // Resolve the typedef/typeref to final type
-    if (tinf.is_typeref() || tinf.is_typedef()) {
-      uint32_t final_ordinal = tinf.get_final_ordinal();
-      assert(final_ordinal > 0 &&
-             "Got a typedef/typeref type without a final ordinal");
-      if (!tinf.get_numbered_type(final_ordinal))
-        assert(false && "Cannot retrieve the final ordinal tinfo_t");
-    }
+    // Resolve the typedef/typeref to final concrete type (uses name-based
+    // fallback when get_final_ordinal() returns 0).
+    ResolveTypedef(tinf);
     tid = tinf.get_tid();
     data_type = GetBaseType(tinf);
   } else {  // No tinfo, fall back on the flags

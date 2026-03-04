@@ -375,7 +375,7 @@ static void WriteCompositeTypes(Quokka* proto) {
     proto_composite_type->set_size(composite.size);
 
     // Write inner memeber type for pointers and arrays
-    if constexpr (is_one_of_t<T, PointerType, ArrayType>) {
+    if constexpr (is_one_of_t<T, PointerType, ArrayType, TypedefType>) {
       assert(composite.element_type.has_value() &&
              "PointerType or ArrayType doesn't have a element_type");
       if (std::holds_alternative<BaseType>(*composite.element_type)) {
@@ -432,11 +432,12 @@ static void WriteCompositeTypes(Quokka* proto) {
   uint32_t i = proto->types_size();
 
   // First write all the composite types without members
-  for_each_visit<StructureType, UnionType, PointerType, ArrayType>(
-      data_types, write_composite_type);
+  for_each_visit<StructureType, UnionType, PointerType, ArrayType,
+                 TypedefType>(data_types, write_composite_type);
 
   // Finally write all the members
-  for_each_visit<StructureType, UnionType, PointerType, ArrayType>(
+  for_each_visit<StructureType, UnionType, PointerType, ArrayType,
+                 TypedefType>(
       data_types, [&](const auto& composite) {
         Quokka::CompositeType* proto_composite_type =
             proto->mutable_types(i)->mutable_composite_type();

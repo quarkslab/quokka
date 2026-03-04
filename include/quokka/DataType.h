@@ -195,6 +195,19 @@ class ArrayType : public CompositeType {
   ArrayType(ArgsT&&... Args) : CompositeType(std::forward<ArgsT>(Args)...) {}
 };
 
+/**
+ * -----------------------------------------------------------------------------
+ * quokka::TypedefType
+ * -----------------------------------------------------------------------------
+ * A class representing a typedef/alias type in IDA.
+ */
+class TypedefType : public CompositeType {
+ public:
+  template <typename... ArgsT>
+  TypedefType(ArgsT&&... Args)
+      : CompositeType(std::forward<ArgsT>(Args)...) {}
+};
+
 struct EnumValue {
   std::string name;
   int64_t value;
@@ -245,14 +258,16 @@ constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
     return Quokka_CompositeType_CompositeSubType_TYPE_POINTER;
   else if constexpr (std::is_same_v<U, ArrayType>)
     return Quokka_CompositeType_CompositeSubType_TYPE_ARRAY;
+  else if constexpr (std::is_same_v<U, TypedefType>)
+    return Quokka_CompositeType_CompositeSubType_TYPE_TYPEDEF;
   else
     static_assert(false, "Mismatch between the CompositeSubTypes");
 }
 
 class DataTypes {
  public:
-  using TypeT =
-      std::variant<StructureType, UnionType, EnumType, PointerType, ArrayType>;
+  using TypeT = std::variant<StructureType, UnionType, EnumType, PointerType,
+                             ArrayType, TypedefType>;
   using CollectionT = absl::flat_hash_map<type_uid_t, std::unique_ptr<TypeT>>;
 
  private:
@@ -501,6 +516,14 @@ void ExportCompositeDataTypes();
  * Export all the enums defined in the program
  */
 void ExportEnums();
+
+/**
+ * Export all typedef types from the IDA type library.
+ *
+ * Must be called after ExportCompositeDataTypes() so that target types
+ * are already registered in the DataTypes singleton.
+ */
+void ExportTypedefs();
 
 type_uid_t ExportPointer(const tinfo_t& tif);
 
