@@ -377,7 +377,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    }</div>
 <div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
 <div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    <span class="comment">// Otherwise insert it</span></div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    <span class="keyword">auto</span> [it, ok] = this-&gt;storage-&gt;bucket.insert(</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    <span class="keyword">auto</span> [it, ok] = this-&gt;storage-&gt;bucket.emplace(</div>
 <div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        key, std::make_unique&lt;P&gt;(std::forward&lt;Args&gt;(args)...));</div>
 <div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    it-&gt;second-&gt;ref_count++;</div>
 <div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    <span class="keywordflow">return</span> *it-&gt;second;</div>
