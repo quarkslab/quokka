@@ -112,7 +112,7 @@ message Quokka {
 
     OperandType type = 1;
 
-    oneof Value {
+    oneof OperandValue {
       string register_index = 2;
       int64 value = 3;  // TODO merge with address below?
       int64 address = 4;
