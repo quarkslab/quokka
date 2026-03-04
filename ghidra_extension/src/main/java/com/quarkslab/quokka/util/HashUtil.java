@@ -1,7 +1,7 @@
 package com.quarkslab.quokka.util;
 
 import ghidra.program.model.listing.Program;
-import ghidra.program.model.mem.FileBytes;
+import ghidra.program.database.mem.FileBytes;
 
 import java.io.File;
 import java.io.FileInputStream;

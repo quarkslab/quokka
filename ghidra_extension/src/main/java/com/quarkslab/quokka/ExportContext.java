@@ -5,6 +5,7 @@ import com.quarkslab.quokka.util.AddressUtil.SegmentInfo;
 import com.quarkslab.quokka.util.GhidraTypeMapper;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.data.*;
+import ghidra.program.database.data.DataTypeUtilities;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.Msg;
@@ -116,6 +117,9 @@ public class ExportContext {
 
         // Strip typedefs
         dt = DataTypeUtilities.getBaseDataType(dt);
+        if (dt == null) {
+            return 0; // TYPE_UNK
+        }
 
         // Check primitive types first
         Quokka.BaseType baseType = GhidraTypeMapper.mapPrimitive(dt);
