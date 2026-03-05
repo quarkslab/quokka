@@ -84,7 +84,7 @@ jobs:
           echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
 
       - name: Cache FetchContent dependencies
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -93,7 +93,7 @@ jobs:
 
       - name: Cache ccache
         id: ccache-cache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -170,7 +170,7 @@ jobs:
           echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
 
       - name: Cache FetchContent dependencies
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -178,7 +178,7 @@ jobs:
             fetchcontent-${{ runner.os }}-
 
       - name: Cache ccache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -308,7 +308,7 @@ jobs:
           echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
 
       - name: Cache FetchContent dependencies
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -316,7 +316,7 @@ jobs:
             fetchcontent-${{ runner.os }}-
 
       - name: Cache ccache
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
