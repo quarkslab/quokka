@@ -208,7 +208,7 @@ class Program(dict):
 
         for function in self.values():
             call_graph.add_node(function.start)
-            call_graph.add_edges_from(product((function.start,), function.callees))
+            call_graph.add_edges_from(product((function.start,), (x.start for x in function.callees)))
             
         return call_graph
 
