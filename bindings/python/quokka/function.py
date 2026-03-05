@@ -29,7 +29,8 @@ from quokka.types import (
     RefType,
     FunctionType,
     Index,
-    SegmentType
+    SegmentType,
+    RefType
 )
 
 logger = logging.getLogger(__name__)
@@ -139,8 +140,6 @@ class Function(dict):
             block_address: int = program.virtual_address(block.segment_index, block.segment_offset)
             self._block_data[block_address] = (block_index, block.size)
         self._index_to_address = {idx: addr for addr, (idx, _) in self._block_data.items()}
- 
-        self._data_references: list[quokka.Data] = []
 
         # Continuous chunks of code in the function
         block_ranges = sorted((addr, addr+size) for addr, (idx, size) in self._block_data.items())
@@ -200,7 +199,7 @@ class Function(dict):
         self.proto.comments.append(comment)
         self.proto.edits.comments.append(len(self.proto.comments) - 1)
 
-    def add_edge(self, source: Block, destination: Block, type: EdgeType) -> None:
+    def add_edge(self, source: Block, destination: Block, type: RefType) -> None:
         """Add an edge to the function CFG"""
         assert source in self.blocks and destination in self.blocks, "Both source and destination blocks must belong to the function"
         edge = self.proto.edges.add()
@@ -333,7 +332,7 @@ class Function(dict):
                 xref = self.program.proto.references[inst_xref.xref_index]
                 typ = RefType.from_proto(xref.reference_type)
                 if typ.is_code:
-                    if f := self.program.find_function_by_address(xref.source.address):
+                    if f := self.program.get(xref.source.address):
                         callers.append(f)
         return callers
 

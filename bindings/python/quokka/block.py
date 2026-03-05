@@ -192,10 +192,12 @@ class Block(MutableMapping):
         """
         return self._proto_index
 
+    @property
     def successors(self) -> Iterator[AddressT]:
         """(Addresses of the) Successors of the current block."""
         return self.parent.graph.successors(self.start)
 
+    @property
     def predecessors(self) -> Iterator[AddressT]:
         """(Addresses of) Predecessors of the current block"""
         return self.parent.graph.predecessors(self.start)

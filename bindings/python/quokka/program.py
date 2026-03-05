@@ -85,7 +85,7 @@ class Program(dict):
         endianness: Program endianness
         executable: An object to manage the binary file
         references: The reference manager
-        data_holder: The data manager
+        data: The data manager
         fun_names: A mapping of function names to functions
 
     Raises:
@@ -147,7 +147,7 @@ class Program(dict):
         self.calling_convention: CallingConvention = CallingConvention.from_proto(self.proto.meta.calling_convention)
 
         self.executable = quokka.Executable(exec_path, self.endianness)
-        self.data_holder = quokka.DataHolder(self.proto, self)
+        self.data = quokka.DataHolder(self.proto, self)
 
         # Functions
         # self.functions: Dict[int, quokka.Function] = {}
@@ -213,13 +213,16 @@ class Program(dict):
         return call_graph
 
     @property
-    def data(self) -> Iterable[quokka.Data]:
-        """Data in the program
+    def functions(self) -> Iterable[quokka.Function]:
+        """Functions accessor
+
+        Allows to retrieve the different functions of a program (as defined by the
+        disassembler).
 
         Returns:
-            Iterable of data in the Program
+            A list of functions
         """
-        return iter(self.data_holder)
+        yield from self.values()
 
     @property
     def types(self) -> Iterable[TypeT]:
@@ -242,20 +245,6 @@ class Program(dict):
             An absolute address
         """
         return self.segments[seg_id].address + seg_offset
-
-    def find_function_by_address(self, address: AddressT) -> quokka.Function|None:
-        """Find a function by an address
-
-        Arguments:
-            address: Address to query
-
-        Returns:
-            The function at the address or None
-        """
-        for function in self.values():
-            if function.in_function(address):
-                return function
-        return None
 
     def address_to_offset(self, address: AddressT) -> int:
         """Converts a program offset to a file offset.
@@ -555,7 +544,7 @@ class Program(dict):
         Raises:
             ValueError: When no data is found at the address
         """
-        return self.data_holder[address]
+        return self.data[address]
 
     def __repr__(self) -> str:
         """Program representation"""
