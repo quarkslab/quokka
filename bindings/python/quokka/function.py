@@ -332,7 +332,7 @@ class Function(dict):
                 xref = self.program.proto.references[inst_xref.xref_index]
                 typ = RefType.from_proto(xref.reference_type)
                 if typ.is_code:
-                    if f := self.program.get(xref.source.address):
+                    if f := self.program.find_function_by_address(xref.source.address):
                         callers.append(f)
         return callers
 
@@ -361,6 +361,10 @@ class Function(dict):
     def __hash__(self) -> int:  # type: ignore
         """Hash value"""
         return self.start
+
+    def __bool__(self) -> bool:
+        """Override dict-behavior to always return True (like an object)"""
+        return True
 
     def __str__(self) -> str:
         """Function representation"""

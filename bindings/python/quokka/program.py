@@ -466,6 +466,24 @@ class Program(dict):
 
         raise IndexError(f"No instruction at address 0x{address:x}")
 
+    def find_function_by_address(self, address: AddressT) -> quokka.Function|None:
+        """Get a function by any address.
+
+        Arguments:
+            address: AddressT: within the function
+
+        Returns:
+            A `quokka.Function` None if not belonging to any function
+        """
+        if address in self:
+            return self[address]
+        else:
+            # try finding it in the functions
+            for function in self.values():
+                if function.in_function(address):
+                    return function
+        return None
+
     def get_function(
         self, name: str, approximative: bool = True, normal: bool = False
     ) -> quokka.Function:
