@@ -188,5 +188,59 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool, mode: str,
 
 
 
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option(
+    "--commit",
+    "action",
+    flag_value="commit",
+    default=True,
+    help="Write .quokka and apply edits to the disassembler (default)",
+)
+@click.option(
+    "--regenerate",
+    "action",
+    flag_value="regenerate",
+    help="commit() then re-export a fresh .quokka from IDA (slower)",
+)
+@click.option("-v", "--verbose", count=True, help="Increase logging verbosity")
+@click.argument("quokka_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("binary_file", type=click.Path(exists=True, dir_okay=False))
+def apply_changes(
+    action: str, verbose: int, quokka_file: str, binary_file: str
+) -> None:
+    """Apply pre-recorded edits from a .quokka file back to the disassembler.
+
+    QUOKKA_FILE is the .quokka file containing pending edits.
+    BINARY_FILE is the corresponding binary executable.
+
+    Use --commit (default) to write the .quokka and push edits to the IDA
+    database.  Use --regenerate to also trigger a fresh re-export from IDA.
+    """
+    logging.basicConfig(
+        format="%(message)s", level=logging.DEBUG if verbose else logging.INFO
+    )
+
+    try:
+        program = Program.open(quokka_file, binary_file)
+    except QuokkaError as e:
+        logging.error(f"Failed to open {quokka_file}: {e}")
+        sys.exit(1)
+
+    if action == "commit":
+        success = program.commit()
+        if success:
+            logging.info(f"Edits committed to {quokka_file}")
+        else:
+            logging.error("commit() failed")
+            sys.exit(1)
+    else:  # regenerate
+        try:
+            new_program = program.regenerate()
+            logging.info(f"Regenerated: {new_program.export_file}")
+        except QuokkaError as e:
+            logging.error(f"regenerate() failed: {e}")
+            sys.exit(1)
+
+
 if __name__ == "__main__":
     main()
