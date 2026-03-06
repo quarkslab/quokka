@@ -376,3 +376,65 @@ def test_backward_compat_no_typedefs(prog: quokka.Program):
     assert len(prog.fun_names) > 0, "Basic loading should still work"
     types_list = list(prog.types)
     assert len(types_list) > 0, "Types should still be present"
+
+
+# ---------------------------------------------------------------------------
+# is_new field tests
+# ---------------------------------------------------------------------------
+
+
+def test_existing_types_not_is_new(many_types_prog: quokka.Program):
+    """All types from the exporter should have is_new=False."""
+    from quokka.data_type import ComplexType
+    for t in many_types_prog.types:
+        if isinstance(t, ComplexType):
+            assert t.is_new is False, (
+                f"Exported type {t.name} should have is_new=False"
+            )
+
+
+def test_is_new_proto_roundtrip():
+    """is_new should survive a protobuf serialize/deserialize round-trip."""
+    from quokka.quokka_pb2 import Quokka as Pb
+
+    # Build a minimal Quokka with one enum type that has is_new=True
+    q = Pb()
+    t = q.types.add()
+    t.is_new = True
+    t.enum_type.name = "TestEnum"
+    val = t.enum_type.values.add()
+    val.name = "VAL_A"
+    val.value = 0
+
+    # Round-trip through serialization
+    data = q.SerializeToString()
+    q2 = Pb()
+    q2.ParseFromString(data)
+
+    assert q2.types[0].is_new is True
+    assert q2.types[0].enum_type.name == "TestEnum"
+
+
+def test_is_new_false_proto_roundtrip():
+    """is_new=False (default) should survive a round-trip."""
+    from quokka.quokka_pb2 import Quokka as Pb
+
+    q = Pb()
+    t = q.types.add()
+    t.enum_type.name = "NormalEnum"
+
+    data = q.SerializeToString()
+    q2 = Pb()
+    q2.ParseFromString(data)
+
+    assert q2.types[0].is_new is False
+
+
+def test_is_new_not_set_for_primitives(prog: quokka.Program):
+    """Primitive (BaseType) types should not have is_new (they are IntEnums)."""
+    from quokka.data_type import BaseType
+    for t in prog.types:
+        if isinstance(t, BaseType):
+            assert not hasattr(t, "is_new"), (
+                "BaseType should not have is_new attribute"
+            )

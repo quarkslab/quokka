@@ -364,20 +364,21 @@ class Program(dict):
                 raise KeyError(f"No type with index {type_index}")
             
             pb_type = self.proto.types[type_index]
+            is_new = pb_type.is_new
             if pb_type.WhichOneof("OneofType") == "enum_type":
-                self._types[type_index] = EnumType(type_index, pb_type.enum_type, self)
+                self._types[type_index] = EnumType(type_index, pb_type.enum_type, self, is_new=is_new)
             elif pb_type.WhichOneof("OneofType") == "composite_type":
                 match pb_type.composite_type.type:
                     case Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
-                        self._types[type_index] = StructureType(type_index, pb_type.composite_type, self)
+                        self._types[type_index] = StructureType(type_index, pb_type.composite_type, self, is_new=is_new)
                     case Pb.CompositeType.CompositeSubType.TYPE_UNION:
-                        self._types[type_index] = UnionType(type_index, pb_type.composite_type, self)
+                        self._types[type_index] = UnionType(type_index, pb_type.composite_type, self, is_new=is_new)
                     case Pb.CompositeType.CompositeSubType.TYPE_ARRAY:
-                        self._types[type_index] = ArrayType(type_index, pb_type.composite_type, self)
+                        self._types[type_index] = ArrayType(type_index, pb_type.composite_type, self, is_new=is_new)
                     case Pb.CompositeType.CompositeSubType.TYPE_POINTER:
-                        self._types[type_index] = PointerType(type_index, pb_type.composite_type, self)
+                        self._types[type_index] = PointerType(type_index, pb_type.composite_type, self, is_new=is_new)
                     case Pb.CompositeType.CompositeSubType.TYPE_TYPEDEF:
-                        self._types[type_index] = TypedefType(type_index, pb_type.composite_type, self)
+                        self._types[type_index] = TypedefType(type_index, pb_type.composite_type, self, is_new=is_new)
                     case _:
                         # Unknown CompositeSubType -- degrade to TYPE_UNK for forward compat
                         self._types[type_index] = BaseType.UNKNOWN

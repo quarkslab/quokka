@@ -127,10 +127,12 @@ class BaseType(CoreType, IntEnum, metaclass=EnumABCMeta):
 
 
 class ComplexType(CoreType):
-    def __init__(self, proto_index: Index, proto: Pb.CompositeType|Pb.EnumType, program: "Program"):
+    def __init__(self, proto_index: Index, proto: Pb.CompositeType|Pb.EnumType, program: "Program",
+                 is_new: bool = False):
         self.type_index = proto_index
         self.proto = proto
         self._program = program
+        self.is_new: bool = is_new
 
         self.name: str = proto.name
         # type is not used here
@@ -220,10 +222,11 @@ class EnumTypeMember(CoreType):
 
 class EnumType(ComplexType):
     """Base class for all enums in quokka"""
-    
-    def __init__(self, index: Index, proto: Pb.EnumType, program: "Program") -> None:
+
+    def __init__(self, index: Index, proto: Pb.EnumType, program: "Program",
+                 is_new: bool = False) -> None:
         """Create an enum from a protobuf enum value"""
-        super().__init__(index, proto, program)
+        super().__init__(index, proto, program, is_new=is_new)
         self.name = proto.name
         self._members: dict[str, EnumTypeMember] = {member.name: EnumTypeMember(member, self) 
                                                     for member in proto.values}
@@ -270,9 +273,10 @@ class ArrayType(ComplexType):
         size: Type size (if known)
         c_str: C declaration of the type
     """
-    def __init__(self, index: Index, proto: Pb.CompositeType, program: "Program") -> None:
+    def __init__(self, index: Index, proto: Pb.CompositeType, program: "Program",
+                 is_new: bool = False) -> None:
         """Constructor"""
-        super().__init__(index, proto, program)
+        super().__init__(index, proto, program, is_new=is_new)
     
     @property
     def array_size(self) -> int:
@@ -299,9 +303,10 @@ class PointerType(ComplexType):
         size: Type size (if known)
         c_str: C declaration of the type
     """
-    def __init__(self, index: Index, proto: Pb.CompositeType, program: "Program") -> None:
+    def __init__(self, index: Index, proto: Pb.CompositeType, program: "Program",
+                 is_new: bool = False) -> None:
         """Constructor"""
-        super().__init__(index, proto, program)
+        super().__init__(index, proto, program, is_new=is_new)
     
     @property
     def pointed_type(self) -> 'TypeT':
@@ -326,9 +331,9 @@ class TypedefType(ComplexType):
     """
 
     def __init__(self, index: Index, proto: Pb.CompositeType,
-                 program: "Program") -> None:
+                 program: "Program", is_new: bool = False) -> None:
         """Constructor"""
-        super().__init__(index, proto, program)
+        super().__init__(index, proto, program, is_new=is_new)
 
     @property
     def aliased_type(self) -> 'TypeT':
@@ -423,10 +428,11 @@ class StructureType(dict, ComplexType):
         comments: Structure comments
     """
 
-    def __init__(self, index: Index, proto: "Pb.CompositeType", program: "Program") -> None:
+    def __init__(self, index: Index, proto: "Pb.CompositeType", program: "Program",
+                 is_new: bool = False) -> None:
         """Constructor"""
         dict.__init__(self)
-        ComplexType.__init__(self, index, proto, program)
+        ComplexType.__init__(self, index, proto, program, is_new=is_new)
 
         self._members_list: list[StructureTypeMember] = []
         for member in proto.members:
@@ -463,9 +469,10 @@ class UnionType(StructureType):
         program: Program back reference
     """
 
-    def __init__(self, index: Index, proto: "Pb.CompositeType", program: "Program") -> None:
+    def __init__(self, index: Index, proto: "Pb.CompositeType", program: "Program",
+                 is_new: bool = False) -> None:
         dict.__init__(self)
-        ComplexType.__init__(self, index, proto, program)
+        ComplexType.__init__(self, index, proto, program, is_new=is_new)
 
         self._members_list: list[StructureTypeMember] = []
         self.index_to_offset: dict[int, int] = {}
