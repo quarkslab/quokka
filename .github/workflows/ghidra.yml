@@ -29,10 +29,6 @@ jobs:
         unzip -q ghidra.zip -d /opt
         echo "GHIDRA_INSTALL_DIR=/opt/ghidra_12.0.3_PUBLIC" >> $GITHUB_ENV
 
-    - name: Build extension
+    - name: Build and test extension
       working-directory: ghidra_extension
       run: gradle build
-
-    - name: Run tests
-      working-directory: ghidra_extension
-      run: gradle test
