@@ -425,6 +425,9 @@ message Quokka {
       CompositeType composite_type = 2;
       BaseType primitive_type = 3;
     }
+    // True when the type was user-added (not from original analysis) and must
+    // be applied back to the database.  Only meaningful for non-primitive types.
+    bool is_new = 4;
   }
 
   Meta meta = 1;

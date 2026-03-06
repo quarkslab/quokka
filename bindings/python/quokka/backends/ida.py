@@ -5,6 +5,7 @@ import ida_funcs
 import ida_xref
 
 from quokka import Program
+from quokka.data_type import ComplexType
 
 
 
@@ -89,4 +90,50 @@ def apply_quokka(program: Program) -> int:
                 errors_count += 1
             print(f"[{res}] set comment of data at 0x{data.address:x}")
 
+    errors_count += apply_types(program)
+
     return errors_count
+
+
+def apply_types(program: Program) -> int:
+    """Apply new user-defined types to the IDA database.
+
+    Only types with ``is_new == True`` are created.  All types are registered
+    into the current TIL via ``parse_decls`` using their ``c_str`` (C
+    declaration).
+
+    Returns:
+        The number of errors encountered.
+    """
+    errors_count = 0
+
+    for typ in program.types:
+        if not isinstance(typ, ComplexType) or not typ.is_new:
+            continue
+
+        errors_count += _apply_type(typ)
+
+    return errors_count
+
+
+def _apply_type(typ: ComplexType) -> int:
+    """Register a single new type into the current TIL via ``parse_decls``.
+
+    Requires a non-empty ``c_str`` on the type.
+
+    Returns:
+        The error count (0 or 1).
+    """
+    kind = type(typ).__name__
+
+    if not typ.c_str:
+        print(f"[x] create {kind} {typ.name} (no c_str available)")
+        return 1
+
+    til = ida_typeinf.get_idati()
+    if ida_typeinf.parse_decls(til, typ.c_str, None, ida_typeinf.HTI_DCL) == 0:
+        print(f"[+] create {kind} {typ.name}")
+        return 0
+
+    print(f"[x] create {kind} {typ.name}")
+    return 1
