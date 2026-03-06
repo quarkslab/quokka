@@ -133,6 +133,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1ArrayType.html">quokka::ArrayType</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1TypedefType.html">quokka::TypedefType</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquokka_1_1EnumValue.html">quokka::EnumValue</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquokka_1_1EnumType.html">quokka::EnumType</a></td></tr>
@@ -166,6 +168,7 @@ Enumerations</h2></td></tr>
 , <b>TYPE_STR</b>
 , <br />
 &#160;&#160;<b>TYPE_ALIGN</b>
+, <b>TYPE_TYPEDEF</b>
 <br />
  }</td></tr>
 <tr class="separator:a87a69ff8de5474bc76a0e30719598af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -178,9 +181,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a7926128f4a828111eba4879ba3925107" id="r_a7926128f4a828111eba4879ba3925107"><td class="memItemLeft" align="right" valign="top"><a id="a7926128f4a828111eba4879ba3925107" name="a7926128f4a828111eba4879ba3925107"></a>
 <a class="el" href="structquokka_1_1type__uid__t.html">type_uid_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetTypeUid</b> (const tid_t &amp;tid)</td></tr>
 <tr class="separator:a7926128f4a828111eba4879ba3925107"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf82da5db0530ad814bb9da862bb3e60" id="r_adf82da5db0530ad814bb9da862bb3e60"><td class="memItemLeft" align="right" valign="top"><a id="adf82da5db0530ad814bb9da862bb3e60" name="adf82da5db0530ad814bb9da862bb3e60"></a>
-<a class="el" href="DataType_8h.html#a87a69ff8de5474bc76a0e30719598af6">BaseType</a>&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetBaseType</b> (const tinfo_t &amp;tinf)</td></tr>
-<tr class="separator:adf82da5db0530ad814bb9da862bb3e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aded3922de7fec2cca10b08306913ffef" id="r_aded3922de7fec2cca10b08306913ffef"><td class="memItemLeft" align="right" valign="top"><a id="aded3922de7fec2cca10b08306913ffef" name="aded3922de7fec2cca10b08306913ffef"></a>
+<a class="el" href="DataType_8h.html#a87a69ff8de5474bc76a0e30719598af6">BaseType</a>&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetBaseType</b> (const tinfo_t &amp;tinf, bool ignore_typedef)</td></tr>
+<tr class="separator:aded3922de7fec2cca10b08306913ffef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ab0c7ac0e6e82bb1455affdb41da361" id="r_a1ab0c7ac0e6e82bb1455affdb41da361"><td class="memItemLeft" align="right" valign="top"><a id="a1ab0c7ac0e6e82bb1455affdb41da361" name="a1ab0c7ac0e6e82bb1455affdb41da361"></a>
 <a class="el" href="DataType_8h.html#a87a69ff8de5474bc76a0e30719598af6">BaseType</a>&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetBaseType</b> (flags_t flags)</td></tr>
 <tr class="separator:a1ab0c7ac0e6e82bb1455affdb41da361"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -211,12 +214,16 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetTinfoSiz
 <tr class="separator:afbf833cee5426546e65df7a355091ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa400e79ac2975284547bc833dc80e5f8" id="r_aa400e79ac2975284547bc833dc80e5f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="api__v9_2DataType_8cpp.html#aa400e79ac2975284547bc833dc80e5f8">quokka::ExportEnums</a> ()</td></tr>
 <tr class="separator:aa400e79ac2975284547bc833dc80e5f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0091e96cec3768aa6493ccfc1032e194" id="r_a0091e96cec3768aa6493ccfc1032e194"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="api__v9_2DataType_8cpp.html#a0091e96cec3768aa6493ccfc1032e194">quokka::ExportTypedefs</a> ()</td></tr>
+<tr class="separator:a0091e96cec3768aa6493ccfc1032e194"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68c3f3b0e56cb7e3023220f8234350b5" id="r_a68c3f3b0e56cb7e3023220f8234350b5"><td class="memItemLeft" align="right" valign="top"><a id="a68c3f3b0e56cb7e3023220f8234350b5" name="a68c3f3b0e56cb7e3023220f8234350b5"></a>
 <a class="el" href="structquokka_1_1type__uid__t.html">type_uid_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::ExportPointer</b> (const tinfo_t &amp;tif)</td></tr>
 <tr class="separator:a68c3f3b0e56cb7e3023220f8234350b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e2bc4c0b721444e2cb77aab72ef9955" id="r_a1e2bc4c0b721444e2cb77aab72ef9955"><td class="memItemLeft" align="right" valign="top"><a id="a1e2bc4c0b721444e2cb77aab72ef9955" name="a1e2bc4c0b721444e2cb77aab72ef9955"></a>
 <a class="el" href="structquokka_1_1type__uid__t.html">type_uid_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::ExportArray</b> (const tinfo_t &amp;tif)</td></tr>
 <tr class="separator:a1e2bc4c0b721444e2cb77aab72ef9955"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61b0cf2cd1199618ce1c7dcc01e8f482" id="r_a61b0cf2cd1199618ce1c7dcc01e8f482"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquokka_1_1type__uid__t.html">type_uid_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="api__v9_2DataType_8cpp.html#a61b0cf2cd1199618ce1c7dcc01e8f482">quokka::ExportSingleTypedef</a> (const tinfo_t &amp;tif)</td></tr>
+<tr class="separator:a61b0cf2cd1199618ce1c7dcc01e8f482"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Functions and classes related to data types </p>
@@ -271,6 +278,58 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>quokka::GetTinfoSiz
       </table>
 </div><div class="memdoc">
 <p>Export all the enums defined in the program </p>
+
+</div>
+</div>
+<a id="a61b0cf2cd1199618ce1c7dcc01e8f482" name="a61b0cf2cd1199618ce1c7dcc01e8f482"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61b0cf2cd1199618ce1c7dcc01e8f482">&#9670;&#160;</a></span>ExportSingleTypedef()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">type_uid_t quokka::ExportSingleTypedef </td>
+          <td>(</td>
+          <td class="paramtype">const tinfo_t &amp;&#160;</td>
+          <td class="paramname"><em>tif</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Export a single typedef by ordinal, recursively exporting any intermediate typedef targets first so that element_type points to the immediate next type in the chain (single-step resolution).</p>
+<p>Resolution strategy:</p><ol type="1">
+<li>get_next_type_name() &ndash; works for chained typedefs and typedefs over struct/union/enum (named targets).</li>
+<li>is_ptr() &ndash; info embedded in typedef; resolve via ptr_type_data_t.</li>
+<li>is_array() &ndash; info embedded in typedef; resolve via array_type_data_t.</li>
+<li>Fallback &ndash; typedef over primitive; use get_realtype() via GetBaseType.</li>
+</ol>
+<p>The order matters: get_next_type_name() is tried first because is_ptr()/is_array() use get_realtype() which follows the full typedef chain, so a chained typedef like <code>typedef A B</code> where A is a pointer would report is_ptr() == true even though B's immediate target is A (a named typedef), not an embedded pointer.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tif</td><td>The IDA type info to export </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The type_uid_t of the exported (or already-existing) typedef </dd></dl>
+
+</div>
+</div>
+<a id="a0091e96cec3768aa6493ccfc1032e194" name="a0091e96cec3768aa6493ccfc1032e194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0091e96cec3768aa6493ccfc1032e194">&#9670;&#160;</a></span>ExportTypedefs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void quokka::ExportTypedefs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Export all typedef types from the IDA type library.</p>
+<p>Must be called after ExportCompositeDataTypes() so that target types are already registered in the DataTypes singleton. </p>
 
 </div>
 </div>

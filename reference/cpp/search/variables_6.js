@@ -6,5 +6,6 @@ var searchData=
   ['indice_3',['indice',['../structquokka_1_1Comment.html#ac512a2f6ab3d0d69985b3d78624e1d3d',1,'quokka::Comment']]],
   ['instr_5fcount_4',['instr_count',['../classquokka_1_1Block.html#a2da11608d59d28e12e1473c725f9de54',1,'quokka::Block']]],
   ['instructions_5',['instructions',['../classquokka_1_1Block.html#a1567587e1e4aa3505a036fbe313a9243',1,'quokka::Block']]],
-  ['is_5fthumb_6',['is_thumb',['../classquokka_1_1Block.html#a06ac91f75317f4629391623377d84fc0',1,'quokka::Block']]]
+  ['is_5fexported_6',['is_exported',['../classquokka_1_1Function.html#a750cd15fc0d603cd1dd6116f94982faf',1,'quokka::Function']]],
+  ['is_5fthumb_7',['is_thumb',['../classquokka_1_1Block.html#a06ac91f75317f4629391623377d84fc0',1,'quokka::Block']]]
 ];
