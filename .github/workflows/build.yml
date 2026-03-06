@@ -452,12 +452,10 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91, 9.2, 9.3]
         bitness: ["", "-32"]
         include:
-          - os: windows-latest
-            ext: dll
           - os: ubuntu-latest
             ext: so
           - os: macos-latest
