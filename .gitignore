@@ -58,3 +58,10 @@ third_party/*.zip
 ghidra_extension/.gradle/
 ghidra_extension/build/
 ghidra_extension/dist/
+
+# IDA idb
+*.id0
+*.id1
+*.id2
+*.nam
+*.til

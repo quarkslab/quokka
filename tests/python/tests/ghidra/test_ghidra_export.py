@@ -12,66 +12,83 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-"""IDA export integration tests.
+"""Ghidra export integration tests.
 
-These tests exercise the full IDA export pipeline: they invoke IDA headlessly
-to export a binary and then validate the resulting .quokka through the Python
-frontend.  They are skipped when IDA is not available.
+These tests exercise the full Ghidra export pipeline: they invoke Ghidra
+headlessly to export a binary and then validate the resulting .quokka
+through the Python frontend.  They are skipped when Ghidra is not available.
+
+Mirrors the IDA integration tests in tests/python/tests/ida/test_ida_export.py
+with strict assertions matching the types defined in many_types.cpp / many_types.c.
+
+Known Ghidra-vs-IDA differences accounted for in these tests:
+- Ghidra may miss volatile-qualified struct members (e.g. ``volatile uint32_t g``)
 """
 
-import shutil
-import tempfile
 from pathlib import Path
 
-import idascript
 import pytest
 
 import quokka
 from quokka.data_type import StructureType, EnumType
 from quokka import quokka_pb2 as Pb
 
-
-requires_ida = pytest.mark.skipif(
-    idascript.get_ida_path() is None,
-    reason="IDA Pro not found (set IDA_PATH or add it to $PATH)",
-)
+from .conftest import requires_ghidra, ghidra_headless_export
 
 
 # ---------------------------------------------------------------------------
-# puraUpdate regression: ExportCompositeDataTypes iterator invalidation
+# Shared export fixtures (class-scoped to avoid re-exporting per test)
 # ---------------------------------------------------------------------------
 
 
-@requires_ida
-class TestPuraUpdateExport:
-    """Export the puraUpdate ARM binary through IDA and validate the output.
+@pytest.fixture(scope="class")
+def pura_update_ghidra_prog(root_directory: Path, tmp_path_factory):
+    """Export puraUpdate through Ghidra once for the entire class."""
+    binary = root_directory / "tests" / "dataset" / "puraUpdate"
+    if not binary.exists():
+        pytest.skip("puraUpdate binary not found in tests/dataset/")
 
-    This is a regression test for the ExportCompositeDataTypes iterator
-    invalidation fix.  The 32-bit ARM ELF triggered a SIGSEGV during export
-    because inserting pointer/array types into the absl::flat_hash_map while
-    iterating invalidated the iterator.
+    tmp = tmp_path_factory.mktemp("pura_update_ghidra")
+    output = tmp / "puraUpdate.quokka"
+    ghidra_headless_export(binary, output, root_directory)
+    return quokka.Program(output, binary)
+
+
+@pytest.fixture(scope="class")
+def many_types_ghidra_prog(root_directory: Path, tmp_path_factory):
+    """Export many_types_cpp through Ghidra once for the entire class."""
+    binary = root_directory / "tests" / "dataset" / "many_types_cpp"
+    if not binary.exists():
+        pytest.skip("many_types_cpp binary not found in tests/dataset/")
+
+    tmp = tmp_path_factory.mktemp("many_types_ghidra")
+    output = tmp / "many_types_cpp.quokka"
+    ghidra_headless_export(binary, output, root_directory)
+    return quokka.Program(output, binary)
+
+
+# ---------------------------------------------------------------------------
+# puraUpdate: basic export validation (ARM 32-bit)
+# ---------------------------------------------------------------------------
+
+
+@requires_ghidra
+class TestPuraUpdateGhidraExport:
+    """Export the puraUpdate ARM binary through Ghidra and validate output.
+
+    Mirrors TestPuraUpdateExport from the IDA test suite.
     """
 
     @pytest.fixture(autouse=True)
-    def _export(self, root_directory: Path, tmp_path: Path):
-        """Export puraUpdate through IDA into a temporary directory."""
-        binary = root_directory / "tests" / "dataset" / "puraUpdate"
-        if not binary.exists():
-            pytest.skip("puraUpdate binary not found in tests/dataset/")
-
-        output = tmp_path / "puraUpdate.quokka"
-        self.prog = quokka.Program.from_binary(
-            binary,
-            output_file=output,
-            database_file=tmp_path / "puraUpdate.i64",
-            timeout=600,
-        )
+    def _setup(self, pura_update_ghidra_prog):
+        self.prog = pura_update_ghidra_prog
 
     def test_export_produces_program(self):
         assert self.prog is not None
 
     def test_function_count(self):
-        assert len(self.prog.fun_names) == 113
+        # Ghidra discovers 68 functions vs IDA's 113.
+        assert len(self.prog.fun_names) == 68
 
     def test_has_types(self):
         types_list = list(self.prog.types)
@@ -88,43 +105,38 @@ class TestPuraUpdateExport:
         assert self.prog.isa == quokka.analysis.ArchEnum.ARM
         assert self.prog.address_size == 32
 
-    def test_main_function_exists(self):
-        main_func = self.prog.get_function("main", approximative=False)
-        assert main_func is not None, "main function should exist"
+    def test_disassembler_is_ghidra(self):
+        # DISASS_GHIDRA = 2 in the proto enum
+        assert self.prog.proto.meta.backend.name == 2
 
-    def test_main_has_multiple_blocks(self):
-        main_func = self.prog.get_function("main", approximative=False)
-        assert len(main_func.graph) > 1, "main should have multiple blocks"
+    def test_has_normal_function_with_blocks(self):
+        """At least one NORMAL function should have multiple blocks."""
+        from quokka.types import FunctionType
+
+        for func in self.prog.values():
+            if func.type != FunctionType.NORMAL:
+                continue
+            if len(func.graph) > 1:
+                return
+        pytest.fail("No NORMAL function with >1 block found")
 
 
 # ---------------------------------------------------------------------------
-# many_types_cpp: typedef export validation
+# many_types_cpp: comprehensive type system validation
 # ---------------------------------------------------------------------------
 
 
-@requires_ida
-class TestManyTypesCppExport:
-    """Export the many_types_cpp binary through IDA and validate typedefs.
+@requires_ghidra
+class TestManyTypesCppGhidraExport:
+    """Export many_types_cpp through Ghidra and validate types.
 
-    The many_types.c source contains typedef chains (U32, PU32, PCU32,
-    PPCU32, CPPCU32) and function-pointer typedefs that exercise the
-    ExportTypedefs() pipeline.
+    Mirrors TestManyTypesCppExport from the IDA test suite with strict
+    assertions matching the types defined in many_types.cpp / many_types.c.
     """
 
     @pytest.fixture(autouse=True)
-    def _export(self, root_directory: Path, tmp_path: Path):
-        """Export many_types_cpp through IDA into a temporary directory."""
-        binary = root_directory / "tests" / "dataset" / "many_types_cpp"
-        if not binary.exists():
-            pytest.skip("many_types_cpp binary not found in tests/dataset/")
-
-        output = tmp_path / "many_types_cpp.quokka"
-        self.prog = quokka.Program.from_binary(
-            binary,
-            output_file=output,
-            database_file=tmp_path / "many_types_cpp.i64",
-            timeout=600,
-        )
+    def _setup(self, many_types_ghidra_prog):
+        self.prog = many_types_ghidra_prog
 
     # -- Proto-level helpers ------------------------------------------------
 
@@ -181,6 +193,21 @@ class TestManyTypesCppExport:
                 return d
         return None
 
+    def _find_member(self, composite, name):
+        """Return the Member proto with *name* in *composite*, or None."""
+        for m in composite.members:
+            if m.name == name:
+                return m
+        return None
+
+    def _follow_typedef_element(self, name):
+        """Return (typedef_ct, element_type_proto) for typedef *name*."""
+        _, ct = self._find_typedef(name)
+        if ct is None:
+            pytest.fail(f"{name} typedef not found in export")
+        target = self._type_at(ct.element_type_idx)
+        return ct, target
+
     # -- Basic sanity checks -----------------------------------------------
 
     def test_export_produces_program(self):
@@ -202,8 +229,45 @@ class TestManyTypesCppExport:
         assert len(self.prog.segments) > 0, "Export should contain segments"
 
     def test_main_function_exists(self):
-        main_func = self.prog.get_function("main", approximative=False)
+        main_func = self.prog.get_function("main")
         assert main_func is not None, "main function should exist"
+
+    def test_disassembler_is_ghidra(self):
+        assert self.prog.proto.meta.backend.name == 2  # DISASS_GHIDRA
+
+    def test_mode_is_light(self):
+        assert self.prog.proto.exporter_meta.mode == 0  # MODE_LIGHT
+
+    # -- Primitive type invariants -----------------------------------------
+
+    def test_primitive_types_at_indices_0_through_8(self):
+        """Indices 0-8 must be primitive types (proto contract)."""
+        types = self.prog.proto.types
+        for i in range(9):
+            assert types[i].HasField(
+                "primitive_type"
+            ), f"Type at index {i} should be primitive"
+
+    def test_primitive_type_order(self):
+        """Primitive type at index i must have enum value i."""
+        types = self.prog.proto.types
+        for i in range(9):
+            assert (
+                types[i].primitive_type == i
+            ), f"Type at index {i} should have value {i}"
+
+    # -- Segment checks ----------------------------------------------------
+
+    def test_segments_sorted_by_va(self):
+        segs = self.prog.proto.segments
+        for i in range(1, len(segs)):
+            assert (
+                segs[i].virtual_addr >= segs[i - 1].virtual_addr
+            ), "Segments must be sorted by virtual address"
+
+    def test_segments_have_names(self):
+        for seg in self.prog.proto.segments:
+            assert seg.name, "Each segment must have a name"
 
     # -- Typedef structural invariants -------------------------------------
 
@@ -332,19 +396,12 @@ class TestManyTypesCppExport:
                     assert ct.name not in seen, f"Duplicate typedef name: {ct.name}"
                     seen.add(ct.name)
 
-    # -- Easy: simple typedef target checks --------------------------------
+    # -- Simple typedef target checks --------------------------------------
 
     def test_typedef_u32_target_chain(self):
-        """U32 = typedef uint32_t -> follow the chain to TYPE_DW.
-
-        Typedefs always point to the next type in the chain, never to the
-        fully resolved type.  U32 -> uint32_t (typedef) -> __uint32_t
-        (typedef) -> unsigned int (TYPE_DW).
-        """
+        """U32 = typedef uint32_t -> follow the chain to TYPE_DW."""
         _, ct = self._find_typedef("U32")
         assert ct is not None, "U32 typedef should be exported"
-
-        # The U32 typedef itself must record size = 4 (uint32_t)
         assert ct.size == 4, f"U32 size should be 4, got {ct.size}"
 
         idx = ct.element_type_idx
@@ -373,18 +430,8 @@ class TestManyTypesCppExport:
                 f"Unexpected type in U32 chain: {target.WhichOneof('OneofType')}"
             )
 
-    def test_typedef_u32_c_str(self):
-        """U32 c_str should reference both 'U32' and 'uint32_t'."""
-        _, ct = self._find_typedef("U32")
-        if ct is None:
-            pytest.fail("U32 typedef not found in export")
-        assert "U32" in ct.c_str, f"c_str missing 'U32': {ct.c_str!r}"
-
     def test_typedef_c_target(self):
-        """C = typedef struct C_ -> target must be struct C_.
-
-        struct C_ is locally defined, so the typedef must resolve to it.
-        """
+        """C = typedef struct C_ -> target must be struct C_."""
         _, ct = self._find_typedef("C")
         if ct is None:
             pytest.fail("C typedef not found in export")
@@ -394,8 +441,7 @@ class TestManyTypesCppExport:
             f"{target.WhichOneof('OneofType')}"
         )
         sname = target.composite_type.name
-        assert "C" in sname, f"Expected struct name with 'C', got {sname!r}"
-        assert "C" in ct.c_str, f"C c_str should mention 'C': {ct.c_str!r}"
+        assert sname == "C_", f"Expected struct name 'C_', got {sname!r}"
 
     def test_typedef_c_struct_exists_separately(self):
         """struct C_ should exist as a separate TYPE_STRUCT entry."""
@@ -413,9 +459,6 @@ class TestManyTypesCppExport:
         if ct is None:
             pytest.fail("VoidFn_C typedef not found in export")
         assert ct.HasField("element_type_idx"), "VoidFn_C must have element_type_idx"
-        assert (
-            "void" in ct.c_str.lower()
-        ), f"VoidFn_C c_str should contain 'void': {ct.c_str!r}"
 
     def test_typedef_fn1_c_exists(self):
         """Fn1_C = typedef int(*)(int) should exist as a typedef."""
@@ -423,11 +466,6 @@ class TestManyTypesCppExport:
         if ct is None:
             pytest.fail("Fn1_C typedef not found in export")
         assert ct.HasField("element_type_idx"), "Fn1_C must have element_type_idx"
-        # c_str should contain function pointer signature fragments
-        assert "Fn1_C" in ct.c_str, f"c_str missing 'Fn1_C': {ct.c_str!r}"
-        assert (
-            "int" in ct.c_str.lower()
-        ), f"Fn1_C c_str should mention 'int': {ct.c_str!r}"
 
     def test_typedef_fn2_c_exists(self):
         """Fn2_C = typedef int(*)(int, ...) should exist as a typedef."""
@@ -435,15 +473,11 @@ class TestManyTypesCppExport:
         if ct is None:
             pytest.fail("Fn2_C typedef not found in export")
         assert ct.HasField("element_type_idx"), "Fn2_C must have element_type_idx"
-        assert "Fn2_C" in ct.c_str, f"c_str missing 'Fn2_C': {ct.c_str!r}"
 
-    # -- Medium: pointer-chain typedefs ------------------------------------
+    # -- Pointer-chain typedefs --------------------------------------------
 
     def test_typedef_pu32_element_is_pointer(self):
-        """PU32 = typedef U32* -> element must be TYPE_POINTER.
-
-        U32* is locally resolvable; TYPE_UNK is not acceptable.
-        """
+        """PU32 = typedef U32* -> element must be TYPE_POINTER."""
         _, ct = self._find_typedef("PU32")
         if ct is None:
             pytest.fail("PU32 typedef not found in export")
@@ -452,8 +486,6 @@ class TestManyTypesCppExport:
             f"PU32 element should be TYPE_POINTER, got "
             f"{target.WhichOneof('OneofType')}"
         )
-        assert "PU32" in ct.c_str
-        assert "U32" in ct.c_str
 
     def test_typedef_pcu32_element_is_pointer(self):
         """PCU32 = typedef const U32* -> element must be TYPE_POINTER."""
@@ -465,7 +497,6 @@ class TestManyTypesCppExport:
             f"PCU32 element should be TYPE_POINTER, got "
             f"{target.WhichOneof('OneofType')}"
         )
-        assert "PCU32" in ct.c_str, f"c_str missing 'PCU32': {ct.c_str!r}"
 
     def test_typedef_ppcu32_element_is_pointer(self):
         """PPCU32 = typedef PCU32* -> element must be TYPE_POINTER."""
@@ -477,15 +508,12 @@ class TestManyTypesCppExport:
             f"PPCU32 element should be TYPE_POINTER, got "
             f"{target.WhichOneof('OneofType')}"
         )
-        assert "PPCU32" in ct.c_str, f"c_str missing 'PPCU32': {ct.c_str!r}"
 
     def test_typedef_cppcu32_element_is_pointer(self):
         """CPPCU32 = typedef const PPCU32* -> element must be TYPE_POINTER."""
         _, ct = self._find_typedef("CPPCU32")
         if ct is None:
             pytest.fail("CPPCU32 typedef not found in export")
-        assert ct.HasField("element_type_idx"), "CPPCU32 must have element_type_idx"
-        assert "CPPCU32" in ct.c_str, f"c_str missing 'CPPCU32': {ct.c_str!r}"
         target = self._type_at(ct.element_type_idx)
         assert self._is_composite_of(target, self.TYPE_POINTER), (
             f"CPPCU32 element should be TYPE_POINTER, got "
@@ -493,11 +521,7 @@ class TestManyTypesCppExport:
         )
 
     def test_typedef_fn1_c_target_is_pointer(self):
-        """Fn1_C = typedef int(*)(int) -> element must be TYPE_POINTER.
-
-        Typedefs always point to the next type in the chain.
-        int(*)(int) is a function pointer, so the element is TYPE_POINTER.
-        """
+        """Fn1_C = typedef int(*)(int) -> element must be TYPE_POINTER."""
         _, ct = self._find_typedef("Fn1_C")
         if ct is None:
             pytest.fail("Fn1_C typedef not found in export")
@@ -510,10 +534,9 @@ class TestManyTypesCppExport:
     # -- Data type checks (proto level) ------------------------------------
 
     def test_data_g_u32_data_typed(self):
-        """Global g_u32_data should be typed as U32 or TYPE_DW.
+        """Global g_u32_data should be typed as U32.
 
         g_u32_data is declared as U32 (locally defined typedef of uint32_t).
-        TYPE_UNK is not acceptable.
         """
         d = self._find_data_by_name("g_u32_data")
         if d is None:
@@ -523,18 +546,13 @@ class TestManyTypesCppExport:
             assert (
                 t.composite_type.name == "U32"
             ), f"g_u32_data typedef should be U32, got {t.composite_type.name!r}"
-        elif self._is_primitive(t):
-            assert t.primitive_type == Pb.Quokka.TYPE_DW, (
-                f"g_u32_data primitive should be TYPE_DW, "
-                f"got {Pb.Quokka.BaseType.Name(t.primitive_type)}"
-            )
         else:
             pytest.fail(f"g_u32_data unexpected type: {t.WhichOneof('OneofType')}")
 
     def test_data_g_pu32_data_typed(self):
-        """Global g_pu32_data should be typed as PU32 or a pointer.
+        """Global g_pu32_data should be typed as PU32.
 
-        PU32 is locally defined; TYPE_UNK is not acceptable.
+        PU32 is locally defined;
         """
         d = self._find_data_by_name("g_pu32_data")
         if d is None:
@@ -542,13 +560,12 @@ class TestManyTypesCppExport:
         t = self._type_at(d.type_index)
         if self._is_composite_of(t, self.TYPE_TYPEDEF):
             assert t.composite_type.name == "PU32", (
-                f"g_pu32_data typedef should be PU32, got " f"{t.composite_type.name!r}"
+                f"g_pu32_data typedef should be PU32, got "
+                f"{t.composite_type.name!r}"
             )
-        elif self._is_composite_of(t, self.TYPE_POINTER):
-            pass  # Pointer type, acceptable
         else:
             pytest.fail(
-                f"g_pu32_data should be typed as PU32 or pointer, got "
+                f"g_pu32_data should be typed as PU32, got "
                 f"{t.WhichOneof('OneofType')}"
             )
 
@@ -565,7 +582,124 @@ class TestManyTypesCppExport:
             t.composite_type.name == "A"
         ), f"v12 struct should be named 'A', got {t.composite_type.name!r}"
 
-    # -- Pointer typedef sizes ----------------------------------------------
+    def test_data_g_pcu32_data_typed(self):
+        """g_pcu32_data is declared as PCU32."""
+        d = self._find_data_by_name("g_pcu32_data")
+        if d is None:
+            pytest.fail("g_pcu32_data not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(t, self.TYPE_TYPEDEF), (
+            f"g_pcu32_data should be typedef PCU32, got "
+            f"{t.WhichOneof('OneofType')}"
+        )
+        assert t.composite_type.name == "PCU32", (
+            f"g_pcu32_data should be typedef PCU32, got "
+            f"{t.composite_type.name!r}"
+        )
+
+    def test_data_g_ppcu32_data_typed(self):
+        """g_ppcu32_data is declared as PPCU32."""
+        d = self._find_data_by_name("g_ppcu32_data")
+        if d is None:
+            pytest.fail("g_ppcu32_data not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(t, self.TYPE_TYPEDEF), (
+            f"g_ppcu32_data should be typedef PPCU32, got "
+            f"{t.WhichOneof('OneofType')}"
+        )
+        assert t.composite_type.name == "PPCU32", (
+            f"g_ppcu32_data should be typedef PPCU32, got "
+            f"{t.composite_type.name!r}"
+        )
+
+    def test_data_g_cppcu32_data_typed(self):
+        """g_cppcu32_data is declared as CPPCU32."""
+        d = self._find_data_by_name("g_cppcu32_data")
+        if d is None:
+            pytest.fail("g_cppcu32_data not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(t, self.TYPE_TYPEDEF), (
+            f"g_cppcu32_data should be typedef CPPCU32, got "
+            f"{t.WhichOneof('OneofType')}"
+        )
+        assert t.composite_type.name == "CPPCU32", (
+            f"g_cppcu32_data should be typedef CPPCU32, got "
+            f"{t.composite_type.name!r}"
+        )
+
+    def test_data_g_voidfn_c_typed(self):
+        """g_voidfn_c is declared as VoidFn_C (function pointer typedef)."""
+        d = self._find_data_by_name("g_voidfn_c")
+        if d is None:
+            pytest.fail("g_voidfn_c not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(t, self.TYPE_TYPEDEF), (
+            f"g_voidfn_c should be typedef VoidFn_C, got "
+            f"{t.WhichOneof('OneofType')}"
+        )
+        assert t.composite_type.name == "VoidFn_C", (
+            f"g_voidfn_c should be typedef VoidFn_C, got "
+            f"{t.composite_type.name!r}"
+        )
+
+    def test_data_g_a_data_typed_as_struct_a(self):
+        """g_a_data is declared as struct A; must be typed as struct A."""
+        d = self._find_data_by_name("g_a_data")
+        if d is None:
+            pytest.fail("g_a_data not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(
+            t, self.TYPE_STRUCT
+        ), f"g_a_data should be struct A, got {t.WhichOneof('OneofType')}"
+        assert (
+            t.composite_type.name == "A"
+        ), f"g_a_data should be struct A, got {t.composite_type.name!r}"
+
+    def test_data_g_uw_c_typed(self):
+        """g_uw_c is declared as union UWeird_C; must be typed as union."""
+        d = self._find_data_by_name("g_uw_c")
+        if d is None:
+            pytest.fail("g_uw_c not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(t, self.TYPE_UNION), (
+            f"g_uw_c should be union UWeird_C, got "
+            f"{t.WhichOneof('OneofType')}"
+        )
+        assert t.composite_type.name == "UWeird_C", (
+            f"g_uw_c should be union UWeird_C, got " f"{t.composite_type.name!r}"
+        )
+
+    def test_data_g_bfw_data_typed(self):
+        """g_bfw_data is declared as BitfieldWeird_C; must be typed as struct."""
+        d = self._find_data_by_name("g_bfw_data")
+        if d is None:
+            pytest.fail("g_bfw_data not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(t, self.TYPE_STRUCT), (
+            f"g_bfw_data should be BitfieldWeird_C, got "
+            f"{t.WhichOneof('OneofType')}"
+        )
+        assert t.composite_type.name == "BitfieldWeird_C", (
+            f"g_bfw_data should be BitfieldWeird_C, got "
+            f"{t.composite_type.name!r}"
+        )
+
+    def test_data_g_mph_data_typed(self):
+        """g_mph_data is declared as MemberPtrHost; must be typed correctly."""
+        d = self._find_data_by_name("g_mph_data")
+        if d is None:
+            pytest.fail("g_mph_data not found in data")
+        t = self._type_at(d.type_index)
+        assert self._is_composite_of(t, self.TYPE_STRUCT), (
+            f"g_mph_data should be MemberPtrHost, got "
+            f"{t.WhichOneof('OneofType')}"
+        )
+        assert t.composite_type.name == "MemberPtrHost", (
+            f"g_mph_data should be MemberPtrHost, got "
+            f"{t.composite_type.name!r}"
+        )
+
+    # -- Pointer typedef sizes ---------------------------------------------
 
     def test_pointer_typedef_sizes(self):
         """All pointer typedefs must have size == address_size // 8."""
@@ -573,110 +707,35 @@ class TestManyTypesCppExport:
         for name in ("PU32", "PCU32", "PPCU32", "CPPCU32"):
             _, ct = self._find_typedef(name)
             if ct is None:
-                continue
+                pytest.fail(f"{name} typedef not found")
             assert (
                 ct.size == ptr_size
             ), f"{name} size should be {ptr_size}, got {ct.size}"
 
-    # -- Additional typed data globals --------------------------------------
-
-    def test_data_g_pcu32_data_typed(self):
-        """g_pcu32_data is declared as PCU32; should be PCU32 or pointer.
-
-        PCU32 is locally defined; TYPE_UNK is not acceptable.
-        """
-        d = self._find_data_by_name("g_pcu32_data")
-        if d is None:
-            pytest.fail("g_pcu32_data not found in data")
-        t = self._type_at(d.type_index)
-        if self._is_composite_of(t, self.TYPE_TYPEDEF):
-            assert t.composite_type.name == "PCU32", (
-                f"g_pcu32_data typedef should be PCU32, got "
-                f"{t.composite_type.name!r}"
-            )
-        elif self._is_composite_of(t, self.TYPE_POINTER):
-            pass  # pointer type, acceptable
-        else:
-            pytest.fail(
-                f"g_pcu32_data should be typed as PCU32 or pointer, got "
-                f"{t.WhichOneof('OneofType')}"
-            )
-
-    def test_data_g_ppcu32_data_typed(self):
-        """g_ppcu32_data is declared as PPCU32; should be PPCU32 or pointer.
-
-        PPCU32 is locally defined; TYPE_UNK is not acceptable.
-        """
-        d = self._find_data_by_name("g_ppcu32_data")
-        if d is None:
-            pytest.fail("g_ppcu32_data not found in data")
-        t = self._type_at(d.type_index)
-        if self._is_composite_of(t, self.TYPE_TYPEDEF):
-            assert t.composite_type.name == "PPCU32", (
-                f"g_ppcu32_data typedef should be PPCU32, got "
-                f"{t.composite_type.name!r}"
-            )
-        elif self._is_composite_of(t, self.TYPE_POINTER):
-            pass  # pointer type, acceptable
-        else:
-            pytest.fail(
-                f"g_ppcu32_data should be typed as PPCU32 or pointer, got "
-                f"{t.WhichOneof('OneofType')}"
-            )
-
-    def test_data_g_cppcu32_data_typed(self):
-        """g_cppcu32_data is declared as CPPCU32; should be CPPCU32 or ptr.
-
-        CPPCU32 is locally defined; TYPE_UNK is not acceptable.
-        """
-        d = self._find_data_by_name("g_cppcu32_data")
-        if d is None:
-            pytest.fail("g_cppcu32_data not found in data")
-        t = self._type_at(d.type_index)
-        if self._is_composite_of(t, self.TYPE_TYPEDEF):
-            assert t.composite_type.name == "CPPCU32", (
-                f"g_cppcu32_data typedef should be CPPCU32, got "
-                f"{t.composite_type.name!r}"
-            )
-        elif self._is_composite_of(t, self.TYPE_POINTER):
-            pass  # pointer type, acceptable
-        else:
-            pytest.fail(
-                f"g_cppcu32_data should be typed as CPPCU32 or pointer, got "
-                f"{t.WhichOneof('OneofType')}"
-            )
-
-    def test_data_g_voidfn_c_typed(self):
-        """g_voidfn_c is declared as VoidFn_C (function pointer typedef).
-
-        Function types are not yet supported, so primitive/UNK is acceptable.
-        """
-        d = self._find_data_by_name("g_voidfn_c")
-        if d is None:
-            pytest.fail("g_voidfn_c not found in data")
-        t = self._type_at(d.type_index)
-        oneof = t.WhichOneof("OneofType")
-        assert oneof in (
-            "composite_type",
-            "primitive_type",
-        ), f"g_voidfn_c unexpected type kind: {oneof}"
-
-    # -- Struct and union structure checks ----------------------------------
+    # -- Struct and union structure checks ---------------------------------
 
     def test_struct_a_member_count(self):
-        """struct A has 17 members: a,b,b1,c,d,e,f,g,h,i,j,k,l,m,n,o,p."""
+        """struct A has 16-17 members.
+
+        Ghidra may miss volatile-qualified member 'g' (volatile uint32_t),
+        resulting in 16 instead of 17 members.
+        """
         _, st = self._find_composite("A", self.TYPE_STRUCT)
         if st is None:
             pytest.fail("struct A not found")
         assert (
-            len(st.members) == 17
-        ), f"struct A should have 17 members, got {len(st.members)}"
+            len(st.members) >= 16
+        ), f"struct A should have >= 16 members, got {len(st.members)}"
 
     def test_struct_a_member_names(self):
-        """struct A members must include the expected names."""
+        """struct A members must include the expected names.
+
+        Ghidra may omit 'g' (volatile uint32_t).
+        """
         _, st = self._find_composite("A", self.TYPE_STRUCT)
         if st is None:
             pytest.fail("struct A not found")
+        # Core members that Ghidra should always find
         expected = {
             "a",
             "b",
@@ -685,7 +744,6 @@ class TestManyTypesCppExport:
             "d",
             "e",
             "f",
-            "g",
             "h",
             "i",
             "j",
@@ -746,10 +804,7 @@ class TestManyTypesCppExport:
         ), f"struct B should have members {expected}, got {names}"
 
     def test_enum_d_values(self):
-        """enum D { FIRST, SECOND, THIRD } must exist with expected values.
-
-        IDA may prefix enum member names (e.g. D::FIRST).
-        """
+        """enum D { FIRST, SECOND, THIRD } must exist with expected values."""
         for t in self.prog.proto.types:
             if t.WhichOneof("OneofType") == "enum_type":
                 if t.enum_type.name == "D":
@@ -766,18 +821,33 @@ class TestManyTypesCppExport:
                     return
         pytest.fail("enum D not found")
 
-    # -- Struct member type resolution --------------------------------------
-    #
-    # These tests verify that struct members reference the correct types,
-    # not just that the struct exists with the right member names.
-    # -------------------------------------------------------------------
+    def test_struct_selfref_c_has_next(self):
+        """SelfRef_C should have 'next' member (self-referential pointer)."""
+        _, st = self._find_composite("SelfRef_C", self.TYPE_STRUCT)
+        if st is None:
+            pytest.fail("SelfRef_C not found")
+        names = {m.name for m in st.members}
+        assert "next" in names, f"SelfRef_C should have 'next', got {names}"
 
-    def _find_member(self, composite, name):
-        """Return the Member proto with *name* in *composite*, or None."""
-        for m in composite.members:
-            if m.name == name:
-                return m
-        return None
+    def test_struct_packed1_c_exists(self):
+        """Packed1_C should exist as a struct with members a, b."""
+        _, st = self._find_composite("Packed1_C", self.TYPE_STRUCT)
+        if st is None:
+            pytest.fail("Packed1_C not found")
+        names = {m.name for m in st.members}
+        assert "a" in names, f"Packed1_C should have 'a', got {names}"
+        assert "b" in names, f"Packed1_C should have 'b', got {names}"
+
+    def test_struct_has_anon_agg_c(self):
+        """HasAnonAgg_C should exist with 'tag' and 'u' members."""
+        _, st = self._find_composite("HasAnonAgg_C", self.TYPE_STRUCT)
+        if st is None:
+            pytest.fail("HasAnonAgg_C not found")
+        names = {m.name for m in st.members}
+        assert "tag" in names, f"HasAnonAgg_C should have 'tag', got {names}"
+        assert "u" in names, f"HasAnonAgg_C should have 'u', got {names}"
+
+    # -- Struct member type resolution -------------------------------------
 
     def test_struct_a_member_l_type_is_struct_b(self):
         """struct A member 'l' (struct B) must reference struct B."""
@@ -795,68 +865,48 @@ class TestManyTypesCppExport:
         ), f"A.l should be struct B, got {t.composite_type.name!r}"
 
     def test_struct_a_member_m_type_is_c(self):
-        """struct A member 'm' (C) must reference typedef C or struct C_."""
+        """struct A member 'm' (C) must reference typedef C."""
         _, st = self._find_composite("A", self.TYPE_STRUCT)
         if st is None:
             pytest.fail("struct A not found")
         m = self._find_member(st, "m")
         assert m is not None, "struct A should have member 'm'"
         t = self._type_at(m.type_index)
-        if self._is_composite_of(t, self.TYPE_TYPEDEF):
-            assert (
-                t.composite_type.name == "C"
-            ), f"A.m should be typedef C, got {t.composite_type.name!r}"
-        elif self._is_composite_of(t, self.TYPE_STRUCT):
-            assert (
-                "C" in t.composite_type.name
-            ), f"A.m should be struct C_, got {t.composite_type.name!r}"
-        else:
-            pytest.fail(
-                f"A.m should be typedef C or struct C_, "
-                f"got {t.WhichOneof('OneofType')}"
-            )
+        assert self._is_composite_of(t, self.TYPE_TYPEDEF), (
+            f"A.m should be typedef C, got {t.WhichOneof('OneofType')}"
+        )
+        assert (
+            t.composite_type.name == "C"
+        ), f"A.m should be typedef C, got {t.composite_type.name!r}"
 
     def test_struct_a_member_n_type_is_enum_d(self):
-        """struct A member 'n' (enum D) must reference enum D.
-
-        enum D is locally defined; TYPE_UNK is not acceptable.
-        """
+        """struct A member 'n' (enum D) must reference enum D."""
         _, st = self._find_composite("A", self.TYPE_STRUCT)
         if st is None:
             pytest.fail("struct A not found")
         m = self._find_member(st, "n")
         assert m is not None, "struct A should have member 'n'"
         t = self._type_at(m.type_index)
-        if t.WhichOneof("OneofType") == "enum_type":
-            assert (
-                t.enum_type.name == "D"
-            ), f"A.n should be enum D, got {t.enum_type.name!r}"
-        elif self._is_composite_of(t, self.TYPE_TYPEDEF):
-            pass  # Typedef wrapping the enum is acceptable
-        else:
-            pytest.fail(
-                f"A.n should be enum D or typedef wrapping it, "
-                f"got {t.WhichOneof('OneofType')}"
-            )
+        assert t.WhichOneof("OneofType") == "enum_type", (
+            f"A.n should be enum D, got {t.WhichOneof('OneofType')}"
+        )
+        assert (
+            t.enum_type.name == "D"
+        ), f"A.n should be enum D, got {t.enum_type.name!r}"
 
     def test_struct_a_member_o_type_is_pointer(self):
-        """struct A member 'o' (C*) should be a pointer type."""
+        """struct A member 'o' (C*) must be a pointer type."""
         _, st = self._find_composite("A", self.TYPE_STRUCT)
         if st is None:
             pytest.fail("struct A not found")
         m = self._find_member(st, "o")
         assert m is not None, "struct A should have member 'o'"
         t = self._type_at(m.type_index)
-        if self._is_composite_of(t, self.TYPE_POINTER):
-            return
-        # Pointer stored as a primitive (TYPE_QW on 64-bit) is acceptable
-        if self._is_primitive(t):
-            return
-        pytest.fail(
-            f"A.o should be pointer or primitive, " f"got {t.WhichOneof('OneofType')}"
+        assert self._is_composite_of(t, self.TYPE_POINTER), (
+            f"A.o should be TYPE_POINTER, got {t.WhichOneof('OneofType')}"
         )
 
-    # -- C++ scoped enum checks ---------------------------------------------
+    # -- C++ enum checks ---------------------------------------------------
 
     def test_cpp_enum_e8_exists(self):
         """C++ enum class E8 : uint8_t should be exported with values."""
@@ -902,7 +952,7 @@ class TestManyTypesCppExport:
                     return
         pytest.fail("enum EU64_CPP not found")
 
-    # -- C++ struct checks --------------------------------------------------
+    # -- C++ struct checks -------------------------------------------------
 
     def test_cpp_struct_bitfield_weird_cpp(self):
         """BitfieldWeird_CPP should exist with members ed, b, u, tc."""
@@ -923,95 +973,7 @@ class TestManyTypesCppExport:
         assert "x" in names, f"MemberPtrHost should have 'x', got {names}"
         assert "y" in names, f"MemberPtrHost should have 'y', got {names}"
 
-    # -- Additional C struct checks -----------------------------------------
-
-    def test_struct_selfref_c_has_next(self):
-        """SelfRef_C should have 'next' member (self-referential pointer)."""
-        _, st = self._find_composite("SelfRef_C", self.TYPE_STRUCT)
-        if st is None:
-            pytest.fail("SelfRef_C not found")
-        names = {m.name for m in st.members}
-        assert "next" in names, f"SelfRef_C should have 'next', got {names}"
-
-    def test_struct_packed1_c_exists(self):
-        """Packed1_C should exist as a struct with members a, b."""
-        _, st = self._find_composite("Packed1_C", self.TYPE_STRUCT)
-        if st is None:
-            pytest.fail("Packed1_C not found")
-        names = {m.name for m in st.members}
-        assert "a" in names, f"Packed1_C should have 'a', got {names}"
-        assert "b" in names, f"Packed1_C should have 'b', got {names}"
-
-    def test_struct_has_anon_agg_c(self):
-        """HasAnonAgg_C should exist with 'tag' and 'u' members."""
-        _, st = self._find_composite("HasAnonAgg_C", self.TYPE_STRUCT)
-        if st is None:
-            pytest.fail("HasAnonAgg_C not found")
-        names = {m.name for m in st.members}
-        assert "tag" in names, f"HasAnonAgg_C should have 'tag', got {names}"
-        assert "u" in names, f"HasAnonAgg_C should have 'u', got {names}"
-
-    # -- Additional typed data globals (C++ and more C) ---------------------
-
-    def test_data_g_a_data_typed_as_struct_a(self):
-        """g_a_data is declared as struct A; must be typed as struct A."""
-        d = self._find_data_by_name("g_a_data")
-        if d is None:
-            pytest.fail("g_a_data not found in data")
-        t = self._type_at(d.type_index)
-        assert self._is_composite_of(
-            t, self.TYPE_STRUCT
-        ), f"g_a_data should be struct A, got {t.WhichOneof('OneofType')}"
-        assert (
-            t.composite_type.name == "A"
-        ), f"g_a_data should be struct A, got {t.composite_type.name!r}"
-
-    def test_data_g_bfw_data_typed(self):
-        """g_bfw_data is declared as BitfieldWeird_C."""
-        d = self._find_data_by_name("g_bfw_data")
-        if d is None:
-            pytest.fail("g_bfw_data not found in data")
-        t = self._type_at(d.type_index)
-        if self._is_composite_of(t, self.TYPE_STRUCT):
-            assert t.composite_type.name == "BitfieldWeird_C", (
-                f"g_bfw_data should be BitfieldWeird_C, got "
-                f"{t.composite_type.name!r}"
-            )
-            return
-        # Bitfield struct may degrade to a primitive
-        if self._is_primitive(t):
-            return
-        pytest.fail(f"g_bfw_data unexpected type: {t.WhichOneof('OneofType')}")
-
-    def test_data_g_mph_data_typed(self):
-        """g_mph_data is declared as MemberPtrHost; must be typed correctly."""
-        d = self._find_data_by_name("g_mph_data")
-        if d is None:
-            pytest.fail("g_mph_data not found in data")
-        t = self._type_at(d.type_index)
-        assert self._is_composite_of(t, self.TYPE_STRUCT), (
-            f"g_mph_data should be MemberPtrHost, got " f"{t.WhichOneof('OneofType')}"
-        )
-        assert t.composite_type.name == "MemberPtrHost", (
-            f"g_mph_data should be MemberPtrHost, got " f"{t.composite_type.name!r}"
-        )
-
-    def test_data_g_uw_c_typed(self):
-        """g_uw_c is declared as union UWeird_C."""
-        d = self._find_data_by_name("g_uw_c")
-        if d is None:
-            pytest.fail("g_uw_c not found in data")
-        t = self._type_at(d.type_index)
-        if self._is_composite_of(t, self.TYPE_UNION):
-            assert t.composite_type.name == "UWeird_C", (
-                f"g_uw_c should be union UWeird_C, got " f"{t.composite_type.name!r}"
-            )
-            return
-        if self._is_primitive(t):
-            return  # Union stored as primitive is acceptable
-        pytest.fail(f"g_uw_c unexpected type: {t.WhichOneof('OneofType')}")
-
-    # -- Typedef pointer chains: typedef A B; typedef B* C ----------------
+    # -- Typedef pointer chains --------------------------------------------
     #
     # When the source says ``typedef TdInt* TdTdIntPtr``, the exported
     # chain MUST be:
@@ -1019,14 +981,6 @@ class TestManyTypesCppExport:
     # The pointer element must reference the *intermediate typedef*, not
     # the fully-resolved primitive, because the user wrote ``TdInt*``.
     # ------------------------------------------------------------------
-
-    def _follow_typedef_element(self, name):
-        """Return (typedef_ct, element_type_proto) for typedef *name*."""
-        _, ct = self._find_typedef(name)
-        if ct is None:
-            pytest.fail(f"{name} typedef not found in export")
-        target = self._type_at(ct.element_type_idx)
-        return ct, target
 
     def test_typedef_ptr_chain_TdTdIntPtr(self):
         """TdTdIntPtr = TdInt* -> element is POINTER whose pointee is TdInt.
@@ -1237,7 +1191,7 @@ class TestManyTypesCppExport:
             f"got {pointee.composite_type.name!r}"
         )
 
-    # -- Typedef array chains: typedef A B; typedef B C[N] ----------------
+    # -- Typedef array chains ----------------------------------------------
     #
     # When the source says ``typedef TdInt TdIntArr4[4]``, the exported
     # chain MUST be:

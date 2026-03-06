@@ -12,12 +12,51 @@ import java.util.*;
 /**
  * Phase 3: Export Type[] with the pinned invariant:
  *   indices 0-8 = primitives (BaseType enum order)
- *   9..N        = enums (sorted by name)
- *   N+1..M      = composites (sorted by name, then kind)
+ *   9..K        = all other types (enums, struct/union, pointers, arrays, typedefs)
+ *
+ * All types are registered (index assigned) before any cross-references
+ * are resolved, so forward references (e.g. pointer-to-typedef) work
+ * regardless of ordering.
  */
 public class TypeExporter {
 
+    /** Classification of a Ghidra DataType for export purposes. */
+    public enum TypeKind {
+        ENUM, STRUCT, UNION, POINTER, ARRAY, TYPEDEF,
+        FUNC_DEF, PRIMITIVE, UNKNOWN
+    }
+
     private TypeExporter() {}
+
+    /** Classify a Ghidra DataType into a TypeKind. */
+    public static TypeKind classify(DataType dt) {
+        if (dt instanceof ghidra.program.model.data.Enum)   return TypeKind.ENUM;
+        if (dt instanceof TypeDef)                           return TypeKind.TYPEDEF;
+        if (dt instanceof Structure)                         return TypeKind.STRUCT;
+        if (dt instanceof Union)                             return TypeKind.UNION;
+        if (dt instanceof Pointer)                           return TypeKind.POINTER;
+        if (dt instanceof Array)                             return TypeKind.ARRAY;
+        if (dt instanceof FunctionDefinition)                return TypeKind.FUNC_DEF;
+        if (GhidraTypeMapper.mapPrimitive(dt) != null)       return TypeKind.PRIMITIVE;
+        return TypeKind.UNKNOWN;
+    }
+
+    /**
+     * Compute the registration key for a non-primitive, non-enum type.
+     * Must match the keys used in ExportContext.resolveTypeIndex().
+     */
+    public static String typeKey(DataType dt, TypeKind kind) {
+        switch (kind) {
+            case STRUCT:  return dt.getName() + ":STRUCT";
+            case UNION:   return dt.getName() + ":UNION";
+            case POINTER: return dt.getName() + ":POINTER";
+            case ARRAY:   return dt.getName() + ":ARRAY";
+            case TYPEDEF: return dt.getName() + ":TYPEDEF";
+            default:
+                throw new IllegalArgumentException(
+                        "No type key for kind: " + kind);
+        }
+    }
 
     public static void export(ExportContext ctx, Quokka.Builder builder) {
         Program program = ctx.getProgram();
@@ -29,109 +68,177 @@ public class TypeExporter {
             builder.addTypes(Quokka.Type.newBuilder().setPrimitiveType(bt));
         }
 
-        // Step 2: Collect enums and composites from DataTypeManager
-        List<ghidra.program.model.data.Enum> enums = new ArrayList<>();
-        List<DataType> composites = new ArrayList<>(); // Struct, Union, Pointer, Array
+        // Step 2: Classify, collect, and register all types from DataTypeManager.
+        // Registration happens immediately so resolveTypeIndex works for
+        // any cross-reference regardless of ordering.
+        List<ClassifiedType> collected = new ArrayList<>();
+        int skippedFuncDefs = 0;
+        int skippedDuplicates = 0;
+        List<String> unhandledTypes = new ArrayList<>();
 
         Iterator<DataType> dtIter = dtm.getAllDataTypes();
         while (dtIter.hasNext()) {
             DataType dt = dtIter.next();
-            if (dt instanceof ghidra.program.model.data.Enum) {
-                enums.add((ghidra.program.model.data.Enum) dt);
-            } else if (dt instanceof Structure || dt instanceof Union) {
-                composites.add(dt);
+            TypeKind kind = classify(dt);
+
+            switch (kind) {
+                case ENUM:
+                    if (ctx.hasEnumType(dt.getName())) {
+                        skippedDuplicates++;
+                        break;
+                    }
+                    ctx.registerEnumType(dt.getName());
+                    collected.add(new ClassifiedType(dt, kind));
+                    break;
+                case STRUCT: case UNION: case POINTER: case ARRAY: case TYPEDEF: {
+                    String key = typeKey(dt, kind);
+                    if (ctx.hasCompositeType(key)) {
+                        skippedDuplicates++;
+                        break;
+                    }
+                    ctx.registerCompositeType(key);
+                    collected.add(new ClassifiedType(dt, kind));
+                    break;
+                }
+                case FUNC_DEF:
+                    skippedFuncDefs++;
+                    break;
+                case PRIMITIVE:
+                    // Handled via indices 0-8; no explicit collection needed
+                    break;
+                default:
+                    unhandledTypes.add(
+                            dt.getName() + " (" + dt.getClass().getSimpleName() + ")");
+                    break;
             }
-            // Note: Pointer and Array types referenced by data/functions will be
-            // added on-demand during composite member resolution
         }
 
-        // Step 3: Sort enums by name, write them (indices 9..N)
-        enums.sort(Comparator.comparing(DataType::getName));
-        for (ghidra.program.model.data.Enum enumDt : enums) {
-            ctx.registerEnumType(enumDt.getName());
-
-            Quokka.EnumType.Builder enumBuilder = Quokka.EnumType.newBuilder()
-                    .setName(enumDt.getName());
-
-            // Add enum values
-            for (String valueName : enumDt.getNames()) {
-                enumBuilder.addValues(Quokka.EnumType.EnumValue.newBuilder()
-                        .setName(valueName)
-                        .setValue(enumDt.getValue(valueName)));
-            }
-
-            // Base type from underlying integer size
-            Quokka.BaseType baseType = GhidraTypeMapper.mapBySize(enumDt.getLength());
-            enumBuilder.setBaseType(GhidraTypeMapper.baseTypeIndex(baseType));
-
-            // C declaration string
-            String cStr = enumDt.toString();
-            if (cStr != null && !cStr.isEmpty()) {
-                enumBuilder.setCStr(cStr);
-            }
-
-            builder.addTypes(Quokka.Type.newBuilder().setEnumType(enumBuilder));
+        if (skippedDuplicates > 0) {
+            Msg.info(TypeExporter.class,
+                    "Skipped " + skippedDuplicates + " duplicate type definitions");
+        }
+        if (skippedFuncDefs > 0) {
+            Msg.info(TypeExporter.class,
+                    "Skipped " + skippedFuncDefs + " FunctionDefinition types "
+                    + "(not representable in proto)");
+        }
+        if (!unhandledTypes.isEmpty()) {
+            Msg.warn(TypeExporter.class,
+                    "Skipped " + unhandledTypes.size()
+                    + " unrepresentable types: " + unhandledTypes);
         }
 
-        // Step 4: Sort composites by (name, then struct before union)
-        composites.sort(Comparator.comparing(DataType::getName)
-                .thenComparing(dt -> dt instanceof Union ? 1 : 0));
-
-        // First pass: register all composite types (for forward references)
-        List<Quokka.CompositeType.Builder> compositeBuilders = new ArrayList<>();
-        for (DataType dt : composites) {
-            String kind = dt instanceof Union ? "UNION" : "STRUCT";
-            ctx.registerCompositeType(dt.getName() + ":" + kind);
-
-            Quokka.CompositeType.Builder cb = Quokka.CompositeType.newBuilder()
-                    .setName(dt.getName())
-                    .setType(dt instanceof Union
-                            ? Quokka.CompositeType.CompositeSubType.TYPE_UNION
-                            : Quokka.CompositeType.CompositeSubType.TYPE_STRUCT)
-                    .setSize(dt.getLength());
-
-            String cStr = dt.toString();
-            if (cStr != null && !cStr.isEmpty()) {
-                cb.setCStr(cStr);
-            }
-
-            compositeBuilders.add(cb);
-        }
-
-        // Second pass: fill members (now all types are registered for index resolution)
-        for (int i = 0; i < composites.size(); i++) {
-            DataType dt = composites.get(i);
-            Quokka.CompositeType.Builder cb = compositeBuilders.get(i);
-            fillMembers(ctx, dt, cb);
-        }
-
-        // Add all composites to proto
-        for (Quokka.CompositeType.Builder cb : compositeBuilders) {
-            builder.addTypes(Quokka.Type.newBuilder().setCompositeType(cb));
+        // Step 3: Export all collected types (all indices already registered)
+        for (ClassifiedType ct : collected) {
+            builder.addTypes(buildType(ctx, ct.dt, ct.kind));
         }
     }
 
+    // ------------------------------------------------------------------
+    // Type building
+    // ------------------------------------------------------------------
+
+    private static Quokka.Type.Builder buildType(
+            ExportContext ctx, DataType dt, TypeKind kind) {
+        Quokka.Type.Builder tb = Quokka.Type.newBuilder();
+        switch (kind) {
+            case ENUM:
+                tb.setEnumType(buildEnum(
+                        (ghidra.program.model.data.Enum) dt));
+                break;
+            case STRUCT: case UNION: {
+                Quokka.CompositeType.Builder cb = buildStructOrUnion(dt, kind);
+                fillMembers(ctx, dt, cb);
+                tb.setCompositeType(cb);
+                break;
+            }
+            case POINTER:
+                tb.setCompositeType(buildReferenceComposite(ctx, dt,
+                        Quokka.CompositeType.CompositeSubType.TYPE_POINTER,
+                        ((Pointer) dt).getDataType()));
+                break;
+            case ARRAY:
+                tb.setCompositeType(buildReferenceComposite(ctx, dt,
+                        Quokka.CompositeType.CompositeSubType.TYPE_ARRAY,
+                        ((Array) dt).getDataType()));
+                break;
+            case TYPEDEF:
+                tb.setCompositeType(buildReferenceComposite(ctx, dt,
+                        Quokka.CompositeType.CompositeSubType.TYPE_TYPEDEF,
+                        ((TypeDef) dt).getDataType()));
+                break;
+            default:
+                break;
+        }
+        return tb;
+    }
+
+    private static Quokka.EnumType.Builder buildEnum(
+            ghidra.program.model.data.Enum enumDt) {
+        Quokka.EnumType.Builder eb = Quokka.EnumType.newBuilder()
+                .setName(enumDt.getName());
+
+        for (String valueName : enumDt.getNames()) {
+            eb.addValues(Quokka.EnumType.EnumValue.newBuilder()
+                    .setName(valueName)
+                    .setValue(enumDt.getValue(valueName)));
+        }
+
+        Quokka.BaseType baseType = GhidraTypeMapper.mapBySize(enumDt.getLength());
+        eb.setBaseType(GhidraTypeMapper.baseTypeIndex(baseType));
+
+        setCStr(eb, enumDt);
+        return eb;
+    }
+
+    /** Build a CompositeType for struct or union (without members). */
+    private static Quokka.CompositeType.Builder buildStructOrUnion(
+            DataType dt, TypeKind kind) {
+        Quokka.CompositeType.Builder cb = Quokka.CompositeType.newBuilder()
+                .setName(dt.getName())
+                .setType(kind == TypeKind.UNION
+                        ? Quokka.CompositeType.CompositeSubType.TYPE_UNION
+                        : Quokka.CompositeType.CompositeSubType.TYPE_STRUCT)
+                .setSize(dt.getLength());
+        setCStr(cb, dt);
+        return cb;
+    }
+
+    /**
+     * Build a CompositeType for pointer, array, or typedef -- types that
+     * reference a single inner type via elementTypeIdx.
+     */
+    private static Quokka.CompositeType.Builder buildReferenceComposite(
+            ExportContext ctx, DataType dt,
+            Quokka.CompositeType.CompositeSubType subType,
+            DataType innerType) {
+        Quokka.CompositeType.Builder cb = Quokka.CompositeType.newBuilder()
+                .setName(dt.getName())
+                .setType(subType)
+                .setSize(dt.getLength());
+        if (innerType != null) {
+            cb.setElementTypeIdx(ctx.resolveTypeIndex(innerType));
+        }
+        setCStr(cb, dt);
+        return cb;
+    }
+
+    // ------------------------------------------------------------------
+    // Members
+    // ------------------------------------------------------------------
+
     private static void fillMembers(ExportContext ctx, DataType dt,
             Quokka.CompositeType.Builder cb) {
-        DataTypeComponent[] components;
-        if (dt instanceof Structure) {
-            components = ((Structure) dt).getDefinedComponents();
-        } else if (dt instanceof Union) {
-            components = ((Union) dt).getComponents();
-        } else {
-            return;
-        }
+        boolean isUnion = dt instanceof Union;
+        DataTypeComponent[] components = isUnion
+                ? ((Union) dt).getComponents()
+                : ((Structure) dt).getDefinedComponents();
 
         for (DataTypeComponent comp : components) {
             Quokka.CompositeType.Member.Builder member =
                     Quokka.CompositeType.Member.newBuilder();
 
-            // Offset in bits (for structs: byte offset * 8, for unions: 0)
-            if (dt instanceof Union) {
-                member.setOffset(0);
-            } else {
-                member.setOffset(comp.getOffset() * 8);
-            }
+            member.setOffset(isUnion ? 0 : comp.getOffset() * 8);
 
             String memberName = comp.getFieldName();
             if (memberName == null || memberName.isEmpty()) {
@@ -139,13 +246,40 @@ public class TypeExporter {
             }
             member.setName(memberName != null ? memberName : "");
 
-            // Resolve member type index
             member.setTypeIndex(ctx.resolveTypeIndex(comp.getDataType()));
-
-            // Size in bits
             member.setSize(comp.getLength() * 8);
 
             cb.addMembers(member);
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------
+
+    private static void setCStr(Quokka.CompositeType.Builder cb, DataType dt) {
+        String cStr = dt.toString();
+        if (cStr != null && !cStr.isEmpty()) {
+            cb.setCStr(cStr);
+        }
+    }
+
+    private static void setCStr(Quokka.EnumType.Builder eb,
+            ghidra.program.model.data.Enum dt) {
+        String cStr = dt.toString();
+        if (cStr != null && !cStr.isEmpty()) {
+            eb.setCStr(cStr);
+        }
+    }
+
+    /** Pairs a DataType with its pre-computed TypeKind to avoid re-classification. */
+    private static final class ClassifiedType {
+        final DataType dt;
+        final TypeKind kind;
+
+        ClassifiedType(DataType dt, TypeKind kind) {
+            this.dt = dt;
+            this.kind = kind;
         }
     }
 }

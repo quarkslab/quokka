@@ -1,11 +1,11 @@
 package com.quarkslab.quokka;
 
+import com.quarkslab.quokka.export.TypeExporter;
 import com.quarkslab.quokka.util.AddressUtil;
 import com.quarkslab.quokka.util.AddressUtil.SegmentInfo;
 import com.quarkslab.quokka.util.GhidraTypeMapper;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.data.*;
-import ghidra.program.database.data.DataTypeUtilities;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
 import ghidra.util.Msg;
@@ -88,8 +88,11 @@ public class ExportContext {
 
     /**
      * Register an enum type and return its index.
+     * If already registered, returns the existing index.
      */
     public int registerEnumType(String name) {
+        Integer existing = enumTypeIndices.get(name);
+        if (existing != null) return existing;
         int idx = nextTypeIndex++;
         enumTypeIndices.put(name, idx);
         return idx;
@@ -97,11 +100,24 @@ public class ExportContext {
 
     /**
      * Register a composite type and return its index.
+     * If already registered, returns the existing index.
      */
     public int registerCompositeType(String key) {
+        Integer existing = compositeTypeIndices.get(key);
+        if (existing != null) return existing;
         int idx = nextTypeIndex++;
         compositeTypeIndices.put(key, idx);
         return idx;
+    }
+
+    /** Check if an enum type is already registered. */
+    public boolean hasEnumType(String name) {
+        return enumTypeIndices.containsKey(name);
+    }
+
+    /** Check if a composite type is already registered. */
+    public boolean hasCompositeType(String key) {
+        return compositeTypeIndices.containsKey(key);
     }
 
     public int getNextTypeIndex() { return nextTypeIndex; }
@@ -115,45 +131,22 @@ public class ExportContext {
             return 0; // TYPE_UNK
         }
 
-        // Strip typedefs
-        dt = DataTypeUtilities.getBaseDataType(dt);
-        if (dt == null) {
-            return 0; // TYPE_UNK
-        }
-
         // Check primitive types first
         Quokka.BaseType baseType = GhidraTypeMapper.mapPrimitive(dt);
         if (baseType != null) {
             return GhidraTypeMapper.baseTypeIndex(baseType);
         }
 
-        // Check enum types
-        if (dt instanceof ghidra.program.model.data.Enum) {
+        TypeExporter.TypeKind kind = TypeExporter.classify(dt);
+
+        if (kind == TypeExporter.TypeKind.ENUM) {
             Integer idx = enumTypeIndices.get(dt.getName());
             if (idx != null) return idx;
-        }
-
-        // Check composite types (struct/union)
-        if (dt instanceof Structure) {
-            Integer idx = compositeTypeIndices.get(dt.getName() + ":STRUCT");
-            if (idx != null) return idx;
-        }
-        if (dt instanceof Union) {
-            Integer idx = compositeTypeIndices.get(dt.getName() + ":UNION");
-            if (idx != null) return idx;
-        }
-
-        // Check pointer types
-        if (dt instanceof Pointer) {
-            String key = dt.getName() + ":POINTER";
-            Integer idx = compositeTypeIndices.get(key);
-            if (idx != null) return idx;
-        }
-
-        // Check array types
-        if (dt instanceof Array) {
-            String key = dt.getName() + ":ARRAY";
-            Integer idx = compositeTypeIndices.get(key);
+        } else if (kind != TypeExporter.TypeKind.FUNC_DEF
+                && kind != TypeExporter.TypeKind.PRIMITIVE
+                && kind != TypeExporter.TypeKind.UNKNOWN) {
+            Integer idx = compositeTypeIndices.get(
+                    TypeExporter.typeKey(dt, kind));
             if (idx != null) return idx;
         }
 
