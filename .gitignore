@@ -65,3 +65,4 @@ ghidra_extension/dist/
 *.id2
 *.nam
 *.til
+*.i64
