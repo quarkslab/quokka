@@ -365,41 +365,6 @@ static void WriteBlock(Quokka::Function* proto_func, const Block& block,
 static void WriteCompositeTypes(Quokka* proto) {
   const DataTypes& data_types = DataTypes::GetInstance();
 
-  auto write_composite_type = [&proto, &data_types]<typename T>(T& composite) {
-    composite.proto_index = proto->types_size();
-
-    Quokka::CompositeType* proto_composite_type =
-        proto->add_types()->mutable_composite_type();
-    proto_composite_type->set_name(composite.name);
-    proto_composite_type->set_type(CompositeSubTypeToProto<T>());
-    proto_composite_type->set_size(composite.size);
-
-    // Write inner memeber type for pointers and arrays
-    if constexpr (is_one_of_t<T, PointerType, ArrayType, TypedefType>) {
-      assert(composite.element_type.has_value() &&
-             "PointerType or ArrayType doesn't have a element_type");
-      if (std::holds_alternative<BaseType>(*composite.element_type)) {
-        proto_composite_type->set_element_type_idx(
-            ToProtoBaseType(std::get<BaseType>(*composite.element_type)));
-      } else {
-        auto inner_type = data_types.find_by_tuid(
-            std::get<type_uid_t>(*composite.element_type));
-        assert(inner_type != data_types.end());
-        proto_composite_type->set_element_type_idx(
-            UpcastVariant<ProtoHelper>(inner_type->second).proto_index);
-      }
-    }
-
-    // Xref
-    for (const Reference* xref : composite.xref_to)
-      proto_composite_type->add_xref_to(xref->proto_index);
-
-    // Export type declaration as string
-    if (!composite.c_str.empty()) {
-      proto_composite_type->set_c_str(composite.c_str);
-    }
-  };
-
   auto write_members = [&data_types](
                            const auto& composite,
                            Quokka::CompositeType* proto_composite_type) {
@@ -428,28 +393,70 @@ static void WriteCompositeTypes(Quokka* proto) {
     }
   };
 
+  auto write_inner = [&data_types](
+                         const auto& composite,
+                         Quokka::CompositeType* proto_composite_type) {
+    assert(composite.element_type.has_value() &&
+           "PointerType or ArrayType doesn't have a element_type");
+    if (std::holds_alternative<BaseType>(*composite.element_type)) {
+      proto_composite_type->set_element_type_idx(
+          ToProtoBaseType(std::get<BaseType>(*composite.element_type)));
+    } else {
+      auto inner_type = data_types.find_by_tuid(
+          std::get<type_uid_t>(*composite.element_type));
+      assert(inner_type != data_types.end());
+      proto_composite_type->set_element_type_idx(
+          UpcastVariant<ProtoHelper>(inner_type->second).proto_index);
+    }
+  };
+
+  auto write_composite_type = [&proto, &data_types, &write_members,
+                               &write_inner]<typename T>(T& composite) {
+    assert(proto->types_size() == composite.proto_index);
+
+    Quokka::CompositeType* proto_composite_type =
+        proto->add_types()->mutable_composite_type();
+    proto_composite_type->set_name(composite.name);
+    proto_composite_type->set_type(CompositeSubTypeToProto<T>());
+    proto_composite_type->set_size(composite.size);
+
+    // Write inner memeber type for pointers and arrays
+    if constexpr (is_one_of_t<T, PointerType, ArrayType, TypedefType>)
+      write_inner(composite, proto_composite_type);
+    else if constexpr (is_one_of_t<T, StructureType, UnionType>)
+      write_members(composite, proto_composite_type);
+
+    // Xref
+    for (const Reference* xref : composite.xref_to)
+      proto_composite_type->add_xref_to(xref->proto_index);
+
+    // Export type declaration as string
+    if (!composite.c_str.empty()) {
+      proto_composite_type->set_c_str(composite.c_str);
+    }
+  };
+
   // `types` might have already been partially populated
   uint32_t i = proto->types_size();
 
-  // First write all the composite types without members
-  for_each_visit<StructureType, UnionType, PointerType, ArrayType,
-                 TypedefType>(data_types, write_composite_type);
-
-  // Finally write all the members
-  for_each_visit<StructureType, UnionType, PointerType, ArrayType,
-                 TypedefType>(
-      data_types, [&](const auto& composite) {
-        Quokka::CompositeType* proto_composite_type =
-            proto->mutable_types(i)->mutable_composite_type();
-        write_members(composite, proto_composite_type);
+  // Step 1. Assign a proto index to all the types
+  for_each_visit<StructureType, UnionType, PointerType, ArrayType, TypedefType>(
+      data_types, [&i](const auto& composite) {
+        static_cast<const ProtoHelper*>(&composite)->proto_index = i;
         ++i;
       });
+
+  // Step 2. Write all the composite types
+  for_each_visit<StructureType, UnionType, PointerType, ArrayType, TypedefType>(
+      data_types, write_composite_type);
 }
 
 static void WriteEnums(Quokka* proto) {
   const DataTypes& data_types = DataTypes::GetInstance();
 
   for (const auto& [tid, enum_type] : data_types | filter_type<EnumType>) {
+    enum_type.proto_index = proto->types_size();
+
     Quokka::EnumType* proto_enum = proto->add_types()->mutable_enum_type();
     proto_enum->set_name(enum_type.name);
 

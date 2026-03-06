@@ -193,14 +193,147 @@ static void ExportStructOrUnion(const tinfo_t& tif) {
   }
 }
 
+/**
+ * Export a single typedef by ordinal, recursively exporting any
+ * intermediate typedef targets first so that element_type points
+ * to the immediate next type in the chain (single-step resolution).
+ *
+ * Resolution strategy:
+ *  1. get_next_type_name() -- works for chained typedefs and
+ *     typedefs over struct/union/enum (named targets).
+ *  2. is_ptr() -- info embedded in typedef; resolve via ptr_type_data_t.
+ *  3. is_array() -- info embedded in typedef; resolve via array_type_data_t.
+ *  4. Fallback -- typedef over primitive; use get_realtype() via GetBaseType.
+ *
+ * The order matters: get_next_type_name() is tried first because
+ * is_ptr()/is_array() use get_realtype() which follows the full typedef
+ * chain, so a chained typedef like `typedef A B` where A is a pointer
+ * would report is_ptr() == true even though B's immediate target is A
+ * (a named typedef), not an embedded pointer.
+ *
+ * @param tif The IDA type info to export
+ * @return The type_uid_t of the exported (or already-existing) typedef
+ */
+static type_uid_t ExportSingleTypedef(const tinfo_t& tif) {
+  DataTypes& data_types = DataTypes::GetInstance();
+
+  type_uid_t tuid = GetTypeUid(tif);
+
+  // Already exported (handles revisits and potential cycles)
+  if (data_types.find_by_tuid(tuid) != data_types.end())
+    return tuid;
+
+  qstring name;
+  tif.get_type_name(&name);
+
+  // tinfo_t::get_size() accounts for typedefs and returns the size
+  // of the underlying type even when the info is embedded.
+  size_t size = GetTinfoSize(tif);
+  tid_t tid = tif.get_tid();
+
+  // Create the entry early so recursive calls see it (avoids cycles).
+  // The reference remains valid across hash-map rehashes because
+  // DataTypes stores unique_ptr<TypeT> (heap-allocated, stable address).
+  TypedefType& typedef_type =
+      data_types.emplace<TypedefType>(tuid, ConvertIdaString(name), tid, size);
+
+  // --- Step 1: Try get_next_type_name() for named targets ---
+  // Works for chained typedefs and typedefs over struct/union/enum.
+  // Fails when the typedef directly wraps an embedded type (pointer,
+  // array, primitive).
+  qstring next_name;
+  bool resolved = false;
+
+  if (tif.get_next_type_name(&next_name)) {
+    tinfo_t next_tif;
+    if (next_tif.get_named_type(next_name.c_str())) {
+      if (next_tif.is_from_subtil()) {  // Target comes from another TIL
+        typedef_type.element_type = TYPE_UNK;
+        resolved = true;
+
+      } else if (next_tif.is_typedef()) {  // Target is another typedef
+        typedef_type.element_type = ExportSingleTypedef(next_tif);
+        resolved = true;
+
+      } else {  // Concrete named type (struct, union, enum).
+        type_uid_t target_tuid = GetTypeUid(next_tif);
+        if (data_types.find_by_tuid(target_tuid) != data_types.end()) {
+          typedef_type.element_type = target_tuid;
+          resolved = true;
+        } else {
+          QLOGE << absl::StrFormat(
+              "Typedef `%s`: target `%s` not found in DataTypes", name.c_str(),
+              next_name.c_str());
+        }
+      }
+    } else {
+      // Name exists but get_named_type failed: built-in type
+      // (e.g. "int", "char") not in the local type library.
+      BaseType bt = GetBaseType(tif);
+      typedef_type.element_type =
+          (IsPrimitiveType(bt) && bt != TYPE_UNK) ? bt : TYPE_UNK;
+      resolved = true;
+    }
+  }
+
+  // --- Step 2: Embedded pointer (info embedded in typedef) ---
+  // Build an anonymous pointer tinfo_t so ExportPointer gets a fresh
+  // type_uid_t that won't collide with the typedef's own tuid.
+  if (!resolved && tif.is_ptr()) {
+    ptr_type_data_t pi;
+    if (tif.get_ptr_details(&pi)) {
+      tinfo_t raw_ptr;
+      raw_ptr.create_ptr(pi);
+      typedef_type.element_type = ExportPointer(raw_ptr);
+      resolved = true;
+    } else {
+      QLOGE << absl::StrFormat(
+          "Typedef `%s`: failed to extract pointer details", name.c_str());
+    }
+  }
+
+  // --- Step 3: Embedded array (info embedded in typedef) ---
+  if (!resolved && tif.is_array()) {
+    array_type_data_t ai;
+    if (tif.get_array_details(&ai)) {
+      tinfo_t raw_arr;
+      raw_arr.create_array(ai);
+      typedef_type.element_type = ExportArray(raw_arr);
+      resolved = true;
+    } else {
+      QLOGE << absl::StrFormat("Typedef `%s`: failed to extract array details",
+                               name.c_str());
+    }
+  }
+
+  // --- Step 4: Primitive fallback ---
+  // Typedef over a primitive type. get_realtype() (used by GetBaseType)
+  // follows the typedef chain across TIL boundaries.
+  if (!resolved) {
+    typedef_type.element_type = GetBaseType(tif);
+  }
+
+  // Print the type as a C-string if possible
+  qstring decl;
+  if (tif.print(&decl, name.c_str(),
+                PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+    typedef_type.c_str = ConvertIdaString(decl);
+
+  // Export xrefs
+  ExportSymbolReference(&typedef_type, typedef_type.xref_to, tid,
+                        reference::WHOLE_TYPE);
+
+  return tuid;
+}
+
 static std::variant<type_uid_t, BaseType> ExportInnerElement(
-    const tinfo_t& arg_tif) {
-  if (arg_tif.empty())
+    const tinfo_t& tif) {
+  if (tif.empty())
     return TYPE_UNK;
 
-  if (arg_tif.is_from_subtil()) {
+  if (tif.is_from_subtil()) {
     qstring name;
-    arg_tif.get_type_name(&name);
+    tif.get_type_name(&name);
     QLOGW << absl::StrFormat(
         "Data type `%s` comes from a different library. Treating it as "
         "TYPE_UNK",
@@ -208,8 +341,11 @@ static std::variant<type_uid_t, BaseType> ExportInnerElement(
     return TYPE_UNK;
   }
 
-  tinfo_t tif = arg_tif;  // Copy it to have a mutable variable
-  ResolveTypedef(tif);
+  if (tif.is_typeref())  // Typeref not handled for now
+    return TYPE_UNK;
+
+  if (tif.is_typedef())
+    return ExportSingleTypedef(tif);
 
   const DataTypes& data_types = DataTypes::GetInstance();
 
@@ -220,7 +356,6 @@ static std::variant<type_uid_t, BaseType> ExportInnerElement(
       return ExportPointer(tif);
     case TYPE_ARRAY:
       return ExportArray(tif);
-      return TYPE_UNK;
     case TYPE_UNK: {
       type_uid_t tuid = GetTypeUid(tif);
       // We should already have exported the data types
@@ -257,8 +392,7 @@ void ExportCompositeDataTypes() {
   DataTypes& data_types = DataTypes::GetInstance();
   std::vector<type_uid_t> composite_keys;
   for_each_visit<StructureType, UnionType>(
-      data_types,
-      [&composite_keys](const type_uid_t& tuid, auto&) {
+      data_types, [&composite_keys](const type_uid_t& tuid, auto&) {
         composite_keys.push_back(tuid);
       });
 
@@ -275,17 +409,16 @@ void ExportCompositeDataTypes() {
     tif.get_type_name(&composite_name);
     qstring decl;
 
-    visit_selected<StructureType, UnionType>(
-        it->second, [&](auto& data_type) {
-          // Print the type as a C-string if possible
-          if (tif.print(&decl, composite_name.c_str(),
-                        PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
-            data_type.c_str = ConvertIdaString(decl);
+    visit_selected<StructureType, UnionType>(it->second, [&](auto& data_type) {
+      // Print the type as a C-string if possible
+      if (tif.print(&decl, composite_name.c_str(),
+                    PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
+        data_type.c_str = ConvertIdaString(decl);
 
-          // Export the members of the struct/union
-          if (!tif.is_empty_udt() && !tif.is_forward_decl())
-            ExportCompositeMembers(data_type, tif);
-        });
+      // Export the members of the struct/union
+      if (!tif.is_empty_udt() && !tif.is_forward_decl())
+        ExportCompositeMembers(data_type, tif);
+    });
   }
 }
 
@@ -345,156 +478,6 @@ void ExportEnums() {
   }
 }
 
-/**
- * Resolve the element_type for a typedef from a tinfo_t.
- *
- * Determines the correct element_type by inspecting @p target_tif
- * (which is the immediate next type in the typedef chain).
- * Handles pointers, arrays, composites (struct/union/enum), and
- * primitives. Sets element_type to TYPE_UNK for types that could
- * not be resolved (e.g. from a sub-TIL).
- */
-static void ResolveTypedefElement(TypedefType& typedef_type,
-                                  const tinfo_t& target_tif) {
-  DataTypes& data_types = DataTypes::GetInstance();
-
-  BaseType base_type = GetBaseType(target_tif);
-  switch (base_type) {
-    case TYPE_POINTER:
-      typedef_type.element_type = ExportPointer(target_tif);
-      break;
-    case TYPE_ARRAY:
-      typedef_type.element_type = ExportArray(target_tif);
-      break;
-    case TYPE_UNK: {
-      type_uid_t target_tuid = GetTypeUid(target_tif);
-      if (data_types.find_by_tuid(target_tuid) != data_types.end())
-        typedef_type.element_type = target_tuid;
-      else
-        typedef_type.element_type = TYPE_UNK;
-      break;
-    }
-    default:  // Primitive type
-      typedef_type.element_type = base_type;
-      break;
-  }
-}
-
-/**
- * Export a single typedef by ordinal, recursively exporting any
- * intermediate typedef targets first so that element_type points
- * to the immediate next type in the chain (single-step resolution).
- *
- * @param ordinal The IDA type ordinal to export
- * @return The type_uid_t of the exported (or already-existing) typedef
- */
-static type_uid_t ExportSingleTypedef(uint32_t ordinal) {
-  DataTypes& data_types = DataTypes::GetInstance();
-
-  tinfo_t tif;
-  if (!tif.get_numbered_type(ordinal))
-    assert(false && "Cannot get type info for typedef ordinal");
-
-  type_uid_t tuid = GetTypeUid(tif);
-
-  // Already exported (handles revisits and potential cycles)
-  if (data_types.find_by_tuid(tuid) != data_types.end())
-    return tuid;
-
-  qstring name;
-  tif.get_type_name(&name);
-
-  // Get size via full resolution (need the concrete type's size)
-  tinfo_t fully_resolved = tif;
-  ResolveTypedef(fully_resolved);
-  size_t size = GetTinfoSize(fully_resolved);
-  tid_t tid = tif.get_tid();
-
-  // Create the entry early so recursive calls see it (avoids cycles).
-  // The reference remains valid across hash-map rehashes because
-  // DataTypes stores unique_ptr<TypeT> (heap-allocated, stable address).
-  TypedefType& typedef_type =
-      data_types.emplace<TypedefType>(tuid, ConvertIdaString(name), tid, size);
-
-  // --- Single-step element_type resolution ---
-  // get_next_type_name() returns the name of the immediate target in
-  // the typedef chain (one step).  It fails when the typedef directly
-  // aliases a primitive or anonymous type (pointer, array, etc.).
-  qstring next_name;
-  bool resolved_element = false;
-
-  if (tif.get_next_type_name(&next_name)) {
-    tinfo_t next_tif;
-    if (next_tif.get_named_type(next_name.c_str())) {
-      // Check if the target comes from a different TIL library
-      if (next_tif.is_from_subtil()) {
-        typedef_type.element_type = TYPE_UNK;
-        resolved_element = true;
-      } else if (next_tif.is_typedef()) {
-        // Target is another typedef -- export it first (recursive)
-        uint32_t next_ord = next_tif.get_ordinal();
-        if (next_ord > 0) {
-          type_uid_t target_tuid = ExportSingleTypedef(next_ord);
-          typedef_type.element_type = target_tuid;
-          resolved_element = true;
-        }
-        // else: typedef without ordinal -- fall through to element
-        // resolution from the next_tif itself (it IS the immediate target)
-        if (!resolved_element) {
-          ResolveTypedefElement(typedef_type, next_tif);
-          resolved_element = true;
-        }
-      } else {
-        // Target is a concrete named type (struct, union, enum, ...)
-        // Use the next_tif directly for single-step resolution
-        ResolveTypedefElement(typedef_type, next_tif);
-        resolved_element = true;
-      }
-    } else {
-      // get_named_type failed despite having a name -- the name might
-      // refer to a built-in type (e.g. "int", "char") that IDA knows
-      // but doesn't store in the local type library.
-      // Fall through to anonymous/primitive resolution below.
-      QLOGD << absl::StrFormat(
-          "Typedef `%s`: get_named_type failed for next name `%s`, "
-          "falling back to resolved type",
-          name.c_str(), next_name.c_str());
-    }
-  }
-
-  if (!resolved_element) {
-    // The typedef aliases a primitive, anonymous pointer/array, or a
-    // type whose name could not be looked up.  Use the fully resolved
-    // concrete type (this IS single-step for anonymous targets, since
-    // anonymous types are never typedefs themselves).
-    ResolveTypedefElement(typedef_type, fully_resolved);
-  }
-
-  // Guard against self-references: when a typedef wraps a pointer/array
-  // that shares the same IDA ordinal (e.g. `typedef U32 *PU32`),
-  // ExportPointer/ExportArray returns the typedef's own tuid because it
-  // was registered first.  Detect and break the cycle by falling back
-  // to the corresponding BaseType.
-  if (typedef_type.element_type.has_value()) {
-    auto* et_tuid = std::get_if<type_uid_t>(&*typedef_type.element_type);
-    if (et_tuid && *et_tuid == tuid) {
-      typedef_type.element_type = GetBaseType(tif);
-    }
-  }
-
-  // Print the type as a C-string if possible
-  qstring decl;
-  if (tif.print(&decl, name.c_str(),
-                PRTYPE_TYPE | PRTYPE_MULTI | PRTYPE_DEF | PRTYPE_SEMI))
-    typedef_type.c_str = ConvertIdaString(decl);
-
-  // Export xrefs
-  ExportSymbolReference(&typedef_type, typedef_type.xref_to, tid,
-                        reference::WHOLE_TYPE);
-
-  return tuid;
-}
-
 void ExportTypedefs() {
   for (uint32_t ordinal = 1; ordinal < get_ordinal_limit(); ++ordinal) {
     tinfo_t tif;
@@ -503,7 +486,7 @@ void ExportTypedefs() {
     if (!tif.is_typedef())
       continue;
 
-    ExportSingleTypedef(ordinal);
+    ExportSingleTypedef(tif);
   }
 }
 
