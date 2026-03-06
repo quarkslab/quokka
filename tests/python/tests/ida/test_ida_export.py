@@ -1010,3 +1010,354 @@ class TestManyTypesCppExport:
         if self._is_primitive(t):
             return  # Union stored as primitive is acceptable
         pytest.fail(f"g_uw_c unexpected type: {t.WhichOneof('OneofType')}")
+
+    # -- Typedef pointer chains: typedef A B; typedef B* C ----------------
+    #
+    # When the source says ``typedef TdInt* TdTdIntPtr``, the exported
+    # chain MUST be:
+    #   TdTdIntPtr (TYPEDEF) -> POINTER -> TdInt (TYPEDEF) -> primitive
+    # The pointer element must reference the *intermediate typedef*, not
+    # the fully-resolved primitive, because the user wrote ``TdInt*``.
+    # ------------------------------------------------------------------
+
+    def _follow_typedef_element(self, name):
+        """Return (typedef_ct, element_type_proto) for typedef *name*."""
+        _, ct = self._find_typedef(name)
+        if ct is None:
+            pytest.skip(f"{name} typedef not found in export")
+        target = self._type_at(ct.element_type_idx)
+        return ct, target
+
+    def test_typedef_ptr_chain_TdTdIntPtr(self):
+        """TdTdIntPtr = TdInt* -> element is POINTER whose pointee is TdInt.
+
+        Source:
+            typedef int          TdInt;
+            typedef TdInt*       TdTdIntPtr;
+        Expected chain:
+            TdTdIntPtr (TYPEDEF) -> POINTER -> TdInt (TYPEDEF) -> TYPE_DW
+        """
+        ct, ptr = self._follow_typedef_element("TdTdIntPtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdTdIntPtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdTdIntPtr pointer pointee should be typedef TdInt, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdInt", (
+            f"TdTdIntPtr pointer pointee should be TdInt, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdTdFloatPtr(self):
+        """TdTdFloatPtr = TdFloat* -> POINTER -> TdFloat (TYPEDEF).
+
+        Source:
+            typedef float        TdFloat;
+            typedef TdFloat*     TdTdFloatPtr;
+        """
+        ct, ptr = self._follow_typedef_element("TdTdFloatPtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdTdFloatPtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdTdFloatPtr pointer pointee should be typedef TdFloat, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdFloat", (
+            f"TdTdFloatPtr pointer pointee should be TdFloat, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdTdBytePtr(self):
+        """TdTdBytePtr = TdByte* -> POINTER -> TdByte (TYPEDEF).
+
+        Source:
+            typedef unsigned char TdByte;
+            typedef TdByte*       TdTdBytePtr;
+        """
+        ct, ptr = self._follow_typedef_element("TdTdBytePtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdTdBytePtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdTdBytePtr pointer pointee should be typedef TdByte, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdByte", (
+            f"TdTdBytePtr pointer pointee should be TdByte, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdStructAPtr(self):
+        """TdStructAPtr = TdStructA* -> POINTER -> TdStructA (TYPEDEF).
+
+        Source:
+            typedef struct A     TdStructA;
+            typedef TdStructA*   TdStructAPtr;
+        """
+        ct, ptr = self._follow_typedef_element("TdStructAPtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdStructAPtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdStructAPtr pointer pointee should be typedef TdStructA, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdStructA", (
+            f"TdStructAPtr pointer pointee should be TdStructA, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdUnionEPtr(self):
+        """TdUnionEPtr = TdUnionE* -> POINTER -> TdUnionE (TYPEDEF).
+
+        Source:
+            typedef union E      TdUnionE;
+            typedef TdUnionE*    TdUnionEPtr;
+        """
+        ct, ptr = self._follow_typedef_element("TdUnionEPtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdUnionEPtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdUnionEPtr pointer pointee should be typedef TdUnionE, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdUnionE", (
+            f"TdUnionEPtr pointer pointee should be TdUnionE, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdEnumDPtr(self):
+        """TdEnumDPtr = TdEnumD* -> POINTER -> TdEnumD (TYPEDEF).
+
+        Source:
+            typedef enum D       TdEnumD;
+            typedef TdEnumD*     TdEnumDPtr;
+        """
+        ct, ptr = self._follow_typedef_element("TdEnumDPtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdEnumDPtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdEnumDPtr pointer pointee should be typedef TdEnumD, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdEnumD", (
+            f"TdEnumDPtr pointer pointee should be TdEnumD, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdConstTdIntPtr(self):
+        """TdConstTdIntPtr = const TdInt* -> POINTER -> TdInt (TYPEDEF).
+
+        Source:
+            typedef int          TdInt;
+            typedef const TdInt* TdConstTdIntPtr;
+        The const qualifier lives on the pointer, not on the pointee
+        typedef; the pointee must still be TdInt.
+        """
+        ct, ptr = self._follow_typedef_element("TdConstTdIntPtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdConstTdIntPtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdConstTdIntPtr pointer pointee should be typedef TdInt, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdInt", (
+            f"TdConstTdIntPtr pointer pointee should be TdInt, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdTdIntPtrPtr(self):
+        """TdTdIntPtrPtr = TdInt** -> POINTER -> POINTER -> TdInt.
+
+        Source:
+            typedef int          TdInt;
+            typedef TdInt**      TdTdIntPtrPtr;
+        The outer pointer must point to another pointer, which in turn
+        must point to the TdInt typedef.
+        """
+        ct, ptr_outer = self._follow_typedef_element("TdTdIntPtrPtr")
+        assert self._is_composite_of(ptr_outer, self.TYPE_POINTER), (
+            f"TdTdIntPtrPtr element should be TYPE_POINTER, "
+            f"got {ptr_outer.WhichOneof('OneofType')}"
+        )
+        ptr_inner = self._type_at(ptr_outer.composite_type.element_type_idx)
+        assert self._is_composite_of(ptr_inner, self.TYPE_POINTER), (
+            f"TdTdIntPtrPtr inner element should be TYPE_POINTER, "
+            f"got {ptr_inner.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr_inner.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdTdIntPtrPtr innermost pointee should be typedef TdInt, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdInt", (
+            f"TdTdIntPtrPtr innermost pointee should be TdInt, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    def test_typedef_ptr_chain_TdConstStructAPtr(self):
+        """TdConstStructAPtr = const TdStructA* -> POINTER -> TdStructA.
+
+        Source:
+            typedef struct A         TdStructA;
+            typedef const TdStructA* TdConstStructAPtr;
+        """
+        ct, ptr = self._follow_typedef_element("TdConstStructAPtr")
+        assert self._is_composite_of(ptr, self.TYPE_POINTER), (
+            f"TdConstStructAPtr element should be TYPE_POINTER, "
+            f"got {ptr.WhichOneof('OneofType')}"
+        )
+        pointee = self._type_at(ptr.composite_type.element_type_idx)
+        assert self._is_composite_of(pointee, self.TYPE_TYPEDEF), (
+            f"TdConstStructAPtr pointer pointee should be typedef TdStructA, "
+            f"got {pointee.WhichOneof('OneofType')}"
+        )
+        assert pointee.composite_type.name == "TdStructA", (
+            f"TdConstStructAPtr pointer pointee should be TdStructA, "
+            f"got {pointee.composite_type.name!r}"
+        )
+
+    # -- Typedef array chains: typedef A B; typedef B C[N] ----------------
+    #
+    # When the source says ``typedef TdInt TdIntArr4[4]``, the exported
+    # chain MUST be:
+    #   TdIntArr4 (TYPEDEF) -> ARRAY -> TdInt (TYPEDEF) -> primitive
+    # The array element must reference the *intermediate typedef*, not
+    # the fully-resolved primitive, because the user wrote ``TdInt[4]``.
+    # ------------------------------------------------------------------
+
+    def test_typedef_arr_chain_TdIntArr4(self):
+        """TdIntArr4 = TdInt[4] -> ARRAY whose element is TdInt (TYPEDEF).
+
+        Source:
+            typedef int    TdInt;
+            typedef TdInt  TdIntArr4[4];
+        Expected chain:
+            TdIntArr4 (TYPEDEF, size=16) -> ARRAY -> TdInt (TYPEDEF) -> TYPE_DW
+        """
+        ct, arr = self._follow_typedef_element("TdIntArr4")
+        assert ct.size == 16, f"TdIntArr4 size should be 16, got {ct.size}"
+        assert self._is_composite_of(arr, self.TYPE_ARRAY), (
+            f"TdIntArr4 element should be TYPE_ARRAY, "
+            f"got {arr.WhichOneof('OneofType')}"
+        )
+        elem = self._type_at(arr.composite_type.element_type_idx)
+        assert self._is_composite_of(elem, self.TYPE_TYPEDEF), (
+            f"TdIntArr4 array element should be typedef TdInt, "
+            f"got {elem.WhichOneof('OneofType')}"
+        )
+        assert elem.composite_type.name == "TdInt", (
+            f"TdIntArr4 array element should be TdInt, "
+            f"got {elem.composite_type.name!r}"
+        )
+
+    def test_typedef_arr_chain_TdByteArr8(self):
+        """TdByteArr8 = TdByte[8] -> ARRAY whose element is TdByte.
+
+        Source:
+            typedef unsigned char TdByte;
+            typedef TdByte        TdByteArr8[8];
+        """
+        ct, arr = self._follow_typedef_element("TdByteArr8")
+        assert ct.size == 8, f"TdByteArr8 size should be 8, got {ct.size}"
+        assert self._is_composite_of(arr, self.TYPE_ARRAY), (
+            f"TdByteArr8 element should be TYPE_ARRAY, "
+            f"got {arr.WhichOneof('OneofType')}"
+        )
+        elem = self._type_at(arr.composite_type.element_type_idx)
+        assert self._is_composite_of(elem, self.TYPE_TYPEDEF), (
+            f"TdByteArr8 array element should be typedef TdByte, "
+            f"got {elem.WhichOneof('OneofType')}"
+        )
+        assert elem.composite_type.name == "TdByte", (
+            f"TdByteArr8 array element should be TdByte, "
+            f"got {elem.composite_type.name!r}"
+        )
+
+    def test_typedef_arr_chain_TdStructAArr2(self):
+        """TdStructAArr2 = TdStructA[2] -> ARRAY whose element is TdStructA.
+
+        Source:
+            typedef struct A   TdStructA;
+            typedef TdStructA  TdStructAArr2[2];
+        """
+        ct, arr = self._follow_typedef_element("TdStructAArr2")
+        assert self._is_composite_of(arr, self.TYPE_ARRAY), (
+            f"TdStructAArr2 element should be TYPE_ARRAY, "
+            f"got {arr.WhichOneof('OneofType')}"
+        )
+        elem = self._type_at(arr.composite_type.element_type_idx)
+        assert self._is_composite_of(elem, self.TYPE_TYPEDEF), (
+            f"TdStructAArr2 array element should be typedef TdStructA, "
+            f"got {elem.WhichOneof('OneofType')}"
+        )
+        assert elem.composite_type.name == "TdStructA", (
+            f"TdStructAArr2 array element should be TdStructA, "
+            f"got {elem.composite_type.name!r}"
+        )
+
+    def test_typedef_arr_chain_TdUnionEArr3(self):
+        """TdUnionEArr3 = TdUnionE[3] -> ARRAY whose element is TdUnionE.
+
+        Source:
+            typedef union E    TdUnionE;
+            typedef TdUnionE   TdUnionEArr3[3];
+        """
+        ct, arr = self._follow_typedef_element("TdUnionEArr3")
+        assert ct.size == 12, f"TdUnionEArr3 size should be 12, got {ct.size}"
+        assert self._is_composite_of(arr, self.TYPE_ARRAY), (
+            f"TdUnionEArr3 element should be TYPE_ARRAY, "
+            f"got {arr.WhichOneof('OneofType')}"
+        )
+        elem = self._type_at(arr.composite_type.element_type_idx)
+        assert self._is_composite_of(elem, self.TYPE_TYPEDEF), (
+            f"TdUnionEArr3 array element should be typedef TdUnionE, "
+            f"got {elem.WhichOneof('OneofType')}"
+        )
+        assert elem.composite_type.name == "TdUnionE", (
+            f"TdUnionEArr3 array element should be TdUnionE, "
+            f"got {elem.composite_type.name!r}"
+        )
+
+    def test_typedef_arr_chain_TdEnumDArr3(self):
+        """TdEnumDArr3 = TdEnumD[3] -> ARRAY whose element is TdEnumD.
+
+        Source:
+            typedef enum D     TdEnumD;
+            typedef TdEnumD    TdEnumDArr3[3];
+        """
+        ct, arr = self._follow_typedef_element("TdEnumDArr3")
+        assert ct.size == 12, f"TdEnumDArr3 size should be 12, got {ct.size}"
+        assert self._is_composite_of(arr, self.TYPE_ARRAY), (
+            f"TdEnumDArr3 element should be TYPE_ARRAY, "
+            f"got {arr.WhichOneof('OneofType')}"
+        )
+        elem = self._type_at(arr.composite_type.element_type_idx)
+        assert self._is_composite_of(elem, self.TYPE_TYPEDEF), (
+            f"TdEnumDArr3 array element should be typedef TdEnumD, "
+            f"got {elem.WhichOneof('OneofType')}"
+        )
+        assert elem.composite_type.name == "TdEnumD", (
+            f"TdEnumDArr3 array element should be TdEnumD, "
+            f"got {elem.composite_type.name!r}"
+        )

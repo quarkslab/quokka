@@ -59,7 +59,7 @@ BaseType GetBaseType(flags_t flags) {
   return TYPE_UNK;
 }
 
-BaseType GetBaseType(const tinfo_t& tinf) {
+BaseType GetBaseType(const tinfo_t& tinf, bool ignore_typedef /* = false */) {
   auto int_from_tinfo_size = [&tinf]() {
     switch (tinf.get_unpadded_size()) {
       case 1:
@@ -75,7 +75,13 @@ BaseType GetBaseType(const tinfo_t& tinf) {
     }
   };
 
-  switch (tinf.get_realtype() & TYPE_BASE_MASK) {
+  // Do not rely on realtype for typedef
+  if (!ignore_typedef && tinf.is_typedef())
+    return TYPE_TYPEDEF;
+
+  type_t realtype = tinf.get_realtype();
+
+  switch (realtype & TYPE_BASE_MASK) {
     case BT_UNK:
       return TYPE_UNK;
     case BT_INT8:
@@ -93,7 +99,7 @@ BaseType GetBaseType(const tinfo_t& tinf) {
     case BTF_VOID:
       return TYPE_VOID;
     case BT_BOOL:
-      switch (tinf.get_realtype() & TYPE_FLAGS_MASK) {
+      switch (realtype & TYPE_FLAGS_MASK) {
         case BTMT_DEFBOOL:  // size is model specific or unknown. Query for size
           return int_from_tinfo_size();
         case BTMT_BOOL1:
@@ -106,7 +112,7 @@ BaseType GetBaseType(const tinfo_t& tinf) {
           return TYPE_UNK;
       }
     case BT_FLOAT:
-      switch (tinf.get_realtype() & TYPE_FLAGS_MASK) {
+      switch (realtype & TYPE_FLAGS_MASK) {
         case BTMT_FLOAT:
           return TYPE_FLOAT;
         case BTMT_DOUBLE:
@@ -116,9 +122,8 @@ BaseType GetBaseType(const tinfo_t& tinf) {
       }
     case BT_PTR:
       return TYPE_POINTER;
-    case BT_ARRAY: {
+    case BT_ARRAY:
       return TYPE_ARRAY;
-    }
     default:
       return TYPE_UNK;
   }

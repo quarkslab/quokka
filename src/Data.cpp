@@ -72,9 +72,6 @@ Data Data::Make(ea_t addr, uint32_t size) {
     if (!get_tinfo(&tinf, addr))
       assert(false);
 
-    // Resolve the typedef/typeref to final concrete type (uses name-based
-    // fallback when get_final_ordinal() returns 0).
-    ResolveTypedef(tinf);
     tid = tinf.get_tid();
     data_type = GetBaseType(tinf);
   } else {  // No tinfo, fall back on the flags
@@ -112,55 +109,70 @@ Data Data::Make(ea_t addr, uint32_t size) {
     goto data_exported;
   }
 
-  if (data_type == TYPE_POINTER) {
-    data.target_tuid = ExportPointer(tinf);
+  switch (data_type) {
+    case TYPE_TYPEDEF:
+      data.target_tuid = ExportSingleTypedef(tinf);
+      break;
 
-  } else if (data_type == TYPE_ARRAY) {
-    data.target_tuid = ExportArray(tinf);
+    case TYPE_POINTER:
+      data.target_tuid = ExportPointer(tinf);
+      break;
 
-  } else if (data_type == TYPE_STR) {  // String literal, No tinfo_t available
-    if (guess_tinfo(&tinf, addr) > 0) {
+    case TYPE_ARRAY:
       data.target_tuid = ExportArray(tinf);
-    } else {
-      QLOGE << absl::StrFormat(
-          "Couldn't recover the tinfo_t from the string literal at address "
-          "0x%08llx. Marking it as TYPE_UNK",
-          addr);
-      data.base_type = TYPE_UNK;
-    }
+      break;
 
-  } else if (data_type == TYPE_ALIGN) {
-    data.base_type = TYPE_UNK;  // This is useless data. Mark it as unknown
-
-  } else if (data_type == TYPE_UNK) {  // Most likely a enum/struct/union
-    // Sometimes IDA fails at giving us the correct tinfo_t. Try to recover it
-    // through unconventional means
-    if (tid == BADADDR) {
-      tid = get_strid(addr);
-      if (tid == BADADDR) {
+    case TYPE_STR:  // String literal, No tinfo_t available
+      if (guess_tinfo(&tinf, addr) > 0) {
+        data.target_tuid = ExportArray(tinf);
+      } else {
         QLOGE << absl::StrFormat(
-            "Cannot correctly identify the type of data at address 0x%08llx. "
-            "Marking it as TYPE_UNK",
+            "Couldn't recover the tinfo_t from the string literal at address "
+            "0x%08llx. Marking it as TYPE_UNK",
             addr);
         data.base_type = TYPE_UNK;
-        goto data_exported;  // Skip to the end
       }
+      break;
+
+    case TYPE_ALIGN:
+      data.base_type = TYPE_UNK;  // This is useless data. Mark it as unknown
+      break;
+
+    case TYPE_UNK: {  // Most likely a enum/struct/union
+      // Sometimes IDA fails at giving us the correct tinfo_t. Try to recover
+      // it through unconventional means
+      if (tid == BADADDR) {
+        tid = get_strid(addr);
+        if (tid == BADADDR) {
+          QLOGE << absl::StrFormat(
+              "Cannot correctly identify the type of data at address "
+              "0x%08llx. "
+              "Marking it as TYPE_UNK",
+              addr);
+          data.base_type = TYPE_UNK;
+          goto data_exported;  // Skip to the end
+        }
+      }
+
+      // Failing to resolve the data type at this point is really bad
+      // Note: here tid is guaranteed to be valid but tinf might not be
+      const auto& it = data_types.find_by_tuid(GetTypeUid(tid));
+
+      if (it == data_types.end()) {
+        QLOGE << absl::StrFormat(
+            "Data at address 0x%x is of type composite but the "
+            "associated composite type was not exported",
+            addr);
+        // Change the type to TYPE_UNK to avoid breaking the protobuf
+        data.base_type = TYPE_UNK;
+      } else {
+        data.target_tuid = it->first;
+      }
+      break;
     }
 
-    // Failing to resolve the data type at this point is really bad
-    // Note: here tid is guaranteed to be valid but tinf might not be
-    const auto& it = data_types.find_by_tuid(GetTypeUid(tid));
-
-    if (it == data_types.end()) {
-      QLOGE << absl::StrFormat(
-          "Data at address 0x%x is of type composite but the "
-          "associated composite type was not exported",
-          addr);
-      // Change the type to TYPE_UNK to avoid breaking the protobuf
-      data.base_type = TYPE_UNK;
-    } else {
-      data.target_tuid = it->first;
-    }
+    default:  // Primitive, passthrough
+      break;
   }
 
 data_exported:
