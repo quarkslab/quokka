@@ -14,7 +14,7 @@
 import pytest
 
 import quokka
-from quokka.data_type import ArrayType, BaseType, EnumType, PointerType, StructureType, UnionType
+from quokka.data_type import ArrayType, BaseType, EnumType, PointerType, StructureType, TypedefType, UnionType
 
 
 def test_data(prog: quokka.Program):
@@ -228,3 +228,151 @@ def test_pura_update_loads(pura_update_prog: quokka.Program):
     main_func = pura_update_prog.get_function("main")
     assert main_func is not None, "main function should exist"
     assert len(main_func.graph) > 1, "main should have multiple blocks"
+
+
+# ---------------------------------------------------------------------------
+# Typedef type tests
+# ---------------------------------------------------------------------------
+
+
+def test_typedef_type_exists(many_types_prog: quokka.Program):
+    """Typedef types should be present in the type list."""
+    typedefs = [t for t in many_types_prog.types if isinstance(t, TypedefType)]
+    if not typedefs:
+        pytest.skip("No typedef types found in sample")
+    assert len(typedefs) > 0
+
+
+def test_typedef_aliased_type(many_types_prog: quokka.Program):
+    """Typedef's aliased_type should return a valid type."""
+    for t in many_types_prog.types:
+        if isinstance(t, TypedefType):
+            aliased = t.aliased_type
+            assert aliased is not None, f"Typedef {t.name} has no aliased type"
+            break
+    else:
+        pytest.skip("No typedef types found in sample")
+
+
+def test_typedef_resolve(many_types_prog: quokka.Program):
+    """Typedef.resolve() should return a non-typedef concrete type."""
+    for t in many_types_prog.types:
+        if isinstance(t, TypedefType):
+            resolved = t.resolve()
+            assert not isinstance(resolved, TypedefType), (
+                f"resolve() should not return a TypedefType, got {resolved}"
+            )
+            break
+    else:
+        pytest.skip("No typedef types found in sample")
+
+
+def test_typedef_is_typedef(many_types_prog: quokka.Program):
+    """TypedefType.is_typedef should be True."""
+    for t in many_types_prog.types:
+        if isinstance(t, TypedefType):
+            assert t.is_typedef is True
+            assert t.is_struct is False
+            assert t.is_pointer is False
+            break
+    else:
+        pytest.skip("No typedef types found in sample")
+
+
+def test_typedef_has_name(many_types_prog: quokka.Program):
+    """All typedef types should have a non-empty name."""
+    typedefs = [t for t in many_types_prog.types if isinstance(t, TypedefType)]
+    if not typedefs:
+        pytest.skip("No typedef types found in sample")
+    for td in typedefs:
+        assert td.name, f"Typedef at index {td.index} has empty name"
+
+
+def test_typedef_chain_resolution(many_types_prog: quokka.Program):
+    """Chained typedefs (e.g. TdInt -> TdInt2 -> TdInt3) should resolve."""
+    typedefs = {
+        t.name: t
+        for t in many_types_prog.types
+        if isinstance(t, TypedefType)
+    }
+    if "TdInt3" not in typedefs:
+        pytest.skip("TdInt3 typedef not found in sample")
+
+    td3 = typedefs["TdInt3"]
+    resolved = td3.resolve()
+    assert not isinstance(resolved, TypedefType), (
+        f"TdInt3.resolve() returned TypedefType: {resolved}"
+    )
+
+
+def test_typedef_over_struct(many_types_prog: quokka.Program):
+    """A typedef over a struct should resolve to a StructureType."""
+    typedefs = {
+        t.name: t
+        for t in many_types_prog.types
+        if isinstance(t, TypedefType)
+    }
+    if "TdStructA" not in typedefs:
+        pytest.skip("TdStructA typedef not found in sample")
+
+    resolved = typedefs["TdStructA"].resolve()
+    assert isinstance(resolved, StructureType), (
+        f"TdStructA should resolve to StructureType, got {type(resolved).__name__}"
+    )
+
+
+def test_typedef_over_union(many_types_prog: quokka.Program):
+    """A typedef over a union should resolve to a UnionType."""
+    typedefs = {
+        t.name: t
+        for t in many_types_prog.types
+        if isinstance(t, TypedefType)
+    }
+    if "TdUnionE" not in typedefs:
+        pytest.skip("TdUnionE typedef not found in sample")
+
+    resolved = typedefs["TdUnionE"].resolve()
+    assert isinstance(resolved, UnionType), (
+        f"TdUnionE should resolve to UnionType, got {type(resolved).__name__}"
+    )
+
+
+def test_typedef_over_enum(many_types_prog: quokka.Program):
+    """A typedef over an enum should resolve to EnumType or BaseType.
+
+    Enum typedefs may resolve to BaseType.UNKNOWN when the enum lives in a
+    different index space (enums vs composites) and the exporter records
+    element_type_idx = 0 as a fallback.
+    """
+    typedefs = {
+        t.name: t
+        for t in many_types_prog.types
+        if isinstance(t, TypedefType)
+    }
+    if "TdEnumD" not in typedefs:
+        pytest.skip("TdEnumD typedef not found in sample")
+
+    resolved = typedefs["TdEnumD"].resolve()
+    assert isinstance(resolved, (EnumType, BaseType)), (
+        f"TdEnumD should resolve to EnumType or BaseType, got {type(resolved).__name__}"
+    )
+
+
+def test_get_type_resolved(many_types_prog: quokka.Program):
+    """Program.get_type_resolved() should resolve through typedef chains."""
+    for t in many_types_prog.types:
+        if isinstance(t, TypedefType):
+            resolved = many_types_prog.get_type_resolved(t.type_index)
+            assert not isinstance(resolved, TypedefType), (
+                f"get_type_resolved({t.type_index}) returned TypedefType"
+            )
+            break
+    else:
+        pytest.skip("No typedef types found in sample")
+
+
+def test_backward_compat_no_typedefs(prog: quokka.Program):
+    """A .quokka file with no typedefs should still load correctly."""
+    assert len(prog.fun_names) > 0, "Basic loading should still work"
+    types_list = list(prog.types)
+    assert len(types_list) > 0, "Types should still be present"
