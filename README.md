@@ -22,7 +22,8 @@ Table of Contents
 ## Introduction
 
 Quokka is a binary exporter: from the disassembly of a program, it generates
-an export file that can be used without the disassembler.
+an export file that can be used without the disassembler. It currently supports
+**IDA Pro** and **Ghidra** as disassembly backends.
 
 The main objective of **Quokka** is to enable to completely manipulate the
 binary without ever opening a disassembler after the initial export. Moreover, it
@@ -73,6 +74,15 @@ The plugin is built on the CI and available in the
 
 To download the plugin, get the file named `quokka_plugin**.so`.
 
+### Ghidra Extension
+
+Quokka also supports exporting from **Ghidra** (>= 12.0.3) via a dedicated
+extension. It produces the same `.quokka` protobuf files that the Python
+library can load.
+
+For build instructions, installation, and usage details see the
+[Ghidra extension README](ghidra_extension/README.md).
+
 ## Usage
 
 ### Exporting via GUI
@@ -92,12 +102,12 @@ in binding)*
 
 ### Exporting in headless
 
+#### IDA
+
 !!! note
 
     This requires a working IDA installation.
 
-
-- Either using command line:
 ```commandline
 $ idat -OQuokkaAuto:true -OQuokkaDecompiled:true -A /path/to/hello.i64
 ```
@@ -106,6 +116,18 @@ All available options are described in the [Usage](https://quarkslab.github.io/q
 
 Note: `idat` is used instead of `ida` to increase the export speed as graphical interface
 is not needed.
+
+#### Ghidra
+
+```commandline
+$ analyzeHeadless /tmp/proj Test \
+    -import /path/to/binary \
+    -scriptPath ghidra_extension/src/script/ghidra_scripts \
+    -postScript QuokkaExportHeadless.java \
+    --out=/path/to/output.quokka --mode=LIGHT
+```
+
+See the [Ghidra extension README](ghidra_extension/README.md) for more details.
 
 ### Exporting in CLI
 
