@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../example/">
+        <link rel="prev" href="../pcode/">
       
       
-        <link rel="next" href="../roadmap/">
+        <link rel="next" href="../tutorials/qb-crackme/00_intro/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Philosophy - Quokka</title>
+        <title>Write Features - Quokka</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#philosophy" class="md-skip">
+        <a href="#editing-a-program" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Philosophy
+              Write Features
             
           </span>
         </div>
@@ -363,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -395,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -634,10 +636,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../write_feature/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Write Features
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -653,6 +682,159 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#modifying-function-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifying function metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modifying function metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#renaming-a-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renaming a function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-a-function-prototype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting a function prototype
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-a-comment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding a comment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#persisting-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persisting changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Persisting changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#write-save-to-the-quokka-file-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        write — save to the .quokka file only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-apply-changes-to-ida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        commit — apply changes to IDA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regenerate-commit-then-re-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        regenerate — commit then re-export
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-ida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From IDA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2058,19 +2240,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
         
   
   
@@ -2086,7 +2259,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2275,6 +2447,147 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#modifying-function-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modifying function metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modifying function metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#renaming-a-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renaming a function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-a-function-prototype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting a function prototype
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-a-comment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding a comment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#persisting-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persisting changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Persisting changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#write-save-to-the-quokka-file-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        write — save to the .quokka file only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-apply-changes-to-ida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        commit — apply changes to IDA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regenerate-commit-then-re-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        regenerate — commit then re-export
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-ida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From IDA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2293,20 +2606,120 @@
   
 
 
-<h1 id="philosophy">Philosophy</h1>
-<p><code>Quokka</code> and its bindings were created in order to manipulate a binary without
-using IDA. To be usable, we needed something (reasonably) fast and compact. It
-leads to the following properties we try to enforce:</p>
-<ul>
-<li>Exhaustive
-  The plugin should export as much data as possible from IDA</li>
-<li>Compact
-  The export file should be as compact as possible to reduce disk usage.</li>
-<li>Fast
-  Waiting for the export should be kept as a minimum.</li>
-<li>Intuitive
-  The plugin should be usable without documentation with an intuitive interface.</li>
-</ul>
+<h1 id="editing-a-program">Editing a Program</h1>
+<p><strong>Quokka</strong> enables editing some fields and propagating those changes back to disassembler
+in an asynchronous manner. You can rename functions, set their prototype, or add comments
+directly on the Python objects. Changes applied back to the disassembler database can be
+propagated back in the quokka file by re-exporting the binary after committing the changes.</p>
+<p>This workflow is useful when you want to share analysis results with
+colleagues, feed them into another tool, or permanently record findings in the
+IDA project.</p>
+<h2 id="modifying-function-metadata">Modifying function metadata</h2>
+<h3 id="renaming-a-function">Renaming a function</h3>
+<p>Assign a new value to <code>Function.name</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+
+<span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;sub_401234&quot;</span><span class="p">)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;authenticate_user&quot;</span>
+</code></pre></div>
+<h3 id="setting-a-function-prototype">Setting a function prototype</h3>
+<p>Assign a C-style prototype string to <code>Function.prototype</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">func</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="s2">&quot;int authenticate_user(const char *user, const char *password)&quot;</span>
+</code></pre></div>
+<h3 id="adding-a-comment">Adding a comment</h3>
+<p>Call <code>Function.add_comment</code> to append a comment to a function:</p>
+<div class="highlight"><pre><span></span><code><span class="n">func</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="s2">&quot;Entry point for the authentication logic.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="persisting-changes">Persisting changes</h2>
+<p>Three methods control how modifications are saved.</p>
+<h3 id="write-save-to-the-quokka-file-only"><code>write</code> — save to the <code>.quokka</code> file only</h3>
+<p><code>Program.write</code> serialises the modified protobuf back to disk. It does <strong>not</strong>
+interact with IDA. Use it when you want to snapshot the current annotations or
+share them without modifying the IDA database.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Overwrite the original file</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+
+<span class="c1"># Or save to a new file</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;binary_annotated.quokka&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="commit-apply-changes-to-ida"><code>commit</code> — apply changes to IDA</h3>
+<p><code>Program.commit</code> calls <code>write()</code> and then opens IDA headlessly to apply all
+recorded edits (names, prototypes, comments) to the IDA database (<code>.i64</code>).</p>
+<div class="highlight"><pre><span></span><code><span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>commit</code> requires a working IDA installation with the Quokka plugin. The
+function returns <code>True</code> when the edits were applied successfully (or with
+non-fatal errors) and raises <code>QuokkaError</code> on a hard failure.</p>
+</div>
+<h3 id="regenerate-commit-then-re-export"><code>regenerate</code> — commit then re-export</h3>
+<p><code>Program.regenerate</code> calls <code>commit()</code> and immediately re-exports the binary,
+returning a fresh <code>Program</code> instance that reflects the updated IDA database.
+This is the right choice when you want a clean <code>.quokka</code> file that incorporates
+your annotations as first-class exported data.</p>
+<div class="highlight"><pre><span></span><code><span class="n">updated_prog</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">regenerate</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="full-example">Full example</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="c1"># Load an existing export</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+
+<span class="c1"># Locate a function by its auto-generated name</span>
+<span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;sub_401234&quot;</span><span class="p">)</span>
+
+<span class="c1"># Annotate it</span>
+<span class="n">func</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;authenticate_user&quot;</span>
+<span class="n">func</span><span class="o">.</span><span class="n">prototype</span> <span class="o">=</span> <span class="s2">&quot;int authenticate_user(const char *user, const char *password)&quot;</span>
+<span class="n">func</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="s2">&quot;Validates credentials against the internal user table.&quot;</span><span class="p">)</span>
+
+<span class="c1"># Write to the .quokka file and push changes to the IDA database</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="from-ida">From IDA</h2>
+<p>You can also applies edits from IDA with the following workflow:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka</span><span class="w"> </span><span class="kn">import</span> <span class="n">Program</span>
+
+<span class="c1"># Import IDA specific Python code to import a Quokka file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.backends.ida</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_quokka</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+<span class="n">apply_quokka</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="summary">Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: center;">Writes <code>.quokka</code> file</th>
+<th style="text-align: center;">Applies to IDA database</th>
+<th style="text-align: center;">Returns fresh <code>Program</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prog.write()</code></td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td><code>prog.commit()</code></td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">No</td>
+</tr>
+<tr>
+<td><code>prog.regenerate()</code></td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -2329,7 +2742,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 12, 2022 16:02:22 UTC">September 12, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     
@@ -2339,7 +2752,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     

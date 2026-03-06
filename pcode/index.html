@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../example/">
+        <link rel="prev" href="../decompilation/">
       
       
-        <link rel="next" href="../roadmap/">
+        <link rel="next" href="../write_feature/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Philosophy - Quokka</title>
+        <title>P-code Lifting - Quokka</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#philosophy" class="md-skip">
+        <a href="#p-code-lifting" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Philosophy
+              P-code Lifting
             
           </span>
         </div>
@@ -363,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -395,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -606,10 +608,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../pcode/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    P-code Lifting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -625,6 +654,164 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-p-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is P-code?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcodeop-one-atomic-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PcodeOp — One Atomic Operation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concrete-example-push-rbp-3-p-code-ops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concrete Example: push rbp → 3 P-code Ops
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#varnode-a-typed-memory-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Varnode — A Typed Memory Location
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#address-spaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Address Spaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opcode-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpCode Categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find-all-memory-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find All Memory Reads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detect-constant-comparisons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detect Constant Comparisons
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2058,19 +2245,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
         
   
   
@@ -2086,7 +2264,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2275,6 +2452,152 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-p-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is P-code?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entry-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcodeop-one-atomic-operation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PcodeOp — One Atomic Operation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concrete-example-push-rbp-3-p-code-ops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concrete Example: push rbp → 3 P-code Ops
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#varnode-a-typed-memory-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Varnode — A Typed Memory Location
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#address-spaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Address Spaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opcode-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpCode Categories
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find-all-memory-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find All Memory Reads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detect-constant-comparisons" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detect Constant Comparisons
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2293,20 +2616,363 @@
   
 
 
-<h1 id="philosophy">Philosophy</h1>
-<p><code>Quokka</code> and its bindings were created in order to manipulate a binary without
-using IDA. To be usable, we needed something (reasonably) fast and compact. It
-leads to the following properties we try to enforce:</p>
+<h1 id="p-code-lifting">P-code Lifting</h1>
+<p>Quokka supports lifting native instructions to <strong>Ghidra P-code</strong>, an architecture-independent intermediate representation, via the <a href="https://github.com/angr/pypcode"><code>pypcode</code></a> library.</p>
+<div class="admonition note">
+<p class="admonition-title">Optional dependency</p>
+<p>P-code support requires <code>pypcode</code>: <code>pip install pypcode</code></p>
+</div>
+<h2 id="what-is-p-code">What is P-code?</h2>
+<p>P-code lifts native instructions into a small set of atomic operations on typed memory locations called <strong>varnodes</strong>.</p>
+<p><strong>Why use P-code?</strong></p>
 <ul>
-<li>Exhaustive
-  The plugin should export as much data as possible from IDA</li>
-<li>Compact
-  The export file should be as compact as possible to reduce disk usage.</li>
-<li>Fast
-  Waiting for the export should be kept as a minimum.</li>
-<li>Intuitive
-  The plugin should be usable without documentation with an intuitive interface.</li>
+<li><strong>Architecture-independent</strong> — write analysis once, run on x86, ARM, MIPS, PowerPC, and more</li>
+<li><strong>Explicit data-flow</strong> — reads/writes to named varnodes are fully explicit</li>
+<li><strong>Uniform representation</strong> — complex instructions (flags, implicit effects) are broken down into simple atomic steps</li>
 </ul>
+<p>Quokka uses the <a href="https://github.com/angr/pypcode"><code>pypcode</code></a> Python bindings for Ghidra's SLEIGH engine.</p>
+<h2 id="entry-points">Entry Points</h2>
+<p>P-code is available at both instruction and block granularity:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Per-instruction (IMARK excluded automatically)</span>
+<span class="n">ops</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">PcodeOp</span><span class="p">]</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">pcode_insts</span>
+
+<span class="c1"># Per-block (more efficient — one SLEIGH pass for all instructions)</span>
+<span class="c1"># NOTE: IMARK operations are included; filter them if needed</span>
+<span class="n">ops</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pypcode</span><span class="o">.</span><span class="n">PcodeOp</span><span class="p">]</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">pcode_insts</span>
+</code></pre></div>
+<p>The <strong>block-level</strong> call is faster because it translates the whole block in a single SLEIGH pass. Use <strong>instruction-level</strong> when you need to correlate P-code ops back to a specific native address.</p>
+<div class="highlight"><pre><span></span><code><span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="n">approximative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">mnemonic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">pcode_insts</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;      </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="pcodeop-one-atomic-operation"><code>PcodeOp</code> — One Atomic Operation</h2>
+<p>Each P-code operation has the form <code>output = opcode(input0, input1, ...)</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>op.opcode</code></td>
+<td><code>pypcode.OpCode</code></td>
+<td>The operation kind (e.g. <code>INT_ADD</code>, <code>LOAD</code>)</td>
+</tr>
+<tr>
+<td><code>op.output</code></td>
+<td><code>pypcode.Varnode \| None</code></td>
+<td>Destination varnode (<code>None</code> for <code>STORE</code>, branches)</td>
+</tr>
+<tr>
+<td><code>op.inputs</code></td>
+<td><code>list[pypcode.Varnode]</code></td>
+<td>Source operands</td>
+</tr>
+<tr>
+<td><code>str(op)</code></td>
+<td><code>str</code></td>
+<td>Human-readable form</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">pcode_insts</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opcode</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>          <span class="c1"># &quot;INT_ADD&quot;</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  → </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># &quot;(register, 0x28, 8)&quot;</span>
+    <span class="k">for</span> <span class="n">vn</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ← </span><span class="si">{</span><span class="n">vn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="concrete-example-push-rbp-3-p-code-ops">Concrete Example: <code>push rbp</code> → 3 P-code Ops</h2>
+<p>Native instruction: <code>push rbp</code> (<code>0x55</code>)</p>
+<div class="highlight"><pre><span></span><code>COPY   unique[27d80:8] = RBP          # save RBP to a temp
+INT_SUB  RSP = RSP - 0x8             # decrement stack pointer
+STORE  *[ram]RSP = unique[27d80:8]   # write saved RBP to stack
+</code></pre></div>
+<p>Each line is a <code>PcodeOp</code>:</p>
+<ul>
+<li><code>COPY</code>: <code>output=unique[27d80:8]</code>, <code>inputs=[register RBP]</code></li>
+<li><code>INT_SUB</code>: <code>output=register RSP</code>, <code>inputs=[register RSP, const 0x8]</code></li>
+<li><code>STORE</code>: <code>output=None</code>, <code>inputs=[const spaceid, register RSP, unique[27d80:8]]</code></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>One native instruction expands to multiple P-code ops that make implicit effects (like stack pointer updates) explicit.</p>
+</div>
+<h2 id="varnode-a-typed-memory-location"><code>Varnode</code> — A Typed Memory Location</h2>
+<p>A varnode is a triple: <strong>(space, offset, size_in_bytes)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vn.space</code></td>
+<td><code>pypcode.AddrSpace</code></td>
+<td>Which address space</td>
+</tr>
+<tr>
+<td><code>vn.offset</code></td>
+<td><code>int</code></td>
+<td>Offset within that space</td>
+</tr>
+<tr>
+<td><code>vn.size</code></td>
+<td><code>int</code></td>
+<td>Width in bytes</td>
+</tr>
+<tr>
+<td><code>vn.getRegisterName()</code></td>
+<td><code>str</code></td>
+<td>Register name if in <code>register</code> space, else <code>""</code></td>
+</tr>
+<tr>
+<td><code>str(vn)</code></td>
+<td><code>str</code></td>
+<td>Human-readable, e.g. <code>"RBP"</code> or <code>"unique[27d80:8]"</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">vn</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">vn</span><span class="o">.</span><span class="n">getRegisterName</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  reg </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes)&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">space</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">vn</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="address-spaces">Address Spaces</h2>
+<p>The <code>vn.space.name</code> string identifies the varnode's kind:</p>
+<table>
+<thead>
+<tr>
+<th>Space name</th>
+<th>Meaning</th>
+<th>Typical usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"register"</code></td>
+<td>CPU register file</td>
+<td><code>RAX</code>, <code>RBP</code>, <code>ZF</code>, <code>CF</code>…</td>
+</tr>
+<tr>
+<td><code>"ram"</code></td>
+<td>Main memory</td>
+<td>Load/store targets</td>
+</tr>
+<tr>
+<td><code>"const"</code></td>
+<td>Immediate constant</td>
+<td>Literal values (offset = value)</td>
+</tr>
+<tr>
+<td><code>"unique"</code></td>
+<td>Temporary / scratch</td>
+<td>SLEIGH-internal temporaries</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">describe_varnode</span><span class="p">(</span><span class="n">vn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">vn</span><span class="o">.</span><span class="n">space</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;register&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vn</span><span class="o">.</span><span class="n">getRegisterName</span><span class="p">()</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;reg@</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">vn</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;const&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hex</span><span class="p">(</span><span class="n">vn</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;unique&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;tmp[</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">vn</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">vn</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">vn</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">]&quot;</span>
+</code></pre></div>
+<h2 id="opcode-categories">OpCode Categories</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Opcodes (examples)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data transfer</strong></td>
+<td><code>COPY</code>, <code>LOAD</code>, <code>STORE</code></td>
+</tr>
+<tr>
+<td><strong>Integer arithmetic</strong></td>
+<td><code>INT_ADD</code>, <code>INT_SUB</code>, <code>INT_MULT</code>, <code>INT_DIV</code>, <code>INT_2COMP</code></td>
+</tr>
+<tr>
+<td><strong>Integer comparison</strong></td>
+<td><code>INT_EQUAL</code>, <code>INT_NOTEQUAL</code>, <code>INT_LESS</code>, <code>INT_SLESS</code></td>
+</tr>
+<tr>
+<td><strong>Bitwise / shifts</strong></td>
+<td><code>INT_AND</code>, <code>INT_OR</code>, <code>INT_XOR</code>, <code>INT_LEFT</code>, <code>INT_RIGHT</code>, <code>INT_SRIGHT</code></td>
+</tr>
+<tr>
+<td><strong>Sign/zero extend</strong></td>
+<td><code>INT_SEXT</code>, <code>INT_ZEXT</code>, <code>SUBPIECE</code>, <code>PIECE</code></td>
+</tr>
+<tr>
+<td><strong>Boolean</strong></td>
+<td><code>BOOL_AND</code>, <code>BOOL_OR</code>, <code>BOOL_XOR</code>, <code>BOOL_NEGATE</code></td>
+</tr>
+<tr>
+<td><strong>Float</strong></td>
+<td><code>FLOAT_ADD</code>, <code>FLOAT_MULT</code>, <code>FLOAT_LESS</code>, <code>FLOAT_INT2FLOAT</code>…</td>
+</tr>
+<tr>
+<td><strong>Control flow</strong></td>
+<td><code>BRANCH</code>, <code>CBRANCH</code>, <code>BRANCHIND</code>, <code>CALL</code>, <code>CALLIND</code>, <code>RETURN</code></td>
+</tr>
+<tr>
+<td><strong>Marker</strong></td>
+<td><code>IMARK</code> <em>(instruction boundary — filtered out in <code>inst.pcode_insts</code>)</em></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pypcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpCode</span>
+
+<span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">LOAD</span><span class="p">:</span>
+    <span class="n">addr_vn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>   <span class="c1"># [0] = spaceid, [1] = address</span>
+    <span class="n">dest_vn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">output</span>
+</code></pre></div>
+<h2 id="examples">Examples</h2>
+<h3 id="find-all-memory-reads">Find All Memory Reads</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pypcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpCode</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+
+<span class="n">reads</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">pcode_insts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opcode</span> <span class="o">==</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">LOAD</span><span class="p">:</span>
+                    <span class="c1"># inputs: [spaceid_const, address_varnode]</span>
+                    <span class="n">addr_vn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">reads</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;inst_addr&quot;</span><span class="p">:</span> <span class="nb">hex</span><span class="p">(</span><span class="n">addr</span><span class="p">),</span>
+                        <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">addr_vn</span><span class="p">),</span>
+                        <span class="s2">&quot;dest&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">output</span><span class="p">),</span>
+                    <span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span><span class="si">}</span><span class="s2"> memory reads found&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reads</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;inst_addr&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;dest&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> = *[</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;from&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="detect-constant-comparisons">Detect Constant Comparisons</h3>
+<p>Find all instructions that compare a variable against a constant (e.g. <code>cmp rax, 0</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pypcode</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpCode</span>
+
+<span class="n">CMP_OPS</span> <span class="o">=</span> <span class="p">{</span><span class="n">OpCode</span><span class="o">.</span><span class="n">INT_EQUAL</span><span class="p">,</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">INT_NOTEQUAL</span><span class="p">,</span>
+           <span class="n">OpCode</span><span class="o">.</span><span class="n">INT_LESS</span><span class="p">,</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">INT_SLESS</span><span class="p">,</span>
+           <span class="n">OpCode</span><span class="o">.</span><span class="n">INT_LESSEQUAL</span><span class="p">,</span> <span class="n">OpCode</span><span class="o">.</span><span class="n">INT_SLESSEQUAL</span><span class="p">}</span>
+
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">pcode_insts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opcode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CMP_OPS</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="c1"># Check if one input is a constant</span>
+                <span class="k">for</span> <span class="n">vn</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">vn</span><span class="o">.</span><span class="n">space</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;const&quot;</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">mnemonic</span><span class="si">}</span><span class="s2">: &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;compare vs </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="n">vn</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="error-handling">Error Handling</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">pcode_insts</span><span class="p">:</span>
+        <span class="o">...</span>
+<span class="k">except</span> <span class="n">quokka</span><span class="o">.</span><span class="n">PypcodeError</span><span class="p">:</span>
+    <span class="c1"># Raised for BadDataError (invalid bytes) or UnimplError (unsupported opcode)</span>
+    <span class="k">pass</span>
+</code></pre></div>
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Key members</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inst.pcode_insts</code></td>
+<td><code>list[PcodeOp]</code></td>
+<td>Per-instruction; no <code>IMARK</code></td>
+</tr>
+<tr>
+<td><code>block.pcode_insts</code></td>
+<td><code>list[PcodeOp]</code></td>
+<td>Whole block; <code>IMARK</code> included</td>
+</tr>
+<tr>
+<td><code>PcodeOp.opcode</code></td>
+<td><code>pypcode.OpCode</code></td>
+<td>Operation kind</td>
+</tr>
+<tr>
+<td><code>PcodeOp.output</code></td>
+<td><code>Varnode \| None</code></td>
+<td>Destination (<code>None</code> for STORE/branch)</td>
+</tr>
+<tr>
+<td><code>PcodeOp.inputs</code></td>
+<td><code>list[Varnode]</code></td>
+<td>Source operands</td>
+</tr>
+<tr>
+<td><code>str(PcodeOp)</code></td>
+<td><code>str</code></td>
+<td>Human-readable dump</td>
+</tr>
+<tr>
+<td><code>Varnode.space</code></td>
+<td><code>AddrSpace</code></td>
+<td>Address space</td>
+</tr>
+<tr>
+<td><code>Varnode.space.name</code></td>
+<td><code>str</code></td>
+<td><code>"register"</code>, <code>"ram"</code>, <code>"const"</code>, <code>"unique"</code></td>
+</tr>
+<tr>
+<td><code>Varnode.offset</code></td>
+<td><code>int</code></td>
+<td>Offset in space (= value for <code>"const"</code>)</td>
+</tr>
+<tr>
+<td><code>Varnode.size</code></td>
+<td><code>int</code></td>
+<td>Width in bytes</td>
+</tr>
+<tr>
+<td><code>Varnode.getRegisterName()</code></td>
+<td><code>str</code></td>
+<td>Register name, <code>""</code> if not a register</td>
+</tr>
+<tr>
+<td><code>str(Varnode)</code></td>
+<td><code>str</code></td>
+<td>Human-readable, e.g. <code>"RAX"</code>, <code>"unique[100:8]"</code></td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -2329,7 +2995,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 12, 2022 16:02:22 UTC">September 12, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     
@@ -2339,7 +3005,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     

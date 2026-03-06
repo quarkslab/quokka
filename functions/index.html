@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../example/">
+        <link rel="prev" href="../program/">
       
       
-        <link rel="next" href="../roadmap/">
+        <link rel="next" href="../blocks/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Philosophy - Quokka</title>
+        <title>Functions - Quokka</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#philosophy" class="md-skip">
+        <a href="#functions" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Philosophy
+              Functions
             
           </span>
         </div>
@@ -363,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -395,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -438,10 +440,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../functions/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Functions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -457,6 +486,136 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-function-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Function Object
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thunk-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thunk Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callers-callees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callers &amp; Callees
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#strings-and-data-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strings and Data References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control-flow-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Flow Graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-graph-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Graph Patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-attributes-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function Attributes Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-top-complexity-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Top Complexity Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2058,19 +2217,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
         
   
   
@@ -2086,7 +2236,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2275,6 +2424,124 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-function-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Function Object
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#thunk-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thunk Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callers-callees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callers &amp; Callees
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#strings-and-data-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strings and Data References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control-flow-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Flow Graph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-graph-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Graph Patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-attributes-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function Attributes Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-top-complexity-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Top Complexity Functions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2293,19 +2560,195 @@
   
 
 
-<h1 id="philosophy">Philosophy</h1>
-<p><code>Quokka</code> and its bindings were created in order to manipulate a binary without
-using IDA. To be usable, we needed something (reasonably) fast and compact. It
-leads to the following properties we try to enforce:</p>
+<h1 id="functions">Functions</h1>
+<p>The <code>Function</code> object represents a single function in the analyzed binary. This page covers function properties, types, thunk handling, call relationships, and CFG access.</p>
+<h2 id="the-function-object">The <code>Function</code> Object</h2>
+<p><code>Function</code> is a <code>dict</code> subclass:</p>
 <ul>
-<li>Exhaustive
-  The plugin should export as much data as possible from IDA</li>
-<li>Compact
-  The export file should be as compact as possible to reduce disk usage.</li>
-<li>Fast
-  Waiting for the export should be kept as a minimum.</li>
-<li>Intuitive
-  The plugin should be usable without documentation with an intuitive interface.</li>
+<li>Keys: <strong>block start addresses</strong></li>
+<li>Values: <strong><code>Block</code></strong> objects</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="n">approximative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>   <span class="c1"># &quot;main&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>  <span class="c1"># 0x401a50  (first address)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>    <span class="c1"># 0x401b20  (last address + 1)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>   <span class="c1"># 208 bytes</span>
+
+<span class="c1"># Number of basic blocks</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>   <span class="c1"># 12</span>
+
+<span class="c1"># Iterate blocks by address</span>
+<span class="k">for</span> <span class="n">block_addr</span><span class="p">,</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  block @ 0x</span><span class="si">{</span><span class="n">block_addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">block</span><span class="p">)</span><span class="si">}</span><span class="s2"> instructions)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="function-types">Function Types</h2>
+<p>Not all functions are equal:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionType</span>
+
+<span class="n">func</span><span class="o">.</span><span class="n">type</span>  <span class="c1"># FunctionType.NORMAL</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NORMAL</code></td>
+<td>Regular function in the binary</td>
+</tr>
+<tr>
+<td><code>IMPORTED</code></td>
+<td>External symbol (e.g. <code>malloc</code> from libc)</td>
+</tr>
+<tr>
+<td><code>LIBRARY</code></td>
+<td>Identified library code (FLIRT signature match)</td>
+</tr>
+<tr>
+<td><code>THUNK</code></td>
+<td>Short stub that jumps to another function</td>
+</tr>
+<tr>
+<td><code>EXTERN</code></td>
+<td>External / unresolved</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># Filter by type</span>
+<span class="n">normal_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">]</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Imported functions have <strong>no blocks</strong>. Always check <code>func.type</code> before accessing <code>func.graph</code> or iterating over blocks.</p>
+</div>
+<h2 id="thunk-functions">Thunk Functions</h2>
+<p>Thunks are compiler-generated stubs that forward calls:</p>
+<div class="highlight"><pre><span></span><code>THUNK_malloc → (jmp) → malloc@plt → (jmp) → malloc (libc)
+</code></pre></div>
+<p>They pollute the call graph with meaningless intermediate nodes.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka</span><span class="w"> </span><span class="kn">import</span> <span class="n">dereference_thunk</span>
+
+<span class="c1"># Get the real function behind a thunk</span>
+<span class="n">thunk</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;j_malloc&quot;</span><span class="p">)</span>
+<span class="n">real</span> <span class="o">=</span> <span class="n">dereference_thunk</span><span class="p">(</span><span class="n">thunk</span><span class="p">)</span>   <span class="c1"># → malloc</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">real</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># &quot;malloc&quot;</span>
+
+<span class="c1"># Effective degrees (resolving thunks)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_effective_degrees</span>
+<span class="n">in_deg</span><span class="p">,</span> <span class="n">out_deg</span> <span class="o">=</span> <span class="n">resolve_effective_degrees</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="callers-callees">Callers &amp; Callees</h2>
+<div class="highlight"><pre><span></span><code><span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;process_input&quot;</span><span class="p">,</span> <span class="n">approximative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Functions called by func</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Callees:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">callee</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">callees</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  → </span><span class="si">{</span><span class="n">callee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Functions that call func</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Callers:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">callers</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ← </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Graph degrees</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">in_degree</span><span class="p">)</span>   <span class="c1"># how many functions call this</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">out_degree</span><span class="p">)</span>  <span class="c1"># how many functions this calls</span>
+</code></pre></div>
+<h2 id="strings-and-data-references">Strings and Data References</h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># All strings referenced by the function</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">strings</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+<span class="c1"># Example output:</span>
+<span class="c1"># &quot;Usage: %s [-h] [-v] filename&quot;</span>
+<span class="c1"># &quot;Error: file not found&quot;</span>
+
+<span class="c1"># All data items referenced by the function</span>
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">data_references</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> @ 0x</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">  type=</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="control-flow-graph">Control Flow Graph</h2>
+<p>The <code>func.graph</code> property returns a <code>networkx.DiGraph</code> where:</p>
+<ul>
+<li><strong>Nodes</strong> are block start addresses</li>
+<li><strong>Edges</strong> are <code>(src_addr, dst_addr, {type: RefType})</code> tuples</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">graph</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Blocks: </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edges:  </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Cyclomatic complexity (McCabe): M = E - N + 2P  (P=1 for a connected CFG)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span> <span class="o">-</span> <span class="n">cfg</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cyclomatic complexity: </span><span class="si">{</span><span class="n">M</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="call-graph-patterns">Call Graph Patterns</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionType</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="n">cg</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">call_graph</span>  <span class="c1"># program-level DiGraph</span>
+
+<span class="c1"># Leaf functions (no callees)</span>
+<span class="n">leaves</span> <span class="o">=</span> <span class="p">[</span><span class="n">prog</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cg</span><span class="o">.</span><span class="n">out_degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span>
+          <span class="ow">and</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">prog</span> <span class="ow">and</span> <span class="n">prog</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">]</span>
+
+<span class="c1"># Root functions (no callers — potential entry points)</span>
+<span class="n">roots</span> <span class="o">=</span> <span class="p">[</span><span class="n">prog</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">cg</span><span class="o">.</span><span class="n">in_degree</span><span class="p">()</span> <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span>
+         <span class="ow">and</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">prog</span> <span class="ow">and</span> <span class="n">prog</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">]</span>
+
+<span class="c1"># Longest call chain</span>
+<span class="n">longest</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">dag_longest_path</span><span class="p">(</span><span class="n">cg</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="function-attributes-quick-reference">Function Attributes Quick Reference</h2>
+<div class="highlight"><pre><span></span><code><span class="n">func</span><span class="o">.</span><span class="n">name</span>             <span class="c1"># str</span>
+<span class="n">func</span><span class="o">.</span><span class="n">start</span>            <span class="c1"># int (first address)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">end</span>              <span class="c1"># int (last address + 1)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">size</span>             <span class="c1"># int (bytes)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">type</span>             <span class="c1"># FunctionType</span>
+<span class="n">func</span><span class="o">.</span><span class="n">in_degree</span>        <span class="c1"># int (raw caller count)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">out_degree</span>       <span class="c1"># int (raw callee count)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">callees</span>          <span class="c1"># list[Function]</span>
+<span class="n">func</span><span class="o">.</span><span class="n">callers</span>          <span class="c1"># list[Function]</span>
+<span class="n">func</span><span class="o">.</span><span class="n">strings</span>          <span class="c1"># list[Data]</span>
+<span class="n">func</span><span class="o">.</span><span class="n">data_references</span>  <span class="c1"># list[Data]</span>
+<span class="n">func</span><span class="o">.</span><span class="n">graph</span>            <span class="c1"># networkx.DiGraph (CFG)</span>
+<span class="n">func</span><span class="o">.</span><span class="n">in_function</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>  <span class="c1"># bool: is addr inside func?</span>
+<span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>    <span class="c1"># Block at addr</span>
+</code></pre></div>
+<h2 id="example-top-complexity-functions">Example: Top Complexity Functions</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionType</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;bash.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;bash&quot;</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">graph</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(),</span> <span class="n">cfg</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+    <span class="n">complexity</span> <span class="o">=</span> <span class="n">e</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">2</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">complexity</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">))</span>
+
+<span class="n">results</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">complexity</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  CC=</span><span class="si">{</span><span class="n">complexity</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> @ 0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="summary">Summary</h2>
+<ul>
+<li><code>Function</code> is a dict of blocks, keyed by block address</li>
+<li><strong>FunctionType</strong>: <code>NORMAL</code>, <code>IMPORTED</code>, <code>LIBRARY</code>, <code>THUNK</code>, <code>EXTERN</code></li>
+<li>Thunks need dereferencing (<code>dereference_thunk</code>) for accurate call graph analysis</li>
+<li><code>func.callees</code> / <code>func.callers</code> provide direct navigation</li>
+<li><code>func.graph</code> is a <code>networkx.DiGraph</code> (CFG)</li>
+<li><strong>Cyclomatic complexity</strong>: <code>E - N + 2</code></li>
 </ul>
 
 
@@ -2329,7 +2772,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 12, 2022 16:02:22 UTC">September 12, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     
@@ -2339,7 +2782,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     

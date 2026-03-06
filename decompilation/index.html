@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../example/">
+        <link rel="prev" href="../xrefs/">
       
       
-        <link rel="next" href="../roadmap/">
+        <link rel="next" href="../pcode/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Philosophy - Quokka</title>
+        <title>Decompilation - Quokka</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#philosophy" class="md-skip">
+        <a href="#decompilation" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Philosophy
+              Decompilation
             
           </span>
         </div>
@@ -363,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -395,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -578,10 +580,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../decompilation/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decompilation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -597,6 +626,76 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-decompilation-at-export-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling decompilation at export time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-decompiled-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading decompiled code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reading decompiled code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-a-single-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking a single function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-case-searching-pseudocode-for-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use-case: searching pseudocode for patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2058,19 +2157,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
         
   
   
@@ -2086,7 +2176,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2275,6 +2364,64 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-decompilation-at-export-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling decompilation at export time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-decompiled-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading decompiled code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reading decompiled code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-a-single-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking a single function
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-case-searching-pseudocode-for-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use-case: searching pseudocode for patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2293,20 +2440,91 @@
   
 
 
-<h1 id="philosophy">Philosophy</h1>
-<p><code>Quokka</code> and its bindings were created in order to manipulate a binary without
-using IDA. To be usable, we needed something (reasonably) fast and compact. It
-leads to the following properties we try to enforce:</p>
-<ul>
-<li>Exhaustive
-  The plugin should export as much data as possible from IDA</li>
-<li>Compact
-  The export file should be as compact as possible to reduce disk usage.</li>
-<li>Fast
-  Waiting for the export should be kept as a minimum.</li>
-<li>Intuitive
-  The plugin should be usable without documentation with an intuitive interface.</li>
-</ul>
+<h1 id="decompilation">Decompilation</h1>
+<p><strong>Quokka</strong> can optionally embed the Hex-Rays pseudocode for each function
+directly inside the exported <code>.quokka</code> file. This lets you work with
+high-level C-like code in your analysis scripts without keeping an IDA session
+open.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Decompilation requires a Hex-Rays decompiler licence for the target
+architecture. The export will succeed even when the decompiler is
+unavailable; in that case <code>Program.decompiled_activated</code> is <code>False</code> and
+<code>Function.decompiled_code</code> is an empty string for every function.</p>
+</div>
+<h2 id="enabling-decompilation-at-export-time">Enabling decompilation at export time</h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">IDA command line</label><label for="__tabbed_1_2">IDA GUI</label><label for="__tabbed_1_3">quokka-cli</label><label for="__tabbed_1_4">Python API</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Pass <code>-OQuokkaDecompiled:true</code> alongside the other options:</p>
+<div class="highlight"><pre><span></span><code>idat64 -OQuokkaAuto:true -OQuokkaDecompiled:true -A /path/to/binary.i64
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Toggle the <strong>Export decompiled code</strong> checkbox in the Quokka export
+dialog (shortcut: <strong>Alt+A</strong> by default).</p>
+</div>
+<div class="tabbed-block">
+<p>Add the <code>--decompiled</code> flag:</p>
+<div class="highlight"><pre><span></span><code>quokka-cli --decompiled /path/to/binary
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Use <code>Program.from_binary</code> or <code>Program.generate</code> with <code>decompiled=True</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span>
+    <span class="n">exec_path</span><span class="o">=</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span>
+    <span class="n">decompiled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="reading-decompiled-code">Reading decompiled code</h2>
+<p>After loading a <code>.quokka</code> file, check <code>Program.decompiled_activated</code> before
+accessing pseudocode — it tells you whether decompilation was enabled when the
+file was created.</p>
+<p>Each <code>Function</code> exposes the pseudocode as the <code>decompiled_code</code> attribute (a
+plain <code>str</code>). The attribute is an empty string when no pseudocode is available
+for that function (e.g. library stubs or imported functions).</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">prog</span><span class="o">.</span><span class="n">decompiled_activated</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File was exported without decompilation support.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="n">decompiled_code</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;=== </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (0x</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">) ===&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">decompiled_code</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="checking-a-single-function">Checking a single function</h3>
+<div class="highlight"><pre><span></span><code><span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;authenticate_user&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="n">decompiled_code</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">decompiled_code</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No pseudocode available for this function.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="use-case-searching-pseudocode-for-patterns">Use-case: searching pseudocode for patterns</h2>
+<p>Because <code>decompiled_code</code> is a plain string you can apply any text-processing
+technique directly:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+
+<span class="c1"># Find all functions whose pseudocode mentions strcpy</span>
+<span class="n">vulnerable</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">func</span> <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;strcpy&quot;</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">decompiled_code</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">vulnerable</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 
 
@@ -2329,7 +2547,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 12, 2022 16:02:22 UTC">September 12, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     
@@ -2339,7 +2557,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     

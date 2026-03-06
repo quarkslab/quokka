@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../example/">
+        <link rel="prev" href="../instructions/">
       
       
-        <link rel="next" href="../roadmap/">
+        <link rel="next" href="../xrefs/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Philosophy - Quokka</title>
+        <title>Types - Quokka</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#philosophy" class="md-skip">
+        <a href="#types" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Philosophy
+              Types
             
           </span>
         </div>
@@ -363,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -395,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -522,10 +524,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../types/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Types
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -541,6 +570,192 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#type-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-types-from-a-program" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing types from a Program
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basetype-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseType — primitives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structuretype-c-structs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructureType — C structs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StructureType — C structs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structuretypemember" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructureTypeMember
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniontype-c-unions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnionType — C unions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enumtype-c-enumerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EnumType — C enumerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EnumType — C enumerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-attributes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumtypemember" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EnumTypeMember
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arraytype-c-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ArrayType — C arrays
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pointertype-c-pointers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PointerType — C pointers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references-from-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-references from types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-types-with-is_-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking types with is_* properties
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2058,19 +2273,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
         
   
   
@@ -2086,7 +2292,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2275,6 +2480,180 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#type-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-types-from-a-program" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing types from a Program
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basetype-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseType — primitives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structuretype-c-structs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructureType — C structs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StructureType — C structs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structuretypemember" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructureTypeMember
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uniontype-c-unions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnionType — C unions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enumtype-c-enumerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EnumType — C enumerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EnumType — C enumerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-attributes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key attributes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumtypemember" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EnumTypeMember
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arraytype-c-arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ArrayType — C arrays
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pointertype-c-pointers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PointerType — C pointers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-references-from-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-references from types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-types-with-is_-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking types with is_* properties
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2293,20 +2672,506 @@
   
 
 
-<h1 id="philosophy">Philosophy</h1>
-<p><code>Quokka</code> and its bindings were created in order to manipulate a binary without
-using IDA. To be usable, we needed something (reasonably) fast and compact. It
-leads to the following properties we try to enforce:</p>
-<ul>
-<li>Exhaustive
-  The plugin should export as much data as possible from IDA</li>
-<li>Compact
-  The export file should be as compact as possible to reduce disk usage.</li>
-<li>Fast
-  Waiting for the export should be kept as a minimum.</li>
-<li>Intuitive
-  The plugin should be usable without documentation with an intuitive interface.</li>
-</ul>
+<h1 id="types">Types</h1>
+<p><strong>Quokka</strong> exports the type information recorded by IDA (structures, unions,
+enumerations, arrays and pointers) and exposes it through a hierarchy of Python
+objects. These objects are useful for understanding data layout, reconstructing
+high-level semantics, and cross-referencing types with the data or code that
+uses them.</p>
+<h2 id="type-hierarchy">Type hierarchy</h2>
+<div class="highlight"><pre><span></span><code>CoreType                         ← abstract base for every type
+├── BaseType          (IntEnum)  ← primitive (char, int, float, …)
+├── ComplexType                  ← abstract base for named types
+│   ├── EnumType                 ← C enum
+│   ├── StructureType  (dict)    ← C struct
+│   │   └── UnionType            ← C union (subclass of StructureType)
+│   ├── ArrayType                ← C array (T[N])
+│   └── PointerType              ← C pointer (T*)
+├── EnumTypeMember               ← one value inside an EnumType
+└── StructureTypeMember          ← one field inside a StructureType/UnionType
+</code></pre></div>
+<p>Every type object exposes a set of <code>is_*</code> boolean properties so you can check
+its kind without <code>isinstance</code> calls:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>True for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_base_type</code></td>
+<td><code>BaseType</code></td>
+</tr>
+<tr>
+<td><code>is_enum</code></td>
+<td><code>EnumType</code></td>
+</tr>
+<tr>
+<td><code>is_struct</code></td>
+<td><code>StructureType</code></td>
+</tr>
+<tr>
+<td><code>is_union</code></td>
+<td><code>UnionType</code></td>
+</tr>
+<tr>
+<td><code>is_array</code></td>
+<td><code>ArrayType</code></td>
+</tr>
+<tr>
+<td><code>is_pointer</code></td>
+<td><code>PointerType</code></td>
+</tr>
+<tr>
+<td><code>is_composite</code></td>
+<td>Any <code>ComplexType</code> (enum, struct, union, array, pointer)</td>
+</tr>
+<tr>
+<td><code>is_member</code></td>
+<td><code>StructureTypeMember</code> or <code>EnumTypeMember</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="accessing-types-from-a-program">Accessing types from a Program</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+
+<span class="c1"># Iterate over every exported type</span>
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span>
+
+<span class="c1"># Only structures</span>
+<span class="k">for</span> <span class="n">struct</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">structures</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;bytes&quot;</span><span class="p">)</span>
+
+<span class="c1"># Only enumerations</span>
+<span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="basetype-primitives">BaseType — primitives</h2>
+<p><code>BaseType</code> is an <code>IntEnum</code> that represents the primitive C types IDA knows
+about:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>C equivalent</th>
+<th>Size (bytes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BYTE</code></td>
+<td><code>char</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>WORD</code></td>
+<td><code>short</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>DOUBLE_WORD</code></td>
+<td><code>int</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>QUAD_WORD</code></td>
+<td><code>int64_t</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>OCTO_WORD</code></td>
+<td><code>int128_t</code></td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>FLOAT</code></td>
+<td><code>float</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>DOUBLE</code></td>
+<td><code>double</code></td>
+<td>8</td>
+</tr>
+<tr>
+<td><code>VOID</code></td>
+<td><code>void</code></td>
+<td>0</td>
+</tr>
+<tr>
+<td><code>UNKNOWN</code></td>
+<td>—</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.data_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseType</span>
+
+<span class="n">bt</span> <span class="o">=</span> <span class="n">BaseType</span><span class="o">.</span><span class="n">DOUBLE_WORD</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>   <span class="c1"># 4</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">c_str</span><span class="p">)</span>  <span class="c1"># &lt;T:int&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">is_base_type</span><span class="p">)</span>  <span class="c1"># True</span>
+</code></pre></div>
+<h2 id="structuretype-c-structs">StructureType — C structs</h2>
+<p><code>StructureType</code> behaves like a <code>dict</code> keyed by <strong>positional index</strong> (integer,
+starting at 0). Each value is a <code>StructureTypeMember</code>.</p>
+<h3 id="key-attributes">Key attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Structure name as defined in IDA</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>int</code></td>
+<td>Total size in bytes (0 if variable-length)</td>
+</tr>
+<tr>
+<td><code>c_str</code></td>
+<td><code>str</code></td>
+<td>C declaration of the structure</td>
+</tr>
+<tr>
+<td><code>comments</code></td>
+<td><code>list[str]</code></td>
+<td>Analyst comments</td>
+</tr>
+<tr>
+<td><code>members</code></td>
+<td><code>list[StructureTypeMember]</code></td>
+<td>Members in declaration order</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">struct</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">structures</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;struct </span><span class="si">{</span><span class="n">struct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">struct</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes)&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">struct</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
+        <span class="n">byte_offset</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">offset</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="n">byte_size</span>   <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">size</span>   <span class="o">//</span> <span class="mi">8</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  +0x</span><span class="si">{</span><span class="n">byte_offset</span><span class="si">:</span><span class="s2">02x</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">byte_size</span><span class="si">}</span><span class="s2"> bytes)  type=</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Offsets and sizes are in bits</p>
+<p><code>StructureTypeMember.offset</code> and <code>StructureTypeMember.size</code> are expressed
+in <strong>bits</strong>, not bytes. Divide by 8 to get byte values. This representation
+is necessary to support bit-fields.</p>
+</div>
+<h3 id="structuretypemember">StructureTypeMember</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Field name</td>
+</tr>
+<tr>
+<td><code>offset</code></td>
+<td><code>int</code></td>
+<td>Bit offset within the parent structure</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>int</code></td>
+<td>Size in bits (0 for variable-length fields)</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>TypeT</code></td>
+<td>Resolved type of the field</td>
+</tr>
+<tr>
+<td><code>parent</code></td>
+<td><code>StructureType</code></td>
+<td>Back-reference to the containing structure</td>
+</tr>
+<tr>
+<td><code>comments</code></td>
+<td><code>list[str]</code></td>
+<td>Analyst comments</td>
+</tr>
+<tr>
+<td><code>data_refs_to</code></td>
+<td><code>list[AddressT]</code></td>
+<td>Addresses that reference this field</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="n">struct</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">prog</span><span class="o">.</span><span class="n">structures</span><span class="p">)</span>
+<span class="n">first_member</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">members</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">first_member</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>           <span class="c1"># e.g. &quot;next&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">first_member</span><span class="o">.</span><span class="n">offset</span> <span class="o">//</span> <span class="mi">8</span><span class="p">)</span>   <span class="c1"># byte offset</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">first_member</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>           <span class="c1"># e.g. &lt;TPtr: next-&gt;...&gt;</span>
+</code></pre></div>
+<h2 id="uniontype-c-unions">UnionType — C unions</h2>
+<p><code>UnionType</code> is a subclass of <code>StructureType</code>. It works identically except that
+all members conceptually share offset 0 (all variants overlay the same memory).
+The dict is still keyed by <strong>positional index</strong> to avoid collisions.</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_union</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;union </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes)&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  variant </span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="enumtype-c-enumerations">EnumType — C enumerations</h2>
+<h3 id="key-attributes_1">Key attributes</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Enum name</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>int</code></td>
+<td>Storage size in bytes (derived from <code>base_type</code>)</td>
+</tr>
+<tr>
+<td><code>base_type</code></td>
+<td><code>BaseType</code></td>
+<td>Underlying integer type</td>
+</tr>
+<tr>
+<td><code>members</code></td>
+<td><code>Iterable[EnumTypeMember]</code></td>
+<td>All enum values</td>
+</tr>
+<tr>
+<td><code>c_str</code></td>
+<td><code>str</code></td>
+<td>C declaration</td>
+</tr>
+<tr>
+<td><code>comments</code></td>
+<td><code>list[str]</code></td>
+<td>Analyst comments</td>
+</tr>
+</tbody>
+</table>
+<p><code>EnumType</code> is <strong>iterable</strong> and <strong>subscriptable by positional index</strong>. Members
+can also be accessed as <strong>attributes</strong> using their name:</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;enum </span><span class="si">{</span><span class="n">enum</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (base: </span><span class="si">{</span><span class="n">enum</span><span class="o">.</span><span class="n">base_type</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Iterate</span>
+    <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">enum</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Positional access</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">enum</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Attribute access by name</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">SOME_VALUE</span>  <span class="c1"># equivalent to enum[&quot;SOME_VALUE&quot;]</span>
+</code></pre></div>
+<h3 id="enumtypemember">EnumTypeMember</h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Constant name</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td><code>int</code></td>
+<td>Integer value</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>int</code></td>
+<td>Same as the parent enum's size</td>
+</tr>
+<tr>
+<td><code>base_type</code></td>
+<td><code>BaseType</code></td>
+<td>Underlying integer type</td>
+</tr>
+<tr>
+<td><code>parent</code></td>
+<td><code>EnumType</code></td>
+<td>Back-reference to the containing enum</td>
+</tr>
+<tr>
+<td><code>comments</code></td>
+<td><code>list[str]</code></td>
+<td>Analyst comments</td>
+</tr>
+<tr>
+<td><code>data_refs_to</code></td>
+<td><code>list[Data]</code></td>
+<td>Data objects that reference this constant</td>
+</tr>
+</tbody>
+</table>
+<h2 id="arraytype-c-arrays">ArrayType — C arrays</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Type name</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>int</code></td>
+<td>Total size in bytes</td>
+</tr>
+<tr>
+<td><code>element_type</code></td>
+<td><code>TypeT</code></td>
+<td>Type of each element</td>
+</tr>
+<tr>
+<td><code>array_size</code></td>
+<td><code>int</code></td>
+<td>Number of elements</td>
+</tr>
+<tr>
+<td><code>c_str</code></td>
+<td><code>str</code></td>
+<td>C declaration</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_array</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">element_type</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">array_size</span><span class="si">}</span><span class="s2">]  (</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> bytes)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="pointertype-c-pointers">PointerType — C pointers</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Type name</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>int</code></td>
+<td>Pointer size in bytes (4 or 8 depending on architecture)</td>
+</tr>
+<tr>
+<td><code>pointed_type</code></td>
+<td><code>TypeT</code></td>
+<td>The type being pointed to</td>
+</tr>
+<tr>
+<td><code>c_str</code></td>
+<td><code>str</code></td>
+<td>C declaration</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_pointer</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">pointed_type</span><span class="si">}</span><span class="s2">  (size=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="cross-references-from-types">Cross-references from types</h2>
+<p>Complex types and their members carry cross-reference lists that tell you which
+data objects use them:</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">struct</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">structures</span><span class="p">:</span>
+    <span class="n">refs</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">data_refs_to</span>
+    <span class="k">if</span> <span class="n">refs</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">struct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is referenced by </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span><span class="si">}</span><span class="s2"> data object(s)&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">struct</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">member</span><span class="o">.</span><span class="n">data_refs_to</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  field </span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> accessed from 0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>The following cross-reference accessors are available on <code>ComplexType</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_refs_to</code></td>
+<td>All data cross-references to this type</td>
+</tr>
+<tr>
+<td><code>data_read_refs_to</code></td>
+<td>Read cross-references only</td>
+</tr>
+<tr>
+<td><code>data_write_refs_to</code></td>
+<td>Write cross-references only</td>
+</tr>
+</tbody>
+</table>
+<p><code>EnumTypeMember</code> and <code>StructureTypeMember</code> also expose <code>data_refs_to</code>.</p>
+<h2 id="checking-types-with-is_-properties">Checking types with <code>is_*</code> properties</h2>
+<p>Because a <code>TypeT</code> can be any of the concrete type classes it is often cleaner
+to use the boolean properties rather than <code>isinstance</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">describe</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_base_type</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;primitive </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">c_str</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_struct</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;struct </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">members</span><span class="p">)</span><span class="si">}</span><span class="s2"> fields)&quot;</span>
+    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_union</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;union </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">members</span><span class="p">)</span><span class="si">}</span><span class="s2"> variants)&quot;</span>
+    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_enum</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;enum </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">t</span><span class="o">.</span><span class="n">members</span><span class="p">)</span><span class="si">}</span><span class="s2"> values)&quot;</span>
+    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_array</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;array </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">element_type</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">array_size</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">is_pointer</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;pointer → </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">pointed_type</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;unknown&quot;</span>
+
+<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">describe</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+</code></pre></div>
 
 
 
@@ -2329,7 +3194,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 12, 2022 16:02:22 UTC">September 12, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     
@@ -2339,7 +3204,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     

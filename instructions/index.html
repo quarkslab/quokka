@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../example/">
+        <link rel="prev" href="../blocks/">
       
       
-        <link rel="next" href="../roadmap/">
+        <link rel="next" href="../types/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Philosophy - Quokka</title>
+        <title>Instructions & Operands - Quokka</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#philosophy" class="md-skip">
+        <a href="#instructions-operands" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Philosophy
+              Instructions & Operands
             
           </span>
         </div>
@@ -363,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -395,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -494,10 +496,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../instructions/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instructions & Operands
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -513,6 +542,192 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-instruction-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Instruction Object
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instruction-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instruction Attributes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-mode-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export Mode Impact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operand-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operand Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#string-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Targets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#register-access-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register Access Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-all-call-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding All Call Instructions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-dangerous-function-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Dangerous Function Calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instruction-cheatsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instruction Cheatsheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operand-cheatsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operand Cheatsheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2058,19 +2273,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
         
   
   
@@ -2086,7 +2292,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2275,6 +2480,180 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-instruction-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Instruction Object
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instruction-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instruction Attributes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-mode-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export Mode Impact
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Operands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#operand-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operand Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#string-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String References
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#call-targets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Call Targets
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#register-access-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Register Access Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-all-call-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding All Call Instructions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-dangerous-function-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Dangerous Function Calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instruction-cheatsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instruction Cheatsheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operand-cheatsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operand Cheatsheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2293,19 +2672,371 @@
   
 
 
-<h1 id="philosophy">Philosophy</h1>
-<p><code>Quokka</code> and its bindings were created in order to manipulate a binary without
-using IDA. To be usable, we needed something (reasonably) fast and compact. It
-leads to the following properties we try to enforce:</p>
+<h1 id="instructions-operands">Instructions &amp; Operands</h1>
+<p>Instructions are the lowest level of the Quokka object model. This page covers the <code>Instruction</code> and <code>Operand</code> objects, their attributes, and common instruction-level analysis patterns.</p>
+<h2 id="the-instruction-object">The <code>Instruction</code> Object</h2>
+<div class="highlight"><pre><span></span><code><span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">,</span> <span class="n">approximative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">entry</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+<span class="c1"># Iterate instructions in a block</span>
+<span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+
+<span class="c1"># Get by address — from a function or from the program</span>
+<span class="n">inst</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_instruction</span><span class="p">(</span><span class="mh">0x401234</span><span class="p">)</span>
+<span class="n">inst</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_instruction</span><span class="p">(</span><span class="mh">0x401234</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="instruction-attributes">Instruction Attributes</h2>
+<div class="highlight"><pre><span></span><code><span class="n">inst</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_instruction</span><span class="p">(</span><span class="mh">0x401234</span><span class="p">)</span>
+
+<span class="n">inst</span><span class="o">.</span><span class="n">address</span>    <span class="c1"># 0x401234 (virtual address)</span>
+<span class="n">inst</span><span class="o">.</span><span class="n">size</span>       <span class="c1"># 3 (bytes)</span>
+<span class="n">inst</span><span class="o">.</span><span class="n">mnemonic</span>   <span class="c1"># &quot;mov&quot;</span>
+<span class="n">inst</span><span class="o">.</span><span class="n">cs_inst</span>    <span class="c1"># Capstone CsInsn object (full disassembly)</span>
+
+<span class="c1"># Capstone gives full detail:</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">cs_inst</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cs</span><span class="o">.</span><span class="n">mnemonic</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cs</span><span class="o">.</span><span class="n">op_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># &quot;mov rax, qword ptr [rbx]&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;groups: </span><span class="si">{</span><span class="n">cs</span><span class="o">.</span><span class="n">groups</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>         <span class="c1"># instruction groups</span>
+</code></pre></div>
+<h2 id="export-mode-impact">Export Mode Impact</h2>
+<p>In <strong>LIGHT mode</strong>, only block start addresses are stored in the <code>.quokka</code> file. Capstone decodes instructions from the binary bytes at runtime. In <strong>FULL mode</strong>, mnemonics and operands are stored directly in the file — the binary is not needed at analysis time.</p>
+<p>Either way, the Python API is identical:</p>
+<div class="highlight"><pre><span></span><code><span class="n">inst</span><span class="o">.</span><span class="n">mnemonic</span>   <span class="c1"># works in both modes</span>
+<span class="n">inst</span><span class="o">.</span><span class="n">cs_inst</span>    <span class="c1"># works in both modes (Capstone is always used)</span>
+
+<span class="c1"># To check the current mode:</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">mode</span>   <span class="c1"># ExporterMode.LIGHT or ExporterMode.FULL</span>
+</code></pre></div>
+<h2 id="operands">Operands</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">OperandType</span>
+
+<span class="n">inst</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_instruction</span><span class="p">(</span><span class="mh">0x401234</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">operands</span><span class="p">)</span>   <span class="c1"># list of Operand objects</span>
+
+<span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">operands</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">REGISTER</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  register: </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">register</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">op</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">IMMEDIATE</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  value: </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">#x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">op</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">MEMORY</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  memory reference&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="operand-types">Operand Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REGISTER</code></td>
+<td>CPU register</td>
+<td><code>rax</code>, <code>rbx</code>, <code>r8</code></td>
+</tr>
+<tr>
+<td><code>IMMEDIATE</code></td>
+<td>Constant value</td>
+<td><code>0x42</code>, <code>-1</code>, <code>3.14</code></td>
+</tr>
+<tr>
+<td><code>MEMORY</code></td>
+<td>Memory reference</td>
+<td><code>[rbp-8]</code>, <code>[rip+0x10]</code></td>
+</tr>
+<tr>
+<td><code>OTHER</code></td>
+<td>Anything else</td>
+<td>FPU stack, implicit operands</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># Filter operands by type</span>
+<span class="n">imm_ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">operands</span>
+           <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">IMMEDIATE</span><span class="p">]</span>
+<span class="n">reg_ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">operands</span>
+           <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">REGISTER</span><span class="p">]</span>
+</code></pre></div>
+<h2 id="string-references">String References</h2>
+<p>An instruction can reference a string literal in the binary:</p>
+<div class="highlight"><pre><span></span><code><span class="n">inst</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_instruction</span><span class="p">(</span><span class="mh">0x401250</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">string</span>
+<span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;String ref: </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># String ref: b&quot;Error: invalid argument\n&quot;</span>
+</code></pre></div>
+<h2 id="call-targets">Call Targets</h2>
+<p>For call instructions, <code>call_target</code> resolves the callee (thunks are resolved automatically):</p>
+<div class="highlight"><pre><span></span><code><span class="n">call_inst</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_instruction</span><span class="p">(</span><span class="mh">0x4012a0</span><span class="p">)</span>
+
+<span class="n">target</span> <span class="o">=</span> <span class="n">call_inst</span><span class="o">.</span><span class="n">call_target</span>
+<span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calls: </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Indirect call (function pointer)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="register-access-mode">Register Access Mode</h2>
+<p>In FULL export mode, register read/write information is available:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AccessMode</span>
+
+<span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">operands</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">REGISTER</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">AccessMode</span><span class="o">.</span><span class="n">READ</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">access</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  reads </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">register</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">AccessMode</span><span class="o">.</span><span class="n">WRITE</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">access</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  writes </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">register</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="examples">Examples</h2>
+<h3 id="finding-all-call-instructions">Finding All Call Instructions</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionType</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;bash.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;bash&quot;</span><span class="p">)</span>
+
+<span class="n">call_sites</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">mnemonic</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;call&quot;</span><span class="p">,</span> <span class="s2">&quot;bl&quot;</span><span class="p">,</span> <span class="s2">&quot;blx&quot;</span><span class="p">,</span> <span class="s2">&quot;jal&quot;</span><span class="p">):</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">call_target</span>
+                <span class="n">call_sites</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;caller&quot;</span><span class="p">:</span> <span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="s2">&quot;site&quot;</span><span class="p">:</span> <span class="nb">hex</span><span class="p">(</span><span class="n">addr</span><span class="p">),</span>
+                    <span class="s2">&quot;callee&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">target</span> <span class="k">else</span> <span class="s2">&quot;indirect&quot;</span><span class="p">,</span>
+                <span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">call_sites</span><span class="p">)</span><span class="si">}</span><span class="s2"> call sites&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="finding-dangerous-function-calls">Finding Dangerous Function Calls</h3>
+<div class="highlight"><pre><span></span><code><span class="n">DANGEROUS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;strcpy&quot;</span><span class="p">,</span> <span class="s2">&quot;gets&quot;</span><span class="p">,</span> <span class="s2">&quot;sprintf&quot;</span><span class="p">,</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;strcat&quot;</span><span class="p">,</span> <span class="s2">&quot;scanf&quot;</span><span class="p">,</span> <span class="s2">&quot;vsprintf&quot;</span><span class="p">}</span>
+
+<span class="n">hits</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">call_target</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">DANGEROUS</span><span class="p">:</span>
+                <span class="n">hits</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">addr</span><span class="p">),</span> <span class="n">target</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">caller</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">callee</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  [</span><span class="si">{</span><span class="n">site</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">callee</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="instruction-cheatsheet">Instruction Cheatsheet</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute / Method</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inst.address</code></td>
+<td><code>int</code></td>
+<td>Virtual address</td>
+</tr>
+<tr>
+<td><code>inst.size</code></td>
+<td><code>int</code></td>
+<td>Size in bytes</td>
+</tr>
+<tr>
+<td><code>inst.mnemonic</code></td>
+<td><code>str</code></td>
+<td>Mnemonic string</td>
+</tr>
+<tr>
+<td><code>inst.bytes</code></td>
+<td><code>bytes</code></td>
+<td>Raw instruction bytes</td>
+</tr>
+<tr>
+<td><code>inst.is_thumb</code></td>
+<td><code>bool</code></td>
+<td>ARM Thumb mode flag</td>
+</tr>
+<tr>
+<td><code>inst.operands</code></td>
+<td><code>list[Operand]</code></td>
+<td>Decoded operands</td>
+</tr>
+<tr>
+<td><code>inst.cs_inst</code></td>
+<td><code>CsInsn</code></td>
+<td>Capstone instruction object</td>
+</tr>
+<tr>
+<td><code>inst.pcode_insts</code></td>
+<td><code>list[PcodeOp]</code></td>
+<td>Lifted P-code operations</td>
+</tr>
+<tr>
+<td><code>inst.string</code></td>
+<td><code>Data \| None</code></td>
+<td>Referenced string literal</td>
+</tr>
+<tr>
+<td><code>inst.constants</code></td>
+<td><code>list[int]</code></td>
+<td>Immediate constant values</td>
+</tr>
+<tr>
+<td><code>inst.comments</code></td>
+<td><code>Iterable[str]</code></td>
+<td>IDA comments on instruction</td>
+</tr>
+<tr>
+<td><code>inst.call_target</code></td>
+<td><code>Function</code></td>
+<td>Resolved call target (raises if none)</td>
+</tr>
+<tr>
+<td><code>inst.callees</code></td>
+<td><code>list[int]</code></td>
+<td>Addresses of call targets</td>
+</tr>
+<tr>
+<td><code>inst.callers</code></td>
+<td><code>list[int]</code></td>
+<td>Addresses of callers</td>
+</tr>
+<tr>
+<td><code>inst.is_call</code></td>
+<td><code>bool</code></td>
+<td>True if this is a call</td>
+</tr>
+<tr>
+<td><code>inst.is_jump</code></td>
+<td><code>bool</code></td>
+<td>True if this is a jump</td>
+</tr>
+<tr>
+<td><code>inst.is_conditional_jump</code></td>
+<td><code>bool</code></td>
+<td>True if conditional jump</td>
+</tr>
+<tr>
+<td><code>inst.is_dynamic</code></td>
+<td><code>bool</code></td>
+<td>True if indirect call/jump</td>
+</tr>
+<tr>
+<td><code>inst.data_refs_from</code></td>
+<td><code>list</code></td>
+<td>Data xrefs from this instruction</td>
+</tr>
+<tr>
+<td><code>inst.data_read_refs_from</code></td>
+<td><code>list</code></td>
+<td>Data read xrefs from this instruction</td>
+</tr>
+<tr>
+<td><code>inst.data_write_refs_from</code></td>
+<td><code>list</code></td>
+<td>Data write xrefs from this instruction</td>
+</tr>
+<tr>
+<td><code>inst.data_refs_to</code></td>
+<td><code>list</code></td>
+<td>Data xrefs to this instruction</td>
+</tr>
+<tr>
+<td><code>inst.code_refs_from</code></td>
+<td><code>list[int]</code></td>
+<td>Code xrefs from (jump/call targets)</td>
+</tr>
+<tr>
+<td><code>inst.code_refs_to</code></td>
+<td><code>list[int]</code></td>
+<td>Code xrefs to (who jumps/calls here)</td>
+</tr>
+<tr>
+<td><code>inst.type_refs_from</code></td>
+<td><code>list[TypeReference]</code></td>
+<td>Type xrefs from this instruction</td>
+</tr>
+<tr>
+<td><code>inst.is_fall_through(addr)</code></td>
+<td><code>bool</code></td>
+<td>Check if addr is the fall-through target</td>
+</tr>
+</tbody>
+</table>
+<h2 id="operand-cheatsheet">Operand Cheatsheet</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute / Method</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>op.type</code></td>
+<td><code>OperandType</code></td>
+<td><code>REGISTER</code>, <code>IMMEDIATE</code>, <code>MEMORY</code>, <code>OTHER</code></td>
+</tr>
+<tr>
+<td><code>op.value</code></td>
+<td><code>Any</code></td>
+<td>Typed value: int (imm), str (reg), mem object</td>
+</tr>
+<tr>
+<td><code>op.register</code></td>
+<td><code>str</code></td>
+<td>Register name (empty if not a register)</td>
+</tr>
+<tr>
+<td><code>op.access</code></td>
+<td><code>AccessMode</code></td>
+<td><code>READ</code>, <code>WRITE</code>, or <code>READ\|WRITE</code></td>
+</tr>
+<tr>
+<td><code>op.data_refs_from</code></td>
+<td><code>list</code></td>
+<td>Data objects/functions referenced by this operand</td>
+</tr>
+<tr>
+<td><code>op.code_refs_from</code></td>
+<td><code>list[int]</code></td>
+<td>Code addresses referenced by this operand</td>
+</tr>
+<tr>
+<td><code>op.type_refs_from</code></td>
+<td><code>list[TypeReference]</code></td>
+<td>Type references on this operand</td>
+</tr>
+<tr>
+<td><code>str(op)</code></td>
+<td><code>str</code></td>
+<td>Human-readable operand string</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">OperandType</span><span class="p">,</span> <span class="n">AccessMode</span>
+
+<span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">operands</span><span class="p">:</span>
+    <span class="k">match</span> <span class="n">op</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">REGISTER</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reg=</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">register</span><span class="si">}</span><span class="s2">  access=</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">access</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">IMMEDIATE</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;imm=</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">#x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">OperandType</span><span class="o">.</span><span class="n">MEMORY</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mem=</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">  refs=</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">data_refs_from</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="see-also">See Also</h2>
 <ul>
-<li>Exhaustive
-  The plugin should export as much data as possible from IDA</li>
-<li>Compact
-  The export file should be as compact as possible to reduce disk usage.</li>
-<li>Fast
-  Waiting for the export should be kept as a minimum.</li>
-<li>Intuitive
-  The plugin should be usable without documentation with an intuitive interface.</li>
+<li><a href="../pcode/">P-code Lifting</a> — architecture-independent IR via <code>inst.pcode_insts</code></li>
+<li><a href="../xrefs/">Cross-References</a> — <code>inst.code_refs_from</code>, <code>inst.data_refs_from</code>, etc.</li>
 </ul>
 
 
@@ -2329,7 +3060,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 12, 2022 16:02:22 UTC">September 12, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     
@@ -2339,7 +3070,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     

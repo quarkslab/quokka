@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../example/">
+        <link rel="prev" href="../functions/">
       
       
-        <link rel="next" href="../roadmap/">
+        <link rel="next" href="../instructions/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Philosophy - Quokka</title>
+        <title>Basic Blocks & CFG - Quokka</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#philosophy" class="md-skip">
+        <a href="#basic-blocks-cfg" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Philosophy
+              Basic Blocks & CFG
             
           </span>
         </div>
@@ -363,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -395,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -466,10 +468,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../blocks/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basic Blocks & CFG
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -485,6 +514,175 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-basic-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is a Basic Block?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-block-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Block Object
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#block-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Block Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cfg-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CFG Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cfg-edge-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CFG Edge Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loop-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loop Detection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-conditional-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Conditional Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-return-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Return Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structured-traversal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structured Traversal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entry-and-exit-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry and Exit Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-complexity-analyzer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Complexity Analyzer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2058,19 +2256,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../philosophy/" class="md-nav__link">
         
   
   
@@ -2086,7 +2275,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2275,6 +2463,163 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-basic-block" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is a Basic Block?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-block-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Block Object
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#block-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Block Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cfg-navigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CFG Navigation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cfg-edge-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CFG Edge Types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loop-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loop Detection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-conditional-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Conditional Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-return-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Return Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structured-traversal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structured Traversal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entry-and-exit-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Entry and Exit Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-complexity-analyzer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Complexity Analyzer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2293,19 +2638,228 @@
   
 
 
-<h1 id="philosophy">Philosophy</h1>
-<p><code>Quokka</code> and its bindings were created in order to manipulate a binary without
-using IDA. To be usable, we needed something (reasonably) fast and compact. It
-leads to the following properties we try to enforce:</p>
+<h1 id="basic-blocks-cfg">Basic Blocks &amp; CFG</h1>
+<p>A <strong>basic block</strong> is a maximal straight-line sequence of instructions with one entry point and one exit point. This page covers the <code>Block</code> object, block types, CFG navigation, and common analysis patterns.</p>
+<h2 id="what-is-a-basic-block">What is a Basic Block?</h2>
+<div class="highlight"><pre><span></span><code>  ┌─────────────────────┐
+  │  mov eax, [rdi]     │
+  │  add eax, 1         │  ← basic block
+  │  cmp eax, 0         │
+  │  jz  exit_label     │
+  └──────┬──────────────┘
+         │  (conditional)
+    ┌────┴────┐  ┌──────────┐
+    │ (false) │  │ (true)   │
+    └─────────┘  └──────────┘
+</code></pre></div>
+<h2 id="the-block-object">The <code>Block</code> Object</h2>
+<p><code>Block</code> is a <code>MutableMapping</code> keyed by <strong>instruction address</strong>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;parse_args&quot;</span><span class="p">,</span> <span class="n">approximative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Get the entry block</span>
+<span class="n">entry</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+<span class="c1"># Or access via the function dict</span>
+<span class="n">entry</span> <span class="o">=</span> <span class="n">func</span><span class="p">[</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Block @ 0x</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">start</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Instructions: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Type:         </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Iterate instructions</span>
+<span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">inst</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="block-types">Block Types</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockType</span>
+
+<span class="n">entry</span><span class="o">.</span><span class="n">type</span>  <span class="c1"># BlockType.NORMAL</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NORMAL</code></td>
+<td>Standard block — falls through or jumps</td>
+</tr>
+<tr>
+<td><code>RET</code></td>
+<td>Ends with a return instruction</td>
+</tr>
+<tr>
+<td><code>NORET</code></td>
+<td>Ends with a call to a no-return function</td>
+</tr>
+<tr>
+<td><code>INDJUMP</code></td>
+<td>Ends with an indirect jump (switch table)</td>
+</tr>
+<tr>
+<td><code>CNDRET</code></td>
+<td>Conditional return</td>
+</tr>
+<tr>
+<td><code>ENORET</code></td>
+<td>External no-return</td>
+</tr>
+<tr>
+<td><code>ERROR</code></td>
+<td>Disassembly error</td>
+</tr>
+<tr>
+<td><code>EXTERN</code></td>
+<td>External / unresolved</td>
+</tr>
+</tbody>
+</table>
+<h2 id="cfg-navigation">CFG Navigation</h2>
+<p>The CFG is a <code>networkx.DiGraph</code> accessible via <code>func.graph</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">cfg</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">graph</span>  <span class="c1"># networkx DiGraph</span>
+
+<span class="c1"># Successors of a block (blocks reachable in one step)</span>
+<span class="n">successors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">entry_addr</span><span class="p">))</span>
+
+<span class="c1"># Predecessors of a block</span>
+<span class="n">predecessors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">predecessors</span><span class="p">(</span><span class="n">some_block_addr</span><span class="p">))</span>
+
+<span class="c1"># Via Block convenience properties</span>
+<span class="n">block</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">succ_addr</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">successors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  → 0x</span><span class="si">{</span><span class="n">succ_addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pred_addr</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">predecessors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ← 0x</span><span class="si">{</span><span class="n">pred_addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="cfg-edge-types">CFG Edge Types</h2>
+<p>Edges carry a <code>type</code> attribute (a <code>RefType</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">ref_type</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  0x</span><span class="si">{</span><span class="n">src</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> → 0x</span><span class="si">{</span><span class="n">dst</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">  [</span><span class="si">{</span><span class="n">ref_type</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Edge type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>JMP_UNCOND</code></td>
+<td>Unconditional jump</td>
+</tr>
+<tr>
+<td><code>JMP_COND</code></td>
+<td>Conditional jump (true branch)</td>
+</tr>
+<tr>
+<td><code>JMP_INDIR</code></td>
+<td>Indirect jump (switch table)</td>
+</tr>
+<tr>
+<td><code>CALL</code></td>
+<td>Direct call</td>
+</tr>
+<tr>
+<td><code>CALL_INDIR</code></td>
+<td>Indirect call</td>
+</tr>
+</tbody>
+</table>
+<h2 id="loop-detection">Loop Detection</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">graph</span>
+
+<span class="c1"># Does the CFG have back-edges? (cycles = loops)</span>
+<span class="n">has_loops</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_directed_acyclic_graph</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="c1"># Find all simple cycles</span>
+<span class="n">cycles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">simple_cycles</span><span class="p">(</span><span class="n">cfg</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cycles</span><span class="p">)</span><span class="si">}</span><span class="s2"> loops&quot;</span><span class="p">)</span>
+
+<span class="c1"># Dominator tree</span>
+<span class="n">dom_tree</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">immediate_dominators</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="common-patterns">Common Patterns</h2>
+<h3 id="finding-conditional-blocks">Finding Conditional Blocks</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Blocks with exactly 2 successors = conditional jump</span>
+<span class="k">for</span> <span class="n">block_addr</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+    <span class="n">succs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">successors</span><span class="p">(</span><span class="n">block_addr</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">succs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">block_addr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conditional block @ 0x</span><span class="si">{</span><span class="n">block_addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  True  → 0x</span><span class="si">{</span><span class="n">succs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  False → 0x</span><span class="si">{</span><span class="n">succs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="finding-return-blocks">Finding Return Blocks</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockType</span>
+
+<span class="n">ret_blocks</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+              <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">BlockType</span><span class="o">.</span><span class="n">RET</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="structured-traversal">Structured Traversal</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">graph</span>
+
+<span class="c1"># BFS from entry</span>
+<span class="k">for</span> <span class="n">block_addr</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">bfs_tree</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">block_addr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Block 0x</span><span class="si">{</span><span class="n">block_addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">block</span><span class="p">)</span><span class="si">}</span><span class="s2"> insts, type=</span><span class="si">{</span><span class="n">block</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Topological order (for acyclic CFGs)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">block_addr</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">block_addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXUnfeasible</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CFG has cycles — use BFS instead&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="entry-and-exit-blocks">Entry and Exit Blocks</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Entry = the block at func.start</span>
+<span class="n">entry</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+<span class="c1"># Exit blocks = blocks with no successors in the CFG</span>
+<span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="n">addr</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+         <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">out_degree</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Or using BlockType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockType</span>
+<span class="n">exits</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">BlockType</span><span class="o">.</span><span class="n">RET</span><span class="p">,</span> <span class="n">BlockType</span><span class="o">.</span><span class="n">NORET</span><span class="p">)]</span>
+</code></pre></div>
+<h2 id="example-complexity-analyzer">Example: Complexity Analyzer</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">FunctionType</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analyze_cfg</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (n_blocks, n_edges, cyclomatic_complexity, n_loops)&quot;&quot;&quot;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">graph</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+    <span class="n">cc</span> <span class="o">=</span> <span class="n">e</span> <span class="o">-</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">2</span>  <span class="c1"># McCabe cyclomatic complexity</span>
+    <span class="n">loops</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">simple_cycles</span><span class="p">(</span><span class="n">cfg</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">loops</span>
+
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">FunctionType</span><span class="o">.</span><span class="n">NORMAL</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">loops</span> <span class="o">=</span> <span class="n">analyze_cfg</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cc</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HIGH COMPLEXITY: </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">:</span><span class="s2">30s</span><span class="si">}</span><span class="s2"> CC=</span><span class="si">{</span><span class="n">cc</span><span class="si">}</span><span class="s2"> loops=</span><span class="si">{</span><span class="n">loops</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="summary">Summary</h2>
 <ul>
-<li>Exhaustive
-  The plugin should export as much data as possible from IDA</li>
-<li>Compact
-  The export file should be as compact as possible to reduce disk usage.</li>
-<li>Fast
-  Waiting for the export should be kept as a minimum.</li>
-<li>Intuitive
-  The plugin should be usable without documentation with an intuitive interface.</li>
+<li><code>Block</code> is a <code>MutableMapping</code> of instructions, keyed by address</li>
+<li><strong>BlockType</strong>: <code>NORMAL</code>, <code>RET</code>, <code>NORET</code>, <code>INDJUMP</code>, <code>CNDRET</code>, <code>ERROR</code></li>
+<li><code>func.graph</code> is a <code>networkx.DiGraph</code> of block addresses</li>
+<li>CFG edges carry <code>RefType</code> (<code>JMP_COND</code>, <code>JMP_UNCOND</code>, <code>CALL</code>…)</li>
+<li><code>block.successors</code> / <code>block.predecessors</code> for convenient navigation</li>
+<li>Use networkx algorithms: BFS, cycle detection, dominator trees</li>
 </ul>
 
 
@@ -2329,7 +2883,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 12, 2022 16:02:22 UTC">September 12, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     
@@ -2339,7 +2893,7 @@ leads to the following properties we try to enforce:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:20:45 UTC">March 5, 2026</span>
   </span>
 
     

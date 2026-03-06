@@ -11,8 +11,10 @@
       
       
       
-        <link rel="prev" href="../dev/">
+        <link rel="prev" href="../types/">
       
+      
+        <link rel="next" href="../decompilation/">
       
       
         
@@ -23,7 +25,7 @@
     
     
       
-        <title>FAQ - Quokka</title>
+        <title>Cross-References - Quokka</title>
       
     
     
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#faq" class="md-skip">
+        <a href="#cross-references" class="md-skip">
           Skip to content
         </a>
       
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              FAQ
+              Cross-References
             
           </span>
         </div>
@@ -361,18 +363,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -393,7 +397,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -548,10 +552,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../xrefs/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-References
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -567,6 +598,231 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reference-types-reftype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference types (RefType)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-xref-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The xref matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The xref matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#direction-from-vs-to" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direction: from vs to
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference-by-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API reference by object
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API reference by object">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instruction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instruction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#operand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-types-structuretype-uniontype-enumtype-arraytype-pointertype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complex types (StructureType, UnionType, EnumType, ArrayType, PointerType)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structuretypemember-enumtypemember" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructureTypeMember / EnumTypeMember
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find-all-call-sites-of-a-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find all call sites of a function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace-all-reads-of-a-global-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace all reads of a global variable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-all-struct-fields-accessed-by-a-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List all struct fields accessed by a function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-data-objects-whose-type-is-a-given-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find data objects whose type is a given structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detect-indirect-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detect indirect calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2220,37 +2476,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FAQ
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
         
   
   
@@ -2266,148 +2495,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-quokka" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is quokka ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-not-use-directly-ida-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why not use directly IDA API ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-does-quokka-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How does quokka works ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-exported" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is exported ?
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="What is exported ?">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#exported-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Exported features:
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-not-exported" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is not exported ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-are-the-trade-off" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What are the trade-off ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#where-to-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Where to start ?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tips" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tips
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2439,10 +2526,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-is-quokka" class="md-nav__link">
+  <a href="#reference-types-reftype" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What is quokka ?
+        Reference types (RefType)
       
     </span>
   </a>
@@ -2450,44 +2537,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why-not-use-directly-ida-api" class="md-nav__link">
+  <a href="#the-xref-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why not use directly IDA API ?
+        The xref matrix
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-does-quokka-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How does quokka works ?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-is-exported" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What is exported ?
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="What is exported ?">
+    <nav class="md-nav" aria-label="The xref matrix">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#exported-features" class="md-nav__link">
+  <a href="#reading-the-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Exported features:
+        Reading the matrix
       
     </span>
   </a>
@@ -2500,10 +2565,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-is-not-exported" class="md-nav__link">
+  <a href="#direction-from-vs-to" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What is not exported ?
+        Direction: from vs to
       
     </span>
   </a>
@@ -2511,33 +2576,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-are-the-trade-off" class="md-nav__link">
+  <a href="#api-reference-by-object" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What are the trade-off ?
+        API reference by object
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#contributing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Contributing
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Contributing">
+    <nav class="md-nav" aria-label="API reference by object">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#where-to-start" class="md-nav__link">
+  <a href="#instruction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Where to start ?
+        Instruction
       
     </span>
   </a>
@@ -2545,10 +2599,126 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#tips" class="md-nav__link">
+  <a href="#operand" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tips
+        Operand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-types-structuretype-uniontype-enumtype-arraytype-pointertype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complex types (StructureType, UnionType, EnumType, ArrayType, PointerType)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structuretypemember-enumtypemember" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructureTypeMember / EnumTypeMember
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#find-all-call-sites-of-a-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find all call sites of a function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trace-all-reads-of-a-global-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace all reads of a global variable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-all-struct-fields-accessed-by-a-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List all struct fields accessed by a function
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-data-objects-whose-type-is-a-given-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find data objects whose type is a given structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detect-indirect-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detect indirect calls
       
     </span>
   </a>
@@ -2580,63 +2750,501 @@
   
 
 
-<h1 id="faq">FAQ</h1>
-<h2 id="what-is-quokka">What is <code>quokka</code> ?</h2>
-<p><code>quokka</code> is a tool to manipulate the exported versions of your program. 
-The goal is to have an easy to understand, stable and scalable API to query the
-(disassembled) binary without relying on having IDA running in the background
-nor interacting with its API.</p>
-<p>As a bonus, once a binary has been exported, you can close IDA and work only
-with the exported file.</p>
-<h2 id="why-not-use-directly-ida-api">Why not use directly IDA API ?</h2>
-<p>IDA API has at least two drawbacks (for me) :</p>
+<h1 id="cross-references">Cross-References</h1>
+<p>Cross-references (<em>xrefs</em>) record every edge between objects in the binary:
+which instruction calls which function, which instruction reads which global
+variable, which data object holds a pointer to another, which instruction
+accesses a specific struct field, and so on.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>On IDA Pro, xrefs are retrieve using disassembler engine (not decompiler).</p>
+</div>
+<p>Quokka organises xrefs into three orthogonal dimensions:</p>
 <ul>
-<li>you will need to learn its syntax and how it works:</li>
+<li><strong>Kind</strong>: code / data / type, what kind of relationship it is</li>
+<li><strong>Direction</strong>:<ul>
+<li><em>from</em>: refences originating from this object (e.g. instructions called by this function)</li>
+<li><em>to</em>: references pointing to this object (e.g. instructions calling this function)</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="c1"># IDA way</span>
-<span class="n">inst</span> <span class="o">=</span> <span class="n">ida_ua</span><span class="o">.</span><span class="n">insn_t</span><span class="p">()</span>
-<span class="n">ida_ua</span><span class="o">.</span><span class="n">decode_insn</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="mh">0xABCD</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">get_canon_mnem</span><span class="p">())</span>
+</li>
+<li><strong>Object addressed</strong>:<ul>
+<li><em>address</em>: most xrefs point to an address (e.g. instruction at 0x401000 calls 0x402000)</li>
+<li><em>type object</em>: reference to a type or a type member (<code>TypeReference</code>)</li>
+</ul>
+</li>
+</ul>
+<h2 id="reference-types-reftype">Reference types (<code>RefType</code>)</h2>
+<p>Every xref carries a <code>RefType</code> that captures the precise nature of the
+relationship:</p>
+<table>
+<thead>
+<tr>
+<th><code>RefType</code></th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>JMP_UNCOND</code></td>
+<td>code</td>
+<td>Unconditional direct jump</td>
+</tr>
+<tr>
+<td><code>JMP_COND</code></td>
+<td>code</td>
+<td>Conditional direct jump</td>
+</tr>
+<tr>
+<td><code>JMP_INDIR</code></td>
+<td>code</td>
+<td>Indirect jump (via pointer)</td>
+</tr>
+<tr>
+<td><code>CALL</code></td>
+<td>code</td>
+<td>Direct function call</td>
+</tr>
+<tr>
+<td><code>CALL_INDIR</code></td>
+<td>code</td>
+<td>Indirect call (call through register or table)</td>
+</tr>
+<tr>
+<td><code>DATA_READ</code></td>
+<td>data</td>
+<td>Instruction reads a data object</td>
+</tr>
+<tr>
+<td><code>DATA_WRITE</code></td>
+<td>data</td>
+<td>Instruction writes a data object</td>
+</tr>
+<tr>
+<td><code>DATA_INDIR</code></td>
+<td>data</td>
+<td>Indirect data reference (pointer dereferencing)</td>
+</tr>
+<tr>
+<td><code>TYPE_SYMBOL</code></td>
+<td>type</td>
+<td><em>Unused!</em></td>
+</tr>
+<tr>
+<td><code>UNKNOWN</code></td>
+<td>—</td>
+<td>Unresolved reference type</td>
+</tr>
+</tbody>
+</table>
+<p>Four boolean helper properties are available on every <code>RefType</code> value:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefType</span>
 
-<span class="c1">## Quokka</span>
-<span class="n">inst</span> <span class="o">=</span> <span class="n">program</span><span class="o">.</span><span class="n">get_instruction</span><span class="p">(</span><span class="mh">0xABCD</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">inst</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">)</span>
+<span class="n">RefType</span><span class="o">.</span><span class="n">CALL</span><span class="o">.</span><span class="n">is_code</span>      <span class="c1"># True  (jumps and calls)</span>
+<span class="n">RefType</span><span class="o">.</span><span class="n">CALL</span><span class="o">.</span><span class="n">is_call</span>      <span class="c1"># True  (calls only)</span>
+<span class="n">RefType</span><span class="o">.</span><span class="n">JMP_COND</span><span class="o">.</span><span class="n">is_code</span>  <span class="c1"># True</span>
+<span class="n">RefType</span><span class="o">.</span><span class="n">JMP_COND</span><span class="o">.</span><span class="n">is_call</span>  <span class="c1"># False</span>
+<span class="n">RefType</span><span class="o">.</span><span class="n">DATA_READ</span><span class="o">.</span><span class="n">is_data</span> <span class="c1"># True  (DATA_READ, DATA_WRITE, DATA_INDIR)</span>
+<span class="n">RefType</span><span class="o">.</span><span class="n">CALL_INDIR</span><span class="o">.</span><span class="n">is_dynamic</span> <span class="c1"># True  (JMP_INDIR, CALL_INDIR)</span>
 </code></pre></div>
-<h2 id="how-does-quokka-works">How does <code>quokka</code> works ?</h2>
-<p>In short, it will write everything to a serialized binary format (namely
- protobuf).</p>
-<h2 id="what-is-exported">What is exported ?</h2>
-<p>You may have a look at the protobuf format definition to understand exactly
-what is exported but the list here can  give you a nice overview.</p>
-<h3 id="exported-features">Exported features:</h3>
+<h2 id="the-xref-matrix">The xref matrix</h2>
+<p>The table below summarises which combinations of source and destination objects
+Quokka exports, and which <code>RefType</code> values can appear:</p>
+<table>
+<thead>
+<tr>
+<th>From → / To ↓</th>
+<th><strong>Code</strong> (instruction)</th>
+<th><strong>Data</strong></th>
+<th><strong>Type</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Code</strong></td>
+<td><code>C</code></td>
+<td><code>D{I}</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td><code>D{R,W,I}</code></td>
+<td><code>D{I}</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td><code>D{I}</code></td>
+<td><code>D{R}</code></td>
+<td><code>D{R}</code></td>
+</tr>
+</tbody>
+</table>
+<p>Legend:</p>
 <ul>
-<li>Meta information (file hash, name, detected compiler, calling convention)</li>
-<li>Segments</li>
-<li>Structures (structs, enumerations and unions)</li>
-<li>Comments (every comments attached to anything)</li>
-<li>Layout (where is the code/data/unknown)</li>
-<li>Functions and their associated Control Flow Graph</li>
-<li>Call Graph</li>
-<li>Instructions (and their operands / mnemonics)</li>
-<li>References (data and code xref)</li>
-<li>Data (bytes, strings, ...)</li>
+<li><code>C</code> — code reference (one of the <code>JMP_*</code> / <code>CALL_*</code> ref types)</li>
+<li><code>D</code> — data reference (<code>DATA_*</code> ref types)</li>
+<li><code>{R}</code> / <code>{W}</code> / <code>{I}</code> — Read / Write / Indirect variant</li>
+<li><code>—</code> — No possible xrefs</li>
 </ul>
-<h2 id="what-is-not-exported">What is not exported ?</h2>
-<p>Pretty much everything else but I think the most important here is the type
-information. It will be a nice addition but that's not the best part of IDA
-API. </p>
-<h2 id="what-are-the-trade-off">What are the trade-off ?</h2>
-<p>TODO(dm)</p>
-<h2 id="contributing">Contributing</h2>
-<p>Every PR is welcome.</p>
-<h3 id="where-to-start">Where to start ?</h3>
-<p>Grep the code for TODO, some are easy, some require more understanding of the 
-code.</p>
-<h3 id="tips">Tips</h3>
-<p>During development, you may want to use a soft link in the
-plugin directory coupled with the option to unload the plugin <code>PLUGIN_UNL</code></p>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka/$ </span>ln<span class="w"> </span>-sf<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>build/src/quokka*64.so<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>/opt/ida/plugins/
+<h3 id="reading-the-matrix">Reading the matrix</h3>
+<ul>
+<li><strong>Code→Code</strong>: an instruction jumping or calling another address.  All five
+  code <code>RefType</code> values can appear.</li>
+<li><strong>Code→Data</strong>: an instruction that reads, writes, or indirectly accesses a
+  data object.  Both direct (<code>DATA_READ</code>/<code>DATA_WRITE</code>) and indirect
+  (<code>DATA_INDIR</code>) variants are exported.</li>
+<li><strong>Code→Type</strong>: an instruction that references a type symbol (e.g. accessing a
+  struct field at a known offset).  Only indirect (<code>DATA_INDIR</code>) references
+  here.</li>
+<li><strong>Data→Code</strong>: a data object containing a pointer to code (e.g. a function
+  pointer in a vtable).  Only indirect references.</li>
+<li><strong>Data→Data</strong>: a data object containing a pointer to another data object.
+  Only indirect references.</li>
+<li><strong>Data→Type</strong>: a data object whose type annotation points to a complex type
+  or one of its members.  <code>(s)</code> means the target can be a <code>StructureTypeMember</code>
+  instead of the type itself.</li>
+<li><strong>Type→Type</strong>: one type referencing another type, or one of its members.
+  <code>(s)</code> = struct/union member target, <code>(k)</code> = enum member target.</li>
+</ul>
+<h2 id="direction-from-vs-to">Direction: <em>from</em> vs <em>to</em></h2>
+<p>Every xref API property comes in two flavours:</p>
+<table>
+<thead>
+<tr>
+<th>Suffix</th>
+<th>You are asking…</th>
+<th>Edge points…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_from</code></td>
+<td>"what does <strong>this object</strong> reference?"</td>
+<td><strong>out</strong> of this object</td>
+</tr>
+<tr>
+<td><code>_to</code></td>
+<td>"what references <strong>this object</strong>?"</td>
+<td><strong>in</strong> to this object</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code> [caller instruction]  --code_refs_from--&gt;  [callee address]
+ [callee instruction]  &lt;--code_refs_to---   [caller address]
+</code></pre></div>
+<h2 id="api-reference-by-object">API reference by object</h2>
+<h3 id="instruction"><code>Instruction</code></h3>
+<div class="highlight"><pre><span></span><code><span class="n">inst</span> <span class="o">=</span> <span class="n">func</span><span class="p">[</span><span class="n">block_addr</span><span class="p">][</span><span class="n">inst_addr</span><span class="p">]</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>code_refs_from</code></td>
+<td><code>list[AddressT]</code></td>
+<td>Code destinations of this instruction (jumps / calls)</td>
+</tr>
+<tr>
+<td><code>code_refs_to</code></td>
+<td><code>list[AddressT]</code></td>
+<td>Addresses that jump or call to this instruction</td>
+</tr>
+<tr>
+<td><code>data_refs_from</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Data objects read/written by this instruction</td>
+</tr>
+<tr>
+<td><code>data_read_refs_from</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Read data refs from this instruction</td>
+</tr>
+<tr>
+<td><code>data_write_refs_from</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Write data refs from this instruction</td>
+</tr>
+<tr>
+<td><code>data_refs_to</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Data objects that point to this instruction</td>
+</tr>
+<tr>
+<td><code>data_read_refs_to</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Read data refs to this instruction</td>
+</tr>
+<tr>
+<td><code>data_write_refs_to</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Write data refs to this instruction</td>
+</tr>
+<tr>
+<td><code>type_refs_from</code></td>
+<td><code>list[TypeReference]</code></td>
+<td>Type / struct member referenced by this instruction</td>
+</tr>
+<tr>
+<td><code>callees</code></td>
+<td><code>list[AddressT]</code></td>
+<td>Functions called by this instruction (subset of <code>code_refs_from</code>)</td>
+</tr>
+<tr>
+<td><code>callers</code></td>
+<td><code>list[AddressT]</code></td>
+<td>Callers of this instruction (subset of <code>code_refs_to</code>)</td>
+</tr>
+<tr>
+<td><code>is_call</code></td>
+<td><code>bool</code></td>
+<td>True if this instruction performs a call</td>
+</tr>
+<tr>
+<td><code>is_jump</code></td>
+<td><code>bool</code></td>
+<td>True if this instruction performs a jump</td>
+</tr>
+<tr>
+<td><code>is_conditional_jump</code></td>
+<td><code>bool</code></td>
+<td>True if this instruction performs a conditional jump</td>
+</tr>
+<tr>
+<td><code>is_dynamic</code></td>
+<td><code>bool</code></td>
+<td>True if the reference is indirect (call/jump through pointer)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">instructions</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">is_call</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> calls </span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">code_refs_from</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">data_read_refs_from</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> reads </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">type_refs_from</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> accesses type </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="operand"><code>Operand</code></h3>
+<p>Xrefs are also resolved at the individual operand level when the operand can be
+unambiguously identified.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_refs_from</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Data object this operand references</td>
+</tr>
+<tr>
+<td><code>code_refs_from</code></td>
+<td><code>list[AddressT]</code></td>
+<td>Code address this operand references</td>
+</tr>
+<tr>
+<td><code>type_refs_from</code></td>
+<td><code>list[TypeReference]</code></td>
+<td>Type / member this operand references</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">operands</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">data_refs_from</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  operand </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> → data </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">data_refs_from</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">type_refs_from</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  operand </span><span class="si">{</span><span class="n">op</span><span class="si">}</span><span class="s2"> → type </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">type_refs_from</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="data"><code>Data</code></h3>
+<div class="highlight"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>code_refs_to</code></td>
+<td><code>list[AddressT]</code></td>
+<td>Instructions that reference this data object</td>
+</tr>
+<tr>
+<td><code>data_refs_to</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Data objects that point to this object</td>
+</tr>
+<tr>
+<td><code>data_read_refs_to</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Read references to this object</td>
+</tr>
+<tr>
+<td><code>data_write_refs_to</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Write references to this object</td>
+</tr>
+<tr>
+<td><code>data_refs_from</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Objects this data points to (pointer data)</td>
+</tr>
+<tr>
+<td><code>data_read_refs_from</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Targets this data reads from</td>
+</tr>
+<tr>
+<td><code>data_write_refs_from</code></td>
+<td><code>list[Data \| Function \| AddressT]</code></td>
+<td>Targets this data writes to</td>
+</tr>
+<tr>
+<td><code>type_refs_from</code></td>
+<td><code>list[TypeReference]</code></td>
+<td>Type or type member referenced by this data</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># Find all instructions reading a global variable</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mh">0x404080</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">code_refs_to</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;instruction 0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2"> references this data&quot;</span><span class="p">)</span>
+
+<span class="c1"># Follow a pointer stored inside a data object</span>
+<span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">data_refs_from</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;this data points to </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="function"><code>Function</code></h3>
+<p><code>Function</code> provides call-graph level xrefs aggregated across all its
+instructions.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>callers</code></td>
+<td><code>list[Function]</code></td>
+<td>Functions that call this function</td>
+</tr>
+<tr>
+<td><code>callees</code></td>
+<td><code>list[Function]</code></td>
+<td>Functions called by this function</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">callers</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> calls </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">callee</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">callees</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> calls </span><span class="si">{</span><span class="n">callee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="complex-types-structuretype-uniontype-enumtype-arraytype-pointertype">Complex types (<code>StructureType</code>, <code>UnionType</code>, <code>EnumType</code>, <code>ArrayType</code>, <code>PointerType</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_refs_to</code></td>
+<td><code>list[Data]</code></td>
+<td>Data objects that use (are annotated with) this type</td>
+</tr>
+<tr>
+<td><code>data_read_refs_to</code></td>
+<td><code>list[Data]</code></td>
+<td>Read-only data references to this type</td>
+</tr>
+<tr>
+<td><code>data_write_refs_to</code></td>
+<td><code>list[Data]</code></td>
+<td>Write data references to this type</td>
+</tr>
+</tbody>
+</table>
+<h3 id="structuretypemember-enumtypemember"><code>StructureTypeMember</code> / <code>EnumTypeMember</code></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data_refs_to</code></td>
+<td><code>list[Data \| AddressT]</code></td>
+<td>Data objects or addresses that access this specific member</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">struct</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">structures</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">struct</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
+        <span class="n">refs</span> <span class="o">=</span> <span class="n">member</span><span class="o">.</span><span class="n">data_refs_to</span>
+        <span class="k">if</span> <span class="n">refs</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">struct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">member</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> accessed from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span><span class="si">}</span><span class="s2"> location(s)&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="common-patterns">Common patterns</h2>
+<h3 id="find-all-call-sites-of-a-function">Find all call sites of a function</h3>
+<div class="highlight"><pre><span></span><code><span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;authenticate_user&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">caller</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">callers</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;called from </span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="trace-all-reads-of-a-global-variable">Trace all reads of a global variable</h3>
+<div class="highlight"><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mh">0x404080</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">code_refs_to</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="list-all-struct-fields-accessed-by-a-function">List all struct fields accessed by a function</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
+<span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;sub_401234&quot;</span><span class="p">)</span>
+
+<span class="n">accessed</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">instructions</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">inst</span><span class="o">.</span><span class="n">type_refs_from</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_member</span><span class="p">:</span>
+            <span class="n">accessed</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">accessed</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="find-data-objects-whose-type-is-a-given-structure">Find data objects whose type is a given structure</h3>
+<div class="highlight"><pre><span></span><code><span class="n">target_struct</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">structures</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;FILE&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">target_struct</span><span class="o">.</span><span class="n">data_refs_to</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="detect-indirect-calls">Detect indirect calls</h3>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">prog</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">instructions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">inst</span><span class="o">.</span><span class="n">is_call</span> <span class="ow">and</span> <span class="n">inst</span><span class="o">.</span><span class="n">is_dynamic</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">address</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">  indirect call in </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -2660,7 +3268,7 @@ plugin directory coupled with the option to unload the plugin <code>PLUGIN_UNL</
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     
@@ -2670,7 +3278,7 @@ plugin directory coupled with the option to unload the plugin <code>PLUGIN_UNL</
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 9, 2022 07:34:18 UTC">September 9, 2022</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
   </span>
 
     
