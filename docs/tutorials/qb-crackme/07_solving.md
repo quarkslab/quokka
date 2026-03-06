@@ -153,17 +153,17 @@ function.
 Let's consider the next block:
 ```python
 first = func.get_block(func.start)
-next_block = func.get_block(next(first.successors()))
+next_block = func.get_block(next(first.successors))
 ```
 
 We know there is only one successor because either :
 - the first block disassembly ends with an unconditional jump
 - `func.graph[first.start]` lists an Unconditional Edge
-- `sum(1 for _ in first.successors())` is 1
+- `sum(1 for _ in first.successors)` is 1
 
 Our new block has two predecessors: we are in a loop!
 ```python
-list(next_block.predecessors())
+list(next_block.predecessors)
 ```
 
 From now on, we can just navigate in the CFG and see what are the conditions to

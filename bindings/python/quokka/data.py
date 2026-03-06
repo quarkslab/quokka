@@ -44,7 +44,7 @@ def _get_item(program: 'Program', addr: AddressT) -> 'Data | Function | AddressT
         The data at the given address
     """
     try:
-        return program.data_holder[addr]  # try getting data
+        return program.data[addr]  # try getting data
     except ValueError:
         try:
             return program[addr]  # try getting function
@@ -232,6 +232,9 @@ class DataHolder(Mapping):
             program.virtual_address(data.segment_index, data.segment_offset): index 
             for index, data in enumerate(proto.data)
         }
+
+    def __contains__(self, key: object) -> bool:
+        return key in self._addr_to_idx
 
     def __setitem__(self, key: Index, value: Data) -> None:
         """Set a data"""

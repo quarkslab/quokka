@@ -142,20 +142,20 @@ class ComplexType(CoreType):
         return self.proto.comments if hasattr(self.proto, "comments") else []
 
     @property
-    def data_refs_to(self) -> list['Data']:
+    def refs_to(self) -> list['AddressT']:
         """Returns all data reference to this type"""
         # Get protobuf type ids
-        return [self._program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t.is_data]
+        return [xref.source.address for t, xref in self._xrefs_to if t.is_data]
 
     @property
-    def data_read_refs_to(self) -> list['Data']:
+    def read_refs_to(self) -> list['AddressT']:
         """Returns all data read reference to this instruction"""
-        return [self._program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
+        return [xref.source.address for t, xref in self._xrefs_to if t in [RefType.DATA_READ, RefType.DATA_INDIR]]
 
     @property
-    def data_write_refs_to(self) -> list['Data']:
+    def write_refs_to(self) -> list['AddressT']:
         """Returns all data write reference to this instruction"""
-        return [self._program.data_holder[xref.source.address] for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
+        return [xref.source.address for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
 
 
 class EnumTypeMember(CoreType):
@@ -199,10 +199,10 @@ class EnumTypeMember(CoreType):
         return self._enum_type() # type: ignore
 
     @property
-    def data_refs_to(self) -> list['Data']:
+    def refs_to(self) -> list['AddressT']:
         """Returns all data reference to this type"""
         # Get protobuf type ids
-        return [self.parent._program.data_holder[xref.source.address] for xref in self._xrefs_to 
+        return [xref.source.address for xref in self._xrefs_to 
                 if RefType.from_proto(xref.reference_type).is_data]
 
     @property
@@ -349,8 +349,8 @@ class StructureTypeMember(CoreType):
         return self._structure() # type: ignore
 
     @property
-    def data_refs_to(self) -> list['AddressT']:
-        """Returns all data reference to this type.
+    def refs_to(self) -> list['AddressT']:
+        """Returns all references to this type.
         
         Addresses can originates from code or data."""
         # Get protobuf type ids

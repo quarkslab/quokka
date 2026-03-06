@@ -11,8 +11,8 @@ Do not hesitate to open Issues for requesting features.
  > For the moment, Quokka does not export types information. This feature would be super useful for various analyses.
 * [ ] Stack Variable
  > IDA defines stack variables in the function. Exporting them could be valuable for some workflows 
-* [ ] Decompiler
- > Hex-Rays generates a pseudo C-code from binary code. Exporting it as well could also be nice 
+* [x] Decompiler
+ > Hex-Rays generates a pseudo C-code from binary code. Quokka can now optionally export this pseudocode (see [Decompilation](decompilation.md)).
 * [ ] Operands Data
  > While the operands are exported, it is hard to understand them outside IDA without having the disassembler 
  > documentation. Exporting information on them could be interesting.

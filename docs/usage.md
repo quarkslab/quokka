@@ -49,14 +49,12 @@ Use this option to also export decompiled code in the resulting export.
 
 #### Export Level
 * Usage: ``-OQuokkaMode:<MODE>``
-* Values: LIGHT, _NORMAL_, FULL
+* Values: LIGHT, FULL
 
 Controls the export level for the instructions:
 
 * If the ``Light`` mode is selected, only the block starting addresses will be 
 exported.
-* For ``Normal``, the instructions with all IDA values will be exported. 
-  However, it is challenging to interpret them because you have to read IDA API.
 * For ``Full``, the instruction **and** the string representation of the 
   instruction is exported.
 
@@ -66,16 +64,6 @@ Example:
 
     ```python
 	prog.proto.instructions == []
-    ```
-
-=== "Normal mode"
-
-    ```python
-    prog.proto.instructions[0] = 
-      size: 3
-      mnemonic_index: 3
-      operand_index: 1
-      operand_index: 6
     ```
 
 === "Full mode"

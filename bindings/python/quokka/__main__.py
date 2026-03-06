@@ -60,13 +60,15 @@ def recursive_file_iter(p: Path) -> Generator[Path, None, None]:
             yield from recursive_file_iter(f)
 
 
-def do_quokka(exec_path: Path, mode: ExporterMode, decompiled: bool = False) -> bool:
+def do_quokka(exec_path: Path, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> bool:
     
     try:
         Program.generate(
             exec_path=exec_path,
             mode=mode,
             decompiled=decompiled,
+            timeout=timeout,
+            override=override
         )
         return True
     except QuokkaError as e:
@@ -74,11 +76,11 @@ def do_quokka(exec_path: Path, mode: ExporterMode, decompiled: bool = False) -> 
         return False
     
 
-def export_job(ingress, egress, mode: ExporterMode, decompiled: bool) -> None:
+def export_job(ingress, egress, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> None:
     while True:
         try:
             file = ingress.get(timeout=0.5)
-            res = do_quokka(file, mode, decompiled)
+            res = do_quokka(file, mode, decompiled, timeout, override)
             egress.put((file, res))
         except queue.Empty:
             pass
@@ -86,7 +88,7 @@ def export_job(ingress, egress, mode: ExporterMode, decompiled: bool) -> None:
             break
 
 
-def run_async(root_path: Path, threads: int, mode: ExporterMode, decompiled: bool) -> None:
+def run_async(root_path: Path, threads: int, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> None:
     manager = Manager()
     ingress = manager.Queue()
     egress = manager.Queue()
@@ -94,7 +96,7 @@ def run_async(root_path: Path, threads: int, mode: ExporterMode, decompiled: boo
 
     # Launch all workers
     for _ in range(threads):
-        pool.apply_async(export_job, (ingress, egress, mode, decompiled))
+        pool.apply_async(export_job, (ingress, egress, mode, decompiled, timeout, override))
 
     # Pre-fill ingress queue
     total = 0
@@ -119,7 +121,7 @@ def run_async(root_path: Path, threads: int, mode: ExporterMode, decompiled: boo
 
     pool.terminate()
 
-def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool) -> None:
+def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> None:
     # Pre-fill ingress queue
     total_files = list(recursive_file_iter(root_path))
     total = len(total_files)
@@ -127,7 +129,7 @@ def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool) -> Non
     logging.info(f"Start exporting {total} binaries")
 
     for i, exe_path in enumerate(total_files):
-        if do_quokka(exe_path, mode, decompiled):
+        if do_quokka(exe_path, mode, decompiled, timeout, override):
             pp_res = Bcolors.OKGREEN + "OK" + Bcolors.ENDC
         else:
             pp_res = Bcolors.FAIL + "KO" + Bcolors.ENDC
@@ -142,12 +144,14 @@ def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool) -> Non
     default=None,
     help="IDA Pro headless executable path",
 )
+@click.option("--timeout", type=int, default=0, help="Timeout for each export in seconds")
+@click.option("--override", is_flag=True, default=False, help="Override existing .quokka files")
 @click.option("-t", "--threads", type=int, default=1, help="Thread number to use")
 @click.option("-v", "--verbose", count=True, help="To activate or not the verbosity")
-@click.option("-m", "--mode", type=click.Choice(["LIGHT", "NORMAL", "FULL"], case_sensitive=False), default="NORMAL", help="Export mode (LIGHT, NORMAL or FULL)")
+@click.option("-m", "--mode", type=click.Choice([x.name for x in ExporterMode], case_sensitive=False), default=ExporterMode.LIGHT.name, help="Export mode (LIGHT or FULL)")
 @click.option("--decompiled", is_flag=True, default=False, help="Export decompiled code")
 @click.argument("input_file", type=click.Path(exists=True), metavar="<binary file|directory>")
-def main(ida_path: str, input_file: str, threads: int, verbose: bool, mode: str, decompiled: bool) -> None:
+def main(ida_path: str, input_file: str, threads: int, verbose: bool, mode: str, decompiled: bool, timeout: int, override: bool) -> None:
     """
     quokka-cli is a very simple utility to generate a .Quokka file
     for a given binary or a directory. It all open the binary file and export files
@@ -157,9 +161,10 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool, mode: str,
     :param input_file: Path of the binary to export
     :param threads: number of threads to use
     :param verbose: To activate or not the verbosity
-    :param mode: Export mode (LIGHT, NORMAL or FULL)
+    :param mode: Export mode (LIGHT or FULL)
     :param decompiled: Whether to export decompiled code
-    :return: None
+    :param timeout: Timeout for each export in seconds
+    :param override: Whether to override existing .quokka files
     """
 
     logging.basicConfig(
@@ -177,10 +182,64 @@ def main(ida_path: str, input_file: str, threads: int, verbose: bool, mode: str,
     export_mode = ExporterMode[mode.upper()]
 
     if threads > 1:
-        run_async(root_path, threads, export_mode, decompiled)
+        run_async(root_path, threads, export_mode, decompiled, timeout, override)
     else:
-        run_sequential(root_path, export_mode, decompiled)
+        run_sequential(root_path, export_mode, decompiled, timeout, override)
 
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option(
+    "--commit",
+    "action",
+    flag_value="commit",
+    default=True,
+    help="Write .quokka and apply edits to the disassembler (default)",
+)
+@click.option(
+    "--regenerate",
+    "action",
+    flag_value="regenerate",
+    help="commit() then re-export a fresh .quokka from IDA (slower)",
+)
+@click.option("-v", "--verbose", count=True, help="Increase logging verbosity")
+@click.argument("quokka_file", type=click.Path(exists=True, dir_okay=False))
+@click.argument("binary_file", type=click.Path(exists=True, dir_okay=False))
+def apply_changes(
+    action: str, verbose: int, quokka_file: str, binary_file: str
+) -> None:
+    """Apply pre-recorded edits from a .quokka file back to the disassembler.
+
+    QUOKKA_FILE is the .quokka file containing pending edits.
+    BINARY_FILE is the corresponding binary executable.
+
+    Use --commit (default) to write the .quokka and push edits to the IDA
+    database.  Use --regenerate to also trigger a fresh re-export from IDA.
+    """
+    logging.basicConfig(
+        format="%(message)s", level=logging.DEBUG if verbose else logging.INFO
+    )
+
+    try:
+        program = Program.open(quokka_file, binary_file)
+    except QuokkaError as e:
+        logging.error(f"Failed to open {quokka_file}: {e}")
+        sys.exit(1)
+
+    if action == "commit":
+        success = program.commit()
+        if success:
+            logging.info(f"Edits committed to {quokka_file}")
+        else:
+            logging.error("commit() failed")
+            sys.exit(1)
+    else:  # regenerate
+        try:
+            new_program = program.regenerate()
+            logging.info(f"Regenerated: {new_program.export_file}")
+        except QuokkaError as e:
+            logging.error(f"regenerate() failed: {e}")
+            sys.exit(1)
 
 
 if __name__ == "__main__":

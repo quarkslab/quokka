@@ -30,6 +30,7 @@ Documentation = "https://quarkslab.github.io/quokka/"
 
 [project.scripts]
 quokka-cli = 'quokka.__main__:main'
+quokka-apply = 'quokka.__main__:apply_changes'
 
 [project.optional-dependencies]
 test = [

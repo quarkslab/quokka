@@ -30,6 +30,16 @@ nav:
   - Installation: installation.md
   - Usage: usage.md
   - Features: features.md
+  - API Guide:
+      - Program & Metadata: program.md
+      - Functions: functions.md
+      - Basic Blocks & CFG: blocks.md
+      - Instructions & Operands: instructions.md
+      - Types: types.md
+      - Cross-References: xrefs.md
+      - Decompilation: decompilation.md
+      - P-code Lifting: pcode.md
+      - Write Features: write_feature.md
   - Tutorials:
       - First steps: tutorials/qb-crackme/
       - Features extraction: tutorials/features/

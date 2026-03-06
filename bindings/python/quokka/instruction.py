@@ -52,7 +52,7 @@ def _get_item(program: 'Program', addr: AddressT) -> 'Data | Function | AddressT
         The data at the given address
     """
     try:
-        return program.data_holder[addr]  # try getting data
+        return program.data[addr]  # try getting data
     except ValueError:
         try:
             return program[addr]  # try getting function
