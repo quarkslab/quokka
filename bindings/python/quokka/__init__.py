@@ -59,6 +59,7 @@ from quokka.data_type import (
     UnionType,
     StructureType,
     StructureTypeMember,
+    TypedefType,
     TypeT
 )
 
@@ -87,6 +88,7 @@ __all__ = [
     "UnionType",
     "StructureType",
     "StructureTypeMember",
+    "TypedefType",
     "TypeT",
     # From exc.py
     "QuokkaError",
