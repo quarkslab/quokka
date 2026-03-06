@@ -131,6 +131,7 @@ class Function {
   const Segment* segment;    ///< The segment where the function lives
   int64 file_offset;  ///< File offset of the function, if <0 then there is none
   std::string decompiled_code;  ///< Decompiled code (if any)
+  bool is_exported = false;     ///< Whether the function is exported
 
   /**
    * Collection of pairs {basic block, position in the graph view}

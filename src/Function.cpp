@@ -27,6 +27,7 @@
 // clang-format on
 #include <pro.h>
 #include <bytes.hpp>
+#include <entry.hpp>
 #include <funcs.hpp>
 #include <gdl.hpp>
 #include <graph.hpp>
@@ -38,6 +39,7 @@
 #include <hexrays.hpp>
 #endif
 
+#include "absl/container/flat_hash_set.h"
 #include "absl/strings/str_format.h"
 
 #include "quokka/Block.h"
@@ -323,6 +325,21 @@ ExportFunctions() {
     functions.emplace_back(address, import.name).segment->ref_count++;
     chunks.emplace_back(address, address + get_item_size(address));
   }
+
+  // Build set of exported addresses from the entry points table
+  const size_t entry_count = get_entry_qty();
+  absl::flat_hash_set<ea_t> exported_addrs;
+  exported_addrs.reserve(entry_count);
+  for (size_t i = 0; i < entry_count; ++i) {
+    ea_t addr = get_entry(get_entry_ordinal(i));
+    if (addr != BADADDR)
+      exported_addrs.insert(addr);
+  }
+
+  // Mark functions that have an exported symbol
+  for (auto& f : functions)
+    if (exported_addrs.contains(f.start_addr))
+      f.is_exported = true;
 
   // Chunks must be sorted
   std::sort(chunks.begin(), chunks.end());

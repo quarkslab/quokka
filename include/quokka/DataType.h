@@ -89,9 +89,10 @@ enum BaseType : uint8_t {
   TYPE_ARRAY,
   TYPE_STR,
   TYPE_ALIGN,
+  TYPE_TYPEDEF,
 };
 
-BaseType GetBaseType(const tinfo_t& flags);
+BaseType GetBaseType(const tinfo_t& flags, bool ignore_typedef = false);
 BaseType GetBaseType(flags_t flags);
 
 constexpr bool IsPrimitiveType(BaseType t) {
@@ -195,6 +196,18 @@ class ArrayType : public CompositeType {
   ArrayType(ArgsT&&... Args) : CompositeType(std::forward<ArgsT>(Args)...) {}
 };
 
+/**
+ * -----------------------------------------------------------------------------
+ * quokka::TypedefType
+ * -----------------------------------------------------------------------------
+ * A class representing a typedef/alias type in IDA.
+ */
+class TypedefType : public CompositeType {
+ public:
+  template <typename... ArgsT>
+  TypedefType(ArgsT&&... Args) : CompositeType(std::forward<ArgsT>(Args)...) {}
+};
+
 struct EnumValue {
   std::string name;
   int64_t value;
@@ -245,14 +258,16 @@ constexpr Quokka::CompositeType::CompositeSubType CompositeSubTypeToProto() {
     return Quokka_CompositeType_CompositeSubType_TYPE_POINTER;
   else if constexpr (std::is_same_v<U, ArrayType>)
     return Quokka_CompositeType_CompositeSubType_TYPE_ARRAY;
+  else if constexpr (std::is_same_v<U, TypedefType>)
+    return Quokka_CompositeType_CompositeSubType_TYPE_TYPEDEF;
   else
     static_assert(false, "Mismatch between the CompositeSubTypes");
 }
 
 class DataTypes {
  public:
-  using TypeT =
-      std::variant<StructureType, UnionType, EnumType, PointerType, ArrayType>;
+  using TypeT = std::variant<StructureType, UnionType, EnumType, PointerType,
+                             ArrayType, TypedefType>;
   using CollectionT = absl::flat_hash_map<type_uid_t, std::unique_ptr<TypeT>>;
 
  private:
@@ -502,9 +517,40 @@ void ExportCompositeDataTypes();
  */
 void ExportEnums();
 
+/**
+ * Export all typedef types from the IDA type library.
+ *
+ * Must be called after ExportCompositeDataTypes() so that target types
+ * are already registered in the DataTypes singleton.
+ */
+void ExportTypedefs();
+
 type_uid_t ExportPointer(const tinfo_t& tif);
 
 type_uid_t ExportArray(const tinfo_t& tif);
+
+/**
+ * Export a single typedef by ordinal, recursively exporting any
+ * intermediate typedef targets first so that element_type points
+ * to the immediate next type in the chain (single-step resolution).
+ *
+ * Resolution strategy:
+ *  1. get_next_type_name() -- works for chained typedefs and
+ *     typedefs over struct/union/enum (named targets).
+ *  2. is_ptr() -- info embedded in typedef; resolve via ptr_type_data_t.
+ *  3. is_array() -- info embedded in typedef; resolve via array_type_data_t.
+ *  4. Fallback -- typedef over primitive; use get_realtype() via GetBaseType.
+ *
+ * The order matters: get_next_type_name() is tried first because
+ * is_ptr()/is_array() use get_realtype() which follows the full typedef
+ * chain, so a chained typedef like `typedef A B` where A is a pointer
+ * would report is_ptr() == true even though B's immediate target is A
+ * (a named typedef), not an embedded pointer.
+ *
+ * @param tif The IDA type info to export
+ * @return The type_uid_t of the exported (or already-existing) typedef
+ */
+type_uid_t ExportSingleTypedef(const tinfo_t& tif);
 
 }  // namespace quokka
 

@@ -15,12 +15,23 @@ git lfs pull
 
 Without LFS, tracked binaries will be 128-byte pointer files and tests will fail.
 
+### Python protobuf module
+
+Python tests import `quokka`, which requires the generated `quokka_pb2` module. Install in editable/dev mode before running pytest:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e '.[dev]'
+```
+
 ## Directory Layout
 
 ```
 tests/
   cpp/
-    DataType_test.cpp   C++ unit tests (no IDA SDK dependency, always built)
+    DataType_test.cpp   Key-snapshot iteration tests (absl::flat_hash_map)
+    Util_test.cpp       scope_exit_guard, Timer, ReplaceFileExtension, type traits, for_each_visit, UpcastVariant
+    Bucket_test.cpp     SetBucket, MapBucket, MultiMapBucket, SortedView
   dataset/              Test binaries, sources, IDA databases, and pre-exported .quokka files
   python/
     tests/
@@ -28,46 +39,64 @@ tests/
       offline/          Tests using pre-exported .quokka files (no IDA needed)
         conftest.py     Fixtures: prog, many_types_prog, pura_update_prog
         backends/       Disassembler backend tests (Capstone, Pypcode)
+        test_ghidra_export.py  Ghidra export validation (skipped without Ghidra-exported fixtures)
       ida/              IDA integration tests (skipped when IDA unavailable)
 ```
 
 ## Running Tests
 
-### C++ Tests
+### C++ Tests (72 tests)
 
 ```bash
-# Configure with tests enabled
-cmake -B build -DBUILD_TEST=On
+# Configure with tests enabled (Ninja recommended)
+cmake -B build -DBUILD_TEST=On -G Ninja
 
 # Build and run
 cmake --build build
 ctest --test-dir build
+
+# Verbose output (shows individual gtest names)
+ctest --test-dir build -V
+
+# Run a single test suite
+ctest --test-dir build -R KeySnapshotIteration
+ctest --test-dir build -R ScopeExitGuard
+ctest --test-dir build -R SetBucket
 ```
 
-### Python Tests
+### Python Tests (48 tests)
 
 ```bash
+source .venv/bin/activate
 pip install -e '.[dev]'
+
+# All tests (IDA/Ghidra tests auto-skip when unavailable)
 pytest tests/python/tests/
+
+# Offline tests only (no IDA/Ghidra needed)
+pytest tests/python/tests/offline/
+
+# IDA integration tests only
+pytest tests/python/tests/ida/
+
+# Single test by name
+pytest tests/python/tests/ -k test_data_string
+
+# Verbose output
+pytest tests/python/tests/ -v
 ```
 
 ## C++ Tests
 
 ### Standalone (no IDA SDK required)
 
-Always built when `-DBUILD_TEST=On`. Runs in CI on every push.
+Always built when `-DBUILD_TEST=On`. Runs in CI on every push. All 72 tests are standalone and have no IDA SDK dependency.
 
-| File | Test Suite | What It Tests |
+| File | Test Suites (test count) | What It Tests |
 |------|-----------|---------------|
-| [DataType_test.cpp](cpp/DataType_test.cpp) | `KeySnapshotIteration` | Regression test for iterator invalidation in `ExportCompositeDataTypes()`. Verifies that snapshotting `absl::flat_hash_map` keys before iterating allows safe insertion during the loop. |
-
-**Individual test cases:**
-
-| Test | Description |
-|------|-------------|
-| `InsertDuringIteration` | Seeds 100 struct + 100 union entries, inserts pointer/array entries during iteration, verifies all entries present |
-| `FiltersCorrectly` | Verifies the key snapshot filters by type (struct vs union) |
-| `StressRehash` | 500 initial entries with 3x insertions per original, forcing multiple rehashes |
+| [DataType_test.cpp](cpp/DataType_test.cpp) | `KeySnapshotIteration` (3) | Regression test for iterator invalidation in `ExportCompositeDataTypes()`. Verifies that snapshotting `absl::flat_hash_map` keys before iterating allows safe insertion during the loop. |
+| [Util_test.cpp](cpp/Util_test.cpp) | `ScopeExitGuard` (5), `Timer` (6), `ReplaceFileExtension` (7), `TypeTraits` (7), `ForEachVisit` (4), `UpcastVariant` (4) | Pure-logic utilities from `Util.h` with no IDA dependency: RAII scope guard, timer arithmetic, file extension replacement, `std::variant` type traits, visitor helpers. |
+| [Bucket_test.cpp](cpp/Bucket_test.cpp) | `SetBucket` (15), `MapBucket` (9), `MultiMapBucket` (9), `SortedView` (3) | Bucket containers from `Bucket.h`: insert/emplace, deduplication, freeze/sort semantics, ref-count tracking, sorted-view iteration, error handling for post-freeze mutations. |
 
 ## Python Tests
 
@@ -80,6 +109,7 @@ The primary test binary is `qb-crackme` (`docs/samples/qb-crackme.quokka`, 50 fu
 | [test_tutorial.py](python/tests/offline/test_tutorial.py) | End-to-end usage: export validation, function counting (50), CFG structure (7 blocks, 8 edges for `level0`), imported function detection (`strcmp`) |
 | [test_data.py](python/tests/offline/test_data.py) | 19 tests covering: data symbols (GOT, uninitialized, string reads), c_str representations (struct, enum, pointer, array types), data cross-references, struct member access (bit offsets, dict keying by offset, `member_at`), union member access (all-offset-zero semantics, dict keying by index, `member_at`, multi-member unions like `UWeird_C`), puraUpdate regression (pre-exported) |
 | [test_executable.py](python/tests/offline/test_executable.py) | Binary file reading: null-terminated string detection, sized string reads |
+| [test_ghidra_export.py](python/tests/offline/test_ghidra_export.py) | 13 tests across 4 classes: Ghidra-exported `.quokka` validation -- program loading, disassembler/mode metadata, functions, segments, primitive type system, block sizes, segment ordering. Skipped when `*_ghidra.quokka` fixtures are not found. |
 
 ### IDA Export Tests (`ida/`, requires IDA Pro)
 
@@ -98,19 +128,10 @@ Skipped automatically when IDA is not available. These tests exercise the full e
 
 ## Test Data
 
-### Primary Sample
-
-The `qb-crackme` binary (24 KB, 50 functions) in `docs/samples/` with its IDA database and exported `.quokka` file. Covers multi-block control flow graphs, imports, string data, cross-references, and switch/jump tables.
-
-### Dataset (`tests/dataset/`)
-
 | File | Description |
 |------|-------------|
-| `many_types_cpp` (163 KB) | x86_64 binary with C11/C23 type stress
-test: bitfields, packing, alignment, typedef chains, anonymous
-aggregates, forward declarations, complex declarators, section
-placement, C++20 extension: scoped enums, templates, SIMD vectors, `__int128`, member pointers, virtual functions, atomics, ABI
-attributes (`clang++ -std=c++20 -g3 -O0`) |
+| `qb-crackme` (24 KB, `docs/samples/`) | x86_64 binary (50 functions) with IDA database and `.quokka` file. Primary fixture (`prog`). Covers multi-block CFGs, imports, string data, xrefs, switch/jump tables. |
+| `many_types_cpp` (163 KB) | | x86_64 binary with C11/C23 type stress test: bitfields, packing, alignment, typedef chains, anonymous aggregates, forward declarations, complex declarators, section placement, C++20 extension: scoped enums, templates, SIMD vectors, `__int128`, member pointers, virtual functions, atomics, ABI attributes (`clang++ -std=c++20 -g3 -O0`) |
 | `many_types_cpp.quokka` (132 KB) | Pre-exported protobuf -- used by `many_types_prog` fixture |
 | `puraUpdate` (22 KB) | 32-bit ARM ELF (113 functions after IDA analysis). Regression binary for `ExportCompositeDataTypes` iterator invalidation -- triggered SIGSEGV before fix |
 | `puraUpdate.quokka` (75 KB) | Pre-exported protobuf -- used by `pura_update_prog` fixture |
@@ -119,6 +140,6 @@ attributes (`clang++ -std=c++20 -g3 -O0`) |
 
 | Suite | Framework | Key Dependencies |
 |-------|-----------|-----------------|
-| C++ Standalone | GoogleTest | gtest, absl::flat_hash_map |
+| C++ Standalone | GoogleTest | gtest, absl::flat_hash_map, absl::time, absl::strings |
 | Python | pytest | quokka, capstone, pypcode |
 | Python IDA Export | pytest | quokka, idascript, IDA Pro |

@@ -112,7 +112,7 @@ message Quokka {
 
     OperandType type = 1;
 
-    oneof Value {
+    oneof OperandValue {
       string register_index = 2;
       int64 value = 3;  // TODO merge with address below?
       int64 address = 4;
@@ -244,6 +244,9 @@ message Quokka {
     repeated string comments = 13;
 
     FunctionEdits edits = 14;
+
+    // Whether the function is exported (visible in the binary's export table)
+    bool is_exported = 15;
   }
 
   message Layout {
@@ -318,13 +321,14 @@ message Quokka {
       TYPE_UNION = 1;
       TYPE_ARRAY = 2;
       TYPE_POINTER = 3;
+      TYPE_TYPEDEF = 4;   // Typedef/alias type
     }
 
     string name = 1;
     CompositeSubType type = 2;
     // In bytes. 0 if forward decl or variable size
     uint32 size = 3;
-    optional uint32 element_type_idx = 4;  // Only for pointer and array
+    optional uint32 element_type_idx = 4;  // For pointer, array, and typedef
     repeated Member members = 5;           // Only for union and struct
     // TODO check to see if ida export this. Possibly remove it
     repeated uint64 xref_to = 6;

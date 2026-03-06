@@ -41,6 +41,7 @@ ida_target_link_libraries(quokka_shared PUBLIC
         absl::str_format
         absl::time
         absl::flat_hash_map
+        absl::flat_hash_set
         absl::hash)
 
 add_ida_plugin(quokka_plugin ${VAR_NOEA32} "Quokka.cpp")

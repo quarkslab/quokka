@@ -149,6 +149,11 @@ class Function(dict):
         # TODO: Retrieving calling convention
 
     @property
+    def is_exported(self) -> bool:
+        """Whether the function is exported (visible in the binary's export table)"""
+        return self.proto.is_exported
+
+    @property
     def has_body(self) -> bool:
         """Check if the function has a body (e.g. at least one block)"""
         return len(self._block_data) > 0
