@@ -51,6 +51,11 @@ class CoreType(ABC):
         return isinstance(self, PointerType)
 
     @property
+    def is_typedef(self) -> bool:
+        """Return True if this type is a typedef"""
+        return isinstance(self, TypedefType)
+
+    @property
     def is_composite(self) -> bool:
         """Return True if this type is a composite type (struct, union, array, pointer)"""
         return isinstance(self, ComplexType)
@@ -307,6 +312,40 @@ class PointerType(ComplexType):
         return f"<TPtr: {self.name}->{self.pointed_type}*>"
 
 
+class TypedefType(ComplexType):
+    """Typedef/alias type
+
+    Arguments:
+        proto: Protobuf data
+        program: Back reference to the program
+
+    Attributes:
+        name: Typedef name (e.g. 'DWORD', 'size_t')
+        size: Size of the aliased type in bytes
+        c_str: C declaration (e.g. 'typedef int DWORD;')
+    """
+
+    def __init__(self, index: Index, proto: Pb.CompositeType,
+                 program: "Program") -> None:
+        """Constructor"""
+        super().__init__(index, proto, program)
+
+    @property
+    def aliased_type(self) -> 'TypeT':
+        """Return the type this typedef aliases (single-step)"""
+        return self._program.get_type(self.proto.element_type_idx)
+
+    def resolve(self) -> 'TypeT':
+        """Recursively resolve through typedef chains to the concrete type"""
+        t = self.aliased_type
+        while isinstance(t, TypedefType):
+            t = t.aliased_type
+        return t
+
+    def __str__(self) -> str:
+        return f"<TTypedef: {self.name} -> {self.aliased_type}>"
+
+
 class StructureTypeMember(CoreType):
     """StructureMember
 
@@ -440,6 +479,6 @@ class UnionType(StructureType):
         return f"<TUnion: {self.name}>"
 
 
-TypeT = StructureType | BaseType | UnionType | ArrayType | PointerType | EnumType
+TypeT = StructureType | BaseType | UnionType | ArrayType | PointerType | EnumType | TypedefType
 TypeReference = TypeT | StructureTypeMember | EnumTypeMember
 TypeValue = int | float | str | bytes | EnumType  # and later we can add struct instances, arrays, etc.

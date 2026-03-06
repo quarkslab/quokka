@@ -42,6 +42,7 @@ from quokka.data_type import (
     PointerType,
     StructureType,
     EnumType,
+    TypedefType,
     TypeReference,
     UnionType,
     TypeT
@@ -375,6 +376,8 @@ class Program(dict):
                         self._types[type_index] = ArrayType(type_index, pb_type.composite_type, self)
                     case Pb.CompositeType.CompositeSubType.TYPE_POINTER:
                         self._types[type_index] = PointerType(type_index, pb_type.composite_type, self)
+                    case Pb.CompositeType.CompositeSubType.TYPE_TYPEDEF:
+                        self._types[type_index] = TypedefType(type_index, pb_type.composite_type, self)
                     case _:
                         # Unknown CompositeSubType -- degrade to TYPE_UNK for forward compat
                         self._types[type_index] = BaseType.UNKNOWN
@@ -411,6 +414,18 @@ class Program(dict):
             return typ.type   # A member cannot point to another member, so it must be a direct reference to a type
         else:
             return typ
+
+    def get_type_resolved(self, type_index: Index) -> TypeT:
+        """Get a type by index, resolving through any typedef chains.
+
+        This is equivalent to calling get_type() and then resolve() on the
+        result if it is a TypedefType. Useful for consumers that do not care
+        about typedef names and want the concrete type directly.
+        """
+        t = self.get_type(type_index)
+        while isinstance(t, TypedefType):
+            t = t.aliased_type
+        return t
 
     # @cached_property
     # def memory(self) -> "quokka.Memory":
