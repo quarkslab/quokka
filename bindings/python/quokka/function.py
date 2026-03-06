@@ -148,6 +148,11 @@ class Function(dict):
         # TODO: Retrieving calling convention
 
     @property
+    def address(self) -> int:
+        """Return the function address (e.g. the starting address)"""
+        return self.start
+
+    @property
     def is_exported(self) -> bool:
         """Whether the function is exported (visible in the binary's export table)"""
         return self.proto.is_exported

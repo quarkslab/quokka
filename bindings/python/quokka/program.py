@@ -485,7 +485,7 @@ class Program(dict):
         return None
 
     def get_function(
-        self, name: str, approximative: bool = True, normal: bool = False
+        self, name: str, approximative: bool = False, normal: bool = False
     ) -> quokka.Function:
         """Find a function in a program by its name
 
