@@ -57,6 +57,7 @@ jobs:
 
   warm-cache:
     name: Warm dependency cache (${{ matrix.os }})
+    if: github.event_name == 'push'
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -143,6 +144,7 @@ jobs:
   cpp-tests:
     name: C++ standalone tests (${{ matrix.os }})
     needs: [warm-cache]
+    if: ${{ !failure() && !cancelled() }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -229,6 +231,7 @@ jobs:
 
   build:
     needs: [setup, warm-cache]
+    if: ${{ !failure() && !cancelled() }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
