@@ -33,6 +33,22 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         persist-credentials: false
+        submodules: false
+
+    - name: Checkout Ghidra submodule
+      run: git submodule update --init third_party/ghidra
+
+    - name: Resolve Ghidra version from submodule
+      id: ghidra-version
+      run: |
+        TAG="$(git -C third_party/ghidra describe --tags --exact-match)"
+        VERSION="$(echo "$TAG" | sed -n 's/^Ghidra_\([0-9]*\.[0-9]*\.[0-9]*\)_build$/\1/p')"
+        if [[ -z "$VERSION" ]]; then
+          echo "Error: tag '$TAG' does not match Ghidra_X.Y.Z_build" >&2
+          exit 1
+        fi
+        echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
     - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
       with:
@@ -43,17 +59,16 @@ jobs:
       id: ghidra-cache
       uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
-        path: /opt/ghidra_12.0.3_PUBLIC
-        key: ghidra-12.0.3-PUBLIC-20260210
+        path: /opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC
+        key: ghidra-${{ steps.ghidra-version.outputs.tag }}
 
-    - name: Download Ghidra 12.0.3
+    - name: Download Ghidra
       if: steps.ghidra-cache.outputs.cache-hit != 'true'
       run: |
-        wget -q https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.0.3_build/ghidra_12.0.3_PUBLIC_20260210.zip -O ghidra.zip
-        unzip -q ghidra.zip -d /opt
+        bash scripts/fetch_ghidra.sh --dest /opt
 
     - name: Set Ghidra environment
-      run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_12.0.3_PUBLIC" >> $GITHUB_ENV
+      run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC" >> $GITHUB_ENV
 
     - name: Build and test extension
       working-directory: ghidra_extension
