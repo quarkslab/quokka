@@ -85,6 +85,7 @@ jobs:
           persist-credentials: false
 
       # Check caches before installing any tools to skip setup on hit
+      # zizmor: ignore[cache-poisoning] -- warm-cache only runs on push (not PRs)
       - name: Cache FetchContent dependencies
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -93,6 +94,7 @@ jobs:
           restore-keys: |
             fetchcontent-${{ runner.os }}-
 
+      # zizmor: ignore[cache-poisoning] -- warm-cache only runs on push (not PRs)
       - name: Cache ccache
         id: ccache-cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
@@ -200,16 +202,16 @@ jobs:
           echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
           echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
 
-      - name: Cache FetchContent dependencies
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      - name: Restore FetchContent cache
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
             fetchcontent-${{ runner.os }}-
 
-      - name: Cache ccache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      - name: Restore ccache cache
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -273,7 +275,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set IDA SDK password
-        if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) }}
+        if: ${{ contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) }}
         env:
           IDA_SDK: ${{ matrix.ida_sdk }}
         shell: bash
@@ -339,16 +341,16 @@ jobs:
           echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
           echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
 
-      - name: Cache FetchContent dependencies
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      - name: Restore FetchContent cache
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
             fetchcontent-${{ runner.os }}-
 
-      - name: Cache ccache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      - name: Restore ccache cache
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -362,10 +364,10 @@ jobs:
           ccache --set-config=compression=true
           ccache -z
 
-      - name: Cache IDA SDK
-        if: ${{ contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) }}
+      - name: Restore IDA SDK cache
+        if: ${{ contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) }}
         id: cache-sdk
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: third_party/idasdk${{ matrix.ida_sdk }}
           key: idasdk-${{ runner.os }}-${{ matrix.ida_sdk }}-${{ hashFiles('sdk_lockfile') }}
@@ -373,7 +375,7 @@ jobs:
       - name: Fetch IDA SDK (Linux / MacOS)
         if:
           ${{ steps.cache-sdk.outputs.cache-hit != 'true' &&
-          contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
+          contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) &&
           (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest') }}
         env:
           IDA_SDK: ${{ matrix.ida_sdk }}
@@ -388,7 +390,7 @@ jobs:
       - name: Fetch IDA SDK (Windows)
         if:
           ${{ steps.cache-sdk.outputs.cache-hit != 'true' &&
-          contains('74,77,80,81,82,83,84,85,90,90sp1,91', matrix.ida_sdk) &&
+          contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) &&
           matrix.os == 'windows-latest' }}
         env:
           IDA_SDK: ${{ matrix.ida_sdk }}
@@ -399,6 +401,13 @@ jobs:
           cd ..
           7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
           rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
+
+      - name: Save IDA SDK cache
+        if: ${{ steps.cache-sdk.outputs.cache-hit != 'true' && contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) }}
+        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: third_party/idasdk${{ matrix.ida_sdk }}
+          key: idasdk-${{ runner.os }}-${{ matrix.ida_sdk }}-${{ hashFiles('sdk_lockfile') }}
 
       - name: Prepare build environment (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -467,7 +476,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Artifacts (32)
-        if: ${{ contains('74,77,80,81,82,83,84', matrix.ida_sdk) }}
+        if: ${{ contains(fromJSON('["74","77","80","81","82","83","84"]'), matrix.ida_sdk) }}
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
