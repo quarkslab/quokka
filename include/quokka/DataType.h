@@ -121,6 +121,7 @@ class CompositeTypeMember {
       target_tuid;  ///< ID of the target type (one of DataTypes variant)
   asize_t size;     ///< Size of the field
   std::vector<const Reference*> xref_to;
+  std::vector<const Reference*> xref_from;  ///< Type-to-type refs from this member
 };
 
 /**
@@ -145,6 +146,7 @@ class CompositeType : public ProtoHelper {
   std::optional<std::variant<type_uid_t, BaseType>>
       element_type;  ///< The element type (only for pointer and array)
   mutable std::vector<const Reference*> xref_to;
+  mutable std::vector<const Reference*> xref_from;  ///< Type-to-type refs from this type
 };
 
 /**
@@ -228,6 +230,7 @@ class EnumType : public ProtoHelper {
   std::string name;               ///< Name of the enum
   std::vector<EnumValue> values;  ///< Internal values of the enum
   mutable std::vector<const Reference*> xref_to;
+  mutable std::vector<const Reference*> xref_from;  ///< Type-to-type refs from this type
   std::string c_str;  ///< C-string representation of the enum (if any)
 
   bool operator==(const EnumType& o) const noexcept {

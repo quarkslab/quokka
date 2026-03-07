@@ -35,6 +35,48 @@
 namespace quokka {
 
 /**
+ * Emit a type-to-type cross-reference from the source type to the target type.
+ *
+ * IDA does not expose an explicit type-to-type xref API, but member type
+ * information is native to IDA's type system (e.g. udm_t::type, pointer
+ * targets, array element types, typedef targets).  This helper records these
+ * natively-available relationships as Reference objects.
+ *
+ * The reference is stored in source.xref_from (outgoing) and in the
+ * destination type's xref_to (incoming).
+ *
+ * @param source        The source composite type (the type that references)
+ * @param source_member Member index in the source type (-1 for WHOLE_TYPE)
+ * @param target_tuid   The tuid of the referenced target type
+ * @return Pointer to the Reference, or nullptr if the target was not found
+ */
+static const Reference* EmitTypeToTypeRef(CompositeType& source,
+                                          int32_t source_member,
+                                          const type_uid_t& target_tuid) {
+  const DataTypes& data_types = DataTypes::GetInstance();
+  auto target_it = data_types.find_by_tuid(target_tuid);
+  if (target_it == data_types.end())
+    return nullptr;
+
+  References& references = References::GetInstance();
+  const auto& ref = references.emplace(
+      std::make_pair(static_cast<const ProtoHelper*>(&source), source_member),
+      std::make_pair(
+          std::addressof(UpcastVariant<ProtoHelper>(target_it->second)),
+          reference::WHOLE_TYPE),
+      Quokka::EdgeType::Quokka_EdgeType_EDGE_DATA_READ);
+
+  // Store on the source type (outgoing)
+  source.xref_from.push_back(&ref);
+
+  // Store on the destination type (incoming) — xref_to is mutable on all types
+  std::visit([&ref](const auto& target) { target.xref_to.push_back(&ref); },
+             target_it->second);
+
+  return &ref;
+}
+
+/**
  * Export the composite type members
  *
  * Iterate through the ida-struct (can be either a struct or a union) members
@@ -147,6 +189,15 @@ static void ExportCompositeMembers(T& composite_type, const tinfo_t& tif) {
 
     // Assert that the parsing went well and data type is consistent
     assert(IsPrimitiveType(member.type) || member.target_tuid.has_value());
+
+    // Emit type-to-type xref if member targets another exported type
+    if (member.target_tuid.has_value()) {
+      const Reference* ref = EmitTypeToTypeRef(
+          composite_type, static_cast<int32_t>(member_idx),
+          *member.target_tuid);
+      if (ref)
+        member.xref_from.push_back(ref);
+    }
 
     /* TODO Retrieve comments */
     ExportSymbolReference(&composite_type, member.xref_to,
@@ -447,6 +498,12 @@ type_uid_t ExportSingleTypedef(const tinfo_t& tif) {
     typedef_type.element_type = GetBaseType(tif, true);
   }
 
+  // Emit type-to-type xref if typedef targets another exported type
+  if (typedef_type.element_type.has_value() &&
+      std::holds_alternative<type_uid_t>(*typedef_type.element_type))
+    EmitTypeToTypeRef(typedef_type, reference::WHOLE_TYPE,
+                      std::get<type_uid_t>(*typedef_type.element_type));
+
   // Print the type as a C-string if possible
   qstring decl;
   if (tif.print(&decl, name.c_str(),
@@ -501,6 +558,12 @@ type_uid_t ExportPointer(const tinfo_t& tif) {
   else
     pointer_type.element_type = ExportInnerElement(pi.obj_type);
 
+  // Emit type-to-type xref if pointer targets another exported type
+  if (pointer_type.element_type.has_value() &&
+      std::holds_alternative<type_uid_t>(*pointer_type.element_type))
+    EmitTypeToTypeRef(pointer_type, reference::WHOLE_TYPE,
+                      std::get<type_uid_t>(*pointer_type.element_type));
+
   // Print the type as a C-string if possible
   qstring decl;
   if (tif.print(&decl, name.c_str(),
@@ -536,6 +599,12 @@ type_uid_t ExportArray(const tinfo_t& tif) {
       data_types.emplace<ArrayType>(tuid, ConvertIdaString(name), tid, size);
 
   array_type.element_type = ExportInnerElement(ai.elem_type);
+
+  // Emit type-to-type xref if array element is another exported type
+  if (array_type.element_type.has_value() &&
+      std::holds_alternative<type_uid_t>(*array_type.element_type))
+    EmitTypeToTypeRef(array_type, reference::WHOLE_TYPE,
+                      std::get<type_uid_t>(*array_type.element_type));
 
   // Print the type as a C-string if possible
   qstring decl;

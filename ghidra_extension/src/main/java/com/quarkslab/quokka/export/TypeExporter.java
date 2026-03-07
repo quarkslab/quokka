@@ -272,6 +272,116 @@ public class TypeExporter {
         }
     }
 
+    // ------------------------------------------------------------------
+    // Type-to-type cross-references
+    // ------------------------------------------------------------------
+
+    /** Sentinel for member_index meaning "the whole type". */
+    private static final int WHOLE_TYPE = -1;
+
+    /**
+     * Emit type-to-type cross-references for all exported types.
+     *
+     * Ghidra has no explicit type-to-type xref API, but member/element type
+     * information is native to Ghidra's DataType hierarchy
+     * (DataTypeComponent.getDataType(), Pointer.getDataType(), etc.).
+     * This method walks the already-built proto types and emits Reference
+     * messages with DataTypeIdentifier source and destination for:
+     *   - struct/union members whose type is another exported type
+     *   - pointer/array/typedef types whose inner type is another exported type
+     *
+     * Must be called after export() so all type indices are registered and
+     * the types[] array in the builder is populated.
+     *
+     * @return the number of type-to-type references emitted
+     */
+    public static int exportTypeToTypeRefs(ExportContext ctx,
+            Quokka.Builder builder) {
+        int emitted = 0;
+
+        for (int typeIdx = 9; typeIdx < builder.getTypesCount(); typeIdx++) {
+            Quokka.Type.Builder tb = builder.getTypesBuilder(typeIdx);
+
+            if (tb.hasCompositeType()) {
+                Quokka.CompositeType.Builder ct = tb.getCompositeTypeBuilder();
+
+                switch (ct.getType()) {
+                    case TYPE_STRUCT:
+                    case TYPE_UNION:
+                        for (int mIdx = 0; mIdx < ct.getMembersCount(); mIdx++) {
+                            int memberTypeIdx = ct.getMembers(mIdx).getTypeIndex();
+                            if (memberTypeIdx >= 9) {
+                                int refIdx = emitTypeRef(builder,
+                                        typeIdx, mIdx, memberTypeIdx);
+                                ct.addXrefFrom(refIdx);
+                                ct.getMembersBuilder(mIdx).addXrefFrom(refIdx);
+                                addXrefTo(builder, memberTypeIdx, refIdx);
+                                emitted++;
+                            }
+                        }
+                        break;
+
+                    case TYPE_POINTER:
+                    case TYPE_ARRAY:
+                    case TYPE_TYPEDEF:
+                        if (ct.hasElementTypeIdx()
+                                && ct.getElementTypeIdx() >= 9) {
+                            int refIdx = emitTypeRef(builder,
+                                    typeIdx, WHOLE_TYPE,
+                                    ct.getElementTypeIdx());
+                            ct.addXrefFrom(refIdx);
+                            addXrefTo(builder, ct.getElementTypeIdx(), refIdx);
+                            emitted++;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            // EnumType members do not reference other types; skip.
+        }
+
+        return emitted;
+    }
+
+    /**
+     * Add a type-to-type Reference to the global references[] array.
+     * Source is {srcTypeIdx, srcMemberIdx}, destination is {dstTypeIdx, WHOLE_TYPE}.
+     *
+     * @return the index of the newly added reference in builder.references
+     */
+    private static int emitTypeRef(Quokka.Builder builder,
+            int srcTypeIdx, int srcMemberIdx, int dstTypeIdx) {
+        int refIdx = builder.getReferencesCount();
+        builder.addReferences(Quokka.Reference.newBuilder()
+                .setSource(Quokka.Reference.Location.newBuilder()
+                        .setDataTypeIdentifier(
+                                Quokka.DataTypeIdentifier.newBuilder()
+                                        .setTypeIndex(srcTypeIdx)
+                                        .setMemberIndex(srcMemberIdx)))
+                .setDestination(Quokka.Reference.Location.newBuilder()
+                        .setDataTypeIdentifier(
+                                Quokka.DataTypeIdentifier.newBuilder()
+                                        .setTypeIndex(dstTypeIdx)
+                                        .setMemberIndex(WHOLE_TYPE)))
+                .setReferenceType(Quokka.EdgeType.EDGE_DATA_READ));
+        return refIdx;
+    }
+
+    /**
+     * Add a reference index to the xref_to list of the destination type.
+     */
+    private static void addXrefTo(Quokka.Builder builder,
+            int typeIdx, long refIdx) {
+        Quokka.Type.Builder destType = builder.getTypesBuilder(typeIdx);
+        if (destType.hasCompositeType()) {
+            destType.getCompositeTypeBuilder().addXrefTo(refIdx);
+        } else if (destType.hasEnumType()) {
+            destType.getEnumTypeBuilder().addXrefTo(refIdx);
+        }
+    }
+
     /** Pairs a DataType with its pre-computed TypeKind to avoid re-classification. */
     private static final class ClassifiedType {
         final DataType dt;

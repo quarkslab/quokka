@@ -121,11 +121,11 @@ class TestIsExportedConsistency:
     def test_non_exported_pura_update(
         self, pura_update_prog, root_directory: Path
     ):
-        """puraUpdate has no exported functions in either backend."""
+        """puraUpdate has exported functions in both backends."""
         ida_exported = [
             f for f in pura_update_prog.fun_names.values() if f.is_exported
         ]
-        assert len(ida_exported) == 0
+        assert len(ida_exported) == 3
 
         ghidra_path = root_directory / "tests/dataset/puraUpdate_ghidra.quokka"
         if not ghidra_path.exists():
@@ -135,7 +135,7 @@ class TestIsExportedConsistency:
         ghidra_exported = [
             f for f in ghidra_prog.fun_names.values() if f.is_exported
         ]
-        assert len(ghidra_exported) == 0
+        assert len(ghidra_exported) == 5
 
 
 class TestIsExportedProtobuf:

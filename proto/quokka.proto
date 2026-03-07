@@ -314,6 +314,7 @@ message Quokka {
       uint32 size = 4;  // In bits. 0 if variable-length member
       repeated uint64 xref_to = 5;
       repeated string comments = 6;
+      repeated uint64 xref_from = 7;  // Type-to-type refs originating from this member
     }
 
     enum CompositeSubType {
@@ -330,10 +331,10 @@ message Quokka {
     uint32 size = 3;
     optional uint32 element_type_idx = 4;  // For pointer, array, and typedef
     repeated Member members = 5;           // Only for union and struct
-    // TODO check to see if ida export this. Possibly remove it
     repeated uint64 xref_to = 6;
     string c_str = 7;
     repeated string comments = 8;
+    repeated uint64 xref_from = 9;  // Type-to-type refs originating from this type
   }
 
   message EnumType {
@@ -345,12 +346,11 @@ message Quokka {
     }
     string name = 1;
     repeated EnumValue values = 2;
-    // TODO add a base DataType
-    // TODO check to see if ida export this. Possibly remove it
     repeated uint64 xref_to = 3;
     uint32 base_type = 4;
     string c_str = 5;
     repeated string comments = 6;
+    repeated uint64 xref_from = 7;  // Type-to-type refs originating from this type
   }
 
   message DataTypeIdentifier {

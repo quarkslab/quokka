@@ -390,6 +390,8 @@ class Program(dict):
 
         if member_index != -1:
             assert isinstance(typ, (StructureType, UnionType, EnumType))
+            if isinstance(typ, StructureType) and not isinstance(typ, UnionType):
+                return typ.member_at(member_index)
             return typ[member_index]
         else:
             return typ

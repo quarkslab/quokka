@@ -390,6 +390,8 @@ static void WriteCompositeTypes(Quokka* proto) {
       // Xref
       for (const Reference* xref : member.xref_to)
         proto_member->add_xref_to(xref->proto_index);
+      for (const Reference* xref : member.xref_from)
+        proto_member->add_xref_from(xref->proto_index);
     }
   };
 
@@ -429,6 +431,8 @@ static void WriteCompositeTypes(Quokka* proto) {
     // Xref
     for (const Reference* xref : composite.xref_to)
       proto_composite_type->add_xref_to(xref->proto_index);
+    for (const Reference* xref : composite.xref_from)
+      proto_composite_type->add_xref_from(xref->proto_index);
 
     // Export type declaration as string
     if (!composite.c_str.empty()) {
@@ -463,6 +467,8 @@ static void WriteEnums(Quokka* proto) {
     // Xref
     for (const Reference* xref : enum_type.xref_to)
       proto_enum->add_xref_to(xref->proto_index);
+    for (const Reference* xref : enum_type.xref_from)
+      proto_enum->add_xref_from(xref->proto_index);
 
     proto_enum->mutable_values()->Reserve(enum_type.values.size());
     if (!enum_type.c_str.empty()) {

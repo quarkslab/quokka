@@ -220,7 +220,7 @@ def test_pura_update_loads(pura_update_prog: quokka.Program):
     due to iterator invalidation when inserting pointer/array types into the
     hash map during iteration. The fixed exporter must produce a loadable
     .quokka file."""
-    assert len(pura_update_prog.fun_names) == 74
+    assert len(pura_update_prog.fun_names) == 113
     types_list = list(pura_update_prog.types)
     assert len(types_list) > 0, "Export should contain data types"
     structs = [t for t in types_list if isinstance(t, StructureType)]

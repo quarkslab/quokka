@@ -98,8 +98,9 @@ static Quokka::EdgeType GetXrefType(const xrefblk_t& xref, const insn_t& insn) {
 
   // Catch everything else. We probably still need to implement it
   throw std::runtime_error(absl::StrFormat(
-      "Cannot get the right xref type for {0x%08llx -> 0x%08llx", xref.from,
-      xref.to));
+      "Cannot get the right xref type for {0x%08llx -> 0x%08llx, "
+      "iscode=%d, type=%d}",
+      xref.from, xref.to, xref.iscode, xref.type));
 }
 
 static Quokka::EdgeType GetXrefType(const xrefblk_t& xref) {
@@ -117,6 +118,8 @@ static Quokka::EdgeType GetXrefType(const xrefblk_t& xref) {
         return Quokka::EdgeType::Quokka_EdgeType_EDGE_DATA_WRITE;
       case dr_R:
       case dr_S:  // xref to enum members
+      case dr_T:  // text (forced operand name references)
+      case dr_I:  // informational (e.g. class inheritance)
         return Quokka::EdgeType::Quokka_EdgeType_EDGE_DATA_READ;
       case dr_O:
         return Quokka::EdgeType::Quokka_EdgeType_EDGE_DATA_INDIR;
@@ -125,8 +128,9 @@ static Quokka::EdgeType GetXrefType(const xrefblk_t& xref) {
 
   // Catch everything else. We probably still need to implement it
   throw std::runtime_error(absl::StrFormat(
-      "Cannot get the right xref type for {0x%08llx -> 0x%08llx", xref.from,
-      xref.to));
+      "Cannot get the right xref type for {0x%08llx -> 0x%08llx, "
+      "iscode=%d, type=%d}",
+      xref.from, xref.to, xref.iscode, xref.type));
 }
 
 static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
