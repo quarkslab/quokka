@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "*"
     paths:
       - "ghidra_extension/**"
       - "proto/**"
@@ -56,3 +58,30 @@ jobs:
     - name: Build and test extension
       working-directory: ghidra_extension
       run: gradle build
+
+    - name: Upload extension artifact
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      with:
+        name: ghidra-extension
+        path: ghidra_extension/dist/*.zip
+        if-no-files-found: error
+
+  upload:
+    name: Upload Ghidra extension for Release
+    needs: [ghidra-build]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: ghidra-extension
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        with:
+          files: "*.zip"
+          fail_on_unmatched_files: true
