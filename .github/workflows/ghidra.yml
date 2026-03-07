@@ -57,7 +57,7 @@ jobs:
 
     - name: Cache Ghidra installation
       id: ghidra-cache
-      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
       with:
         path: /opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC
         key: ghidra-${{ steps.ghidra-version.outputs.tag }}
@@ -68,11 +68,20 @@ jobs:
         bash scripts/fetch_ghidra.sh --dest /opt
 
     - name: Set Ghidra environment
-      run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC" >> $GITHUB_ENV
+      env:
+        GHIDRA_VERSION: ${{ steps.ghidra-version.outputs.version }}
+      run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${GHIDRA_VERSION}_PUBLIC" >> $GITHUB_ENV
 
     - name: Build and test extension
       working-directory: ghidra_extension
       run: gradle buildExtension
+
+    - name: Save Ghidra cache
+      if: github.event_name == 'push' && steps.ghidra-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+      with:
+        path: /opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC
+        key: ghidra-${{ steps.ghidra-version.outputs.tag }}
 
     - name: Upload extension artifact
       uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
