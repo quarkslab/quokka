@@ -236,10 +236,11 @@ class Program(dict):
         """Types in the program
 
         Returns:
-            Iterable of types in the Program
+            Iterable of types in the Program (excludes user-added types)
         """
-        for i in range(len(self.proto.types)):
-            yield self.get_type(i)
+        for i, pb_type in enumerate(self.proto.types):
+            if not pb_type.is_new:
+                yield self.get_type(i)
 
     def virtual_address(self, seg_id: int, seg_offset: int) -> AddressT:
         """Converts an offset in the file to an absolute address
@@ -290,11 +291,13 @@ class Program(dict):
             A list of structures
         """
         for i, t in enumerate(self.proto.types):
+            if t.is_new:
+                continue
             if t.WhichOneof("OneofType") == "composite_type":
                 if t.composite_type.type == Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
                     if i not in self._types:
-                        self._types[i] = StructureType(t.composite_type, self)
-        yield from (t for t in self._types.values() if isinstance(t, StructureType))
+                        self._types[i] = StructureType(i, t.composite_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, StructureType) and not t.is_new)
 
     @cached_property
     def enums(self) -> Iterable[EnumType]:
@@ -307,10 +310,12 @@ class Program(dict):
             A list of enums
         """
         for i, t in enumerate(self.proto.types):
-            if t.WhichOneof("OneofType") == "composite_type":
+            if t.is_new:
+                continue
+            if t.WhichOneof("OneofType") == "enum_type":
                 if i not in self._types:
-                    self._types[i] = EnumType(t.enum_type, self)
-        yield from (t for t in self._types.values() if isinstance(t, EnumType))
+                    self._types[i] = EnumType(i, t.enum_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, EnumType) and not t.is_new)
 
     def get_struct_member(self, struct_index: Index, member_index: Index) -> StructureTypeMember:
         """Get a structure member by its index
@@ -360,7 +365,7 @@ class Program(dict):
             The corresponding type
 
         Raises:
-            KeyError: When the type is not found
+            KeyError: When the type is not found or is a user-added type
         """
         try:
             typ = self._types[type_index]
@@ -368,8 +373,10 @@ class Program(dict):
             # Unless fill the type from the protobuf
             if type_index >= len(self.proto.types):
                 raise KeyError(f"No type with index {type_index}")
-            
+
             pb_type = self.proto.types[type_index]
+            if pb_type.is_new:
+                raise KeyError(f"Type at index {type_index} is a user-added type")
             is_new = pb_type.is_new
             if pb_type.WhichOneof("OneofType") == "enum_type":
                 self._types[type_index] = EnumType(type_index, pb_type.enum_type, self, is_new=is_new)
@@ -393,6 +400,9 @@ class Program(dict):
             else:
                 assert False, "Unknown type"
             typ = self._types[type_index]  # here should be loaded in _types
+
+        if isinstance(typ, ComplexType) and typ.is_new:
+            raise KeyError(f"Type at index {type_index} is a user-added type")
 
         if member_index != -1:
             assert isinstance(typ, (StructureType, UnionType, EnumType))
