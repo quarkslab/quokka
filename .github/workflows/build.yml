@@ -85,7 +85,6 @@ jobs:
           persist-credentials: false
 
       # Check caches before installing any tools to skip setup on hit
-      # zizmor: ignore[cache-poisoning] -- warm-cache only runs on push (not PRs)
       - name: Cache FetchContent dependencies
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -94,7 +93,6 @@ jobs:
           restore-keys: |
             fetchcontent-${{ runner.os }}-
 
-      # zizmor: ignore[cache-poisoning] -- warm-cache only runs on push (not PRs)
       - name: Cache ccache
         id: ccache-cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
