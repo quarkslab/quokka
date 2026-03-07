@@ -44,7 +44,6 @@ from quokka.data_type import (
     StructureTypeMember,
     BaseType,
     ArrayType,
-    ComplexType,
     PointerType,
     StructureType,
     EnumType,
@@ -437,11 +436,11 @@ class Program(dict):
             t = t.aliased_type
         return t
 
-    def add_type(self, type: str | ComplexType) -> TypeT:
+    def add_type(self, type: str) -> TypeT:
         """Add a new user-defined type to the program.
 
         Args:
-            type: A C type declaration string or a pre-built :class:`ComplexType` (or subclass) to adopt.
+            type: A C type declaration string
                 (e.g. ``"struct foo { int x; float y; }"``).
 
         Returns:
@@ -451,29 +450,15 @@ class Program(dict):
             QuokkaError: If a type with the same name already exists.
         """
 
-        if isinstance(type, ComplexType):
-            # Adopt existing ComplexType -- copy its proto into our type array
-            new_index = len(self.proto.types)
-            pb_type = self.proto.types.add()
-            pb_type.is_new = True
-            if isinstance(type, EnumType):
-                pb_type.enum_type.CopyFrom(type.proto)
-                type_name = type.name
-            else:
-                pb_type.composite_type.CopyFrom(type.proto)
-                type_name = type.name
-        elif isinstance(type, str):
-            h = hashlib.sha256(type.encode("utf-8", errors="replace")).hexdigest()[:16]
-            type_name = f"__user_type_{h}"
-            new_index = len(self.proto.types)
-            pb_type = self.proto.types.add()
-            pb_type.is_new = True
-            ct = pb_type.composite_type
-            ct.name = type_name
-            ct.type = Pb.CompositeType.TYPE_STRUCT
-            ct.c_str = type
-        else:
-            assert False, "Invalid type argument"
+        h = hashlib.sha256(type.encode("utf-8", errors="replace")).hexdigest()[:16]
+        type_name = f"__user_type_{h}"
+        new_index = len(self.proto.types)
+        pb_type = self.proto.types.add()
+        pb_type.is_new = True
+        ct = pb_type.composite_type
+        ct.name = type_name
+        ct.type = Pb.CompositeType.TYPE_STRUCT
+        ct.c_str = type
 
         # Check for duplicate names
         for i, t in enumerate(self.proto.types):

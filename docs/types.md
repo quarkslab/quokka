@@ -224,8 +224,6 @@ You can define new types from Python and persist them back to the
 disassembler database. New types are created via `Program.add_type()` and
 are marked with `is_new=True` so the backend knows to register them.
 
-### From a C declaration string
-
 ```python
 # Struct
 prog.add_type("struct point { int x; int y; };")
@@ -238,21 +236,6 @@ prog.add_type("typedef unsigned int uint32;")
 
 # Union
 prog.add_type("union data { int i; float f; };")
-```
-
-### From an existing type object
-
-```python
-from quokka.quokka_pb2 import Quokka as Pb
-from quokka.data_type import StructureType
-
-ct = Pb.CompositeType()
-ct.name = "my_struct"
-ct.type = Pb.CompositeType.TYPE_STRUCT
-ct.c_str = "struct my_struct { int a; int b; };"
-
-struct = StructureType(0, ct, prog, is_new=True)
-prog.add_type(struct)
 ```
 
 ### Persisting new types
