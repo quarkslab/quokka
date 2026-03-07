@@ -968,26 +968,6 @@ class Program(dict):
         with open(output_file, "wb") as fd:
             fd.write(self.proto.SerializeToString())
 
-    # IDAPython script template for headless apply-back.
-    # Reads dynamic paths from a JSON config file to avoid escaping issues.
-    _IDA_APPLY_SCRIPT = """\
-import json, os
-import ida_auto, ida_pro
-ida_auto.auto_wait()
-config_path = os.path.join(os.path.dirname(__file__), "_config.json")
-with open(config_path) as f:
-    config = json.load(f)
-import sys
-for p in config["paths"]:
-    if p not in sys.path:
-        sys.path.append(p)
-from quokka import Program
-from quokka.backends.ida import apply_quokka
-prog = Program(config["quokka_file"], config["binary"])
-errors = apply_quokka(prog)
-ida_pro.qexit(errors)
-"""
-
     def _commit_edits_ida(
         self,
         database_file: "Path|str",
@@ -1026,8 +1006,6 @@ ida_pro.qexit(errors)
             RuntimeError: If IDA times out.
             QuokkaError: If IDA exits with an unexpected error.
         """
-        import json as _json
-        import tempfile
         assert idascript is not None, "idascript is required for IDA apply-back"
 
         database_file = Path(database_file)
@@ -1042,21 +1020,14 @@ ida_pro.qexit(errors)
                 "Overwriting existing IDA database: %s", database_file
             )
 
-        # Write a JSON config and a tiny wrapper script into a temp dir.
-        # The wrapper runs inside IDA's Python and loads quokka from the
-        # host virtualenv via sys.path injection.
-        tmpdir = Path(tempfile.mkdtemp(prefix="quokka_apply_"))
-        config_path = tmpdir / "_config.json"
-        config_path.write_text(
-            _json.dumps({
-                "paths": [p for p in sys.path if p],
-                "quokka_file": str(self.export_file),
-                "binary": str(self.executable.exec_file),
-            }),
-            encoding="ascii",
-        )
-        script_path = tmpdir / "_apply_back.py"
-        script_path.write_text(self._IDA_APPLY_SCRIPT, encoding="ascii")
+        # Point idascript at backends/ida/apply.py.  The script lives in
+        # its own sub-package (not directly in backends/) so that IDA's
+        # automatic sys.path insertion does not shadow the capstone package.
+        script_file = Path(__file__).resolve().parent / "backends" / "ida" / "apply.py"
+        script_params = [
+            str(self.export_file),
+            str(self.executable.exec_file),
+        ]
 
         old_ida_path = os.environ.get("IDA_PATH")
         try:
@@ -1065,8 +1036,8 @@ ida_pro.qexit(errors)
 
             ida = idascript.IDA(
                 database_file,
-                script_file=script_path,
-                script_params=[],
+                script_file=script_file,
+                script_params=script_params,
                 timeout=timeout,
                 database_path=None,
             )

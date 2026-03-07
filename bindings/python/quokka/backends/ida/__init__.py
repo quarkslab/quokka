@@ -8,7 +8,6 @@ from quokka import Program, Function, Data
 from quokka.data_type import ComplexType
 
 
-
 def apply_quokka(program: Program) -> int:
     """Apply the program to the IDA current database.
     
@@ -23,7 +22,7 @@ def apply_quokka(program: Program) -> int:
     # Iterate functions for edits to apply
     for function in program.functions:
         edits = function.proto.edits
-        if edits.name_set or edits.type_str or edits.comments:
+        if edits.name_set or edits.prototype_set or edits.comments:
             errors_count += apply_function(function)
 
     # Iterate data for edits to apply
@@ -53,7 +52,7 @@ def apply_function(function: Function) -> int:
     if edits.name_set:
         res = "x"
         if ida_name.set_name(fun_addr, function.name):
-            res = "✓"
+            res = "ok"
         else:
             errors_count += 1
         print(f"[{res}] set name of function at 0x{fun_addr:x} to {function.name}")
@@ -62,7 +61,7 @@ def apply_function(function: Function) -> int:
         flg = ida_typeinf.TINFO_DEFINITE
         res = "x"
         if ida_typeinf.apply_cdecl(til, fun_addr, function.prototype, flg):
-            res = "✓"
+            res = "ok"
         else:
             errors_count += 1
         print(f"[{res}] set prototype of function at 0x{fun_addr:x} to {function.prototype}")
@@ -71,7 +70,7 @@ def apply_function(function: Function) -> int:
         cmts = "\n".join(function.proto.comments[x] for x in edits.comments)
         res = "x"
         if ida_funcs.set_func_cmt(fun_addr, cmts, True):  # set it repeatable
-            res = "✓"
+            res = "ok"
         else:
             errors_count += 1
         print(f"[{res}] set comment of function at 0x{fun_addr:x}")
@@ -83,7 +82,7 @@ def apply_function(function: Function) -> int:
             src, dst = function[src_addr], function[dst_addr]
             res = "x"
             if ida_xref.add_cref(src, dst, ida_xref.fl_USobsolete):
-                res = "✓"
+                res = "ok"
             else:
                 errors_count += 1
             print(f"[{res}] add edge from 0x{src:x} to 0x{dst:x}")
@@ -99,7 +98,7 @@ def apply_data(data: Data) -> int:
     if edits.name_set:
         res = "x"
         if ida_name.set_name(data.address, data.name):
-            res = "✓"
+            res = "ok"
         else:
             errors_count += 1
         print(f"[{res}] set name of data at 0x{data.address:x} to {data.name}")
@@ -107,7 +106,7 @@ def apply_data(data: Data) -> int:
     if edits.type_str:
         res = "x"
         if ida_typeinf.apply_cdecl(til, data.address, edits.type_str, ida_typeinf.TINFO_DEFINITE):
-            res = "✓"
+            res = "ok"
         else:
             errors_count += 1
         print(f"[{res}] set type of data at 0x{data.address:x} to {edits.type_str}")
@@ -116,7 +115,7 @@ def apply_data(data: Data) -> int:
         cmts = "\n".join(data.proto.comments[x] for x in edits.comments)
         res = "x"
         if ida_bytes.set_cmt(data.address, cmts, True):  # set it repeatable
-            res = "✓"
+            res = "ok"
         else:
             errors_count += 1
         print(f"[{res}] set comment of data at 0x{data.address:x}")
@@ -161,8 +160,10 @@ def _apply_type(typ: ComplexType) -> int:
 
     til = ida_typeinf.get_idati()
     if ida_typeinf.parse_decls(til, typ.c_str, None, ida_typeinf.HTI_DCL) == 0:
-        print(f"[✓] create {kind} {typ.name}")
+        print(f"[ok] create {kind} {typ.name}")
         return 0
 
     print(f"[x] create {kind} {typ.name}")
     return 1
+
+
