@@ -53,7 +53,7 @@ from quokka.data_type import (
     UnionType,
     TypeT
 )
-from quokka.c_type_parser import parse_c_type
+import hashlib
 from quokka.types import (
     AddressT,
     Disassembler,
@@ -463,11 +463,15 @@ class Program(dict):
                 pb_type.composite_type.CopyFrom(type.proto)
                 type_name = type.name
         elif isinstance(type, str):
-            type_name, new_pb = parse_c_type(type, self)
+            h = hashlib.sha256(type.encode("utf-8", errors="replace")).hexdigest()[:16]
+            type_name = f"__user_type_{h}"
             new_index = len(self.proto.types)
             pb_type = self.proto.types.add()
-            pb_type.CopyFrom(new_pb)
             pb_type.is_new = True
+            ct = pb_type.composite_type
+            ct.name = type_name
+            ct.type = Pb.CompositeType.TYPE_STRUCT
+            ct.c_str = type
         else:
             assert False, "Invalid type argument"
 
