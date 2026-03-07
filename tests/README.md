@@ -118,6 +118,7 @@ Skipped automatically when IDA is not available. These tests exercise the full e
 | File | What It Tests |
 |------|---------------|
 | [test_ida_export.py](python/tests/ida/test_ida_export.py) | `TestPuraUpdateExport` class (8 tests): headless IDA export of puraUpdate ARM binary with 600s timeout. Validates program validity, function count (113), type and struct export, segments, ARM/32-bit architecture metadata, main function existence, multi-block CFG |
+| [test_ida_apply_back.py](python/tests/ida/test_ida_apply_back.py) | `TestApplyBackFullSignature` class (4 tests): apply-back round-trip with Hex-Rays cache invalidation using sig_test binary. Verifies full signature changes (name, return type, param types, param names, param count) are reflected in both stored prototype and decompiled pseudocode |
 
 ### Backend Tests (`offline/backends/`)
 
@@ -135,6 +136,7 @@ Skipped automatically when IDA is not available. These tests exercise the full e
 | `many_types_cpp.quokka` (132 KB) | Pre-exported protobuf -- used by `many_types_prog` fixture |
 | `puraUpdate` (22 KB) | 32-bit ARM ELF (113 functions after IDA analysis). Regression binary for `ExportCompositeDataTypes` iterator invalidation -- triggered SIGSEGV before fix |
 | `puraUpdate.quokka` (75 KB) | Pre-exported protobuf -- used by `pura_update_prog` fixture |
+| `sig_test` | x86_64 binary compiled from `sig_test_source.c` (`gcc -O0 -no-pie`). Contains `add_two`, `compute_three`, `use_char_ptr` with clear int/long/pointer params. Used by apply-back signature tests. |
 
 ## Frameworks and Dependencies
 

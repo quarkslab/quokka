@@ -92,6 +92,14 @@ def apply_quokka(program: Program) -> int:
 
     errors_count += apply_types(program)
 
+    # Invalidate Hex-Rays decompiler cache so a subsequent re-export
+    # picks up the changes we just applied (names, prototypes, etc.).
+    try:
+        import ida_hexrays
+        ida_hexrays.clear_cached_cfuncs()
+    except (ImportError, AttributeError):
+        pass  # Hex-Rays not available -- nothing to invalidate
+
     return errors_count
 
 
