@@ -4,8 +4,24 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "bindings/python/**"
+      - "proto/**"
+      - "tests/python/**"
+      - "pyproject.toml"
+      - "setup.py"
+      - "MANIFEST.in"
+      - ".github/workflows/python.yml"
   pull_request:
     branches: ["**"]
+    paths:
+      - "bindings/python/**"
+      - "proto/**"
+      - "tests/python/**"
+      - "pyproject.toml"
+      - "setup.py"
+      - "MANIFEST.in"
+      - ".github/workflows/python.yml"
 
 permissions: {}
 
