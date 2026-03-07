@@ -172,6 +172,8 @@ data = prog.data[addr]
 | `data_read_refs_from` | `list[Data \| Function \| AddressT]` | Targets this data reads from |
 | `data_write_refs_from` | `list[Data \| Function \| AddressT]` | Targets this data writes to |
 | `type_refs_from` | `list[TypeReference]` | Type or type member referenced by this data |
+| `prev` | `Data \| None` | Data at the highest address below this one |
+| `next` | `Data \| None` | Data at the lowest address above this one |
 
 ```python
 # Find all instructions reading a global variable
