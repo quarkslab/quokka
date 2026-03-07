@@ -63,6 +63,6 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["quokka", "quokka.analysis", "quokka.backends"]
+packages = ["quokka", "quokka.analysis", "quokka.backends", "quokka.backends.ida"]
 package-dir = { "" = "bindings/python/" }
 package-data = { "quokka" = ["*.pyi", "*.typed"] }
