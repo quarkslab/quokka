@@ -10,7 +10,6 @@ import pytest
 
 import quokka
 from quokka.quokka_pb2 import Quokka as Pb
-from quokka.data_type import StructureType
 from quokka.exc import QuokkaError
 
 
@@ -49,13 +48,15 @@ class TestAddTypeFromCStr:
         "union data { int i; float f; }",
         "int x",
     ])
-    def test_c_str_produces_struct_with_hash_name(self, c_str):
+    def test_c_str_produces_proto_entry_with_hash_name(self, c_str):
         prog = _make_program()
-        result = prog.add_type(c_str)
-        assert isinstance(result, StructureType)
-        assert result.name == _hash_name(c_str)
-        assert result.is_new is True
-        assert result.c_str == c_str
+        count_before = len(prog.proto.types)
+        prog.add_type(c_str)
+        assert len(prog.proto.types) == count_before + 1
+        pb_type = prog.proto.types[count_before]
+        assert pb_type.is_new is True
+        assert pb_type.composite_type.name == _hash_name(c_str)
+        assert pb_type.composite_type.c_str == c_str
 
     def test_duplicate_c_str_rejected(self):
         prog = _make_program()
@@ -103,17 +104,16 @@ class TestAddTypeRoundTrip:
         prog, tmpdir, tmp_binary = prog_and_tmpdir
         original_count = len(prog.proto.types)
 
-        added = prog.add_type(c_str)
-        assert isinstance(added, StructureType)
+        prog.add_type(c_str)
+        assert len(prog.proto.types) == original_count + 1
 
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
         assert len(reloaded.proto.types) == original_count + 1
 
-        rt = reloaded.get_type(added.type_index)
-        assert isinstance(rt, StructureType)
-        assert rt.name == _hash_name(c_str)
-        assert rt.is_new is True
-        assert rt.c_str == c_str
+        pb_type = reloaded.proto.types[original_count]
+        assert pb_type.is_new is True
+        assert pb_type.composite_type.name == _hash_name(c_str)
+        assert pb_type.composite_type.c_str == c_str
 
     def test_existing_types_unchanged(self, prog_and_tmpdir):
         prog, tmpdir, tmp_binary = prog_and_tmpdir

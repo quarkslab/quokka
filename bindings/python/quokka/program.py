@@ -40,6 +40,7 @@ import quokka.analysis
 import quokka.backends
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.data_type import (
+    ComplexType,
     EnumTypeMember,
     StructureTypeMember,
     BaseType,
@@ -446,15 +447,12 @@ class Program(dict):
             t = t.aliased_type
         return t
 
-    def add_type(self, type: str) -> TypeT:
+    def add_type(self, type: str) -> None:
         """Add a new user-defined type to the program.
 
         Args:
             type: A C type declaration string
                 (e.g. ``"struct foo { int x; float y; }"``).
-
-        Returns:
-            The newly created Python type wrapper.
 
         Raises:
             QuokkaError: If a type with the same name already exists.
@@ -482,10 +480,6 @@ class Program(dict):
             elif oneof == "enum_type" and t.enum_type.name == type_name:
                 del self.proto.types[new_index]
                 raise QuokkaError(f"Type '{type_name}' already exists at index {i}")
-
-        # Create the Python wrapper and cache it
-        wrapper = self.get_type(new_index)
-        return wrapper
 
     @cached_property
     def orphaned_blocks(self) -> Iterable[quokka.Block]:
