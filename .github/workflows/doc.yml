@@ -3,6 +3,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "docs/**"
+      - "bindings/python/**"
+      - "mkdocs.yml"
+      - "pyproject.toml"
+      - "setup.py"
+      - "doxygen.cfg"
+      - "README.md"
+      - ".github/workflows/doc.yml"
 
 permissions: {}
 

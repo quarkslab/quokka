@@ -8,6 +8,18 @@ on:
       - "*"
   pull_request:
     branches: ["**"]
+    paths:
+      - "src/**"
+      - "include/**"
+      - "CMakeLists.txt"
+      - "cmake/**"
+      - "proto/**"
+      - "tests/cpp/**"
+      - "scripts/**"
+      - "third_party/ida-sdk/**"
+      - "sdk_lockfile"
+      - ".gitmodules"
+      - ".github/workflows/build.yml"
 
 env:
   BUILD_TYPE: Release
