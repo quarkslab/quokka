@@ -8,7 +8,9 @@ updates:
         patterns:
           - "*"
     schedule:
-      interval: daily
+      interval: weekly
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: github-actions
     directory: /
@@ -17,4 +19,6 @@ updates:
         patterns:
           - "*"
     schedule:
-      interval: daily
+      interval: weekly
+    cooldown:
+      default-days: 7
