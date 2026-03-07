@@ -48,9 +48,9 @@ back to the disassembler database via `commit()`.
 
 ```python
 # Add types from C declaration strings
-prog.add_type(c_str="struct context { int id; char name[64]; };")
-prog.add_type(c_str="enum status { OK=0, ERROR=1 };")
-prog.add_type(c_str="typedef unsigned int uint32;")
+prog.add_type("struct context { int id; char name[64]; };")
+prog.add_type("enum status { OK=0, ERROR=1 };")
+prog.add_type("typedef unsigned int uint32;")
 ```
 
 See the [Types](types.md#adding-new-types) page for the full API and more

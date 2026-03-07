@@ -172,8 +172,8 @@ ls = quokka.Program("ls.quokka",  # the exported file
 
 ```python
 # Add new types from C declarations
-prog.add_type(c_str="struct context { int id; char name[64]; };")
-prog.add_type(c_str="enum status { OK=0, ERROR=1 };")
+prog.add_type("struct context { int id; char name[64]; };")
+prog.add_type("enum status { OK=0, ERROR=1 };")
 
 # Save the .quokka file
 prog.write()

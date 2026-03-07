@@ -370,7 +370,7 @@ class TestAddTypeIDA:
     def test_add_struct_ida_roundtrip(self):
         """A struct added via add_type() survives the IDA round-trip."""
         c_str = "struct quokka_test_struct { int x; int y; float z; };"
-        self.prog.add_type(c_str=c_str)
+        self.prog.add_type(c_str)
 
         new_prog = self._commit_and_reexport()
 
@@ -384,7 +384,7 @@ class TestAddTypeIDA:
     def test_add_enum_ida_roundtrip(self):
         """An enum added via add_type() survives the IDA round-trip."""
         c_str = "enum quokka_test_enum { QTE_A = 0, QTE_B = 1, QTE_C = 42 };"
-        self.prog.add_type(c_str=c_str)
+        self.prog.add_type(c_str)
 
         new_prog = self._commit_and_reexport()
 
@@ -398,7 +398,7 @@ class TestAddTypeIDA:
     def test_add_typedef_ida_roundtrip(self):
         """A typedef added via add_type() survives the IDA round-trip."""
         c_str = "typedef unsigned int quokka_test_uint;"
-        self.prog.add_type(c_str=c_str)
+        self.prog.add_type(c_str)
 
         new_prog = self._commit_and_reexport()
 
@@ -411,10 +411,10 @@ class TestAddTypeIDA:
     def test_add_multiple_types_ida_roundtrip(self):
         """Several types added at once all survive the IDA round-trip."""
         self.prog.add_type(
-            c_str="struct quokka_multi_s { int a; int b; };"
+            "struct quokka_multi_s { int a; int b; };"
         )
         self.prog.add_type(
-            c_str="enum quokka_multi_e { QME_X = 10, QME_Y = 20 };"
+            "enum quokka_multi_e { QME_X = 10, QME_Y = 20 };"
         )
 
         new_prog = self._commit_and_reexport()

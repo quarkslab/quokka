@@ -228,16 +228,16 @@ are marked with `is_new=True` so the backend knows to register them.
 
 ```python
 # Struct
-prog.add_type(c_str="struct point { int x; int y; };")
+prog.add_type("struct point { int x; int y; };")
 
 # Enum
-prog.add_type(c_str="enum color { RED=0, GREEN=1, BLUE=2 };")
+prog.add_type("enum color { RED=0, GREEN=1, BLUE=2 };")
 
 # Typedef
-prog.add_type(c_str="typedef unsigned int uint32;")
+prog.add_type("typedef unsigned int uint32;")
 
 # Union
-prog.add_type(c_str="union data { int i; float f; };")
+prog.add_type("union data { int i; float f; };")
 ```
 
 ### From an existing type object
@@ -252,7 +252,7 @@ ct.type = Pb.CompositeType.TYPE_STRUCT
 ct.c_str = "struct my_struct { int a; int b; };"
 
 struct = StructureType(0, ct, prog, is_new=True)
-prog.add_type(type_obj=struct)
+prog.add_type(struct)
 ```
 
 ### Persisting new types

@@ -29,7 +29,7 @@ def _make_program():
     prog._types = {}
     prog.get_type = lambda idx, member_index=-1: quokka.Program.get_type(prog, idx, member_index)
     prog.get_type_reference = lambda idx, member_index=-1: quokka.Program.get_type_reference(prog, idx, member_index)
-    prog.add_type = lambda **kwargs: quokka.Program.add_type(prog, **kwargs)
+    prog.add_type = lambda *args, **kwargs: quokka.Program.add_type(prog, *args, **kwargs)
 
     return prog
 
@@ -41,28 +41,28 @@ def _make_program():
 class TestAddTypeFromCStr:
     def test_struct(self):
         prog = _make_program()
-        result = prog.add_type(c_str="struct foo { int x; float y; }")
+        result = prog.add_type("struct foo { int x; float y; }")
         assert isinstance(result, StructureType)
         assert result.name == "foo"
         assert result.is_new is True
 
     def test_enum(self):
         prog = _make_program()
-        result = prog.add_type(c_str="enum color { RED=0, GREEN=1, BLUE=2 }")
+        result = prog.add_type("enum color { RED=0, GREEN=1, BLUE=2 }")
         assert isinstance(result, EnumType)
         assert result.name == "color"
         assert result.is_new is True
 
     def test_typedef(self):
         prog = _make_program()
-        result = prog.add_type(c_str="typedef int myint")
+        result = prog.add_type("typedef int myint")
         assert isinstance(result, TypedefType)
         assert result.name == "myint"
         assert result.is_new is True
 
     def test_union(self):
         prog = _make_program()
-        result = prog.add_type(c_str="union data { int i; float f; }")
+        result = prog.add_type("union data { int i; float f; }")
         assert isinstance(result, UnionType)
         assert result.name == "data"
         assert result.is_new is True
@@ -78,7 +78,7 @@ class TestAddTypeFromObject:
         idx = len(prog.proto.types)
         struct = StructureType(idx, ct, prog, is_new=True)
 
-        result = prog.add_type(type_obj=struct)
+        result = prog.add_type(struct)
         assert isinstance(result, StructureType)
         assert result.name == "bar"
         assert result.is_new is True
@@ -96,43 +96,34 @@ class TestAddTypeFromObject:
         idx = len(prog.proto.types)
         enum_obj = EnumType(idx, et, prog, is_new=True)
 
-        result = prog.add_type(type_obj=enum_obj)
+        result = prog.add_type(enum_obj)
         assert isinstance(result, EnumType)
         assert result.name == "myenum"
         assert result.is_new is True
 
 
 class TestAddTypeErrors:
-    def test_no_args(self):
+    def test_invalid_arg_type(self):
         prog = _make_program()
-        with pytest.raises(QuokkaError, match="Exactly one"):
-            prog.add_type()
-
-    def test_both_args(self):
-        prog = _make_program()
-        ct = Pb.CompositeType()
-        ct.name = "x"
-        ct.type = Pb.CompositeType.TYPE_STRUCT
-        struct = StructureType(0, ct, prog)
-        with pytest.raises(QuokkaError, match="Exactly one"):
-            prog.add_type(c_str="struct x {}", type_obj=struct)
+        with pytest.raises(AssertionError, match="Invalid type argument"):
+            prog.add_type(...)
 
     def test_duplicate_name(self):
         prog = _make_program()
-        prog.add_type(c_str="struct dup { int x; }")
+        prog.add_type("struct dup { int x; }")
         with pytest.raises(QuokkaError, match="already exists"):
-            prog.add_type(c_str="struct dup { float y; }")
+            prog.add_type("struct dup { float y; }")
 
     def test_unsupported_decl(self):
         prog = _make_program()
         with pytest.raises(ValueError, match="Unsupported"):
-            prog.add_type(c_str="int x")
+            prog.add_type("int x")
 
 
 class TestAddTypeUnitIntegration:
     def test_new_type_in_types_iteration(self):
         prog = _make_program()
-        prog.add_type(c_str="struct iter_test { int a; }")
+        prog.add_type("struct iter_test { int a; }")
 
         found = False
         for i in range(len(prog.proto.types)):
@@ -144,7 +135,7 @@ class TestAddTypeUnitIntegration:
 
     def test_new_type_accessible_via_get_type(self):
         prog = _make_program()
-        result = prog.add_type(c_str="enum access_test { X=1 }")
+        result = prog.add_type("enum access_test { X=1 }")
         idx = result.type_index
         retrieved = prog.get_type(idx)
         assert retrieved is result
@@ -152,7 +143,7 @@ class TestAddTypeUnitIntegration:
     def test_c_str_preserved(self):
         prog = _make_program()
         decl = "struct preserved { int x; }"
-        result = prog.add_type(c_str=decl)
+        result = prog.add_type(decl)
         assert result.c_str == decl
 
 
@@ -187,7 +178,7 @@ class TestAddTypeRoundTrip:
         prog, tmpdir, tmp_binary = prog_and_tmpdir
         original_type_count = len(prog.proto.types)
 
-        added = prog.add_type(c_str="struct test_rt_struct { int x; float y; }")
+        added = prog.add_type("struct test_rt_struct { int x; float y; }")
         assert isinstance(added, StructureType)
 
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
@@ -202,7 +193,7 @@ class TestAddTypeRoundTrip:
     def test_enum_roundtrip(self, prog_and_tmpdir):
         prog, tmpdir, tmp_binary = prog_and_tmpdir
 
-        added = prog.add_type(c_str="enum test_rt_enum { A=0, B=1, C=2 }")
+        added = prog.add_type("enum test_rt_enum { A=0, B=1, C=2 }")
         assert isinstance(added, EnumType)
 
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
@@ -215,7 +206,7 @@ class TestAddTypeRoundTrip:
     def test_typedef_roundtrip(self, prog_and_tmpdir):
         prog, tmpdir, tmp_binary = prog_and_tmpdir
 
-        added = prog.add_type(c_str="typedef int test_rt_td")
+        added = prog.add_type("typedef int test_rt_td")
         assert isinstance(added, TypedefType)
 
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
@@ -227,7 +218,7 @@ class TestAddTypeRoundTrip:
     def test_union_roundtrip(self, prog_and_tmpdir):
         prog, tmpdir, tmp_binary = prog_and_tmpdir
 
-        added = prog.add_type(c_str="union test_rt_union { int i; float f; }")
+        added = prog.add_type("union test_rt_union { int i; float f; }")
         assert isinstance(added, UnionType)
 
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
@@ -241,9 +232,9 @@ class TestAddTypeRoundTrip:
         prog, tmpdir, tmp_binary = prog_and_tmpdir
         original_type_count = len(prog.proto.types)
 
-        s = prog.add_type(c_str="struct multi_s { int a; }")
-        e = prog.add_type(c_str="enum multi_e { X=10, Y=20 }")
-        t = prog.add_type(c_str="typedef int multi_t")
+        s = prog.add_type("struct multi_s { int a; }")
+        e = prog.add_type("enum multi_e { X=10, Y=20 }")
+        t = prog.add_type("typedef int multi_t")
 
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
         assert len(reloaded.proto.types) == original_type_count + 3
@@ -268,7 +259,7 @@ class TestAddTypeRoundTrip:
             t = prog.get_type(i)
             existing_samples.append((i, type(t), getattr(t, "name", None)))
 
-        prog.add_type(c_str="struct no_corrupt { int z; }")
+        prog.add_type("struct no_corrupt { int z; }")
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
 
         for idx, cls, name in existing_samples:
@@ -283,7 +274,7 @@ class TestAddTypeRoundTrip:
         """The new type must appear when iterating Program.types."""
         prog, tmpdir, tmp_binary = prog_and_tmpdir
 
-        prog.add_type(c_str="struct visible_check { int v; }")
+        prog.add_type("struct visible_check { int v; }")
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
 
         names = [
@@ -293,7 +284,7 @@ class TestAddTypeRoundTrip:
         assert "visible_check" in names
 
     def test_adopt_type_obj_roundtrip(self, prog_and_tmpdir):
-        """add_type(type_obj=...) should also survive write -> open."""
+        """add_type(...) should also survive write -> open."""
         prog, tmpdir, tmp_binary = prog_and_tmpdir
 
         ct = Pb.CompositeType()
@@ -304,7 +295,7 @@ class TestAddTypeRoundTrip:
         tmp_idx = len(prog.proto.types)
         struct = StructureType(tmp_idx, ct, prog, is_new=True)
 
-        added = prog.add_type(type_obj=struct)
+        added = prog.add_type(struct)
         reloaded = self._write_and_reload(prog, tmpdir, tmp_binary)
 
         rt = reloaded.get_type(added.type_index)

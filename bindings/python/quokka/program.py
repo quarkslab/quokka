@@ -437,44 +437,39 @@ class Program(dict):
             t = t.aliased_type
         return t
 
-    def add_type(self, c_str: str | None = None, type_obj: ComplexType | None = None) -> TypeT:
+    def add_type(self, type: str | ComplexType) -> TypeT:
         """Add a new user-defined type to the program.
 
-        Exactly one of ``c_str`` or ``type_obj`` must be provided.
-
         Args:
-            c_str: A C type declaration string
+            type: A C type declaration string or a pre-built :class:`ComplexType` (or subclass) to adopt.
                 (e.g. ``"struct foo { int x; float y; }"``).
-            type_obj: A pre-built :class:`ComplexType` (or subclass) to adopt.
 
         Returns:
             The newly created Python type wrapper.
 
         Raises:
-            QuokkaError: If both or neither argument is provided, or if a
-                type with the same name already exists.
+            QuokkaError: If a type with the same name already exists.
         """
-        if (c_str is None) == (type_obj is None):
-            raise QuokkaError("Exactly one of c_str or type_obj must be provided")
 
-        if type_obj is not None:
+        if isinstance(type, ComplexType):
             # Adopt existing ComplexType -- copy its proto into our type array
             new_index = len(self.proto.types)
             pb_type = self.proto.types.add()
             pb_type.is_new = True
-            if isinstance(type_obj, EnumType):
-                pb_type.enum_type.CopyFrom(type_obj.proto)
-                type_name = type_obj.name
+            if isinstance(type, EnumType):
+                pb_type.enum_type.CopyFrom(type.proto)
+                type_name = type.name
             else:
-                pb_type.composite_type.CopyFrom(type_obj.proto)
-                type_name = type_obj.name
-        else:
-            assert c_str is not None
-            type_name, new_pb = parse_c_type(c_str, self)
+                pb_type.composite_type.CopyFrom(type.proto)
+                type_name = type.name
+        elif isinstance(type, str):
+            type_name, new_pb = parse_c_type(type, self)
             new_index = len(self.proto.types)
             pb_type = self.proto.types.add()
             pb_type.CopyFrom(new_pb)
             pb_type.is_new = True
+        else:
+            assert False, "Invalid type argument"
 
         # Check for duplicate names
         for i, t in enumerate(self.proto.types):
@@ -492,19 +487,6 @@ class Program(dict):
         # Create the Python wrapper and cache it
         wrapper = self.get_type(new_index)
         return wrapper
-
-    # @cached_property
-    # def memory(self) -> "quokka.Memory":
-    #     """Memory representation of the program.
-
-    #     Allows getting layout of the program especially if addressses are flagged
-    #     as code or data.
-
-    #     Returns:
-    #         A `quokka.Memory` instance to access the program memory.
-    #     """
-    #     # TODO(rd): Parse the memory layout
-    #     raise NotImplementedError("Memory is not implemented yet")
 
     @cached_property
     def orphaned_blocks(self) -> Iterable[quokka.Block]:
@@ -725,10 +707,7 @@ class Program(dict):
             return Disassembler.IDA
         if os.environ.get("GHIDRA_INSTALL_DIR"):
             return Disassembler.GHIDRA
-        raise QuokkaError(
-            "No disassembler backend found. Install idascript and set "
-            "IDA_PATH, or set GHIDRA_INSTALL_DIR."
-        )
+        return Disassembler.UNKNOWN
 
     @staticmethod
     def _generate_ida(
@@ -946,29 +925,32 @@ class Program(dict):
         if disassembler is None:
             disassembler = Program._detect_disassembler()
 
-        if disassembler == Disassembler.GHIDRA:
-            if decompiled:
-                Program.logger.warning(
-                    "Ghidra export does not support decompilation yet; "
-                    "ignoring --decompiled flag."
+        match disassembler:
+            case Disassembler.GHIDRA:
+                if decompiled:
+                    Program.logger.warning(
+                        "Ghidra export does not support decompilation yet; "
+                        "ignoring --decompiled flag."
+                    )
+                return Program._generate_ghidra(
+                    exec_path=exec_path,
+                    output_file=output_file,
+                    debug=debug,
+                    timeout=timeout,
+                    mode=mode,
                 )
-            return Program._generate_ghidra(
-                exec_path=exec_path,
-                output_file=output_file,
-                debug=debug,
-                timeout=timeout,
-                mode=mode,
-            )
-        else:
-            return Program._generate_ida(
-                exec_path=exec_path,
-                output_file=output_file,
-                database_file=database_file,
-                decompiled=decompiled,
-                debug=debug,
-                timeout=timeout,
-                mode=mode,
-            )
+            case Disassembler.IDA:
+                return Program._generate_ida(
+                    exec_path=exec_path,
+                    output_file=output_file,
+                    database_file=database_file,
+                    decompiled=decompiled,
+                    debug=debug,
+                    timeout=timeout,
+                    mode=mode,
+                )
+            case _:
+                raise QuokkaError(f"Unsupported disassembler: {disassembler}")
 
 
     def write(self, output_file: Path|str|None = None) -> None:
@@ -1042,6 +1024,7 @@ ida_pro.qexit(errors)
         """
         import json as _json
         import tempfile
+        assert idascript is not None, "idascript is required for IDA apply-back"
 
         database_file = Path(database_file)
 
