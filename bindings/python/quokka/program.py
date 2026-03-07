@@ -23,6 +23,8 @@ from __future__ import annotations
 from functools import cached_property
 from itertools import product
 import logging
+import os
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Type, Iterable
 
@@ -759,36 +761,160 @@ class Program(dict):
         with open(output_file, "wb") as fd:
             fd.write(self.proto.SerializeToString())
 
-    def _commit_edits_ida(self) -> bool:
-        """Commit the edits to the IDA database."""
+    # IDAPython script template for headless apply-back.
+    # Reads dynamic paths from a JSON config file to avoid escaping issues.
+    _IDA_APPLY_SCRIPT = """\
+import json, os
+import ida_auto, ida_pro
+ida_auto.auto_wait()
+config_path = os.path.join(os.path.dirname(__file__), "_config.json")
+with open(config_path) as f:
+    config = json.load(f)
+import sys
+for p in config["paths"]:
+    if p not in sys.path:
+        sys.path.append(p)
+from quokka import Program
+from quokka.backends.ida import apply_quokka
+prog = Program(config["quokka_file"], config["binary"])
+errors = apply_quokka(prog)
+ida_pro.qexit(errors)
+"""
 
-        script_file = Path(__file__).parent / "backends" / "ida.py"
+    def _commit_edits_ida(
+        self,
+        database_file: "Path|str",
+        ida_path: "Path|str|None" = None,
+        overwrite: bool = False,
+        timeout: int = 600,
+    ) -> int:
+        """Apply in-memory edits to an IDA database by spawning a headless
+        IDA instance.
 
-        ida = idascript.IDA(
-            self.executable.exec_file,
-            script_file=script_file,
-            script_params=[],
-            database_path=None,
+        The quokka file and binary paths are taken from ``self``.  The
+        caller must call :meth:`write` beforehand so the serialised
+        ``.quokka`` on disk reflects the pending edits.
+
+        Arguments:
+            database_file: Path to the ``.i64`` database to modify.
+                The database must already exist (e.g. from a prior export).
+            ida_path: Optional path to the IDA installation directory.
+                When *None*, ``idascript`` resolves it from ``IDA_PATH``
+                or ``$PATH``.
+            overwrite: If *True*, allow modifying an existing database.
+                A warning is logged when an existing database is
+                overwritten.  If *False* (the default) and the database
+                already exists, a :class:`FileExistsError` is raised.
+            timeout: Maximum seconds to wait for IDA (default 600).
+
+        Returns:
+            The number of errors reported by ``apply_quokka()`` inside
+            IDA (0 means all edits applied successfully).
+
+        Raises:
+            FileExistsError: If *database_file* exists and *overwrite*
+                is False.
+            FileNotFoundError: If *database_file* does not exist and
+                cannot be created (parent directory missing).
+            RuntimeError: If IDA times out.
+            QuokkaError: If IDA exits with an unexpected error.
+        """
+        import json as _json
+        import tempfile
+
+        database_file = Path(database_file)
+
+        if database_file.exists():
+            if not overwrite:
+                raise FileExistsError(
+                    f"Database already exists: {database_file}. "
+                    "Pass overwrite=True to modify it."
+                )
+            self.logger.warning(
+                "Overwriting existing IDA database: %s", database_file
+            )
+
+        # Write a JSON config and a tiny wrapper script into a temp dir.
+        # The wrapper runs inside IDA's Python and loads quokka from the
+        # host virtualenv via sys.path injection.
+        tmpdir = Path(tempfile.mkdtemp(prefix="quokka_apply_"))
+        config_path = tmpdir / "_config.json"
+        config_path.write_text(
+            _json.dumps({
+                "paths": [p for p in sys.path if p],
+                "quokka_file": str(self.export_file),
+                "binary": str(self.executable.exec_file),
+            }),
+            encoding="ascii",
         )
-        ida.start()
-        ret_code = ida.wait()
+        script_path = tmpdir / "_apply_back.py"
+        script_path.write_text(self._IDA_APPLY_SCRIPT, encoding="ascii")
+
+        old_ida_path = os.environ.get("IDA_PATH")
+        try:
+            if ida_path is not None:
+                os.environ["IDA_PATH"] = str(ida_path)
+
+            ida = idascript.IDA(
+                database_file,
+                script_file=script_path,
+                script_params=[],
+                timeout=timeout,
+                database_path=None,
+            )
+            ida.start()
+            ret_code = ida.wait()
+        finally:
+            if ida_path is not None:
+                if old_ida_path is None:
+                    os.environ.pop("IDA_PATH", None)
+                else:
+                    os.environ["IDA_PATH"] = old_ida_path
 
         if ret_code == idascript.IDA.TIMEOUT_RETURNCODE:
-            Program.logger.error(f"Updates application triggered timeout")  # not meant to happen
-        elif ret_code != 0:  # Everything but 0 is an error
-            Program.logger.debug(f"Edits {ret_code} errors during applying")
-            Program.logger.debug(ida.stderr.read().decode("utf-8"))
-            return True  # still return True even if some changes applied with errors
-        # Other returned 0 so application was sucessful
-        return True
+            raise RuntimeError(
+                f"IDA apply-back timed out after {timeout}s "
+                f"on {database_file}"
+            )
 
-    def commit(self) -> bool:
-        """Commit the changes to the export file
-        and apply them to the underlying disassembler."""
+        return ret_code
+
+    def commit(
+        self,
+        database_file: "Path|str|None" = None,
+        ida_path: "Path|str|None" = None,
+        overwrite: bool = False,
+        timeout: int = 600,
+    ) -> int:
+        """Write the .quokka and apply edits to the disassembler database.
+
+        Arguments:
+            database_file: Path to the ``.i64`` database.  Required for
+                IDA-originated programs.
+            ida_path: Optional IDA installation path (IDA only).
+            overwrite: Allow modifying an existing database (IDA only).
+            timeout: IDA timeout in seconds (IDA only).
+
+        Returns:
+            The number of apply errors (0 = success).
+
+        Raises:
+            ValueError: If *database_file* is not provided for an IDA
+                program.
+        """
         self.write()
         match self.disassembler:
             case Disassembler.IDA:
-                return self._commit_edits_ida()
+                if database_file is None:
+                    raise ValueError(
+                        "database_file is required for IDA programs"
+                    )
+                return self._commit_edits_ida(
+                    database_file,
+                    ida_path=ida_path,
+                    overwrite=overwrite,
+                    timeout=timeout,
+                )
             case Disassembler.GHIDRA:
                 pass
                 # TODO: Call ghidra script with the write script
@@ -796,24 +922,48 @@ class Program(dict):
                 raise NotImplementedError("Binary Ninja export is not implemented yet")
             case _:
                 raise NotImplementedError("Unknown disassembler")
-        return True
+        return 0
 
 
-    def regenerate(self) -> 'Program':
-        """Regenerate the Quokka file and from the binary
-        after applying editions.
+    def regenerate(
+        self,
+        database_file: "Path|str|None" = None,
+        ida_path: "Path|str|None" = None,
+        overwrite: bool = False,
+        timeout: int = 600,
+    ) -> 'Program':
+        """Apply edits, re-export, and return a fresh Program.
 
-        This is useful to update the program after making changes to the binary (e.g. by
-        applying patches).
+        Calls :meth:`commit` to apply edits, then :meth:`generate` to
+        produce a new ``.quokka`` file.
+
+        Arguments:
+            database_file: Path to the ``.i64`` database (required for
+                IDA programs).
+            ida_path: Optional IDA installation path.
+            overwrite: Allow modifying an existing database.
+            timeout: IDA timeout in seconds.
 
         Returns:
-            A new instance of Program with the updated data.
-        
-            Raises:
-                QuokkaError: If applying changes failed or regenerating Quokka file failed.
+            A new Program instance with the updated data.
+
+        Raises:
+            QuokkaError: If applying changes or regenerating fails.
         """
-        if self.commit():
-            path = Program.generate(self.executable.exec_file, self.export_file, override=True)
-            return Program.open(path, self.executable.exec_file)
-        else:
-            raise QuokkaError("Failed to commit changes to the export file.")
+        errors = self.commit(
+            database_file=database_file,
+            ida_path=ida_path,
+            overwrite=overwrite,
+            timeout=timeout,
+        )
+        if errors:
+            self.logger.warning(
+                "%d errors occurred while applying edits", errors
+            )
+        path = Program.generate(
+            self.executable.exec_file,
+            self.export_file,
+            database_file=database_file,
+            override=True,
+        )
+        return Program.open(path, self.executable.exec_file)

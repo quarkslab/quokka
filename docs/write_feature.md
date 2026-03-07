@@ -44,7 +44,7 @@ func.add_comment("Entry point for the authentication logic.")
 
 Three methods control how modifications are saved.
 
-### `write` — save to the `.quokka` file only
+### `write` -- save to the `.quokka` file only
 
 `Program.write` serialises the modified protobuf back to disk. It does **not**
 interact with IDA. Use it when you want to snapshot the current annotations or
@@ -58,21 +58,31 @@ prog.write()
 prog.write("binary_annotated.quokka")
 ```
 
-### `commit` — apply changes to IDA
+### `commit` -- apply changes to IDA
 
-`Program.commit` calls `write()` and then opens IDA headlessly to apply all
-recorded edits (names, prototypes, comments) to the IDA database (`.i64`).
+`Program.commit` calls `write()` and then spawns a headless IDA instance to
+apply all recorded edits (names, prototypes, comments) to the IDA database.
+The full function signature (name, return type, parameter types, parameter
+names, and parameter count) is applied to the `.i64`.
 
 ```python
-prog.commit()
+# database_file is required -- it is the .i64 to modify
+errors = prog.commit(database_file="binary.i64", overwrite=True)
 ```
 
-!!! note
-    `commit` requires a working IDA installation with the Quokka plugin. The
-    function returns `True` when the edits were applied successfully (or with
-    non-fatal errors) and raises `QuokkaError` on a hard failure.
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `database_file` | `Path\|str` | *required* | Path to the `.i64` database to modify |
+| `ida_path` | `Path\|str\|None` | `None` | IDA installation directory (auto-detected if omitted) |
+| `overwrite` | `bool` | `False` | Allow modifying an existing `.i64`. Raises `FileExistsError` when `False` and the file exists. Logs a warning when `True`. |
+| `timeout` | `int` | `600` | Maximum seconds to wait for IDA |
 
-### `regenerate` — commit then re-export
+Returns the number of errors (0 = all edits applied successfully).
+
+!!! note
+    `commit` requires a working IDA installation with the Quokka plugin.
+
+### `regenerate` -- commit then re-export
 
 `Program.regenerate` calls `commit()` and immediately re-exports the binary,
 returning a fresh `Program` instance that reflects the updated IDA database.
@@ -80,8 +90,10 @@ This is the right choice when you want a clean `.quokka` file that incorporates
 your annotations as first-class exported data.
 
 ```python
-updated_prog = prog.regenerate()
+updated_prog = prog.regenerate(database_file="binary.i64", overwrite=True)
 ```
+
+It accepts the same parameters as `commit`.
 
 ## Full example
 
@@ -100,21 +112,20 @@ func.prototype = "int authenticate_user(const char *user, const char *password)"
 func.add_comment("Validates credentials against the internal user table.")
 
 # Write to the .quokka file and push changes to the IDA database
-prog.commit()
+prog.commit(database_file="binary.i64", overwrite=True)
 ```
 
 ## From IDA
 
-You can also applies edits from IDA with the following workflow:
+If you are already running inside IDA (e.g. via IDAPython), you can apply
+edits directly without spawning a new instance:
 
 ```python
 from quokka import Program
-
-# Import IDA specific Python code to import a Quokka file
 from quokka.backends.ida import apply_quokka
 
 p = Program("binary.quokka", "binary")
-apply_quokka(p)
+errors = apply_quokka(p)
 ```
 
 ## Summary
@@ -122,5 +133,5 @@ apply_quokka(p)
 | Method | Writes `.quokka` file | Applies to IDA database | Returns fresh `Program` |
 |---|:---:|:---:|:---:|
 | `prog.write()` | Yes | No | No |
-| `prog.commit()` | Yes | Yes | No |
-| `prog.regenerate()` | Yes | Yes | Yes |
+| `prog.commit(database_file=...)` | Yes | Yes | No |
+| `prog.regenerate(database_file=...)` | Yes | Yes | Yes |

@@ -21,10 +21,8 @@ correctly reflected in both the stored prototype and the Hex-Rays decompiled
 output.
 """
 
-import json
 import re
 import shutil
-import sys
 from pathlib import Path
 
 import idascript
@@ -36,58 +34,6 @@ requires_ida = pytest.mark.skipif(
     idascript.get_ida_path() is None,
     reason="IDA Pro not found (set IDA_PATH or add it to $PATH)",
 )
-
-# IDAPython script template.  Reads paths and file locations from a JSON
-# config file placed next to it.  IDA-internal imports come *before* any
-# sys.path manipulation to avoid shadowing IDA modules.
-_APPLY_SCRIPT = """\
-import json, os
-import ida_auto, ida_pro
-ida_auto.auto_wait()
-config_path = os.path.join(os.path.dirname(__file__), "_config.json")
-with open(config_path) as f:
-    config = json.load(f)
-import sys
-for p in config["paths"]:
-    if p not in sys.path:
-        sys.path.append(p)
-from quokka import Program
-from quokka.backends.ida import apply_quokka
-prog = Program(config["quokka_file"], config["binary"])
-errors = apply_quokka(prog)
-ida_pro.qexit(errors)
-"""
-
-
-def _run_apply_script(database: Path, quokka_file: Path, binary: Path,
-                      timeout: int = 600):
-    """Run apply_quokka() inside IDA headlessly against *database*.
-
-    Writes a JSON config and a small IDAPython wrapper script, then
-    executes it via ``idascript``.
-    """
-    config = database.parent / "_config.json"
-    config.write_text(json.dumps({
-        "paths": [p for p in sys.path if p],
-        "quokka_file": str(quokka_file),
-        "binary": str(binary),
-    }), encoding="ascii")
-
-    script = database.parent / "_apply_back.py"
-    script.write_text(_APPLY_SCRIPT, encoding="ascii")
-
-    ida = idascript.IDA(
-        database,
-        script_file=script,
-        script_params=[],
-        timeout=timeout,
-        database_path=None,
-    )
-    ida.start()
-    ret_code = ida.wait()
-    if ret_code == idascript.IDA.TIMEOUT_RETURNCODE:
-        raise RuntimeError("IDA apply-back timed out")
-    return ret_code
 
 
 # ---------------------------------------------------------------------------
@@ -183,10 +129,13 @@ class TestApplyBackFullSignature:
         pytest.skip(f"Function {name!r} not found in sig_test")
 
     def _apply_and_reexport(self):
-        """Write .quokka, apply to .i64, re-export, return new Program."""
-        self.prog.write(self.quokka_file)
-        ret = _run_apply_script(self.database, self.quokka_file, self.binary)
-        assert ret == 0, f"apply_quokka() returned {ret} errors"
+        """Apply edits via commit(), then re-export and return new Program."""
+        errors = self.prog.commit(
+            database_file=self.database,
+            overwrite=True,
+            timeout=600,
+        )
+        assert errors == 0, f"commit() returned {errors} errors"
 
         reexport = self.tmp / "sig_test_re.quokka"
         new_prog = quokka.Program.from_binary(
