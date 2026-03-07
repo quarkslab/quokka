@@ -645,7 +645,7 @@ class Program(dict):
         override: bool = True,
         timeout: int|None = 0,
         mode: ExporterMode = ExporterMode.LIGHT,
-        disassembler: Disassembler|None = None,
+        disassembler: Disassembler = Disassembler.UNKNOWN,
     ) -> Program|None:
         """Generate an export file directly from the binary.
 
@@ -657,7 +657,7 @@ class Program(dict):
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
             mode: Export mode (LIGHT or FULL)
-            disassembler: Backend to use (auto-detect if None)
+            disassembler: Backend to use (auto-detect if UNKNOWN)
 
         Returns:
             A Program instance or None
@@ -888,7 +888,7 @@ class Program(dict):
         override: bool = True,
         timeout: int|None = 600,
         mode: ExporterMode = ExporterMode.LIGHT,
-        disassembler: Disassembler|None = None,
+        disassembler: Disassembler = Disassembler.UNKNOWN,
     ) -> Path:
         """Generate an export file directly from the binary.
 
@@ -900,7 +900,7 @@ class Program(dict):
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
             mode: Export mode (LIGHT or FULL)
-            disassembler: Backend to use (auto-detect if None)
+            disassembler: Backend to use (auto-detect if UNKNOWN)
 
         Returns:
             Path to the generated .quokka file.
@@ -922,7 +922,7 @@ class Program(dict):
         if output_file.is_file() and not override:
             return output_file
 
-        if disassembler is None:
+        if disassembler is Disassembler.UNKNOWN:
             disassembler = Program._detect_disassembler()
 
         match disassembler:

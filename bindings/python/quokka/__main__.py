@@ -65,7 +65,7 @@ def do_quokka(
     decompiled: bool,
     timeout: int,
     override: bool,
-    disassembler: Disassembler|None = None,
+    disassembler: Disassembler = Disassembler.UNKNOWN,
 ) -> bool:
 
     try:
@@ -90,7 +90,7 @@ def export_job(
     decompiled: bool,
     timeout: int,
     override: bool,
-    disassembler: Disassembler|None = None,
+    disassembler: Disassembler = Disassembler.UNKNOWN,
 ) -> None:
     while True:
         try:
@@ -110,7 +110,7 @@ def run_async(
     decompiled: bool,
     timeout: int,
     override: bool,
-    disassembler: Disassembler|None = None,
+    disassembler: Disassembler = Disassembler.UNKNOWN,
 ) -> None:
     manager = Manager()
     ingress = manager.Queue()
@@ -153,7 +153,7 @@ def run_sequential(
     decompiled: bool,
     timeout: int,
     override: bool,
-    disassembler: Disassembler|None = None,
+    disassembler: Disassembler = Disassembler.UNKNOWN,
 ) -> None:
     # Pre-fill ingress queue
     total_files = list(recursive_file_iter(root_path))
@@ -223,7 +223,7 @@ def main(
     )
 
     # Resolve the disassembler backend
-    disassembler: Disassembler|None = None
+    disassembler: Disassembler = Disassembler.UNKNOWN
 
     if backend == "ida":
         disassembler = Disassembler.IDA
@@ -257,7 +257,7 @@ def main(
         if ghidra_path:
             os.environ["GHIDRA_INSTALL_DIR"] = ghidra_path
         # Let Program._detect_disassembler() choose at export time
-        disassembler = None
+        disassembler = Disassembler.UNKNOWN
 
     root_path = Path(input_file)
 
