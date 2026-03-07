@@ -17,6 +17,10 @@ on:
       - ".gitmodules"
       - ".github/workflows/ghidra.yml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions: {}
 
 jobs:
