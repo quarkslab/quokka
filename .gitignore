@@ -53,6 +53,7 @@ venv.bak/
 
 .clangd
 third_party/*.zip
+third_party/ghidra_*_PUBLIC/
 
 # Ghidra extension
 ghidra_extension/.gradle/
