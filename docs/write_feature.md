@@ -40,6 +40,22 @@ Call `Function.add_comment` to append a comment to a function:
 func.add_comment("Entry point for the authentication logic.")
 ```
 
+## Adding new types
+
+You can inject new type definitions (structs, enums, unions, typedefs) into
+the program. These are recorded as `is_new=True` in the protobuf and applied
+back to the disassembler database via `commit()`.
+
+```python
+# Add types from C declaration strings
+prog.add_type(c_str="struct context { int id; char name[64]; };")
+prog.add_type(c_str="enum status { OK=0, ERROR=1 };")
+prog.add_type(c_str="typedef unsigned int uint32;")
+```
+
+See the [Types](types.md#adding-new-types) page for the full API and more
+examples.
+
 ## Persisting changes
 
 Three methods control how modifications are saved.

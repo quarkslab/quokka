@@ -44,6 +44,7 @@ from quokka.data_type import (
     StructureTypeMember,
     BaseType,
     ArrayType,
+    ComplexType,
     PointerType,
     StructureType,
     EnumType,
@@ -52,6 +53,7 @@ from quokka.data_type import (
     UnionType,
     TypeT
 )
+from quokka.c_type_parser import parse_c_type
 from quokka.types import (
     AddressT,
     Disassembler,
@@ -434,6 +436,62 @@ class Program(dict):
         while isinstance(t, TypedefType):
             t = t.aliased_type
         return t
+
+    def add_type(self, c_str: str | None = None, type_obj: ComplexType | None = None) -> TypeT:
+        """Add a new user-defined type to the program.
+
+        Exactly one of ``c_str`` or ``type_obj`` must be provided.
+
+        Args:
+            c_str: A C type declaration string
+                (e.g. ``"struct foo { int x; float y; }"``).
+            type_obj: A pre-built :class:`ComplexType` (or subclass) to adopt.
+
+        Returns:
+            The newly created Python type wrapper.
+
+        Raises:
+            QuokkaError: If both or neither argument is provided, or if a
+                type with the same name already exists.
+        """
+        if (c_str is None) == (type_obj is None):
+            raise QuokkaError("Exactly one of c_str or type_obj must be provided")
+
+        if type_obj is not None:
+            # Adopt existing ComplexType -- copy its proto into our type array
+            new_index = len(self.proto.types)
+            pb_type = self.proto.types.add()
+            pb_type.is_new = True
+            if isinstance(type_obj, EnumType):
+                pb_type.enum_type.CopyFrom(type_obj.proto)
+                type_name = type_obj.name
+            else:
+                pb_type.composite_type.CopyFrom(type_obj.proto)
+                type_name = type_obj.name
+        else:
+            assert c_str is not None
+            type_name, new_pb = parse_c_type(c_str, self)
+            new_index = len(self.proto.types)
+            pb_type = self.proto.types.add()
+            pb_type.CopyFrom(new_pb)
+            pb_type.is_new = True
+
+        # Check for duplicate names
+        for i, t in enumerate(self.proto.types):
+            if i == new_index:
+                continue
+            oneof = t.WhichOneof("OneofType")
+            if oneof == "composite_type" and t.composite_type.name == type_name:
+                # Remove the just-added entry
+                del self.proto.types[new_index]
+                raise QuokkaError(f"Type '{type_name}' already exists at index {i}")
+            elif oneof == "enum_type" and t.enum_type.name == type_name:
+                del self.proto.types[new_index]
+                raise QuokkaError(f"Type '{type_name}' already exists at index {i}")
+
+        # Create the Python wrapper and cache it
+        wrapper = self.get_type(new_index)
+        return wrapper
 
     # @cached_property
     # def memory(self) -> "quokka.Memory":

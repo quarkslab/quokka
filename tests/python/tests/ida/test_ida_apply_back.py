@@ -302,3 +302,126 @@ class TestApplyBackFullSignature:
             f"Decompiled code does not contain new name {new_name!r}.\n"
             f"Snippet: {new_func.decompiled_code[:200]!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# add_type() integration tests (IDA round-trip)
+# ---------------------------------------------------------------------------
+
+
+@requires_ida
+class TestAddTypeIDA:
+    """add_type() -> commit() -> re-export -> verify the type landed in IDA.
+
+    Uses the sig_test binary.  After commit(), IDA's apply_types() calls
+    parse_decls() for each is_new type.  The re-exported program should
+    contain the new types in its headers string.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _setup(self, root_directory: Path, tmp_path: Path):
+        """Export sig_test into a temp directory."""
+        binary_src = root_directory / "tests" / "dataset" / "sig_test"
+        if not binary_src.exists():
+            pytest.skip("sig_test binary not found in tests/dataset/")
+
+        self.tmp = tmp_path
+        self.binary = tmp_path / "sig_test"
+        shutil.copy2(binary_src, self.binary)
+
+        self.database = tmp_path / "sig_test.i64"
+        self.quokka_file = tmp_path / "sig_test.quokka"
+
+        self.prog = quokka.Program.from_binary(
+            self.binary,
+            output_file=self.quokka_file,
+            database_file=self.database,
+            timeout=600,
+        )
+
+    def _commit_and_reexport(self):
+        """Commit edits, then re-export and return a fresh Program."""
+        errors = self.prog.commit(
+            database_file=self.database,
+            overwrite=True,
+            timeout=600,
+        )
+        assert errors == 0, f"commit() returned {errors} errors"
+
+        reexport = self.tmp / "sig_test_re.quokka"
+        new_prog = quokka.Program.from_binary(
+            self.binary,
+            output_file=reexport,
+            database_file=self.database,
+            override=False,
+            timeout=600,
+        )
+        return new_prog
+
+    def _find_type_by_name(self, prog, name):
+        """Search for a type by name in a program."""
+        for t in prog.types:
+            if hasattr(t, "name") and t.name == name:
+                return t
+        return None
+
+    # -- tests -------------------------------------------------------------
+
+    def test_add_struct_ida_roundtrip(self):
+        """A struct added via add_type() survives the IDA round-trip."""
+        c_str = "struct quokka_test_struct { int x; int y; float z; };"
+        self.prog.add_type(c_str=c_str)
+
+        new_prog = self._commit_and_reexport()
+
+        found = self._find_type_by_name(new_prog, "quokka_test_struct")
+        assert found is not None, (
+            "quokka_test_struct not found in re-exported types"
+        )
+        assert isinstance(found, quokka.StructureType)
+        assert "quokka_test_struct" in new_prog.headers
+
+    def test_add_enum_ida_roundtrip(self):
+        """An enum added via add_type() survives the IDA round-trip."""
+        c_str = "enum quokka_test_enum { QTE_A = 0, QTE_B = 1, QTE_C = 42 };"
+        self.prog.add_type(c_str=c_str)
+
+        new_prog = self._commit_and_reexport()
+
+        found = self._find_type_by_name(new_prog, "quokka_test_enum")
+        assert found is not None, (
+            "quokka_test_enum not found in re-exported types"
+        )
+        assert isinstance(found, quokka.EnumType)
+        assert "quokka_test_enum" in new_prog.headers
+
+    def test_add_typedef_ida_roundtrip(self):
+        """A typedef added via add_type() survives the IDA round-trip."""
+        c_str = "typedef unsigned int quokka_test_uint;"
+        self.prog.add_type(c_str=c_str)
+
+        new_prog = self._commit_and_reexport()
+
+        # Typedefs may appear as TYPE_TYPEDEF or be inlined by IDA;
+        # check the headers string as the primary verification.
+        assert "quokka_test_uint" in new_prog.headers, (
+            "quokka_test_uint not found in re-exported headers"
+        )
+
+    def test_add_multiple_types_ida_roundtrip(self):
+        """Several types added at once all survive the IDA round-trip."""
+        self.prog.add_type(
+            c_str="struct quokka_multi_s { int a; int b; };"
+        )
+        self.prog.add_type(
+            c_str="enum quokka_multi_e { QME_X = 10, QME_Y = 20 };"
+        )
+
+        new_prog = self._commit_and_reexport()
+
+        assert "quokka_multi_s" in new_prog.headers, (
+            "quokka_multi_s not found in re-exported headers"
+        )
+        assert "quokka_multi_e" in new_prog.headers, (
+            "quokka_multi_e not found in re-exported headers"
+        )

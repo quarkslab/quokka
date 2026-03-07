@@ -168,6 +168,23 @@ ls = quokka.Program("ls.quokka",  # the exported file
                     "/bin/ls")    # the original binary
 ```
 
+### Editing and adding types
+
+```python
+# Add new types from C declarations
+prog.add_type(c_str="struct context { int id; char name[64]; };")
+prog.add_type(c_str="enum status { OK=0, ERROR=1 };")
+
+# Save the .quokka file
+prog.write()
+
+# Or apply changes (including new types) back to the IDA database
+prog.commit(database_file="ls.i64", overwrite=True)
+```
+
+See the full [editing documentation](https://quarkslab.github.io/quokka/write_feature/)
+for details on renaming functions, setting prototypes, and more.
+
 ## Building
 
 The process for building depends on which version of the IDA SDK you are using.

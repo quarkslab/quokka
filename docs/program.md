@@ -202,6 +202,7 @@ for addr, degree in top_called[:10]:
 | Call graph | `prog.call_graph` (networkx DiGraph) |
 | Raw bytes | `prog.read_bytes(addr, size)` |
 | Binary file access | `prog.executable.read_bytes/string/int/type_value(offset, ...)` |
+| Add a new type | `prog.add_type(c_str="struct foo { int x; };")` |
 | Save `.quokka` only | `prog.write()` |
 | Apply edits to IDA | `prog.commit(database_file="f.i64", overwrite=True)` |
 | Commit + re-export | `prog.regenerate(database_file="f.i64", overwrite=True)` |

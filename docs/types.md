@@ -218,6 +218,62 @@ for t in prog.types:
         print(f"{t.name} → {t.pointed_type}  (size={t.size})")
 ```
 
+## Adding new types
+
+You can define new types from Python and persist them back to the
+disassembler database. New types are created via `Program.add_type()` and
+are marked with `is_new=True` so the backend knows to register them.
+
+### From a C declaration string
+
+```python
+# Struct
+prog.add_type(c_str="struct point { int x; int y; };")
+
+# Enum
+prog.add_type(c_str="enum color { RED=0, GREEN=1, BLUE=2 };")
+
+# Typedef
+prog.add_type(c_str="typedef unsigned int uint32;")
+
+# Union
+prog.add_type(c_str="union data { int i; float f; };")
+```
+
+### From an existing type object
+
+```python
+from quokka.quokka_pb2 import Quokka as Pb
+from quokka.data_type import StructureType
+
+ct = Pb.CompositeType()
+ct.name = "my_struct"
+ct.type = Pb.CompositeType.TYPE_STRUCT
+ct.c_str = "struct my_struct { int a; int b; };"
+
+struct = StructureType(0, ct, prog, is_new=True)
+prog.add_type(type_obj=struct)
+```
+
+### Persisting new types
+
+New types are appended to the protobuf `types` array, so `prog.write()` and
+`prog.commit()` automatically include them. When applied back to IDA, the
+backend reconstructs each new type from its `c_str` field using
+`parse_decls()`.
+
+```python
+# Save to .quokka only
+prog.write()
+
+# Or apply to IDA and re-export
+prog.commit(database_file="binary.i64", overwrite=True)
+```
+
+!!! note
+    Duplicate type names are rejected -- `add_type()` raises `QuokkaError`
+    if a type with the same name already exists in the program.
+
 ## Cross-references from types
 
 Complex types and their members carry cross-reference lists that tell you which
