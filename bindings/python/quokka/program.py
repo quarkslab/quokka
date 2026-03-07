@@ -30,7 +30,10 @@ from typing import TYPE_CHECKING, Type, Iterable
 
 import capstone
 import networkx
-import idascript
+try:
+    import idascript
+except ImportError:
+    idascript = None  # type: ignore[assignment]
 
 import quokka
 import quokka.analysis
@@ -602,11 +605,9 @@ class Program(dict):
         override: bool = True,
         timeout: int|None = 0,
         mode: ExporterMode = ExporterMode.LIGHT,
+        disassembler: Disassembler|None = None,
     ) -> Program|None:
         """Generate an export file directly from the binary.
-
-        This methods will export `exec_path` directly using Quokka IDA's plugin if
-        installed.
 
         Arguments:
             exec_path: Binary to export.
@@ -615,10 +616,11 @@ class Program(dict):
             decompiled: Whether to export decompiled code (default: False)
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
-            mode: Export mode (LIGHT, NORMAL or FULL)
+            mode: Export mode (LIGHT or FULL)
+            disassembler: Backend to use (auto-detect if None)
 
         Returns:
-            A |`Program` instance or None if
+            A Program instance or None
 
         Raises:
             QuokkaError: If the export fails
@@ -632,7 +634,8 @@ class Program(dict):
             override=override,
             debug=debug,
             timeout=timeout,
-            mode=mode
+            mode=mode,
+            disassembler=disassembler,
         )
 
         # In theory if reach here export file exists otherwise an exception has been raised
@@ -654,50 +657,37 @@ class Program(dict):
         return Program(export_file, exec_file)
 
     @staticmethod
-    def generate(
-        exec_path: Path|str,
-        output_file: Path|str|None = None,
-        database_file: Path|str|None = None,
-        decompiled: bool = False,
-        debug: bool = False,
-        override: bool = True,
-        timeout: int|None = 600,
-        mode: ExporterMode = ExporterMode.LIGHT,
-    ) -> Path:
-        """Generate an export file directly from the binary.
+    def _detect_disassembler() -> Disassembler:
+        """Auto-detect an available disassembler backend.
 
-        This methods will export `exec_path` directly using Quokka IDA's plugin if
-        installed.
-
-        Arguments:
-            exec_path: Binary to export.
-            output_file: Where to store the result (by default: near the executable)
-            database_file: Where to store IDA database (by default: near the executable)
-            decompiled: Whether to export decompiled code (default: False)
-            timeout: How long should we wait for the export to finish (default: 10 min)
-            debug: Activate the debug output
-            mode: Export mode (LIGHT, NORMAL or FULL)
-
-        Returns:
-            A |`Path` instance or None if
-
-        Raises:
-            QuokkaError: If the export fails
-            FileNotFoundError: If the executable is not found
+        Prefers IDA if ``idascript`` is importable and ``IDA_PATH`` is set,
+        otherwise falls back to Ghidra if ``GHIDRA_INSTALL_DIR`` is set.
         """
+        if idascript is not None and idascript.get_ida_path():
+            return Disassembler.IDA
+        if os.environ.get("GHIDRA_INSTALL_DIR"):
+            return Disassembler.GHIDRA
+        raise QuokkaError(
+            "No disassembler backend found. Install idascript and set "
+            "IDA_PATH, or set GHIDRA_INSTALL_DIR."
+        )
 
-        exec_path = Path(exec_path)
-        if not exec_path.is_file():
-            raise FileNotFoundError("Missing exec file")
+    @staticmethod
+    def _generate_ida(
+        exec_path: Path,
+        output_file: Path,
+        database_file: Path|str|None,
+        decompiled: bool,
+        debug: bool,
+        timeout: int|None,
+        mode: ExporterMode,
+    ) -> Path:
+        """Run IDA headless export."""
+        if idascript is None:
+            raise QuokkaError(
+                "idascript is not installed. Install it or use Ghidra backend."
+            )
 
-        if output_file is None:
-            output_file = exec_path.parent / f"{exec_path.name}.quokka"
-        else:
-            output_file = Path(output_file)
-
-        if output_file.is_file() and not override:
-            return output_file
-        
         exec_file = exec_path
         if database_file is None:
             database_file = exec_file.parent / f"{exec_file.name}.i64"
@@ -748,6 +738,179 @@ class Program(dict):
             )
 
         return output_file
+
+    @staticmethod
+    def _generate_ghidra(
+        exec_path: Path,
+        output_file: Path,
+        debug: bool,
+        timeout: int|None,
+        mode: ExporterMode,
+    ) -> Path:
+        """Run Ghidra headless export."""
+        import subprocess
+        import tempfile
+
+        env_dir = os.environ.get("GHIDRA_INSTALL_DIR")
+        if not env_dir:
+            raise QuokkaError(
+                "Ghidra not found. Set the GHIDRA_INSTALL_DIR environment variable."
+            )
+        ghidra_dir = Path(env_dir)
+
+        analyze_headless = ghidra_dir / "support" / "analyzeHeadless"
+        if not analyze_headless.exists():
+            raise QuokkaError(
+                f"analyzeHeadless not found at {analyze_headless}"
+            )
+
+        # Verify extension is installed
+        ext_dir = ghidra_dir / "Ghidra" / "Extensions"
+        if not ext_dir.exists() or not any(ext_dir.rglob("QuokkaExporter*")):
+            raise QuokkaError(
+                "QuokkaExporter extension not found in "
+                f"{ext_dir}. Install it first -- see ghidra_extension/README.md."
+            )
+
+        # Locate the headless export script.
+        # Search order: installed extension dir, then repo source tree.
+        script_path = None
+        for d in ext_dir.rglob("ghidra_scripts"):
+            if (d / "QuokkaExportHeadless.java").exists():
+                script_path = d
+                break
+        if script_path is None:
+            # Fall back to repo source tree (works for dev installs)
+            repo_script = (
+                Path(__file__).resolve().parent.parent.parent.parent
+                / "ghidra_extension" / "src" / "script" / "ghidra_scripts"
+            )
+            if (repo_script / "QuokkaExportHeadless.java").exists():
+                script_path = repo_script
+        if script_path is None:
+            raise QuokkaError(
+                "QuokkaExportHeadless.java not found. Install the Ghidra "
+                "extension or run from the quokka source tree."
+            )
+
+        # Map ExporterMode to Ghidra script mode names
+        ghidra_mode = "LIGHT" if mode == ExporterMode.LIGHT else "SELF_CONTAINED"
+
+        proj_dir = tempfile.mkdtemp(prefix="quokka_ghidra_")
+        try:
+            cmd = [
+                str(analyze_headless),
+                proj_dir,
+                "QuokkaTmp",
+                "-import", str(exec_path),
+                "-scriptPath", str(script_path),
+                "-postScript", "QuokkaExportHeadless.java",
+                f"--out={output_file}",
+                f"--mode={ghidra_mode}",
+                "-readOnly",
+            ]
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout if timeout else None,
+            )
+
+            if debug:
+                Program.logger.debug(
+                    f"Ghidra returned code {result.returncode}"
+                )
+                Program.logger.debug(result.stderr[-2000:] if result.stderr else "")
+
+            if result.returncode != 0:
+                raise QuokkaError(
+                    f"Ghidra failed to export {exec_path} "
+                    f"(rc={result.returncode}):\n"
+                    f"{result.stderr[-2000:] if result.stderr else ''}"
+                )
+
+            if not output_file.exists():
+                raise QuokkaError(
+                    f"Ghidra export did not produce {output_file}.\n"
+                    f"{result.stdout[-2000:] if result.stdout else ''}"
+                )
+        finally:
+            import shutil
+            shutil.rmtree(proj_dir, ignore_errors=True)
+
+        return output_file
+
+    @staticmethod
+    def generate(
+        exec_path: Path|str,
+        output_file: Path|str|None = None,
+        database_file: Path|str|None = None,
+        decompiled: bool = False,
+        debug: bool = False,
+        override: bool = True,
+        timeout: int|None = 600,
+        mode: ExporterMode = ExporterMode.LIGHT,
+        disassembler: Disassembler|None = None,
+    ) -> Path:
+        """Generate an export file directly from the binary.
+
+        Arguments:
+            exec_path: Binary to export.
+            output_file: Where to store the result (by default: near the executable)
+            database_file: Where to store IDA database (by default: near the executable)
+            decompiled: Whether to export decompiled code (default: False)
+            timeout: How long should we wait for the export to finish (default: 10 min)
+            debug: Activate the debug output
+            mode: Export mode (LIGHT or FULL)
+            disassembler: Backend to use (auto-detect if None)
+
+        Returns:
+            Path to the generated .quokka file.
+
+        Raises:
+            QuokkaError: If the export fails
+            FileNotFoundError: If the executable is not found
+        """
+
+        exec_path = Path(exec_path)
+        if not exec_path.is_file():
+            raise FileNotFoundError("Missing exec file")
+
+        if output_file is None:
+            output_file = exec_path.parent / f"{exec_path.name}.quokka"
+        else:
+            output_file = Path(output_file)
+
+        if output_file.is_file() and not override:
+            return output_file
+
+        if disassembler is None:
+            disassembler = Program._detect_disassembler()
+
+        if disassembler == Disassembler.GHIDRA:
+            if decompiled:
+                Program.logger.warning(
+                    "Ghidra export does not support decompilation yet; "
+                    "ignoring --decompiled flag."
+                )
+            return Program._generate_ghidra(
+                exec_path=exec_path,
+                output_file=output_file,
+                debug=debug,
+                timeout=timeout,
+                mode=mode,
+            )
+        else:
+            return Program._generate_ida(
+                exec_path=exec_path,
+                output_file=output_file,
+                database_file=database_file,
+                decompiled=decompiled,
+                debug=debug,
+                timeout=timeout,
+                mode=mode,
+            )
 
 
     def write(self, output_file: Path|str|None = None) -> None:

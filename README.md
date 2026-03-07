@@ -132,17 +132,21 @@ See the [Ghidra extension README](ghidra_extension/README.md) for more details.
 ### Exporting in CLI
 
 Quokka provides a CLI utility tool to automatically export a single file or
-all executable files of a given directory in parallel. An example to automate
-the export using 8 threads:
+all executable files of a given directory in parallel.
+It supports both IDA Pro and Ghidra backends:
 
 ```commandline
-$ quokka-cli -t 8 dir/
+$ quokka-cli --backend ghidra -t 8 dir/
+$ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/
+$ quokka-cli -t 8 dir/                          # auto-detect backend
 ```
 
 It also accepts various arguments:
 
-* `--ida-path` to provide the path to IDA Pro (directory or binary)
-* `--decompiled` to enable decompiled code export
+* `--backend` to choose the disassembler backend (`ida`, `ghidra`, or `auto`)
+* `--ida-path` to provide the path to IDA Pro (sets `IDA_PATH`)
+* `--ghidra-path` to provide the Ghidra installation directory (sets `GHIDRA_INSTALL_DIR`)
+* `--decompiled` to enable decompiled code export (IDA only)
 * `--verbose` to enable verbose logging
 
 
@@ -150,12 +154,17 @@ It also accepts various arguments:
 
 ```python
 import quokka
+from quokka.types import Disassembler
 
-# Directly from the binary (requires the IDA plugin to be installed)
+# Directly from the binary (auto-detects available backend)
 ls = quokka.Program.from_binary("/bin/ls")
 
+# Explicitly choose a backend
+ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
+ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
+
 # From the exported file
-ls = quokka.Program("ls.quokka",  # the exported file 
+ls = quokka.Program("ls.quokka",  # the exported file
                     "/bin/ls")    # the original binary
 ```
 

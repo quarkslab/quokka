@@ -10,13 +10,12 @@ import sys
 
 import magic
 import click
-import idascript
 from multiprocessing import Pool, Queue, Manager
 import queue
 
 # local imports
 from quokka import Program, QuokkaError
-from quokka.types import ExporterMode
+from quokka.types import Disassembler, ExporterMode
 
 
 BINARY_FORMAT = {
@@ -60,27 +59,43 @@ def recursive_file_iter(p: Path) -> Generator[Path, None, None]:
             yield from recursive_file_iter(f)
 
 
-def do_quokka(exec_path: Path, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> bool:
-    
+def do_quokka(
+    exec_path: Path,
+    mode: ExporterMode,
+    decompiled: bool,
+    timeout: int,
+    override: bool,
+    disassembler: Disassembler|None = None,
+) -> bool:
+
     try:
         Program.generate(
             exec_path=exec_path,
             mode=mode,
             decompiled=decompiled,
             timeout=timeout,
-            override=override
+            override=override,
+            disassembler=disassembler,
         )
         return True
     except QuokkaError as e:
         logging.error(f"Failed to export the binary {exec_path}. Error: {str(e)}")
         return False
-    
 
-def export_job(ingress, egress, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> None:
+
+def export_job(
+    ingress,
+    egress,
+    mode: ExporterMode,
+    decompiled: bool,
+    timeout: int,
+    override: bool,
+    disassembler: Disassembler|None = None,
+) -> None:
     while True:
         try:
             file = ingress.get(timeout=0.5)
-            res = do_quokka(file, mode, decompiled, timeout, override)
+            res = do_quokka(file, mode, decompiled, timeout, override, disassembler)
             egress.put((file, res))
         except queue.Empty:
             pass
@@ -88,7 +103,15 @@ def export_job(ingress, egress, mode: ExporterMode, decompiled: bool, timeout: i
             break
 
 
-def run_async(root_path: Path, threads: int, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> None:
+def run_async(
+    root_path: Path,
+    threads: int,
+    mode: ExporterMode,
+    decompiled: bool,
+    timeout: int,
+    override: bool,
+    disassembler: Disassembler|None = None,
+) -> None:
     manager = Manager()
     ingress = manager.Queue()
     egress = manager.Queue()
@@ -96,7 +119,10 @@ def run_async(root_path: Path, threads: int, mode: ExporterMode, decompiled: boo
 
     # Launch all workers
     for _ in range(threads):
-        pool.apply_async(export_job, (ingress, egress, mode, decompiled, timeout, override))
+        pool.apply_async(
+            export_job,
+            (ingress, egress, mode, decompiled, timeout, override, disassembler),
+        )
 
     # Pre-fill ingress queue
     total = 0
@@ -121,7 +147,14 @@ def run_async(root_path: Path, threads: int, mode: ExporterMode, decompiled: boo
 
     pool.terminate()
 
-def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool, timeout: int, override: bool) -> None:
+def run_sequential(
+    root_path: Path,
+    mode: ExporterMode,
+    decompiled: bool,
+    timeout: int,
+    override: bool,
+    disassembler: Disassembler|None = None,
+) -> None:
     # Pre-fill ingress queue
     total_files = list(recursive_file_iter(root_path))
     total = len(total_files)
@@ -129,7 +162,7 @@ def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool, timeou
     logging.info(f"Start exporting {total} binaries")
 
     for i, exe_path in enumerate(total_files):
-        if do_quokka(exe_path, mode, decompiled, timeout, override):
+        if do_quokka(exe_path, mode, decompiled, timeout, override, disassembler):
             pp_res = Bcolors.OKGREEN + "OK" + Bcolors.ENDC
         else:
             pp_res = Bcolors.FAIL + "KO" + Bcolors.ENDC
@@ -138,11 +171,24 @@ def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool, timeou
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option(
+    "-b",
+    "--backend",
+    type=click.Choice(["ida", "ghidra", "auto"], case_sensitive=False),
+    default="auto",
+    help="Disassembler backend (default: auto-detect)",
+)
+@click.option(
     "-i",
     "--ida-path",
     type=click.Path(exists=True),
     default=None,
     help="IDA Pro headless executable path",
+)
+@click.option(
+    "--ghidra-path",
+    type=click.Path(exists=True),
+    default=None,
+    help="Ghidra installation directory (overrides GHIDRA_INSTALL_DIR)",
 )
 @click.option("--timeout", type=int, default=0, help="Timeout for each export in seconds")
 @click.option("--override", is_flag=True, default=False, help="Override existing .quokka files")
@@ -151,40 +197,76 @@ def run_sequential(root_path: Path, mode: ExporterMode, decompiled: bool, timeou
 @click.option("-m", "--mode", type=click.Choice([x.name for x in ExporterMode], case_sensitive=False), default=ExporterMode.LIGHT.name, help="Export mode (LIGHT or FULL)")
 @click.option("--decompiled", is_flag=True, default=False, help="Export decompiled code")
 @click.argument("input_file", type=click.Path(exists=True), metavar="<binary file|directory>")
-def main(ida_path: str, input_file: str, threads: int, verbose: bool, mode: str, decompiled: bool, timeout: int, override: bool) -> None:
+def main(
+    backend: str,
+    ida_path: str,
+    ghidra_path: str,
+    input_file: str,
+    threads: int,
+    verbose: bool,
+    mode: str,
+    decompiled: bool,
+    timeout: int,
+    override: bool,
+) -> None:
     """
     quokka-cli is a very simple utility to generate a .Quokka file
-    for a given binary or a directory. It all open the binary file and export files
-    seamlessly.
+    for a given binary or a directory. It will open the binary file and export
+    files seamlessly.
 
-    :param ida_path: Path to the IDA Pro headless executable (idat or idat64)
-    :param input_file: Path of the binary to export
-    :param threads: number of threads to use
-    :param verbose: To activate or not the verbosity
-    :param mode: Export mode (LIGHT or FULL)
-    :param decompiled: Whether to export decompiled code
-    :param timeout: Timeout for each export in seconds
-    :param override: Whether to override existing .quokka files
+    Supports both IDA Pro and Ghidra backends. Use --backend to choose, or
+    let auto-detection pick whichever is available.
     """
 
     logging.basicConfig(
         format="%(message)s", level=logging.DEBUG if verbose else logging.INFO
     )
 
-    if ida_path:
-        os.environ["IDA_PATH"] = ida_path
-    if not idascript.get_ida_path():
-        logging.error("Can't find IDA Pro executable. Try setting IDA_PATH or use -i option")
-        exit(1)
+    # Resolve the disassembler backend
+    disassembler: Disassembler|None = None
+
+    if backend == "ida":
+        disassembler = Disassembler.IDA
+        if ida_path:
+            os.environ["IDA_PATH"] = ida_path
+        try:
+            import idascript
+        except ImportError:
+            logging.error("idascript is not installed. Install it to use the IDA backend.")
+            exit(1)
+        if not idascript.get_ida_path():
+            logging.error("Can't find IDA Pro executable. Try setting IDA_PATH or use -i option")
+            exit(1)
+    elif backend == "ghidra":
+        disassembler = Disassembler.GHIDRA
+        if ghidra_path:
+            os.environ["GHIDRA_INSTALL_DIR"] = ghidra_path
+        if not os.environ.get("GHIDRA_INSTALL_DIR"):
+            logging.error(
+                "Ghidra not found. Set GHIDRA_INSTALL_DIR or use --ghidra-path"
+            )
+            exit(1)
+        if decompiled:
+            logging.warning(
+                "Ghidra export does not support decompilation yet; "
+                "ignoring --decompiled flag."
+            )
+    else:  # auto
+        if ida_path:
+            os.environ["IDA_PATH"] = ida_path
+        if ghidra_path:
+            os.environ["GHIDRA_INSTALL_DIR"] = ghidra_path
+        # Let Program._detect_disassembler() choose at export time
+        disassembler = None
 
     root_path = Path(input_file)
 
     export_mode = ExporterMode[mode.upper()]
 
     if threads > 1:
-        run_async(root_path, threads, export_mode, decompiled, timeout, override)
+        run_async(root_path, threads, export_mode, decompiled, timeout, override, disassembler)
     else:
-        run_sequential(root_path, export_mode, decompiled, timeout, override)
+        run_sequential(root_path, export_mode, decompiled, timeout, override, disassembler)
 
 
 
