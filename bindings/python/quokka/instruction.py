@@ -137,6 +137,25 @@ class Operand(ABC):
         """
         pass
 
+    @property
+    def is_register(self) -> bool:
+        """Returns True if this operand is a register"""
+        return self.type == OperandType.REGISTER
+    
+    @property
+    def is_immediate(self) -> bool:
+        """Returns True if this operand is an immediate"""
+        return self.type == OperandType.IMMEDIATE
+    
+    @property
+    def is_memory(self) -> bool:
+        """Returns True if this operand is a memory operand"""
+        return self.type == OperandType.MEMORY
+    
+    @property
+    def is_other(self) -> bool:
+        """Returns True if this operand is of other type (i.e. not register, immediate or memory)"""
+        return self.type == OperandType.OTHER
 
 
 class OperandFull(Operand):
@@ -586,7 +605,10 @@ class Instruction:
     def has_call(self) -> bool:
         """Check if the instruction has a call target (namely
         code refs on a function entrypoint)"""
-        return self.call_target is not False
+        try:
+            return self.call_target is not None
+        except quokka.FunctionMissingError:
+            return False
 
     @cached_property
     def strings(self) -> list[str]:

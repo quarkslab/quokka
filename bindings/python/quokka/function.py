@@ -175,6 +175,9 @@ class Function(dict):
                 super().__setitem__(address, block)
                 return block
 
+    def __len__(self) -> AddressT:
+        return len(self._block_data)
+
     def values(self):
         """Return the blocks of the function"""
         for address in self._block_data.keys():
@@ -252,6 +255,15 @@ class Function(dict):
             constants.extend(block.constants)
 
         return constants
+
+    @property
+    def bytes(self) -> bytes:
+        """Return the concatenated bytes of all blocks in the function, sorted by address."""
+        result = bytearray()
+        for start, end in self._chunks:
+            off = self.program.address_to_offset(start)
+            result += self.program.executable.read_bytes(off, end - start)
+        return bytes(result)
 
     @cached_property
     def graph(self) -> "networkx.DiGraph":

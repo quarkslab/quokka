@@ -93,7 +93,7 @@ class Block(MutableMapping):
         elif self.program.mode == ExporterMode.LIGHT:
             insts = quokka.backends.capstone.capstone_decode_block(self)
             if len(insts) != self.proto.n_instr:
-                logger.warning(
+                logger.debug(
                     f"Decoded {len(insts)} instructions for block at 0x{self.start:x} but expected {self.proto.n_instr}."
                 )
             for i, inst in enumerate(insts):  
@@ -226,6 +226,14 @@ class Block(MutableMapping):
         )
 
         return block_bytes
+
+    @property
+    def pp_str(self) -> str:
+        """Pretty print the block as a string"""
+        return "\n".join(
+            f"{inst.address:#x}: {str(inst)}"
+            for inst in self.instructions
+        )
 
     @cached_property
     def pcode_insts(self) -> list[pypcode.PcodeOp]:
