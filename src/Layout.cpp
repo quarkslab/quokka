@@ -377,14 +377,19 @@ void HeadIterator::Scan(
       ExportDataReferences(data);
 
     } else if (this->state == UNK_WITH_XREF) {
-      /* IDA being IDA, some unknown part in the code have data ref attached
-       * to them.
-       *
-       * This tries to deal with this case but also attaching "data" ref to
-       * unknown part of the code.
-       * */
+      // Some unknown part in the code might have data ref attached to them.
+      // Try to create a new data object out of it to preserve xrefs. It will
+      // most likely end up being a TYPE_B or TYPE_UNK.
 
-      // ExportUnkReferences(head_iterator.current_ea, head_iterator.data_list);
+      // In PE, the imports are listed as DATA
+      assert(!import_manager.InImport(this->current_ea) &&
+             "Found an imported function in the UNK_WITH_XREF section that is "
+             "not part of the excluded ranges");
+
+      const Data& data =
+          this->data_list.insert(Data::Make(this->current_ea, this->item_size));
+
+      ExportDataReferences(data);
     }
 
   iterate:  // Iterate on the next head

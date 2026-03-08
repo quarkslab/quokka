@@ -10,3 +10,4 @@ tests/dataset/many_types_cpp_ghidra.quokka filter=lfs diff=lfs merge=lfs -text
 tests/dataset/puraUpdate.quokka filter=lfs diff=lfs merge=lfs -text
 tests/dataset/puraUpdate_ghidra.quokka filter=lfs diff=lfs merge=lfs -text
 tests/dataset/sig_test filter=lfs diff=lfs merge=lfs -text
+tests/dataset/nf_nat_pt.ko filter=lfs diff=lfs merge=lfs -text

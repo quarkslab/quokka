@@ -27,7 +27,7 @@ import idascript
 import pytest
 
 import quokka
-from quokka.data_type import StructureType, EnumType
+from quokka.data_type import ArrayType, BaseType, StructureType, EnumType
 from quokka import quokka_pb2 as Pb
 
 
@@ -1361,3 +1361,70 @@ class TestManyTypesCppExport:
             f"TdEnumDArr3 array element should be TdEnumD, "
             f"got {elem.composite_type.name!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Deferred type export: decompiler-created types are captured
+# ---------------------------------------------------------------------------
+
+
+@requires_ida
+class TestDeferredTypeExport:
+    """Verify that types created by the decompiler are captured.
+
+    The nf_nat_pt.ko binary has a global 'inport' at address 0x1920.
+    Without decompilation it is exported as a plain byte.  When the
+    decompiler runs on nat_pt_write_proc (0x41C), IDA promotes inport
+    to _WORD inport[300].  The deferred type export ensures this array
+    type is present in the .quokka output.
+    """
+
+    INPORT_ADDR = 0x1920
+
+    @pytest.fixture(autouse=True)
+    def _export(self, root_directory: Path, tmp_path: Path):
+        binary = root_directory / "tests" / "dataset" / "nf_nat_pt.ko"
+        if not binary.exists():
+            pytest.skip("nf_nat_pt.ko not found in tests/dataset/")
+
+        self.binary = tmp_path / "nf_nat_pt.ko"
+        shutil.copy2(binary, self.binary)
+
+        # Export without decompilation
+        self.prog_no_decomp = quokka.Program.from_binary(
+            self.binary,
+            output_file=tmp_path / "nf_nat_pt_nodecomp.quokka",
+            database_file=tmp_path / "nf_nat_pt_nodecomp.i64",
+            decompiled=False,
+            timeout=600,
+        )
+
+        # Export with decompilation (fresh database)
+        self.prog_decomp = quokka.Program.from_binary(
+            self.binary,
+            output_file=tmp_path / "nf_nat_pt_decomp.quokka",
+            database_file=tmp_path / "nf_nat_pt_decomp.i64",
+            decompiled=True,
+            timeout=600,
+        )
+
+    def test_no_decomp_inport_is_unknown(self):
+        """Without decompilation, inport is untyped (.bss byte)."""
+        data = self.prog_no_decomp.data[self.INPORT_ADDR]
+        assert data.name == "inport"
+        assert isinstance(data.type, BaseType)
+        assert data.type == BaseType.UNKNOWN
+
+    def test_decomp_inport_is_word_array_300(self):
+        """With decompilation, inport should be _WORD[300]."""
+        data = self.prog_decomp.data[self.INPORT_ADDR]
+        assert data.name == "inport"
+        assert isinstance(data.type, ArrayType), (
+            f"Expected ArrayType, got {type(data.type).__name__}"
+        )
+        assert data.type.array_size == 300, (
+            f"Expected array of 300 elements, got {data.type.array_size}"
+        )
+        elem = data.type.element_type
+        assert isinstance(elem, BaseType)
+        assert elem == BaseType.WORD

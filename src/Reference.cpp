@@ -133,14 +133,19 @@ static Quokka::EdgeType GetXrefType(const xrefblk_t& xref) {
       xref.from, xref.to, xref.iscode, xref.type));
 }
 
-static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
-                        const insn_t* insn = nullptr) {
-  References& references = References::GetInstance();
+struct DeferredSymbolXref {
+  ea_t address;
+  std::vector<const Reference*>* xrefs_from;
+};
 
-  xrefblk_t xref;
+static std::vector<DeferredSymbolXref> deferred_symbol_xrefs;
+
+static void AttachSymbolLinks(std::vector<const Reference*>& xrefs_from,
+                              ea_t address) {
+  References& references = References::GetInstance();
   DataTypes& data_types = DataTypes::GetInstance();
 
-  // Symbol xrefs
+  xrefblk_t xref;
   for (bool ok = xref.first_from(address, XREF_TID | XREF_NOFLOW); ok;
        ok = xref.next_from()) {
     // get_tid_ordinal() resolves the parent type ordinal when provided with a
@@ -183,7 +188,8 @@ static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
       assert(false && "Found a xref to a type that has not been exported!");
     }
 
-    auto edge_type = insn ? GetXrefType(xref, *insn) : GetXrefType(xref);
+    // TID xrefs are always !iscode, so insn is never needed
+    auto edge_type = GetXrefType(xref);
 
     references.attach_link(
         &xrefs_from,
@@ -191,6 +197,21 @@ static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
          std::make_pair(std::addressof(UpcastVariant<ProtoHelper>(it->second)),
                         member_idx),
          edge_type});
+  }
+}
+
+static void AttachLinks(std::vector<const Reference*>& xrefs_from, ea_t address,
+                        const insn_t* insn = nullptr,
+                        bool defer_symbols = true) {
+  References& references = References::GetInstance();
+
+  xrefblk_t xref;
+
+  // Symbol xrefs (TID): defer during function export, resolve after types exist
+  if (defer_symbols) {
+    deferred_symbol_xrefs.push_back({address, &xrefs_from});
+  } else {
+    AttachSymbolLinks(xrefs_from, address);
   }
 
   // Code+Data xrefs
@@ -236,31 +257,9 @@ void ExportDataReferences(const Data& data) {
         references.emplace(xref.from, data.addr, GetXrefType(xref))));
   }
 
-  // Attach link in the FROM xref
-  AttachLinks(data.xrefs.from, data.addr);
+  // Attach link in the FROM xref (types already exported, resolve immediately)
+  AttachLinks(data.xrefs.from, data.addr, nullptr, false);
 }
-
-// void ExportUnkReferences(ea_t current_ea, BucketNew<Data>& data_bucket) {
-//   ReferenceHolder& reference_holder = ReferenceHolder::GetInstance();
-
-//   xrefblk_t xref{};
-//   uint32_t ref_count = 0;
-//   std::shared_ptr<Data> data;
-
-//   for (bool ok = xref.first_to(current_ea, XREF_DATA); ok;
-//        ok = xref.next_to()) {
-//     if (ref_count == 0) {
-//       data = data_bucket.emplace(current_ea, DataType::TYPE_UNK, 1);
-//     }
-
-//     reference_holder.emplace_back(data, ea_t(xref.from), REF_DATA);
-//     ++ref_count;
-//   }
-
-//   if (ref_count > 0) {
-//     data->ref_count += (ref_count - 1);
-//   }
-// }
 
 void ExportSymbolReference(const ProtoHelper* type,
                            std::vector<const Reference*>& xref_to,
@@ -275,6 +274,13 @@ void ExportSymbolReference(const ProtoHelper* type,
     xref_to.push_back(std::addressof(references.emplace(
         xref.from, std::make_pair(type, index), GetXrefType(xref))));
   }
+}
+
+void ResolveDeferredSymbolXrefs() {
+  for (auto& entry : deferred_symbol_xrefs) {
+    AttachSymbolLinks(*entry.xrefs_from, entry.address);
+  }
+  deferred_symbol_xrefs.clear();
 }
 
 }  // namespace quokka

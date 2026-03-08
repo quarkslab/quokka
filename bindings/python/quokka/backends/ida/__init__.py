@@ -5,7 +5,6 @@ import ida_funcs
 import ida_xref
 
 from quokka import Program, Function, Data
-from quokka.data_type import ComplexType
 
 
 def apply_quokka(program: Program) -> int:
@@ -130,40 +129,47 @@ def apply_types(program: Program) -> int:
     into the current TIL via ``parse_decls`` using their ``c_str`` (C
     declaration).
 
+    Iterates proto types directly because ``program.types`` filters out
+    ``is_new`` entries.
+
     Returns:
         The number of errors encountered.
     """
     errors_count = 0
 
-    for typ in program.types:
-        if not isinstance(typ, ComplexType) or not typ.is_new:
+    for pb_type in program.proto.types:
+        if not pb_type.is_new:
             continue
 
-        errors_count += _apply_type(typ)
+        oneof = pb_type.WhichOneof("OneofType")
+        if oneof == "composite_type":
+            ct = pb_type.composite_type
+        elif oneof == "enum_type":
+            ct = pb_type.enum_type
+        else:
+            continue
+
+        errors_count += _apply_type(ct.c_str, ct.name)
 
     return errors_count
 
 
-def _apply_type(typ: ComplexType) -> int:
+def _apply_type(c_str: str, name: str) -> int:
     """Register a single new type into the current TIL via ``parse_decls``.
-
-    Requires a non-empty ``c_str`` on the type.
 
     Returns:
         The error count (0 or 1).
     """
-    kind = type(typ).__name__
-
-    if not typ.c_str:
-        print(f"[x] create {kind} {typ.name} (no c_str available)")
+    if not c_str:
+        print(f"[x] create type {name} (no c_str available)")
         return 1
 
     til = ida_typeinf.get_idati()
-    if ida_typeinf.parse_decls(til, typ.c_str, None, ida_typeinf.HTI_DCL) == 0:
-        print(f"[ok] create {kind} {typ.name}")
+    if ida_typeinf.parse_decls(til, c_str, None, ida_typeinf.HTI_DCL) == 0:
+        print(f"[ok] create type {name}")
         return 0
 
-    print(f"[x] create {kind} {typ.name}")
+    print(f"[x] create type {name}")
     return 1
 
 

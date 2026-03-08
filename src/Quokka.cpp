@@ -54,6 +54,7 @@
 #include "quokka/Logger.h"
 #include "quokka/ProtoWrapper.h"
 #include "quokka/Quokka.h"
+#include "quokka/Reference.h"
 #include "quokka/Segment.h"
 #include "quokka/Settings.h"
 #include "quokka/Util.h"
@@ -159,20 +160,15 @@ static int ExportBinary(const std::string& filename) {
     ExportMeta(&quokka_protobuf);
   }
 
-  // Export segments but don't write them yet. Segments have to outlive all
-  // the other objects
+  // Export segments (must outlive all other objects)
   {
-    SCOPED_BOX_STEP("quokka: exporting segments and data types",
-                    "Starting to export segments and data types...",
-                    "Segments and data types exported successfully");
+    SCOPED_BOX_STEP("quokka: exporting segments",
+                    "Starting to export segments...",
+                    "Segments exported successfully");
     ExportSegments();
-    ExportEnums();  // First enums
-    ExportCompositeDataTypes();
-    ExportTypedefs();  // After composites so target types exist
-    WriteHeaders(&quokka_protobuf);
   }
 
-  // Export functions
+  // Export functions (decompiler runs here, may create/modify types)
   decltype(ExportFunctions()) funcs_and_ranges;
   {
     Timer timer(absl::Now());
@@ -185,6 +181,18 @@ static int ExportBinary(const std::string& filename) {
                              timer.ElapsedSeconds(absl::Now()));
   }
   auto [functions, ranges] = std::move(funcs_and_ranges);
+
+  // Export data types (after functions so decompiler-created types are captured)
+  {
+    SCOPED_BOX_STEP("quokka: exporting data types",
+                    "Starting to export data types...",
+                    "Data types exported successfully");
+    WriteHeaders(&quokka_protobuf);
+    ExportEnums();
+    ExportCompositeDataTypes();
+    ExportTypedefs();
+    ResolveDeferredSymbolXrefs();
+  }
 
   // Export layout and remaining data through linear scanning
   replace_wait_box("quokka: linear scan in progress");
