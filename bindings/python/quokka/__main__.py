@@ -79,12 +79,13 @@ def do_quokka(
         )
         return True
     except StaleIDBError as e:
+        indented_err = str(e).replace('\n', '\n  ')
         logging.error(
             f"\n{Bcolors.FAIL}{Bcolors.BOLD}"
             f"{'=' * 60}\n"
             f"  ERROR: Stale IDA database files detected!\n"
             f"{'=' * 60}\n\n"
-            f"  {e}\n\n"
+            f"  {indented_err}\n\n"
             f"  Remove the .id0, .id1, .id2, .til, and .nam files\n"
             f"  next to '{exec_path.name}' before running quokka again.\n"
             f"{'=' * 60}"
