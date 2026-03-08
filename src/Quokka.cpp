@@ -122,7 +122,7 @@ static std::string GetOutputFileName() {
   if (output_file.empty()) {
     char path[QMAXPATH] = {0};
     get_input_file_path(path, QMAXPATH);
-    output_file = ReplaceFileExtension(path, ".quokka");
+    output_file = absl::StrCat(path, ".quokka");
   }
   return output_file;
 }

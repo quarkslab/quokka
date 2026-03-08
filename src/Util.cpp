@@ -14,7 +14,6 @@
 
 #include <cassert>
 #include <string>
-#include <string_view>
 
 // clang-format off: Compatibility.h must come before ida headers
 #include "quokka/Compatibility.h"
@@ -25,20 +24,12 @@
 #include <name.hpp>
 #include <typeinf.hpp>
 
-#include "absl/strings/str_cat.h"
-
 #include "quokka/Util.h"
 
 namespace quokka {
 
 std::string ConvertIdaString(const qstring& ida_string) {
   return {ida_string.c_str(), ida_string.length()};
-}
-
-std::string ReplaceFileExtension(std::string_view path,
-                                 std::string_view new_extension) {
-  auto pos = path.find_last_of('.');
-  return absl::StrCat(path.substr(0, pos), new_extension);
 }
 
 std::string GetName(ea_t address, bool mangled) {

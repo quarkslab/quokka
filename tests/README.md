@@ -30,7 +30,7 @@ pip install -e '.[dev]'
 tests/
   cpp/
     DataType_test.cpp   Key-snapshot iteration tests (absl::flat_hash_map)
-    Util_test.cpp       scope_exit_guard, Timer, ReplaceFileExtension, type traits, for_each_visit, UpcastVariant
+    Util_test.cpp       scope_exit_guard, Timer, type traits, for_each_visit, UpcastVariant
     Bucket_test.cpp     SetBucket, MapBucket, MultiMapBucket, SortedView
   dataset/              Test binaries, sources, IDA databases, and pre-exported .quokka files
   python/
@@ -95,7 +95,7 @@ Always built when `-DBUILD_TEST=On`. Runs in CI on every push. All 72 tests are 
 | File | Test Suites (test count) | What It Tests |
 |------|-----------|---------------|
 | [DataType_test.cpp](cpp/DataType_test.cpp) | `KeySnapshotIteration` (3) | Regression test for iterator invalidation in `ExportCompositeDataTypes()`. Verifies that snapshotting `absl::flat_hash_map` keys before iterating allows safe insertion during the loop. |
-| [Util_test.cpp](cpp/Util_test.cpp) | `ScopeExitGuard` (5), `Timer` (6), `ReplaceFileExtension` (7), `TypeTraits` (7), `ForEachVisit` (4), `UpcastVariant` (4) | Pure-logic utilities from `Util.h` with no IDA dependency: RAII scope guard, timer arithmetic, file extension replacement, `std::variant` type traits, visitor helpers. |
+| [Util_test.cpp](cpp/Util_test.cpp) | `ScopeExitGuard` (5), `Timer` (6), `TypeTraits` (7), `ForEachVisit` (4), `UpcastVariant` (4) | Pure-logic utilities from `Util.h` with no IDA dependency: RAII scope guard, timer arithmetic, `std::variant` type traits, visitor helpers. |
 | [Bucket_test.cpp](cpp/Bucket_test.cpp) | `SetBucket` (15), `MapBucket` (9), `MultiMapBucket` (9), `SortedView` (3) | Bucket containers from `Bucket.h`: insert/emplace, deduplication, freeze/sort semantics, ref-count tracking, sorted-view iteration, error handling for post-freeze mutations. |
 
 ## Python Tests
