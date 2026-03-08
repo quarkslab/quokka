@@ -63,7 +63,7 @@ from quokka.types import (
     Index,
     CallingConvention
 )
-from quokka.exc import QuokkaError
+from quokka.exc import QuokkaError, StaleIDBError
 
 
 if TYPE_CHECKING:
@@ -716,6 +716,21 @@ class Program(dict):
         if idascript is None:
             raise QuokkaError(
                 "idascript is not installed. Install it or use Ghidra backend."
+            )
+
+        stale_extensions = (".id0", ".id1", ".id2", ".til", ".nam")
+        stale_files = [
+            exec_path.parent / f"{exec_path.name}{ext}"
+            for ext in stale_extensions
+            if (exec_path.parent / f"{exec_path.name}{ext}").is_file()
+        ]
+        if stale_files:
+            names = ", ".join(f.name for f in stale_files)
+            raise StaleIDBError(
+                f"Stale IDA database files found next to the binary: {names}\n"
+                "These files prevent IDA from opening the binary in "
+                "autonomous mode.\n"
+                "Please delete them before re-exporting."
             )
 
         exec_file = exec_path

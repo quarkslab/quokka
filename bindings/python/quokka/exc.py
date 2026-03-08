@@ -44,3 +44,7 @@ class CapstoneError(QuokkaError):
 
 class PypcodeError(QuokkaError):
     """Main exception for pypcode integration"""
+
+
+class StaleIDBError(QuokkaError):
+    """Raised when stale IDA database files prevent opening a binary"""

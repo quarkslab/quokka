@@ -14,7 +14,7 @@ from multiprocessing import Pool, Queue, Manager
 import queue
 
 # local imports
-from quokka import Program, QuokkaError
+from quokka import Program, QuokkaError, StaleIDBError
 from quokka.types import Disassembler, ExporterMode
 
 
@@ -78,6 +78,19 @@ def do_quokka(
             disassembler=disassembler,
         )
         return True
+    except StaleIDBError as e:
+        logging.error(
+            f"\n{Bcolors.FAIL}{Bcolors.BOLD}"
+            f"{'=' * 60}\n"
+            f"  ERROR: Stale IDA database files detected!\n"
+            f"{'=' * 60}\n\n"
+            f"  {e}\n\n"
+            f"  Remove the .id0, .id1, .id2, .til, and .nam files\n"
+            f"  next to '{exec_path.name}' before running quokka again.\n"
+            f"{'=' * 60}"
+            f"{Bcolors.ENDC}"
+        )
+        return False
     except QuokkaError as e:
         logging.error(f"Failed to export the binary {exec_path}. Error: {str(e)}")
         return False
