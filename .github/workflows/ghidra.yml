@@ -105,7 +105,9 @@ jobs:
           name: ghidra-extension
 
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
-        with:
-          files: "*.zip"
-          fail_on_unmatched_files: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          shopt -s failglob
+          gh release upload "$TAG_NAME" *.zip
