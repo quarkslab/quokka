@@ -1080,7 +1080,7 @@ class Program(dict):
         self,
         database_file: "Path|str|None" = None,
         ida_path: "Path|str|None" = None,
-        overwrite: bool = False,
+        overwrite: bool = True,
         timeout: int = 600,
     ) -> int:
         """Write the .quokka and apply edits to the disassembler database.
@@ -1103,9 +1103,7 @@ class Program(dict):
         match self.disassembler:
             case Disassembler.IDA:
                 if database_file is None:
-                    raise ValueError(
-                        "database_file is required for IDA programs"
-                    )
+                    database_file = str(self.executable.exec_file) + ".i64"
                 return self._commit_edits_ida(
                     database_file,
                     ida_path=ida_path,
