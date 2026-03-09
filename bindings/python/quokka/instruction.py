@@ -351,6 +351,11 @@ class Instruction:
                 yield from  inst_c.comments
 
     @property
+    def block(self) -> quokka.Block:
+        """Return the parent block of the instruction"""
+        return self.parent
+
+    @property
     def proto(self) -> "Pb.Instruction":
         """Return the instruction protobuf if in full mode"""
         assert self._proto is not None
@@ -487,7 +492,7 @@ class Instruction:
     def callers(self) -> list[AddressT]:
         """Returns all call reference to this instruction"""
         # Check if the reference address points to a function head
-        return [addr for addr in self.code_refs_to if addr in self.program]
+        return [addr for addr in self.code_refs_to if self.program.find_function_by_address(addr)]
 
     def is_fall_through(self, addr: AddressT) -> bool:
         """Check if the given address is a fall-through of the instruction
@@ -558,7 +563,7 @@ class Instruction:
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the data ref to it
                 imm_ops[0]._data_xrefs_from.append((t, dxref))
             else:
-                logger.warning(f"{self.address:#x} inst {str(self)} can't assign data refs")
+                logger.debug(f"{self.address:#x} inst {str(self)} can't assign data refs")
         
         for t, cxref in ((t, xref.destination.address) for t, xref in self._xrefs_from if t.is_code):
             # If there is only one memory operand assign code ref to it
@@ -569,7 +574,7 @@ class Instruction:
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the code ref to it
                 imm_ops[0]._code_xrefs_from.append((t, cxref))
             else:
-                logger.warning(f"{self.address:#x} inst {str(self)} can't assign code refs")
+                logger.debug(f"{self.address:#x} inst {str(self)} can't assign code refs")
 
         for t, sxref in ((t, xref.destination.data_type_identifier) for t, xref in self._xrefs_from
                          if t.is_data and xref.destination.HasField("data_type_identifier")):  # Note: do not use SYMBOL enum

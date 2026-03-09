@@ -435,6 +435,20 @@ class Program(dict):
         else:
             return typ
 
+    def find_type(self, name: str) -> TypeT|None:
+        """Find a type by its name
+
+        Arguments:
+            name: Name of the type to find
+
+        Returns:
+            The corresponding type, None if not found
+        """
+        for t in self.types:
+            if t.name == name:
+                return t
+        return None
+
     def get_type_resolved(self, type_index: Index) -> TypeT:
         """Get a type by index, resolving through any typedef chains.
 
