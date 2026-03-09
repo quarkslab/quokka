@@ -83,6 +83,17 @@ BaseType GetBaseType(const tinfo_t& tinf, bool ignore_typedef /* = false */) {
 
   switch (realtype & TYPE_BASE_MASK) {
     case BT_UNK:
+      // Unknown sometimes can have a size
+      switch (realtype & TYPE_FLAGS_MASK) {
+        case BTMT_SIZE0:
+          return TYPE_UNK;
+        case BTMT_SIZE12:
+          return TYPE_W;
+        case BTMT_SIZE48:
+          return TYPE_QW;
+        case BTMT_SIZE128:
+          return TYPE_OW;
+      }
       return TYPE_UNK;
     case BT_INT8:
       return TYPE_B;

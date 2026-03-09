@@ -35,6 +35,7 @@ from quokka.exc import (
     InstructionError,
     CapstoneError,
     PypcodeError,
+    StaleIDBError,
 )
 
 from quokka.executable import Executable
@@ -98,6 +99,7 @@ __all__ = [
     "InstructionError",
     "CapstoneError",
     "PypcodeError",
+    "StaleIDBError",
     # From executable.py
     "Executable",
     # From functions.py

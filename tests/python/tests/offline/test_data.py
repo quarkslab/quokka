@@ -220,7 +220,7 @@ def test_pura_update_loads(pura_update_prog: quokka.Program):
     due to iterator invalidation when inserting pointer/array types into the
     hash map during iteration. The fixed exporter must produce a loadable
     .quokka file."""
-    assert len(pura_update_prog.fun_names) == 74
+    assert len(pura_update_prog.fun_names) == 113
     types_list = list(pura_update_prog.types)
     assert len(types_list) > 0, "Export should contain data types"
     structs = [t for t in types_list if isinstance(t, StructureType)]
@@ -438,3 +438,51 @@ def test_is_new_not_set_for_primitives(prog: quokka.Program):
             assert not hasattr(t, "is_new"), (
                 "BaseType should not have is_new attribute"
             )
+
+
+# ---------------------------------------------------------------------------
+# Data.prev / Data.next navigation tests
+# ---------------------------------------------------------------------------
+
+
+def test_data_next_address_is_higher(prog: quokka.Program):
+    """data.next should return a Data with a higher address."""
+    data_list = list(prog.data)
+    for d in data_list:
+        nxt = d.next
+        if nxt is not None:
+            assert nxt.address > d.address
+
+
+def test_data_prev_address_is_lower(prog: quokka.Program):
+    """data.prev should return a Data with a lower address."""
+    data_list = list(prog.data)
+    for d in data_list:
+        prv = d.prev
+        if prv is not None:
+            assert prv.address < d.address
+
+
+def test_data_first_prev_is_none(prog: quokka.Program):
+    """The first data (lowest address) should have prev == None."""
+    sorted_addrs = prog.data._sorted_addrs
+    first = prog.data[sorted_addrs[0]]
+    assert first.prev is None
+
+
+def test_data_last_next_is_none(prog: quokka.Program):
+    """The last data (highest address) should have next == None."""
+    sorted_addrs = prog.data._sorted_addrs
+    last = prog.data[sorted_addrs[-1]]
+    assert last.next is None
+
+
+def test_data_next_prev_roundtrip(prog: quokka.Program):
+    """data.next.prev should return the original data."""
+    sorted_addrs = prog.data._sorted_addrs
+    if len(sorted_addrs) < 2:
+        pytest.skip("Need at least 2 data entries for round-trip test")
+    first = prog.data[sorted_addrs[0]]
+    nxt = first.next
+    assert nxt is not None
+    assert nxt.prev.address == first.address

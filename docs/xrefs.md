@@ -84,8 +84,9 @@ Legend:
 - **Data→Type**: a data object whose type annotation points to a complex type
   or one of its members.  `(s)` means the target can be a `StructureTypeMember`
   instead of the type itself.
-- **Type→Type**: one type referencing another type, or one of its members.
-  `(s)` = struct/union member target, `(k)` = enum member target.
+- **Type→Type**: one type referencing another type, or one of its members
+  (e.g. a struct member whose type is another struct).  Supported by both
+  IDA and Ghidra.
 
 ## Direction: *from* vs *to*
 
@@ -172,6 +173,8 @@ data = prog.data[addr]
 | `data_read_refs_from` | `list[Data \| Function \| AddressT]` | Targets this data reads from |
 | `data_write_refs_from` | `list[Data \| Function \| AddressT]` | Targets this data writes to |
 | `type_refs_from` | `list[TypeReference]` | Type or type member referenced by this data |
+| `prev` | `Data \| None` | Data at the highest address below this one |
+| `next` | `Data \| None` | Data at the lowest address above this one |
 
 ```python
 # Find all instructions reading a global variable
@@ -209,12 +212,23 @@ for callee in func.callees:
 | `data_refs_to` | `list[Data]` | Data objects that use (are annotated with) this type |
 | `data_read_refs_to` | `list[Data]` | Read-only data references to this type |
 | `data_write_refs_to` | `list[Data]` | Write data references to this type |
+| `type_refs_from` | `list[TypeReference]` | Types/members this type references (outgoing type-to-type xrefs) |
+| `type_refs_to` | `list[TypeReference]` | Types/members that reference this type (incoming type-to-type xrefs) |
 
-### `StructureTypeMember` / `EnumTypeMember`
+### `StructureTypeMember`
 
 | Property | Type | Description |
 |---|---|---|
-| `data_refs_to` | `list[Data \| AddressT]` | Data objects or addresses that access this specific member |
+| `data_refs_to` | `list[Data \| AddressT]` | Data objects or addresses that access this member |
+| `type_refs_from` | `list[TypeReference]` | Types/members this member's type resolves to (outgoing) |
+| `type_refs_to` | `list[TypeReference]` | Types/members that reference this member (incoming) |
+
+### `EnumTypeMember`
+
+| Property | Type | Description |
+|---|---|---|
+| `data_refs_to` | `list[Data \| AddressT]` | Data objects or addresses that access this member |
+| `type_refs_to` | `list[TypeReference]` | Types/members that reference this member (incoming) |
 
 ```python
 for struct in prog.structures:
@@ -266,6 +280,24 @@ for struct_name, field_name in sorted(accessed):
 target_struct = next(s for s in prog.structures if s.name == "FILE")
 for data in target_struct.data_refs_to:
     print(f"0x{data.address:x}  {data}")
+```
+
+### Explore type-to-type relationships
+
+```python
+# Which types does this struct reference through its members?
+target_struct = next(s for s in prog.structures if s.name == "request_t")
+for ref in target_struct.type_refs_from:
+    print(f"request_t references {ref}")
+
+# Which types reference this struct?
+for ref in target_struct.type_refs_to:
+    print(f"{ref} references request_t")
+
+# Per-member: what type does each field resolve to?
+for member in target_struct.members:
+    for ref in member.type_refs_from:
+        print(f"  .{member.name} -> {ref}")
 ```
 
 ### Detect indirect calls

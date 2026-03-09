@@ -218,6 +218,45 @@ for t in prog.types:
         print(f"{t.name} → {t.pointed_type}  (size={t.size})")
 ```
 
+## Adding new types
+
+You can define new types from Python and persist them back to the
+disassembler database. New types are created via `Program.add_type()` and
+are marked with `is_new=True` so the backend knows to register them.
+
+```python
+# Struct
+prog.add_type("struct point { int x; int y; };")
+
+# Enum
+prog.add_type("enum color { RED=0, GREEN=1, BLUE=2 };")
+
+# Typedef
+prog.add_type("typedef unsigned int uint32;")
+
+# Union
+prog.add_type("union data { int i; float f; };")
+```
+
+### Persisting new types
+
+New types are appended to the protobuf `types` array, so `prog.write()` and
+`prog.commit()` automatically include them. When applied back to IDA, the
+backend reconstructs each new type from its `c_str` field using
+`parse_decls()`.
+
+```python
+# Save to .quokka only
+prog.write()
+
+# Or apply to IDA and re-export
+prog.commit(database_file="binary.i64", overwrite=True)
+```
+
+!!! note
+    Duplicate type names are rejected -- `add_type()` raises `QuokkaError`
+    if a type with the same name already exists in the program.
+
 ## Cross-references from types
 
 Complex types and their members carry cross-reference lists that tell you which

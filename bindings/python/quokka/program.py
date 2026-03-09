@@ -23,18 +23,24 @@ from __future__ import annotations
 from functools import cached_property
 from itertools import product
 import logging
+import os
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Type, Iterable
 
 import capstone
 import networkx
-import idascript
+try:
+    import idascript
+except ImportError:
+    idascript = None  # type: ignore[assignment]
 
 import quokka
 import quokka.analysis
 import quokka.backends
 from quokka.quokka_pb2 import Quokka as Pb # pyright: ignore[reportMissingImports]
 from quokka.data_type import (
+    ComplexType,
     EnumTypeMember,
     StructureTypeMember,
     BaseType,
@@ -47,6 +53,7 @@ from quokka.data_type import (
     UnionType,
     TypeT
 )
+import hashlib
 from quokka.types import (
     AddressT,
     Disassembler,
@@ -56,7 +63,7 @@ from quokka.types import (
     Index,
     CallingConvention
 )
-from quokka.exc import QuokkaError
+from quokka.exc import QuokkaError, StaleIDBError
 
 
 if TYPE_CHECKING:
@@ -230,10 +237,11 @@ class Program(dict):
         """Types in the program
 
         Returns:
-            Iterable of types in the Program
+            Iterable of types in the Program (excludes user-added types)
         """
-        for i in range(len(self.proto.types)):
-            yield self.get_type(i)
+        for i, pb_type in enumerate(self.proto.types):
+            if not pb_type.is_new:
+                yield self.get_type(i)
 
     def virtual_address(self, seg_id: int, seg_offset: int) -> AddressT:
         """Converts an offset in the file to an absolute address
@@ -284,11 +292,13 @@ class Program(dict):
             A list of structures
         """
         for i, t in enumerate(self.proto.types):
+            if t.is_new:
+                continue
             if t.WhichOneof("OneofType") == "composite_type":
                 if t.composite_type.type == Pb.CompositeType.CompositeSubType.TYPE_STRUCT:
                     if i not in self._types:
-                        self._types[i] = StructureType(t.composite_type, self)
-        yield from (t for t in self._types.values() if isinstance(t, StructureType))
+                        self._types[i] = StructureType(i, t.composite_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, StructureType) and not t.is_new)
 
     @cached_property
     def enums(self) -> Iterable[EnumType]:
@@ -301,10 +311,12 @@ class Program(dict):
             A list of enums
         """
         for i, t in enumerate(self.proto.types):
-            if t.WhichOneof("OneofType") == "composite_type":
+            if t.is_new:
+                continue
+            if t.WhichOneof("OneofType") == "enum_type":
                 if i not in self._types:
-                    self._types[i] = EnumType(t.enum_type, self)
-        yield from (t for t in self._types.values() if isinstance(t, EnumType))
+                    self._types[i] = EnumType(i, t.enum_type, self)
+        yield from (t for t in self._types.values() if isinstance(t, EnumType) and not t.is_new)
 
     def get_struct_member(self, struct_index: Index, member_index: Index) -> StructureTypeMember:
         """Get a structure member by its index
@@ -354,7 +366,7 @@ class Program(dict):
             The corresponding type
 
         Raises:
-            KeyError: When the type is not found
+            KeyError: When the type is not found or is a user-added type
         """
         try:
             typ = self._types[type_index]
@@ -362,8 +374,10 @@ class Program(dict):
             # Unless fill the type from the protobuf
             if type_index >= len(self.proto.types):
                 raise KeyError(f"No type with index {type_index}")
-            
+
             pb_type = self.proto.types[type_index]
+            if pb_type.is_new:
+                raise KeyError(f"Type at index {type_index} is a user-added type")
             is_new = pb_type.is_new
             if pb_type.WhichOneof("OneofType") == "enum_type":
                 self._types[type_index] = EnumType(type_index, pb_type.enum_type, self, is_new=is_new)
@@ -388,8 +402,13 @@ class Program(dict):
                 assert False, "Unknown type"
             typ = self._types[type_index]  # here should be loaded in _types
 
+        if isinstance(typ, ComplexType) and typ.is_new:
+            raise KeyError(f"Type at index {type_index} is a user-added type")
+
         if member_index != -1:
             assert isinstance(typ, (StructureType, UnionType, EnumType))
+            if isinstance(typ, StructureType) and not isinstance(typ, UnionType):
+                return typ.member_at(member_index)
             return typ[member_index]
         else:
             return typ
@@ -416,6 +435,20 @@ class Program(dict):
         else:
             return typ
 
+    def find_type(self, name: str) -> TypeT|None:
+        """Find a type by its name
+
+        Arguments:
+            name: Name of the type to find
+
+        Returns:
+            The corresponding type, None if not found
+        """
+        for t in self.types:
+            if t.name == name:
+                return t
+        return None
+
     def get_type_resolved(self, type_index: Index) -> TypeT:
         """Get a type by index, resolving through any typedef chains.
 
@@ -428,18 +461,39 @@ class Program(dict):
             t = t.aliased_type
         return t
 
-    # @cached_property
-    # def memory(self) -> "quokka.Memory":
-    #     """Memory representation of the program.
+    def add_type(self, type: str) -> None:
+        """Add a new user-defined type to the program.
 
-    #     Allows getting layout of the program especially if addressses are flagged
-    #     as code or data.
+        Args:
+            type: A C type declaration string
+                (e.g. ``"struct foo { int x; float y; }"``).
 
-    #     Returns:
-    #         A `quokka.Memory` instance to access the program memory.
-    #     """
-    #     # TODO(rd): Parse the memory layout
-    #     raise NotImplementedError("Memory is not implemented yet")
+        Raises:
+            QuokkaError: If a type with the same name already exists.
+        """
+
+        h = hashlib.sha256(type.encode("utf-8", errors="replace")).hexdigest()[:16]
+        type_name = f"__user_type_{h}"
+        new_index = len(self.proto.types)
+        pb_type = self.proto.types.add()
+        pb_type.is_new = True
+        ct = pb_type.composite_type
+        ct.name = type_name
+        ct.type = Pb.CompositeType.TYPE_STRUCT
+        ct.c_str = type
+
+        # Check for duplicate names
+        for i, t in enumerate(self.proto.types):
+            if i == new_index:
+                continue
+            oneof = t.WhichOneof("OneofType")
+            if oneof == "composite_type" and t.composite_type.name == type_name:
+                # Remove the just-added entry
+                del self.proto.types[new_index]
+                raise QuokkaError(f"Type '{type_name}' already exists at index {i}")
+            elif oneof == "enum_type" and t.enum_type.name == type_name:
+                del self.proto.types[new_index]
+                raise QuokkaError(f"Type '{type_name}' already exists at index {i}")
 
     @cached_property
     def orphaned_blocks(self) -> Iterable[quokka.Block]:
@@ -598,11 +652,9 @@ class Program(dict):
         override: bool = True,
         timeout: int|None = 0,
         mode: ExporterMode = ExporterMode.LIGHT,
+        disassembler: Disassembler = Disassembler.UNKNOWN,
     ) -> Program|None:
         """Generate an export file directly from the binary.
-
-        This methods will export `exec_path` directly using Quokka IDA's plugin if
-        installed.
 
         Arguments:
             exec_path: Binary to export.
@@ -611,10 +663,11 @@ class Program(dict):
             decompiled: Whether to export decompiled code (default: False)
             timeout: How long should we wait for the export to finish (default: 10 min)
             debug: Activate the debug output
-            mode: Export mode (LIGHT, NORMAL or FULL)
+            mode: Export mode (LIGHT or FULL)
+            disassembler: Backend to use (auto-detect if UNKNOWN)
 
         Returns:
-            A |`Program` instance or None if
+            A Program instance or None
 
         Raises:
             QuokkaError: If the export fails
@@ -628,7 +681,8 @@ class Program(dict):
             override=override,
             debug=debug,
             timeout=timeout,
-            mode=mode
+            mode=mode,
+            disassembler=disassembler,
         )
 
         # In theory if reach here export file exists otherwise an exception has been raised
@@ -650,50 +704,49 @@ class Program(dict):
         return Program(export_file, exec_file)
 
     @staticmethod
-    def generate(
-        exec_path: Path|str,
-        output_file: Path|str|None = None,
-        database_file: Path|str|None = None,
-        decompiled: bool = False,
-        debug: bool = False,
-        override: bool = True,
-        timeout: int|None = 600,
-        mode: ExporterMode = ExporterMode.LIGHT,
-    ) -> Path:
-        """Generate an export file directly from the binary.
+    def _detect_disassembler() -> Disassembler:
+        """Auto-detect an available disassembler backend.
 
-        This methods will export `exec_path` directly using Quokka IDA's plugin if
-        installed.
-
-        Arguments:
-            exec_path: Binary to export.
-            output_file: Where to store the result (by default: near the executable)
-            database_file: Where to store IDA database (by default: near the executable)
-            decompiled: Whether to export decompiled code (default: False)
-            timeout: How long should we wait for the export to finish (default: 10 min)
-            debug: Activate the debug output
-            mode: Export mode (LIGHT, NORMAL or FULL)
-
-        Returns:
-            A |`Path` instance or None if
-
-        Raises:
-            QuokkaError: If the export fails
-            FileNotFoundError: If the executable is not found
+        Prefers IDA if ``idascript`` is importable and ``IDA_PATH`` is set,
+        otherwise falls back to Ghidra if ``GHIDRA_INSTALL_DIR`` is set.
         """
+        if idascript is not None and idascript.get_ida_path():
+            return Disassembler.IDA
+        if os.environ.get("GHIDRA_INSTALL_DIR"):
+            return Disassembler.GHIDRA
+        return Disassembler.UNKNOWN
 
-        exec_path = Path(exec_path)
-        if not exec_path.is_file():
-            raise FileNotFoundError("Missing exec file")
+    @staticmethod
+    def _generate_ida(
+        exec_path: Path,
+        output_file: Path,
+        database_file: Path|str|None,
+        decompiled: bool,
+        debug: bool,
+        timeout: int|None,
+        mode: ExporterMode,
+    ) -> Path:
+        """Run IDA headless export."""
+        if idascript is None:
+            raise QuokkaError(
+                "idascript is not installed. Install it or use Ghidra backend."
+            )
 
-        if output_file is None:
-            output_file = exec_path.parent / f"{exec_path.name}.quokka"
-        else:
-            output_file = Path(output_file)
+        stale_extensions = (".id0", ".id1", ".id2", ".til", ".nam")
+        stale_files = [
+            exec_path.parent / f"{exec_path.name}{ext}"
+            for ext in stale_extensions
+            if (exec_path.parent / f"{exec_path.name}{ext}").is_file()
+        ]
+        if stale_files:
+            names = ", ".join(f.name for f in stale_files)
+            raise StaleIDBError(
+                f"Stale IDA database files found next to the binary: {names}\n"
+                "These files prevent IDA from opening the binary in "
+                "autonomous mode.\n"
+                "Please delete them before re-exporting."
+            )
 
-        if output_file.is_file() and not override:
-            return output_file
-        
         exec_file = exec_path
         if database_file is None:
             database_file = exec_file.parent / f"{exec_file.name}.i64"
@@ -702,12 +755,6 @@ class Program(dict):
 
         if not database_file.is_file():
             database_path = database_file.with_suffix("")
-            # Clean up stale IDA database files to prevent IDA from
-            # failing in autonomous mode when a database already exists.
-            for suffix in (".i64", ".idb"):
-                stale_db = database_path.with_suffix(suffix)
-                if stale_db.is_file():
-                    stale_db.unlink()
         else:
             exec_path = database_file
             database_path = None
@@ -745,6 +792,182 @@ class Program(dict):
 
         return output_file
 
+    @staticmethod
+    def _generate_ghidra(
+        exec_path: Path,
+        output_file: Path,
+        debug: bool,
+        timeout: int|None,
+        mode: ExporterMode,
+    ) -> Path:
+        """Run Ghidra headless export."""
+        import subprocess
+        import tempfile
+
+        env_dir = os.environ.get("GHIDRA_INSTALL_DIR")
+        if not env_dir:
+            raise QuokkaError(
+                "Ghidra not found. Set the GHIDRA_INSTALL_DIR environment variable."
+            )
+        ghidra_dir = Path(env_dir)
+
+        analyze_headless = ghidra_dir / "support" / "analyzeHeadless"
+        if not analyze_headless.exists():
+            raise QuokkaError(
+                f"analyzeHeadless not found at {analyze_headless}"
+            )
+
+        # Verify extension is installed
+        ext_dir = ghidra_dir / "Ghidra" / "Extensions"
+        if not ext_dir.exists() or not any(ext_dir.rglob("QuokkaExporter*")):
+            raise QuokkaError(
+                "QuokkaExporter extension not found in "
+                f"{ext_dir}. Install it first -- see ghidra_extension/README.md."
+            )
+
+        # Locate the headless export script.
+        # Search order: installed extension dir, then repo source tree.
+        script_path = None
+        for d in ext_dir.rglob("ghidra_scripts"):
+            if (d / "QuokkaExportHeadless.java").exists():
+                script_path = d
+                break
+        if script_path is None:
+            # Fall back to repo source tree (works for dev installs)
+            repo_script = (
+                Path(__file__).resolve().parent.parent.parent.parent
+                / "ghidra_extension" / "src" / "script" / "ghidra_scripts"
+            )
+            if (repo_script / "QuokkaExportHeadless.java").exists():
+                script_path = repo_script
+        if script_path is None:
+            raise QuokkaError(
+                "QuokkaExportHeadless.java not found. Install the Ghidra "
+                "extension or run from the quokka source tree."
+            )
+
+        # Map ExporterMode to Ghidra script mode names
+        ghidra_mode = "LIGHT" if mode == ExporterMode.LIGHT else "SELF_CONTAINED"
+
+        proj_dir = tempfile.mkdtemp(prefix="quokka_ghidra_")
+        try:
+            cmd = [
+                str(analyze_headless),
+                proj_dir,
+                "QuokkaTmp",
+                "-import", str(exec_path),
+                "-scriptPath", str(script_path),
+                "-postScript", "QuokkaExportHeadless.java",
+                f"--out={output_file}",
+                f"--mode={ghidra_mode}",
+                "-readOnly",
+            ]
+
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout if timeout else None,
+            )
+
+            if debug:
+                Program.logger.debug(
+                    f"Ghidra returned code {result.returncode}"
+                )
+                Program.logger.debug(result.stderr[-2000:] if result.stderr else "")
+
+            if result.returncode != 0:
+                raise QuokkaError(
+                    f"Ghidra failed to export {exec_path} "
+                    f"(rc={result.returncode}):\n"
+                    f"{result.stderr[-2000:] if result.stderr else ''}"
+                )
+
+            if not output_file.exists():
+                raise QuokkaError(
+                    f"Ghidra export did not produce {output_file}.\n"
+                    f"{result.stdout[-2000:] if result.stdout else ''}"
+                )
+        finally:
+            import shutil
+            shutil.rmtree(proj_dir, ignore_errors=True)
+
+        return output_file
+
+    @staticmethod
+    def generate(
+        exec_path: Path|str,
+        output_file: Path|str|None = None,
+        database_file: Path|str|None = None,
+        decompiled: bool = False,
+        debug: bool = False,
+        override: bool = True,
+        timeout: int|None = 600,
+        mode: ExporterMode = ExporterMode.LIGHT,
+        disassembler: Disassembler = Disassembler.UNKNOWN,
+    ) -> Path:
+        """Generate an export file directly from the binary.
+
+        Arguments:
+            exec_path: Binary to export.
+            output_file: Where to store the result (by default: near the executable)
+            database_file: Where to store IDA database (by default: near the executable)
+            decompiled: Whether to export decompiled code (default: False)
+            timeout: How long should we wait for the export to finish (default: 10 min)
+            debug: Activate the debug output
+            mode: Export mode (LIGHT or FULL)
+            disassembler: Backend to use (auto-detect if UNKNOWN)
+
+        Returns:
+            Path to the generated .quokka file.
+
+        Raises:
+            QuokkaError: If the export fails
+            FileNotFoundError: If the executable is not found
+        """
+
+        exec_path = Path(exec_path)
+        if not exec_path.is_file():
+            raise FileNotFoundError("Missing exec file")
+
+        if output_file is None:
+            output_file = exec_path.parent / f"{exec_path.name}.quokka"
+        else:
+            output_file = Path(output_file)
+
+        if output_file.is_file() and not override:
+            return output_file
+
+        if disassembler is Disassembler.UNKNOWN:
+            disassembler = Program._detect_disassembler()
+
+        match disassembler:
+            case Disassembler.GHIDRA:
+                if decompiled:
+                    Program.logger.warning(
+                        "Ghidra export does not support decompilation yet; "
+                        "ignoring --decompiled flag."
+                    )
+                return Program._generate_ghidra(
+                    exec_path=exec_path,
+                    output_file=output_file,
+                    debug=debug,
+                    timeout=timeout,
+                    mode=mode,
+                )
+            case Disassembler.IDA:
+                return Program._generate_ida(
+                    exec_path=exec_path,
+                    output_file=output_file,
+                    database_file=database_file,
+                    decompiled=decompiled,
+                    debug=debug,
+                    timeout=timeout,
+                    mode=mode,
+                )
+            case _:
+                raise QuokkaError(f"Unsupported disassembler: {disassembler}")
+
 
     def write(self, output_file: Path|str|None = None) -> None:
         """Write the program to a file
@@ -757,36 +980,130 @@ class Program(dict):
         with open(output_file, "wb") as fd:
             fd.write(self.proto.SerializeToString())
 
-    def _commit_edits_ida(self) -> bool:
-        """Commit the edits to the IDA database."""
+    def _commit_edits_ida(
+        self,
+        database_file: "Path|str",
+        ida_path: "Path|str|None" = None,
+        overwrite: bool = False,
+        timeout: int = 600,
+    ) -> int:
+        """Apply in-memory edits to an IDA database by spawning a headless
+        IDA instance.
 
-        script_file = Path(__file__).parent / "backends" / "ida.py"
+        The quokka file and binary paths are taken from ``self``.  The
+        caller must call :meth:`write` beforehand so the serialised
+        ``.quokka`` on disk reflects the pending edits.
 
-        ida = idascript.IDA(
-            self.executable.exec_file,
-            script_file=script_file,
-            script_params=[],
-            database_path=None,
-        )
-        ida.start()
-        ret_code = ida.wait()
+        Arguments:
+            database_file: Path to the ``.i64`` database to modify.
+                The database must already exist (e.g. from a prior export).
+            ida_path: Optional path to the IDA installation directory.
+                When *None*, ``idascript`` resolves it from ``IDA_PATH``
+                or ``$PATH``.
+            overwrite: If *True*, allow modifying an existing database.
+                A warning is logged when an existing database is
+                overwritten.  If *False* (the default) and the database
+                already exists, a :class:`FileExistsError` is raised.
+            timeout: Maximum seconds to wait for IDA (default 600).
+
+        Returns:
+            The number of errors reported by ``apply_quokka()`` inside
+            IDA (0 means all edits applied successfully).
+
+        Raises:
+            FileExistsError: If *database_file* exists and *overwrite*
+                is False.
+            FileNotFoundError: If *database_file* does not exist and
+                cannot be created (parent directory missing).
+            RuntimeError: If IDA times out.
+            QuokkaError: If IDA exits with an unexpected error.
+        """
+        assert idascript is not None, "idascript is required for IDA apply-back"
+
+        database_file = Path(database_file)
+
+        if database_file.exists():
+            if not overwrite:
+                raise FileExistsError(
+                    f"Database already exists: {database_file}. "
+                    "Pass overwrite=True to modify it."
+                )
+            self.logger.warning(
+                "Overwriting existing IDA database: %s", database_file
+            )
+
+        # Point idascript at backends/ida/apply.py.  The script lives in
+        # its own sub-package (not directly in backends/) so that IDA's
+        # automatic sys.path insertion does not shadow the capstone package.
+        script_file = Path(__file__).resolve().parent / "backends" / "ida" / "apply.py"
+        script_params = [
+            str(self.export_file),
+            str(self.executable.exec_file),
+        ]
+
+        old_ida_path = os.environ.get("IDA_PATH")
+        try:
+            if ida_path is not None:
+                os.environ["IDA_PATH"] = str(ida_path)
+
+            ida = idascript.IDA(
+                database_file,
+                script_file=script_file,
+                script_params=script_params,
+                timeout=timeout,
+                database_path=None,
+            )
+            ida.start()
+            ret_code = ida.wait()
+        finally:
+            if ida_path is not None:
+                if old_ida_path is None:
+                    os.environ.pop("IDA_PATH", None)
+                else:
+                    os.environ["IDA_PATH"] = old_ida_path
 
         if ret_code == idascript.IDA.TIMEOUT_RETURNCODE:
-            Program.logger.error(f"Updates application triggered timeout")  # not meant to happen
-        elif ret_code != 0:  # Everything but 0 is an error
-            Program.logger.debug(f"Edits {ret_code} errors during applying")
-            Program.logger.debug(ida.stderr.read().decode("utf-8"))
-            return True  # still return True even if some changes applied with errors
-        # Other returned 0 so application was sucessful
-        return True
+            raise RuntimeError(
+                f"IDA apply-back timed out after {timeout}s "
+                f"on {database_file}"
+            )
 
-    def commit(self) -> bool:
-        """Commit the changes to the export file
-        and apply them to the underlying disassembler."""
+        return ret_code
+
+    def commit(
+        self,
+        database_file: "Path|str|None" = None,
+        ida_path: "Path|str|None" = None,
+        overwrite: bool = True,
+        timeout: int = 600,
+    ) -> int:
+        """Write the .quokka and apply edits to the disassembler database.
+
+        Arguments:
+            database_file: Path to the ``.i64`` database.  Required for
+                IDA-originated programs.
+            ida_path: Optional IDA installation path (IDA only).
+            overwrite: Allow modifying an existing database (IDA only).
+            timeout: IDA timeout in seconds (IDA only).
+
+        Returns:
+            The number of apply errors (0 = success).
+
+        Raises:
+            ValueError: If *database_file* is not provided for an IDA
+                program.
+        """
         self.write()
         match self.disassembler:
             case Disassembler.IDA:
-                return self._commit_edits_ida()
+                if database_file is None:
+                    database_file = str(self.executable.exec_file) + ".i64"
+                return self._commit_edits_ida(
+                    database_file,
+                    ida_path=ida_path,
+                    overwrite=overwrite,
+                    timeout=timeout,
+                )
             case Disassembler.GHIDRA:
                 pass
                 # TODO: Call ghidra script with the write script
@@ -794,24 +1111,48 @@ class Program(dict):
                 raise NotImplementedError("Binary Ninja export is not implemented yet")
             case _:
                 raise NotImplementedError("Unknown disassembler")
-        return True
+        return 0
 
 
-    def regenerate(self) -> 'Program':
-        """Regenerate the Quokka file and from the binary
-        after applying editions.
+    def regenerate(
+        self,
+        database_file: "Path|str|None" = None,
+        ida_path: "Path|str|None" = None,
+        overwrite: bool = False,
+        timeout: int = 600,
+    ) -> 'Program':
+        """Apply edits, re-export, and return a fresh Program.
 
-        This is useful to update the program after making changes to the binary (e.g. by
-        applying patches).
+        Calls :meth:`commit` to apply edits, then :meth:`generate` to
+        produce a new ``.quokka`` file.
+
+        Arguments:
+            database_file: Path to the ``.i64`` database (required for
+                IDA programs).
+            ida_path: Optional IDA installation path.
+            overwrite: Allow modifying an existing database.
+            timeout: IDA timeout in seconds.
 
         Returns:
-            A new instance of Program with the updated data.
-        
-            Raises:
-                QuokkaError: If applying changes failed or regenerating Quokka file failed.
+            A new Program instance with the updated data.
+
+        Raises:
+            QuokkaError: If applying changes or regenerating fails.
         """
-        if self.commit():
-            path = Program.generate(self.executable.exec_file, self.export_file, override=True)
-            return Program.open(path, self.executable.exec_file)
-        else:
-            raise QuokkaError("Failed to commit changes to the export file.")
+        errors = self.commit(
+            database_file=database_file,
+            ida_path=ida_path,
+            overwrite=overwrite,
+            timeout=timeout,
+        )
+        if errors:
+            self.logger.warning(
+                "%d errors occurred while applying edits", errors
+            )
+        path = Program.generate(
+            self.executable.exec_file,
+            self.export_file,
+            database_file=database_file,
+            override=True,
+        )
+        return Program.open(path, self.executable.exec_file)

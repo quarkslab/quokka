@@ -191,18 +191,7 @@ struct Xref {
   std::vector<const Reference*> to, from;
 };
 
-// /**
-//  * Export all the references towards the unknown at current_ea
-//  *
-//  * This is a special case from DataReferences has the data does not really
-//  * exist but will be put in the DataBucket if we find some references
-//  towards
-//  * it (the resulting data will be of size 1 and type UNKNOWN).
-//  *
-//  * @param current_ea Address
-//  * @param data_bucket Data holder
-//  */
-// void ExportUnkReferences(ea_t current_ea, BucketNew<Data>& data_bucket);
+void ResolveDeferredSymbolXrefs();
 
 /**
  * Export all references towards a enum

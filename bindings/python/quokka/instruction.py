@@ -137,6 +137,25 @@ class Operand(ABC):
         """
         pass
 
+    @property
+    def is_register(self) -> bool:
+        """Returns True if this operand is a register"""
+        return self.type == OperandType.REGISTER
+    
+    @property
+    def is_immediate(self) -> bool:
+        """Returns True if this operand is an immediate"""
+        return self.type == OperandType.IMMEDIATE
+    
+    @property
+    def is_memory(self) -> bool:
+        """Returns True if this operand is a memory operand"""
+        return self.type == OperandType.MEMORY
+    
+    @property
+    def is_other(self) -> bool:
+        """Returns True if this operand is of other type (i.e. not register, immediate or memory)"""
+        return self.type == OperandType.OTHER
 
 
 class OperandFull(Operand):
@@ -332,6 +351,11 @@ class Instruction:
                 yield from  inst_c.comments
 
     @property
+    def block(self) -> quokka.Block:
+        """Return the parent block of the instruction"""
+        return self.parent
+
+    @property
     def proto(self) -> "Pb.Instruction":
         """Return the instruction protobuf if in full mode"""
         assert self._proto is not None
@@ -468,7 +492,7 @@ class Instruction:
     def callers(self) -> list[AddressT]:
         """Returns all call reference to this instruction"""
         # Check if the reference address points to a function head
-        return [addr for addr in self.code_refs_to if addr in self.program]
+        return [addr for addr in self.code_refs_to if self.program.find_function_by_address(addr)]
 
     def is_fall_through(self, addr: AddressT) -> bool:
         """Check if the given address is a fall-through of the instruction
@@ -539,7 +563,7 @@ class Instruction:
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the data ref to it
                 imm_ops[0]._data_xrefs_from.append((t, dxref))
             else:
-                logger.warning(f"{self.address:#x} inst {str(self)} can't assign data refs")
+                logger.debug(f"{self.address:#x} inst {str(self)} can't assign data refs")
         
         for t, cxref in ((t, xref.destination.address) for t, xref in self._xrefs_from if t.is_code):
             # If there is only one memory operand assign code ref to it
@@ -550,7 +574,7 @@ class Instruction:
             elif len(imm_ops) == 1:  # Only one immediate operand, assign the code ref to it
                 imm_ops[0]._code_xrefs_from.append((t, cxref))
             else:
-                logger.warning(f"{self.address:#x} inst {str(self)} can't assign code refs")
+                logger.debug(f"{self.address:#x} inst {str(self)} can't assign code refs")
 
         for t, sxref in ((t, xref.destination.data_type_identifier) for t, xref in self._xrefs_from
                          if t.is_data and xref.destination.HasField("data_type_identifier")):  # Note: do not use SYMBOL enum
@@ -586,7 +610,10 @@ class Instruction:
     def has_call(self) -> bool:
         """Check if the instruction has a call target (namely
         code refs on a function entrypoint)"""
-        return self.call_target is not False
+        try:
+            return self.call_target is not None
+        except quokka.FunctionMissingError:
+            return False
 
     @cached_property
     def strings(self) -> list[str]:

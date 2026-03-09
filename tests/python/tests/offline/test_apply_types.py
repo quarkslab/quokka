@@ -16,6 +16,7 @@ def _install_ida_stubs():
     for mod_name in (
         "ida_name", "ida_typeinf",
         "ida_bytes", "ida_funcs", "ida_xref",
+        "ida_loader", "ida_kernwin",
     ):
         if mod_name not in sys.modules:
             stubs[mod_name] = MagicMock()

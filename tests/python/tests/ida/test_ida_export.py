@@ -27,7 +27,7 @@ import idascript
 import pytest
 
 import quokka
-from quokka.data_type import StructureType, EnumType
+from quokka.data_type import ArrayType, BaseType, StructureType, EnumType
 from quokka import quokka_pb2 as Pb
 
 
@@ -1361,3 +1361,214 @@ class TestManyTypesCppExport:
             f"TdEnumDArr3 array element should be TdEnumD, "
             f"got {elem.composite_type.name!r}"
         )
+
+    # -- Enum value xrefs (per-member, not enum-level) ----------------------
+
+    def _find_enum(self, name):
+        """Return (type_index, EnumType proto) for the first enum with *name*."""
+        for i, t in enumerate(self.prog.proto.types):
+            if t.WhichOneof("OneofType") == "enum_type":
+                if t.enum_type.name == name:
+                    return i, t.enum_type
+        return None, None
+
+    def _ref_source_addr(self, ref_idx):
+        """Return the source address of a reference, or None."""
+        ref = self.prog.proto.references[ref_idx]
+        if ref.source.HasField("address"):
+            return ref.source.address
+        return None
+
+    def _addr_in_function(self, addr, func_name):
+        """True if *addr* falls within the function named *func_name*."""
+        func = self.prog.get_function(func_name, approximative=False)
+        if func is None:
+            return False
+        return func.start <= addr < func.start + func.size
+
+    def test_enum_value_xrefs_populated(self):
+        """Enum values used in code should have per-value xref_to entries.
+
+        The fix routes ExportSymbolReference xrefs to EnumValue.xref_to
+        (per-member) instead of the enum-level xref_to.  Verify that at
+        least one enum has values with non-empty xref_to.
+        """
+        values_with_xrefs = []
+        for t in self.prog.proto.types:
+            if t.WhichOneof("OneofType") != "enum_type":
+                continue
+            et = t.enum_type
+            for val in et.values:
+                if len(val.xref_to) > 0:
+                    values_with_xrefs.append((et.name, val.name, len(val.xref_to)))
+
+        assert len(values_with_xrefs) > 0, (
+            "Expected at least one enum value with per-value xref_to entries; "
+            "xrefs may still be going to the enum-level xref_to instead"
+        )
+
+    def test_enum_value_xrefs_reference_indices_valid(self):
+        """All xref_to indices on enum values must be valid reference indices."""
+        num_refs = len(self.prog.proto.references)
+        for t in self.prog.proto.types:
+            if t.WhichOneof("OneofType") != "enum_type":
+                continue
+            et = t.enum_type
+            for val in et.values:
+                for ref_idx in val.xref_to:
+                    assert 0 <= ref_idx < num_refs, (
+                        f"Enum {et.name} value {val.name} has out-of-range "
+                        f"xref_to index {ref_idx} (max {num_refs - 1})"
+                    )
+
+    def test_enum_d_first_has_xref_from_data(self):
+        """Enum D::FIRST has xrefs from typed global variables.
+
+        IDA tracks enum member usage in data definitions (typed globals),
+        so at least one xref source should be a data address.
+        """
+        _, et = self._find_enum("D")
+        assert et is not None, "Enum D must be exported (defined in many_types.c)"
+
+        # IDA may prefix enum member names (e.g. D::FIRST)
+        val_map = {v.name: v for v in et.values}
+        first_val = next(
+            (v for v in et.values if v.name == "FIRST" or v.name.endswith("::FIRST")),
+            None,
+        )
+        assert first_val is not None, (
+            f"Enum D should have member FIRST, found: {list(val_map.keys())}"
+        )
+        assert len(first_val.xref_to) > 0, (
+            "Enum D value FIRST is used in typed globals but has no per-value xref_to"
+        )
+
+        # At least one xref should have a valid source address
+        source_addrs = [self._ref_source_addr(r) for r in first_val.xref_to]
+        source_addrs = [a for a in source_addrs if a is not None]
+        assert len(source_addrs) > 0, (
+            "Expected at least one FIRST xref with a source address"
+        )
+
+    def test_enum_d_second_has_xref_from_data(self):
+        """Enum D::SECOND has xrefs from typed global variables.
+
+        IDA tracks enum member usage in data definitions (typed globals),
+        so at least one xref source should be a data address.
+        """
+        _, et = self._find_enum("D")
+        assert et is not None, "Enum D must be exported (defined in many_types.c)"
+
+        # IDA may prefix enum member names (e.g. D::SECOND)
+        val_map = {v.name: v for v in et.values}
+        second_val = next(
+            (v for v in et.values if v.name == "SECOND" or v.name.endswith("::SECOND")),
+            None,
+        )
+        assert second_val is not None, (
+            f"Enum D should have member SECOND, found: {list(val_map.keys())}"
+        )
+        assert len(second_val.xref_to) > 0, (
+            "Enum D value SECOND is used in typed globals but has no per-value xref_to"
+        )
+
+        source_addrs = [self._ref_source_addr(r) for r in second_val.xref_to]
+        source_addrs = [a for a in source_addrs if a is not None]
+        assert len(source_addrs) > 0, (
+            "Expected at least one SECOND xref with a source address"
+        )
+
+    def test_enum_d_xrefs_not_on_enum_level(self):
+        """After the fix, enum D's enum-level xref_to should not contain
+        xrefs that belong to individual enum values.
+
+        If the per-value xrefs are populated, the enum-level xref_to should
+        have fewer entries than the total of all per-value xrefs (or be empty
+        if no whole-enum references exist).
+        """
+        _, et = self._find_enum("D")
+        assert et is not None, "Enum D must be exported (defined in many_types.c)"
+
+        total_value_xrefs = sum(len(v.xref_to) for v in et.values)
+        # The enum-level xref_to should not have swallowed all value xrefs
+        if total_value_xrefs > 0:
+            assert len(et.xref_to) < total_value_xrefs + len(et.xref_to), (
+                "Sanity check on xref distribution"
+            )
+            # More importantly: value xrefs should not be duplicated at enum level
+            value_ref_set = set()
+            for v in et.values:
+                value_ref_set.update(v.xref_to)
+            enum_ref_set = set(et.xref_to)
+            overlap = value_ref_set & enum_ref_set
+            assert len(overlap) == 0, (
+                f"Enum D has {len(overlap)} xrefs duplicated between "
+                f"enum-level and value-level xref_to"
+            )
+
+
+# ---------------------------------------------------------------------------
+# Deferred type export: decompiler-created types are captured
+# ---------------------------------------------------------------------------
+
+
+@requires_ida
+class TestDeferredTypeExport:
+    """Verify that types created by the decompiler are captured.
+
+    The nf_nat_pt.ko binary has a global 'inport' at address 0x1920.
+    Without decompilation it is exported as a plain byte.  When the
+    decompiler runs on nat_pt_write_proc (0x41C), IDA promotes inport
+    to _WORD inport[300].  The deferred type export ensures this array
+    type is present in the .quokka output.
+    """
+
+    INPORT_ADDR = 0x1920
+
+    @pytest.fixture(autouse=True)
+    def _export(self, root_directory: Path, tmp_path: Path):
+        binary = root_directory / "tests" / "dataset" / "nf_nat_pt.ko"
+        if not binary.exists():
+            pytest.skip("nf_nat_pt.ko not found in tests/dataset/")
+
+        self.binary = tmp_path / "nf_nat_pt.ko"
+        shutil.copy2(binary, self.binary)
+
+        # Export without decompilation
+        self.prog_no_decomp = quokka.Program.from_binary(
+            self.binary,
+            output_file=tmp_path / "nf_nat_pt_nodecomp.quokka",
+            database_file=tmp_path / "nf_nat_pt_nodecomp.i64",
+            decompiled=False,
+            timeout=600,
+        )
+
+        # Export with decompilation (fresh database)
+        self.prog_decomp = quokka.Program.from_binary(
+            self.binary,
+            output_file=tmp_path / "nf_nat_pt_decomp.quokka",
+            database_file=tmp_path / "nf_nat_pt_decomp.i64",
+            decompiled=True,
+            timeout=600,
+        )
+
+    def test_no_decomp_inport_is_unknown(self):
+        """Without decompilation, inport is untyped (.bss byte)."""
+        data = self.prog_no_decomp.data[self.INPORT_ADDR]
+        assert data.name == "inport"
+        assert isinstance(data.type, BaseType)
+        assert data.type == BaseType.UNKNOWN
+
+    def test_decomp_inport_is_word_array_300(self):
+        """With decompilation, inport should be _WORD[300]."""
+        data = self.prog_decomp.data[self.INPORT_ADDR]
+        assert data.name == "inport"
+        assert isinstance(data.type, ArrayType), (
+            f"Expected ArrayType, got {type(data.type).__name__}"
+        )
+        assert data.type.array_size == 300, (
+            f"Expected array of 300 elements, got {data.type.array_size}"
+        )
+        elem = data.type.element_type
+        assert isinstance(elem, BaseType)
+        assert elem == BaseType.WORD

@@ -1,13 +1,13 @@
 # Git LFS tracking rules
 #
 # Track binary and .quokka test fixtures used by the test suite.
-
 # Test dataset: binaries
 tests/dataset/many_types_cpp filter=lfs diff=lfs merge=lfs -text
 tests/dataset/puraUpdate filter=lfs diff=lfs merge=lfs -text
-
 # Test dataset: .quokka exports
 tests/dataset/many_types_cpp.quokka filter=lfs diff=lfs merge=lfs -text
 tests/dataset/many_types_cpp_ghidra.quokka filter=lfs diff=lfs merge=lfs -text
 tests/dataset/puraUpdate.quokka filter=lfs diff=lfs merge=lfs -text
 tests/dataset/puraUpdate_ghidra.quokka filter=lfs diff=lfs merge=lfs -text
+tests/dataset/sig_test filter=lfs diff=lfs merge=lfs -text
+tests/dataset/nf_nat_pt.ko filter=lfs diff=lfs merge=lfs -text

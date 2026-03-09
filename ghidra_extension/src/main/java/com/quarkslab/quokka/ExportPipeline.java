@@ -55,6 +55,12 @@ public class ExportPipeline {
         Msg.info(ExportPipeline.class, "Phase 3 (Types) complete: "
                 + builder.getTypesCount() + " types");
 
+        // Phase 3b: Type-to-type cross-references
+        monitor.setMessage("Quokka: exporting type-to-type xrefs...");
+        int typeRefs = TypeExporter.exportTypeToTypeRefs(ctx, builder);
+        Msg.info(ExportPipeline.class, "Phase 3b (Type xrefs) complete: "
+                + typeRefs + " type-to-type references");
+
         // Phase 4: Functions
         monitor.setMessage("Quokka: exporting functions...");
         FunctionExporter.export(ctx, builder);

@@ -283,19 +283,6 @@ std::string GetName(ea_t address, bool mangled = false);
 std::string ConvertIdaString(const qstring& ida_string);
 
 /**
- * Replace the file extension in path
- *
- * It will replace the part after the last dot (or the end of the file) with
- * the new extension
- *
- * @param path Input file
- * @param new_extension Extension to set
- * @return New file name
- */
-std::string ReplaceFileExtension(std::string_view path,
-                                 std::string_view new_extension);
-
-/**
  * Get the processor "ph" variable
  *
  * New for IDA SDK 7.5

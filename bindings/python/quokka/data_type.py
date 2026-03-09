@@ -142,6 +142,9 @@ class ComplexType(CoreType):
         # Xrefs attached to the type itself
         self._xrefs_to = [self._program.proto.references[x] for x in proto.xref_to]
         self._xrefs_to = [(RefType(ref.reference_type), ref) for ref in self._xrefs_to]
+
+        self._xrefs_from = [self._program.proto.references[x] for x in proto.xref_from]
+        self._xrefs_from = [(RefType(ref.reference_type), ref) for ref in self._xrefs_from]
     
     @property
     def comments(self) -> list[str]:
@@ -163,6 +166,20 @@ class ComplexType(CoreType):
     def write_refs_to(self) -> list['AddressT']:
         """Returns all data write reference to this instruction"""
         return [xref.source.address for t, xref in self._xrefs_to if t == RefType.DATA_WRITE]
+
+    @property
+    def type_refs_from(self) -> list['TypeReference']:
+        """Returns types/members this type references (outgoing type-to-type xrefs)"""
+        type_ids = [xref.destination.data_type_identifier for t, xref in self._xrefs_from
+                    if t.is_data and xref.destination.HasField("data_type_identifier")]
+        return [self._program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
+
+    @property
+    def type_refs_to(self) -> list['TypeReference']:
+        """Returns types/members that reference this type (incoming type-to-type xrefs)"""
+        type_ids = [xref.source.data_type_identifier for t, xref in self._xrefs_to
+                    if t.is_data and xref.source.HasField("data_type_identifier")]
+        return [self._program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
 
 
 class EnumTypeMember(CoreType):
@@ -209,8 +226,17 @@ class EnumTypeMember(CoreType):
     def refs_to(self) -> list['AddressT']:
         """Returns all data reference to this type"""
         # Get protobuf type ids
-        return [xref.source.address for xref in self._xrefs_to 
+        return [xref.source.address for xref in self._xrefs_to
                 if RefType.from_proto(xref.reference_type).is_data]
+
+    @property
+    def type_refs_to(self) -> list['TypeReference']:
+        """Returns types/members that reference this member (incoming type-to-type xrefs)"""
+        type_ids = [xref.source.data_type_identifier for t, xref in
+                    [(RefType(r.reference_type), r) for r in self._xrefs_to]
+                    if t.is_data and xref.source.HasField("data_type_identifier")]
+        return [self._enum_type()._program.get_type_reference(t.type_index, t.member_index)  # type: ignore
+                for t in type_ids]
 
     @property
     def is_member(self) -> bool:
@@ -376,6 +402,7 @@ class StructureTypeMember(CoreType):
         self.size: int = member.size  # Size in bits
         self._structure: weakref.ref[StructureType] = weakref.ref(structure)
         self._xrefs_to = [structure._program.proto.references[x] for x in member.xref_to]
+        self._xrefs_from = [structure._program.proto.references[x] for x in member.xref_from]
 
     @property
     def comments(self) -> list[str]:
@@ -395,11 +422,27 @@ class StructureTypeMember(CoreType):
     @property
     def refs_to(self) -> list['AddressT']:
         """Returns all references to this type.
-        
+
         Addresses can originates from code or data."""
         # Get protobuf type ids
-        return [xref.source.address for xref in self._xrefs_to 
+        return [xref.source.address for xref in self._xrefs_to
                 if RefType.from_proto(xref.reference_type).is_data]
+
+    @property
+    def type_refs_from(self) -> list['TypeReference']:
+        """Returns types/members this member references (outgoing type-to-type xrefs)"""
+        type_ids = [xref.destination.data_type_identifier for t, xref in
+                    [(RefType(r.reference_type), r) for r in self._xrefs_from]
+                    if t.is_data and xref.destination.HasField("data_type_identifier")]
+        return [self.parent._program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
+
+    @property
+    def type_refs_to(self) -> list['TypeReference']:
+        """Returns types/members that reference this member (incoming type-to-type xrefs)"""
+        type_ids = [xref.source.data_type_identifier for t, xref in
+                    [(RefType(r.reference_type), r) for r in self._xrefs_to]
+                    if t.is_data and xref.source.HasField("data_type_identifier")]
+        return [self.parent._program.get_type_reference(t.type_index, t.member_index) for t in type_ids]
 
     @property
     def is_member(self) -> bool:

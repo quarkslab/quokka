@@ -28,6 +28,7 @@
 #include <pro.h>
 #include <bytes.hpp>
 #include <ida.hpp>
+#include <segment.hpp>
 
 #include "absl/strings/str_format.h"
 #include "absl/time/clock.h"
@@ -182,7 +183,25 @@ void HeadIterator::Iterate() {
 
     // Then, we test if it's an "unknown" address
   } else if (this->next_ea == this->next_unk_addr) {
-    this->next_unk_addr = next_unknown(this->next_ea, this->max_ea);
+    if (this->state == UNK) {
+      // Bulk skip: when already in an unknown region, jump to the end of the
+      // contiguous unknown block instead of advancing one byte at a time.
+      // Cap at segment end to avoid spanning unmapped gaps between segments.
+      segment_t* seg = getseg(this->next_ea);
+      ea_t block_end = this->next_head_addr != BADADDR
+                           ? this->next_head_addr
+                           : this->max_ea;
+      if (seg != nullptr && seg->end_ea < block_end)
+        block_end = seg->end_ea;
+
+      this->current_layout.size += (block_end - this->next_ea);
+      this->next_unk_addr = next_unknown(block_end, this->max_ea);
+      if (block_end == this->next_head_addr)
+        this->next_head_addr = next_head(block_end, this->max_ea);
+      this->next_ea = block_end;
+    } else {
+      this->next_unk_addr = next_unknown(this->next_ea, this->max_ea);
+    }
 
     // In the case of false decoding, we want to restart code as soon as
     // possible
@@ -377,14 +396,20 @@ void HeadIterator::Scan(
       ExportDataReferences(data);
 
     } else if (this->state == UNK_WITH_XREF) {
-      /* IDA being IDA, some unknown part in the code have data ref attached
-       * to them.
-       *
-       * This tries to deal with this case but also attaching "data" ref to
-       * unknown part of the code.
-       * */
+      // Some unknown part in the code might have data ref attached to them.
+      // Try to create a new data object out of it to preserve xrefs. It will
+      // most likely end up being a TYPE_B or TYPE_UNK.
 
-      // ExportUnkReferences(head_iterator.current_ea, head_iterator.data_list);
+      // In PE, the imports are listed as DATA
+      assert(!import_manager.InImport(this->current_ea) &&
+             "Found an imported function in the UNK_WITH_XREF section that is "
+             "not part of the excluded ranges");
+
+      const Data& data =
+          this->data_list.insert(Data::Make(this->current_ea, this->item_size));
+
+      ExportDataReferences(data);
+
     }
 
   iterate:  // Iterate on the next head

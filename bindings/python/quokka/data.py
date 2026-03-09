@@ -18,6 +18,7 @@ A data is a piece of information that isn't code.
 #  limitations under the License.
 
 from __future__ import annotations
+import bisect
 import logging
 from typing import Mapping, TYPE_CHECKING
 
@@ -189,6 +190,16 @@ class Data:
 
 
     @property
+    def prev(self) -> Data | None:
+        """Return the data at the highest address below this one, or None."""
+        return self.program.data.prev(self.address)
+
+    @property
+    def next(self) -> Data | None:
+        """Return the data at the lowest address above this one, or None."""
+        return self.program.data.next(self.address)
+
+    @property
     def code_refs_to(self) -> list[AddressT]:
         """Returns all code reference to this data"""
         # If querying refs_to get the source address
@@ -229,9 +240,10 @@ class DataHolder(Mapping):
         self.proto = proto.data
         self.program: quokka.Program = program
         self._addr_to_idx: dict[AddressT, Index] = {
-            program.virtual_address(data.segment_index, data.segment_offset): index 
+            program.virtual_address(data.segment_index, data.segment_offset): index
             for index, data in enumerate(proto.data)
         }
+        self._sorted_addrs: list[AddressT] = sorted(self._addr_to_idx)
 
     def __contains__(self, key: object) -> bool:
         return key in self._addr_to_idx
@@ -261,6 +273,32 @@ class DataHolder(Mapping):
     def __len__(self) -> int:
         """Number of data in the program"""
         return len(self._addr_to_idx)
+
+    def prev(self, address: AddressT) -> Data | None:
+        """Return the data at the highest address below `address`, or None.
+
+        Arguments:
+            address: Reference address
+        Returns:
+            The previous Data by virtual address, or None
+        """
+        i = bisect.bisect_left(self._sorted_addrs, address)
+        if i > 0:
+            return self[self._sorted_addrs[i - 1]]
+        return None
+
+    def next(self, address: AddressT) -> Data | None:
+        """Return the data at the lowest address above `address`, or None.
+
+        Arguments:
+            address: Reference address
+        Returns:
+            The next Data by virtual address, or None
+        """
+        i = bisect.bisect_right(self._sorted_addrs, address)
+        if i < len(self._sorted_addrs):
+            return self[self._sorted_addrs[i]]
+        return None
 
     def __iter__(self):
         """Do not allow the iteration over the data"""

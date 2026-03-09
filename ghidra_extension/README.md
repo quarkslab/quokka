@@ -5,7 +5,7 @@ Ghidra extension that exports analysis to `.quokka` protobuf files, consumable b
 ## Requirements
 
 - JDK 21+
-- Gradle >= 8.5
+- Gradle >= 8.5 (a Gradle wrapper is included, so no system-wide install is needed)
 - Ghidra >= 12.0.3
 
 ## Build
@@ -13,10 +13,11 @@ Ghidra extension that exports analysis to `.quokka` protobuf files, consumable b
 ```bash
 export GHIDRA_INSTALL_DIR=/path/to/ghidra_12.0.3
 cd ghidra_extension
-gradle build
+rm -rf dist/
+./gradlew buildExtension
 ```
 
-The distributable ZIP is generated in `dist/`.
+The extension ZIP is generated in `dist/` (e.g. `ghidra_12.0.3_PUBLIC_QuokkaExporter.zip`).
 
 ## Install
 
@@ -66,7 +67,7 @@ print(f'Segments: {len(p.proto.segments)}')
 ## Testing
 
 ```bash
-gradle test
+./gradlew test
 ```
 
 ## Project Structure

@@ -5,7 +5,6 @@
 
 #include <concepts>
 #include <string>
-#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <variant>
@@ -13,7 +12,6 @@
 
 #include "gtest/gtest.h"
 
-#include "absl/strings/str_cat.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
 
@@ -94,12 +92,6 @@ class Timer {
     return absl::ToDoubleSeconds(Elapsed(t));
   }
 };
-
-std::string ReplaceFileExtension(std::string_view path,
-                                 std::string_view new_extension) {
-  auto pos = path.find_last_of('.');
-  return absl::StrCat(path.substr(0, pos), new_extension);
-}
 
 // Type traits copied from Util.h
 template <typename T>
@@ -252,42 +244,6 @@ TEST(Timer, SubMillisecondPrecision) {
   absl::Time end = start + absl::Microseconds(500);
   double ms = timer.ElapsedMilliSeconds(end);
   EXPECT_DOUBLE_EQ(ms, 0.5);
-}
-
-// ---------------------------------------------------------------------------
-// ReplaceFileExtension tests
-// ---------------------------------------------------------------------------
-
-TEST(ReplaceFileExtension, NormalExtension) {
-  EXPECT_EQ(ReplaceFileExtension("file.idb", ".quokka"), "file.quokka");
-}
-
-TEST(ReplaceFileExtension, NoExtension) {
-  // No dot found -> substr(0, npos) returns entire string
-  EXPECT_EQ(ReplaceFileExtension("file", ".quokka"), "file.quokka");
-}
-
-TEST(ReplaceFileExtension, MultipleDots) {
-  EXPECT_EQ(ReplaceFileExtension("path.to/file.idb", ".quokka"),
-            "path.to/file.quokka");
-}
-
-TEST(ReplaceFileExtension, EmptyNewExtension) {
-  EXPECT_EQ(ReplaceFileExtension("file.idb", ""), "file");
-}
-
-TEST(ReplaceFileExtension, DotOnly) {
-  EXPECT_EQ(ReplaceFileExtension("file.", ".quokka"), "file.quokka");
-}
-
-TEST(ReplaceFileExtension, HiddenFile) {
-  // Unix hidden file: last dot is at position 0
-  EXPECT_EQ(ReplaceFileExtension(".bashrc", ".quokka"), ".quokka");
-}
-
-TEST(ReplaceFileExtension, PreservesPath) {
-  EXPECT_EQ(ReplaceFileExtension("/some/long/path/binary.elf", ".quokka"),
-            "/some/long/path/binary.quokka");
 }
 
 // ---------------------------------------------------------------------------
