@@ -1,10 +1,21 @@
+from datetime import datetime
 import ida_name
 import ida_typeinf
 import ida_bytes
 import ida_funcs
 import ida_xref
-
+import ida_loader
+import ida_kernwin
 from quokka import Program, Function, Data
+
+def do_snapshot():
+    snap = ida_loader.snapshot_t()
+    snap.desc = datetime.now().strftime("quokka_snapshot_%Y-%m-%d_%H-%M-%S")
+    ok, err = ida_kernwin.take_database_snapshot(snap)
+    if ok:
+        print("Snapshot created:", snap.filename)
+    else:
+        print("Snapshot failed:", err)
 
 
 def apply_quokka(program: Program) -> int:
@@ -14,6 +25,9 @@ def apply_quokka(program: Program) -> int:
         The number of errors encountered while applying the changes.
     """      
     errors_count = 0
+
+    # Take a snapshot before applying the changes, so we can easily revert if something goes wrong.
+    do_snapshot()
 
     # First apply types, as functions and data may depend on them.
     errors_count += apply_types(program)
