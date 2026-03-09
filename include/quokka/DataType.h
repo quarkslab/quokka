@@ -213,7 +213,7 @@ class TypedefType : public CompositeType {
 struct EnumValue {
   std::string name;
   int64_t value;
-  std::vector<const Reference*> xref_to;
+  mutable std::vector<const Reference*> xref_to;
 };
 
 /**

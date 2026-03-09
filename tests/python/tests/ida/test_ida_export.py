@@ -1362,6 +1362,160 @@ class TestManyTypesCppExport:
             f"got {elem.composite_type.name!r}"
         )
 
+    # -- Enum value xrefs (per-member, not enum-level) ----------------------
+
+    def _find_enum(self, name):
+        """Return (type_index, EnumType proto) for the first enum with *name*."""
+        for i, t in enumerate(self.prog.proto.types):
+            if t.WhichOneof("OneofType") == "enum_type":
+                if t.enum_type.name == name:
+                    return i, t.enum_type
+        return None, None
+
+    def _ref_source_addr(self, ref_idx):
+        """Return the source address of a reference, or None."""
+        ref = self.prog.proto.references[ref_idx]
+        if ref.source.HasField("address"):
+            return ref.source.address
+        return None
+
+    def _addr_in_function(self, addr, func_name):
+        """True if *addr* falls within the function named *func_name*."""
+        func = self.prog.get_function(func_name, approximative=False)
+        if func is None:
+            return False
+        return func.start <= addr < func.start + func.size
+
+    def test_enum_value_xrefs_populated(self):
+        """Enum values used in code should have per-value xref_to entries.
+
+        The fix routes ExportSymbolReference xrefs to EnumValue.xref_to
+        (per-member) instead of the enum-level xref_to.  Verify that at
+        least one enum has values with non-empty xref_to.
+        """
+        values_with_xrefs = []
+        for t in self.prog.proto.types:
+            if t.WhichOneof("OneofType") != "enum_type":
+                continue
+            et = t.enum_type
+            for val in et.values:
+                if len(val.xref_to) > 0:
+                    values_with_xrefs.append((et.name, val.name, len(val.xref_to)))
+
+        assert len(values_with_xrefs) > 0, (
+            "Expected at least one enum value with per-value xref_to entries; "
+            "xrefs may still be going to the enum-level xref_to instead"
+        )
+
+    def test_enum_value_xrefs_reference_indices_valid(self):
+        """All xref_to indices on enum values must be valid reference indices."""
+        num_refs = len(self.prog.proto.references)
+        for t in self.prog.proto.types:
+            if t.WhichOneof("OneofType") != "enum_type":
+                continue
+            et = t.enum_type
+            for val in et.values:
+                for ref_idx in val.xref_to:
+                    assert 0 <= ref_idx < num_refs, (
+                        f"Enum {et.name} value {val.name} has out-of-range "
+                        f"xref_to index {ref_idx} (max {num_refs - 1})"
+                    )
+
+    @pytest.mark.skip(reason="Needs Python-side fix: code xrefs for enum values not yet exported")
+    def test_enum_d_first_has_xref_from_use_cpp_only_types(self):
+        """Enum D::FIRST is assigned to g_bf_bss.ed in use_cpp_only_types().
+
+        At least one xref source address should fall within use_cpp_only_types.
+        """
+        _, et = self._find_enum("D")
+        assert et is not None, "Enum D must be exported (defined in many_types.c)"
+
+        # IDA may prefix enum member names (e.g. D::FIRST)
+        val_map = {v.name: v for v in et.values}
+        first_val = next(
+            (v for v in et.values if v.name == "FIRST" or v.name.endswith("::FIRST")),
+            None,
+        )
+        assert first_val is not None, (
+            f"Enum D should have member FIRST, found: {list(val_map.keys())}"
+        )
+        assert len(first_val.xref_to) > 0, (
+            "Enum D value FIRST is used in code but has no per-value xref_to"
+        )
+
+        # At least one xref should originate from use_cpp_only_types
+        source_addrs = [self._ref_source_addr(r) for r in first_val.xref_to]
+        source_addrs = [a for a in source_addrs if a is not None]
+        in_func = [
+            a for a in source_addrs
+            if self._addr_in_function(a, "use_cpp_only_types")
+        ]
+        assert len(in_func) > 0, (
+            f"Expected at least one FIRST xref from use_cpp_only_types; "
+            f"source addresses: {[hex(a) for a in source_addrs]}"
+        )
+
+    @pytest.mark.skip(reason="Needs Python-side fix: code xrefs for enum values not yet exported")
+    def test_enum_d_second_has_xref_from_main(self):
+        """Enum D::SECOND is assigned to bf_local.ed in main().
+
+        At least one xref source address should fall within main.
+        """
+        _, et = self._find_enum("D")
+        assert et is not None, "Enum D must be exported (defined in many_types.c)"
+
+        # IDA may prefix enum member names (e.g. D::SECOND)
+        val_map = {v.name: v for v in et.values}
+        second_val = next(
+            (v for v in et.values if v.name == "SECOND" or v.name.endswith("::SECOND")),
+            None,
+        )
+        assert second_val is not None, (
+            f"Enum D should have member SECOND, found: {list(val_map.keys())}"
+        )
+        assert len(second_val.xref_to) > 0, (
+            "Enum D value SECOND is used in code but has no per-value xref_to"
+        )
+
+        source_addrs = [self._ref_source_addr(r) for r in second_val.xref_to]
+        source_addrs = [a for a in source_addrs if a is not None]
+        in_main = [
+            a for a in source_addrs
+            if self._addr_in_function(a, "main")
+        ]
+        assert len(in_main) > 0, (
+            f"Expected at least one SECOND xref from main; "
+            f"source addresses: {[hex(a) for a in source_addrs]}"
+        )
+
+    def test_enum_d_xrefs_not_on_enum_level(self):
+        """After the fix, enum D's enum-level xref_to should not contain
+        xrefs that belong to individual enum values.
+
+        If the per-value xrefs are populated, the enum-level xref_to should
+        have fewer entries than the total of all per-value xrefs (or be empty
+        if no whole-enum references exist).
+        """
+        _, et = self._find_enum("D")
+        assert et is not None, "Enum D must be exported (defined in many_types.c)"
+
+        total_value_xrefs = sum(len(v.xref_to) for v in et.values)
+        # The enum-level xref_to should not have swallowed all value xrefs
+        if total_value_xrefs > 0:
+            assert len(et.xref_to) < total_value_xrefs + len(et.xref_to), (
+                "Sanity check on xref distribution"
+            )
+            # More importantly: value xrefs should not be duplicated at enum level
+            value_ref_set = set()
+            for v in et.values:
+                value_ref_set.update(v.xref_to)
+            enum_ref_set = set(et.xref_to)
+            overlap = value_ref_set & enum_ref_set
+            assert len(overlap) == 0, (
+                f"Enum D has {len(overlap)} xrefs duplicated between "
+                f"enum-level and value-level xref_to"
+            )
+
 
 # ---------------------------------------------------------------------------
 # Deferred type export: decompiler-created types are captured

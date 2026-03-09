@@ -388,7 +388,7 @@ void ExportEnums() {
                           reference::WHOLE_TYPE);
     if (has_members) {
       for (size_t i = 0; const edm_t& edm : edt) {
-        ExportSymbolReference(&new_obj, new_obj.xref_to, tif.get_edm_tid(i), i);
+        ExportSymbolReference(&new_obj, new_obj.values[i].xref_to, tif.get_edm_tid(i), i);
         ++i;
       }
     }
