@@ -170,8 +170,6 @@ template&lt;typename B , StdVariant V&gt; </td></tr>
 <tr class="separator:a6a69679ba5a6178f46e37b915f1c4b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3fe8fef39abf48cf6a44bbfe2b1c6e9" id="r_ae3fe8fef39abf48cf6a44bbfe2b1c6e9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#ae3fe8fef39abf48cf6a44bbfe2b1c6e9">quokka::ConvertIdaString</a> (const qstring &amp;ida_string)</td></tr>
 <tr class="separator:ae3fe8fef39abf48cf6a44bbfe2b1c6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab96faa2d77b104df42d252e72a8177f" id="r_aab96faa2d77b104df42d252e72a8177f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#aab96faa2d77b104df42d252e72a8177f">quokka::ReplaceFileExtension</a> (std::string_view path, std::string_view new_extension)</td></tr>
-<tr class="separator:aab96faa2d77b104df42d252e72a8177f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a692289bf48b27192246a574da6661d10" id="r_a692289bf48b27192246a574da6661d10"><td class="memItemLeft" align="right" valign="top">processor_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a692289bf48b27192246a574da6661d10">quokka::GetProcessor</a> ()</td></tr>
 <tr class="separator:a692289bf48b27192246a574da6661d10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5407a750d7601c91caadba29afc3f8aa" id="r_a5407a750d7601c91caadba29afc3f8aa"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Util_8cpp.html#a5407a750d7601c91caadba29afc3f8aa">quokka::GetMnemonic</a> (const insn_t &amp;instruction)</td></tr>
@@ -366,44 +364,6 @@ template&lt;typename T &gt; </td></tr>
 <p>Get the processor "ph" variable</p>
 <p>New for IDA SDK 7.5</p>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to the processor object </dd></dl>
-
-</div>
-</div>
-<a id="aab96faa2d77b104df42d252e72a8177f" name="aab96faa2d77b104df42d252e72a8177f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab96faa2d77b104df42d252e72a8177f">&#9670;&#160;</a></span>ReplaceFileExtension()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string quokka::ReplaceFileExtension </td>
-          <td>(</td>
-          <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>path</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>new_extension</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Replace the file extension in path</p>
-<p>It will replace the part after the last dot (or the end of the file) with the new extension</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">path</td><td>Input file </td></tr>
-    <tr><td class="paramname">new_extension</td><td>Extension to set </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>New file name </dd></dl>
 
 </div>
 </div>

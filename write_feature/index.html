@@ -749,6 +749,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#adding-new-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding new types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#persisting-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -764,7 +775,7 @@
   <a href="#write-save-to-the-quokka-file-only" class="md-nav__link">
     <span class="md-ellipsis">
       
-        write — save to the .quokka file only
+        write -- save to the .quokka file only
       
     </span>
   </a>
@@ -775,7 +786,7 @@
   <a href="#commit-apply-changes-to-ida" class="md-nav__link">
     <span class="md-ellipsis">
       
-        commit — apply changes to IDA
+        commit -- apply changes to IDA
       
     </span>
   </a>
@@ -786,7 +797,7 @@
   <a href="#regenerate-commit-then-re-export" class="md-nav__link">
     <span class="md-ellipsis">
       
-        regenerate — commit then re-export
+        regenerate -- commit then re-export
       
     </span>
   </a>
@@ -1950,34 +1961,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/ida/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ida
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/python/backends/pypcode/" class="md-nav__link">
         
   
@@ -2022,6 +2005,89 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_13_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_13_3" id="__nav_8_13_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ida
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_13_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_13_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ida
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/backends/ida/apply/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    apply
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2504,6 +2570,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#adding-new-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding new types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#persisting-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2519,7 +2596,7 @@
   <a href="#write-save-to-the-quokka-file-only" class="md-nav__link">
     <span class="md-ellipsis">
       
-        write — save to the .quokka file only
+        write -- save to the .quokka file only
       
     </span>
   </a>
@@ -2530,7 +2607,7 @@
   <a href="#commit-apply-changes-to-ida" class="md-nav__link">
     <span class="md-ellipsis">
       
-        commit — apply changes to IDA
+        commit -- apply changes to IDA
       
     </span>
   </a>
@@ -2541,7 +2618,7 @@
   <a href="#regenerate-commit-then-re-export" class="md-nav__link">
     <span class="md-ellipsis">
       
-        regenerate — commit then re-export
+        regenerate -- commit then re-export
       
     </span>
   </a>
@@ -2632,9 +2709,20 @@ IDA project.</p>
 <p>Call <code>Function.add_comment</code> to append a comment to a function:</p>
 <div class="highlight"><pre><span></span><code><span class="n">func</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="s2">&quot;Entry point for the authentication logic.&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="adding-new-types">Adding new types</h2>
+<p>You can inject new type definitions (structs, enums, unions, typedefs) into
+the program. These are recorded as <code>is_new=True</code> in the protobuf and applied
+back to the disassembler database via <code>commit()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Add types from C declaration strings</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;struct context { int id; char name[64]; };&quot;</span><span class="p">)</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;enum status { OK=0, ERROR=1 };&quot;</span><span class="p">)</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;typedef unsigned int uint32;&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>See the <a href="../types/#adding-new-types">Types</a> page for the full API and more
+examples.</p>
 <h2 id="persisting-changes">Persisting changes</h2>
 <p>Three methods control how modifications are saved.</p>
-<h3 id="write-save-to-the-quokka-file-only"><code>write</code> — save to the <code>.quokka</code> file only</h3>
+<h3 id="write-save-to-the-quokka-file-only"><code>write</code> -- save to the <code>.quokka</code> file only</h3>
 <p><code>Program.write</code> serialises the modified protobuf back to disk. It does <strong>not</strong>
 interact with IDA. Use it when you want to snapshot the current annotations or
 share them without modifying the IDA database.</p>
@@ -2644,24 +2732,63 @@ share them without modifying the IDA database.</p>
 <span class="c1"># Or save to a new file</span>
 <span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;binary_annotated.quokka&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="commit-apply-changes-to-ida"><code>commit</code> — apply changes to IDA</h3>
-<p><code>Program.commit</code> calls <code>write()</code> and then opens IDA headlessly to apply all
-recorded edits (names, prototypes, comments) to the IDA database (<code>.i64</code>).</p>
-<div class="highlight"><pre><span></span><code><span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<h3 id="commit-apply-changes-to-ida"><code>commit</code> -- apply changes to IDA</h3>
+<p><code>Program.commit</code> calls <code>write()</code> and then spawns a headless IDA instance to
+apply all recorded edits (names, prototypes, comments) to the IDA database.
+The full function signature (name, return type, parameter types, parameter
+names, and parameter count) is applied to the <code>.i64</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># database_file is required -- it is the .i64 to modify</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>database_file</code></td>
+<td><code>Path\|str</code></td>
+<td><em>required</em></td>
+<td>Path to the <code>.i64</code> database to modify</td>
+</tr>
+<tr>
+<td><code>ida_path</code></td>
+<td><code>Path\|str\|None</code></td>
+<td><code>None</code></td>
+<td>IDA installation directory (auto-detected if omitted)</td>
+</tr>
+<tr>
+<td><code>overwrite</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Allow modifying an existing <code>.i64</code>. Raises <code>FileExistsError</code> when <code>False</code> and the file exists. Logs a warning when <code>True</code>.</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td><code>int</code></td>
+<td><code>600</code></td>
+<td>Maximum seconds to wait for IDA</td>
+</tr>
+</tbody>
+</table>
+<p>Returns the number of errors (0 = all edits applied successfully).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>commit</code> requires a working IDA installation with the Quokka plugin. The
-function returns <code>True</code> when the edits were applied successfully (or with
-non-fatal errors) and raises <code>QuokkaError</code> on a hard failure.</p>
+<p><code>commit</code> requires a working IDA installation with the Quokka plugin.</p>
 </div>
-<h3 id="regenerate-commit-then-re-export"><code>regenerate</code> — commit then re-export</h3>
+<h3 id="regenerate-commit-then-re-export"><code>regenerate</code> -- commit then re-export</h3>
 <p><code>Program.regenerate</code> calls <code>commit()</code> and immediately re-exports the binary,
 returning a fresh <code>Program</code> instance that reflects the updated IDA database.
 This is the right choice when you want a clean <code>.quokka</code> file that incorporates
 your annotations as first-class exported data.</p>
-<div class="highlight"><pre><span></span><code><span class="n">updated_prog</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">regenerate</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><span class="n">updated_prog</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">regenerate</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
+<p>It accepts the same parameters as <code>commit</code>.</p>
 <h2 id="full-example">Full example</h2>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
 
@@ -2677,17 +2804,16 @@ your annotations as first-class exported data.</p>
 <span class="n">func</span><span class="o">.</span><span class="n">add_comment</span><span class="p">(</span><span class="s2">&quot;Validates credentials against the internal user table.&quot;</span><span class="p">)</span>
 
 <span class="c1"># Write to the .quokka file and push changes to the IDA database</span>
-<span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="from-ida">From IDA</h2>
-<p>You can also applies edits from IDA with the following workflow:</p>
+<p>If you are already running inside IDA (e.g. via IDAPython), you can apply
+edits directly without spawning a new instance:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">quokka</span><span class="w"> </span><span class="kn">import</span> <span class="n">Program</span>
-
-<span class="c1"># Import IDA specific Python code to import a Quokka file</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">quokka.backends.ida</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_quokka</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span> <span class="s2">&quot;binary&quot;</span><span class="p">)</span>
-<span class="n">apply_quokka</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="n">apply_quokka</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="summary">Summary</h2>
 <table>
@@ -2707,13 +2833,13 @@ your annotations as first-class exported data.</p>
 <td style="text-align: center;">No</td>
 </tr>
 <tr>
-<td><code>prog.commit()</code></td>
+<td><code>prog.commit(database_file=...)</code></td>
 <td style="text-align: center;">Yes</td>
 <td style="text-align: center;">Yes</td>
 <td style="text-align: center;">No</td>
 </tr>
 <tr>
-<td><code>prog.regenerate()</code></td>
+<td><code>prog.regenerate(database_file=...)</code></td>
 <td style="text-align: center;">Yes</td>
 <td style="text-align: center;">Yes</td>
 <td style="text-align: center;">Yes</td>
@@ -2742,7 +2868,7 @@ your annotations as first-class exported data.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 7, 2026 14:34:42 UTC">March 7, 2026</span>
   </span>
 
     

@@ -731,6 +731,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#adding-new-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding new types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding new types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#persisting-new-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persisting new types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cross-references-from-types" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1983,34 +2011,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/ida/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ida
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/python/backends/pypcode/" class="md-nav__link">
         
   
@@ -2055,6 +2055,89 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_13_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_13_3" id="__nav_8_13_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ida
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_13_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_13_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ida
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/backends/ida/apply/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    apply
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -2631,6 +2714,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#adding-new-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding new types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding new types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#persisting-new-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persisting new types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cross-references-from-types" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3115,6 +3226,38 @@ can also be accessed as <strong>attributes</strong> using their name:</p>
     <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_pointer</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">pointed_type</span><span class="si">}</span><span class="s2">  (size=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="adding-new-types">Adding new types</h2>
+<p>You can define new types from Python and persist them back to the
+disassembler database. New types are created via <code>Program.add_type()</code> and
+are marked with <code>is_new=True</code> so the backend knows to register them.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Struct</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;struct point { int x; int y; };&quot;</span><span class="p">)</span>
+
+<span class="c1"># Enum</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;enum color { RED=0, GREEN=1, BLUE=2 };&quot;</span><span class="p">)</span>
+
+<span class="c1"># Typedef</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;typedef unsigned int uint32;&quot;</span><span class="p">)</span>
+
+<span class="c1"># Union</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;union data { int i; float f; };&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="persisting-new-types">Persisting new types</h3>
+<p>New types are appended to the protobuf <code>types</code> array, so <code>prog.write()</code> and
+<code>prog.commit()</code> automatically include them. When applied back to IDA, the
+backend reconstructs each new type from its <code>c_str</code> field using
+<code>parse_decls()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Save to .quokka only</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+
+<span class="c1"># Or apply to IDA and re-export</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Duplicate type names are rejected -- <code>add_type()</code> raises <code>QuokkaError</code>
+if a type with the same name already exists in the program.</p>
+</div>
 <h2 id="cross-references-from-types">Cross-references from types</h2>
 <p>Complex types and their members carry cross-reference lists that tell you which
 data objects use them:</p>
@@ -3194,7 +3337,7 @@ to use the boolean properties rather than <code>isinstance</code>:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 2, 2026 08:47:30 UTC">March 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 7, 2026 23:13:16 UTC">March 7, 2026</span>
   </span>
 
     
