@@ -13,10 +13,11 @@ Ghidra extension that exports analysis to `.quokka` protobuf files, consumable b
 ```bash
 export GHIDRA_INSTALL_DIR=/path/to/ghidra_12.0.3
 cd ghidra_extension
-./gradlew build
+rm -rf dist/
+./gradlew buildExtension
 ```
 
-The distributable ZIP is generated in `dist/`.
+The extension ZIP is generated in `dist/` (e.g. `ghidra_12.0.3_PUBLIC_QuokkaExporter.zip`).
 
 ## Install
 
