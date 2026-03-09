@@ -61,14 +61,17 @@ class Segment:
         """End address of the segment"""
         return self.address + self.size
     
+    @property
     def writable(self) -> bool:
         """Is the segment writable?"""
         return self.permissions & 0x2 > 0
 
+    @property
     def executable(self) -> bool:
         """Is the segment executable?"""
         return self.permissions & 0x1 > 0
 
+    @property
     def readable(self) -> bool:
         """Is the segment readable?"""
         return self.permissions & 0x4 > 0
