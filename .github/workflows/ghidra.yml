@@ -74,7 +74,7 @@ jobs:
 
     - name: Build and test extension
       working-directory: ghidra_extension
-      run: gradle buildExtension
+      run: ./gradlew buildExtension
 
     - name: Save Ghidra cache
       if: github.event_name == 'push' && steps.ghidra-cache.outputs.cache-hit != 'true'
