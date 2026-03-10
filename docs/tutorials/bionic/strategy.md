@@ -60,10 +60,10 @@ for inst in getpwuid.instructions:
 ```
 
 ```shell
-None (DataType.DOUBLE_WORD) at 0x1d024
-_ZL11android_ids (DataType.DOUBLE_WORD) at 0x8cda0
-_ZL11android_ids (DataType.DOUBLE_WORD) at 0x8cda0
-None (DataType.DOUBLE_WORD) at 0x8cda4
+None (<T:int>) at 0x1d024
+_ZL11android_ids (<T:int>) at 0x8cda0
+_ZL11android_ids (<T:int>) at 0x8cda0
+None (<T:int>) at 0x8cda4
 ```
 So the second and third reference in the function are towards the table we are looking for!
 
@@ -149,12 +149,13 @@ ValueError: No data at offset 0x8cdbc
 Another solution is to write this helper script:
 ```python
 from quokka import Program
-from quokka.types import AddressT, DataType
+from quokka.data_type import BaseType
+from quokka.types import AddressT
 
 def read_userid(prog: Program, address: AddressT) -> int:
     """Read a user ID within the program at `address`"""
     return prog.executable.read_type_value(
-        prog.address_to_offset(address), DataType.DOUBLE_WORD
+        prog.address_to_offset(address), BaseType.DOUBLE_WORD
     )
 ```
 

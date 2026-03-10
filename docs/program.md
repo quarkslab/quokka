@@ -54,7 +54,7 @@ path = quokka.Program.generate("binary", output_file="out.quokka")
 ```python
 # Binary identity
 prog.name           # "bash"
-prog.hash           # "a4f3..." (sha256 or MD5)
+prog.hash           # "a4f3..." (hex string, SHA-256 or MD5)
 
 # Architecture
 prog.isa            # ArchEnum.X86

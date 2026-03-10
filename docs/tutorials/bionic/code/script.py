@@ -28,7 +28,8 @@ import sys
 
 import quokka
 from quokka import Data
-from quokka.types import AddressT, DataType
+from quokka.data_type import BaseType
+from quokka.types import AddressT
 
 
 def print_usertable(bionic: quokka.Program):
@@ -54,8 +55,8 @@ def print_usertable(bionic: quokka.Program):
 
     # Read other entries
     def read_userid(prog: quokka.Program, address: AddressT) -> int:
-        return prog.executable.read_data(
-            prog.address_to_offset(address), DataType.DOUBLE_WORD
+        return prog.executable.read_type_value(
+            prog.address_to_offset(address), BaseType.DOUBLE_WORD
         )
 
     # Gather all components together

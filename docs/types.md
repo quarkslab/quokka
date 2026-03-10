@@ -85,8 +85,8 @@ print(bt.is_base_type)  # True
 
 ## StructureType — C structs
 
-`StructureType` behaves like a `dict` keyed by **positional index** (integer,
-starting at 0). Each value is a `StructureTypeMember`.
+`StructureType` behaves like a `dict` keyed by **bit offset** (integer). Each
+value is a `StructureTypeMember`. A `members` list provides positional access.
 
 ### Key attributes
 
@@ -136,7 +136,8 @@ print(first_member.type)           # e.g. <TPtr: next->...>
 
 `UnionType` is a subclass of `StructureType`. It works identically except that
 all members conceptually share offset 0 (all variants overlay the same memory).
-The dict is still keyed by **positional index** to avoid collisions.
+The dict is still keyed by **bit offset**, so for unions all members share
+offset 0. Use the `members` list for positional access.
 
 ```python
 for t in prog.types:
