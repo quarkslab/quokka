@@ -131,6 +131,23 @@ func.add_comment("Validates credentials against the internal user table.")
 prog.commit(database_file="binary.i64", overwrite=True)
 ```
 
+## From the command line (`quokka-apply`)
+
+The `quokka-apply` CLI applies edits stored in a `.quokka` file back to the
+disassembler database without writing Python code:
+
+```commandline
+$ quokka-apply binary.quokka binary --overwrite
+$ quokka-apply binary.quokka binary --regenerate --overwrite
+```
+
+| Option | Description |
+|--------|-------------|
+| `--commit` | Write `.quokka` and apply edits to the disassembler (default) |
+| `--regenerate` | Commit then re-export a fresh `.quokka` from IDA |
+| `--overwrite` | Allow overwriting an existing disassembler database |
+| `-v`, `--verbose` | Increase logging verbosity |
+
 ## From IDA
 
 If you are already running inside IDA (e.g. via IDAPython), you can apply

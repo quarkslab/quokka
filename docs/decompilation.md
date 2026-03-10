@@ -20,7 +20,7 @@ open.
     Pass `-OQuokkaDecompiled:true` alongside the other options:
 
     ```commandline
-    idat64 -OQuokkaAuto:true -OQuokkaDecompiled:true -A /path/to/binary.i64
+    idat -OQuokkaAuto:true -OQuokkaDecompiled:true -A /path/to/binary.i64
     ```
 
 === "IDA GUI"

@@ -43,7 +43,9 @@ path = quokka.Program.generate("binary", output_file="out.quokka")
 ```
 
 !!! note
-    `from_binary` requires a working IDA installation with the Quokka plugin.
+    `from_binary` requires a working disassembler installation: either IDA
+    with the Quokka plugin, or Ghidra with the QuokkaExporter extension.
+    Set the `disassembler` parameter to choose, or let it auto-detect.
 
 ## Program Metadata
 

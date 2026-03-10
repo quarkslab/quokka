@@ -110,6 +110,6 @@ def export_binary(binary: quokka.Program) -> None:
         json.dump(prog_features, fp, indent=True)
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     program: quokka.Program = quokka.Program.from_binary(sys.argv[1])
     export_binary(program)

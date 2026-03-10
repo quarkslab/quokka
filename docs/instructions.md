@@ -83,28 +83,30 @@ reg_ops = [op for op in inst.operands
 
 ## String References
 
-An instruction can reference a string literal in the binary:
+An instruction can reference string literals in the binary:
 
 ```python
 inst = func.get_instruction(0x401250)
 
-s = inst.string
-if s is not None:
-    print(f"String ref: {repr(s.value)}")
-# String ref: b"Error: invalid argument\n"
+for s in inst.strings:
+    print(f"String ref: {repr(s)}")
+# String ref: 'Error: invalid argument\n'
 ```
 
 ## Call Targets
 
-For call instructions, `call_target` resolves the callee (thunks are resolved automatically):
+For call instructions, `call_target` resolves the callee. It raises
+`FunctionMissingError` if the target cannot be resolved (e.g. indirect calls):
 
 ```python
+from quokka.exc import FunctionMissingError
+
 call_inst = func.get_instruction(0x4012a0)
 
-target = call_inst.call_target
-if target is not None:
+try:
+    target = call_inst.call_target
     print(f"Calls: {target.name}")
-else:
+except FunctionMissingError:
     print("Indirect call (function pointer)")
 ```
 
@@ -180,7 +182,7 @@ for caller, site, callee in hits:
 | `inst.operands` | `list[Operand]` | Decoded operands |
 | `inst.cs_inst` | `CsInsn` | Capstone instruction object |
 | `inst.pcode_insts` | `list[PcodeOp]` | Lifted P-code operations |
-| `inst.string` | `Data \| None` | Referenced string literal |
+| `inst.strings` | `list[str]` | Referenced string literals |
 | `inst.constants` | `list[int]` | Immediate constant values |
 | `inst.comments` | `Iterable[str]` | IDA comments on instruction |
 | `inst.call_target` | `Function` | Resolved call target (raises if none) |

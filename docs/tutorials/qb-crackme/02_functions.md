@@ -31,7 +31,7 @@ prog.get_function(name='_init_pr',  # Something in the name
 ```
 
 !!! question "Function Types ?"
-    Binary functions have types in IDA (e.g. NORMAL, THUNK ...). The 
+    Binary functions have types in Quokka (e.g. NORMAL, THUNK ...). The
     `get_function` method allows to restrict results to the NORMAL one : 
     functions that are defined inside the program with regular body.
 
@@ -70,7 +70,7 @@ The keys are the address and the values the corresponding **chunks**.
     prog: quokka.Program
     func = prog.fun_names['_init_proc']
     
-    print(f"Function {func.name} calls {len(func.calls)} function(s).")
+    print(f"Function {func.name} calls {len(func.callees)} function(s).")
     # Print: Function _init_proc calls 1 function(s).
     ```
 
@@ -93,7 +93,7 @@ if func.constants:
     print(f'{func.name} use constants')
 
 # What are the names of the functions called by this one ?
-for called in func.calls:
+for called in func.callees:
     print(called.name)
 ```
 

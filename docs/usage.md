@@ -2,8 +2,42 @@
 
 ## Exporting a binary
 
-Quokka supports three ways to generate `.quokka` files: the IDA plugin, the
-Ghidra extension, and the `quokka-cli` command-line tool.
+Quokka supports multiple ways to generate `.quokka` files. The recommended
+approach for most users is the `quokka-cli` command-line tool, which works with
+both IDA Pro and Ghidra. For more control, you can use the IDA plugin or the
+Ghidra extension directly.
+
+### CLI (`quokka-cli`)
+
+The `quokka-cli` tool is the easiest way to export binaries in headless mode.
+It automatically detects available backends (IDA or Ghidra) and can export a
+single file or all executable files in a directory in parallel.
+
+```commandline
+$ quokka-cli /path/to/binary                    # export a single file
+$ quokka-cli -t 8 dir/                           # export a directory in parallel
+$ quokka-cli --backend ghidra -t 8 dir/          # use Ghidra explicitly
+$ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/  # use IDA explicitly
+```
+
+Available options:
+
+| Option | Description |
+|--------|-------------|
+| `-b`, `--backend` | Disassembler backend: `ida`, `ghidra`, or `auto` (default: `auto`) |
+| `-i`, `--ida-path` | Path to the IDA installation directory (the folder containing `idat`) |
+| `--ghidra-path` | Ghidra installation directory (overrides `GHIDRA_INSTALL_DIR`) |
+| `-t`, `--threads` | Number of parallel workers (default: 1) |
+| `-m`, `--mode` | Export mode: `light` or `full` (default: `light`) |
+| `--decompiled` | Export decompiled code (IDA only) |
+| `--timeout` | Timeout for each export in seconds |
+| `--override` | Override existing `.quokka` files |
+| `-v`, `--verbose` | Enable verbose logging |
+
+!!! tip
+    You can set the `IDA_PATH` environment variable (pointing to the IDA
+    installation directory) and the `GHIDRA_INSTALL_DIR` environment variable
+    instead of passing `--ida-path` / `--ghidra-path` every time.
 
 ### IDA Plugin
 
@@ -99,30 +133,6 @@ $ analyzeHeadless /tmp/proj Test \
 !!! note
     The Ghidra extension must be installed into `$GHIDRA_INSTALL_DIR/Ghidra/Extensions/`
     for headless export to work.
-
-### CLI (`quokka-cli`)
-
-Quokka provides a CLI utility tool to automatically export a single file or
-all executable files of a given directory in parallel.
-It supports both IDA Pro and Ghidra backends:
-
-```commandline
-$ quokka-cli --backend ghidra -t 8 dir/
-$ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/
-$ quokka-cli -t 8 dir/                          # auto-detect backend
-```
-
-Available options:
-
-| Option | Description |
-|--------|-------------|
-| `--backend` | Disassembler backend: `ida`, `ghidra`, or `auto` (default: `auto`) |
-| `--ida-path` | Path to IDA Pro installation (sets `IDA_PATH`) |
-| `--ghidra-path` | Ghidra installation directory (sets `GHIDRA_INSTALL_DIR`) |
-| `-t`, `--threads` | Number of parallel workers (default: 1) |
-| `-m`, `--mode` | Export mode: `LIGHT` or `FULL` (default: `LIGHT`) |
-| `--decompiled` | Enable decompiled code export (IDA only) |
-| `-v`, `--verbose` | Enable verbose logging |
 
 ### Python API
 

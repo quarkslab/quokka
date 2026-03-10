@@ -141,13 +141,14 @@ $ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/
 $ quokka-cli -t 8 dir/                          # auto-detect backend
 ```
 
-It also accepts various arguments:
+Run `quokka-cli --help` for all options. Key flags include:
 
-* `--backend` to choose the disassembler backend (`ida`, `ghidra`, or `auto`)
-* `--ida-path` to provide the path to IDA Pro (sets `IDA_PATH`)
-* `--ghidra-path` to provide the Ghidra installation directory (sets `GHIDRA_INSTALL_DIR`)
+* `-b`, `--backend` to choose the disassembler backend (`ida`, `ghidra`, or `auto`)
+* `-i`, `--ida-path` to provide the path to the IDA installation directory (the folder containing `idat`)
+* `--ghidra-path` to provide the Ghidra installation directory (overrides `GHIDRA_INSTALL_DIR`)
+* `-m`, `--mode` to choose the export mode (`light` or `full`)
 * `--decompiled` to enable decompiled code export (IDA only)
-* `--verbose` to enable verbose logging
+* `-v`, `--verbose` to enable verbose logging
 
 
 ### Loading an export file

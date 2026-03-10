@@ -37,7 +37,7 @@ The previous snippet generates an error. Indeed, the `function` selected is not 
 However, the signature of the `get_function` method has an additional parameter:
 
 ```python
-Program.get_function(name: 'str', approximative: 'bool' = True, normal: 'bool' = False) -> 'quokka.Function'
+Program.get_function(name: 'str', approximative: 'bool' = False, normal: 'bool' = False) -> 'quokka.Function'
 ```
 
 Thus, the correct code to select the `getpwuid` function is:
@@ -53,8 +53,10 @@ We know that the `getpwuid` functions must use the user mapping we are searching
 table must exist within the function. Lets explore them:
 
 ```python
-for data in getpwuid.data_references:
-    print(f"{data.name} ({data.type}) at 0x{data.address:x}")
+for inst in getpwuid.instructions:
+    for data in inst.data_refs_from:
+        if hasattr(data, "address"):
+            print(f"{data.name} ({data.type}) at 0x{data.address:x}")
 ```
 
 ```shell
@@ -69,7 +71,15 @@ Let's find the beginning of our user table:
 
 ```python
 from quokka import Data
-user_table: Data = getpwuid.data_references[1]
+
+# Collect all data references from the function's instructions
+data_refs = []
+for inst in getpwuid.instructions:
+    for data in inst.data_refs_from:
+        if isinstance(data, Data):
+            data_refs.append(data)
+
+user_table: Data = data_refs[1]
 
 print(f"{user_table.address=:x}")
 # user_table.address=8cda0
@@ -88,7 +98,7 @@ To find if an element has a code reference, there is a convenient accessor:
 
 ```python
 data = bionic.get_data(address)
-assert data.code_references != [], "Has code references"
+assert data.code_refs_to != [], "Has code references"
 ```
 
 So our loop to iterate _until_ the end of the table will look like this:
@@ -99,7 +109,7 @@ from quokka.types import AddressT
 address: AddressT
 while True:
     data = bionic.get_data(address)
-    if data.code_references:
+    if data.code_refs_to:
         break
         
     ...
@@ -158,7 +168,7 @@ from quokka.types import AddressT
 start: AddressT = user_table.address + 0x8
 while True:
     data = bionic.get_data(start)
-    if data.code_references:
+    if data.code_refs_to:
         break
 
     user_name = bionic.executable.read_string(data.value)

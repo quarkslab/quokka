@@ -95,7 +95,7 @@ print(func.in_degree)   # how many functions call this
 print(func.out_degree)  # how many functions this calls
 ```
 
-## Strings and Data References
+## Strings
 
 ```python
 # All strings referenced by the function
@@ -105,11 +105,17 @@ for s in func.strings:
 # Example output:
 # "Usage: %s [-h] [-v] filename"
 # "Error: file not found"
-
-# All data items referenced by the function
-for data in func.data_references:
-    print(f"  {data.name} @ 0x{data.address:x}  type={data.type}")
 ```
+
+!!! tip
+    To find all data references from a function, iterate over its instructions
+    and collect their `data_refs_from`:
+
+    ```python
+    data_refs = []
+    for inst in func.instructions:
+        data_refs.extend(inst.data_refs_from)
+    ```
 
 ## Control Flow Graph
 
@@ -163,8 +169,7 @@ func.in_degree        # int (raw caller count)
 func.out_degree       # int (raw callee count)
 func.callees          # list[Function]
 func.callers          # list[Function]
-func.strings          # list[Data]
-func.data_references  # list[Data]
+func.strings          # list[str]
 func.graph            # networkx.DiGraph (CFG)
 func.in_function(addr)  # bool: is addr inside func?
 func.get_block(addr)    # Block at addr
