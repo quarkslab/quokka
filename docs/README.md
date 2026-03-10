@@ -64,20 +64,21 @@ import quokka
 from quokka.types import Disassembler
 
 # Directly from the binary (auto-detects available backend)
-ls = quokka.Program.from_binary("/bin/ls")
+prog = quokka.Program.from_binary("/bin/ls")
 
 # Explicitly choose a backend
-ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
-ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
+prog = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
+prog = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
 
 # From an already-exported file
-ls = quokka.Program("ls.quokka",  # the exported file
-                    "/bin/ls")    # the original binary
+prog = quokka.Program("ls.quokka",  # the exported file
+                      "/bin/ls")    # the original binary
 ```
 
 ### Exploring the binary
 
 ```python
+
 # Functions
 func = prog.get_function("main")
 print(func.name, hex(func.start), len(func), "blocks")

@@ -42,6 +42,7 @@ func.type  # FunctionType.NORMAL
 | `LIBRARY` | Identified library code (FLIRT signature match) |
 | `THUNK` | Short stub that jumps to another function |
 | `EXTERN` | External / unresolved |
+| `INVALID` | Invalid / unrecognized function type |
 
 ```python
 # Filter by type
@@ -122,7 +123,7 @@ for s in func.strings:
 The `func.graph` property returns a `networkx.DiGraph` where:
 
 - **Nodes** are block start addresses
-- **Edges** are `(src_addr, dst_addr, {type: RefType})` tuples
+- **Edges** are `(src_addr, dst_addr, {condition: RefType})` tuples
 
 ```python
 import networkx as nx
@@ -200,7 +201,7 @@ for complexity, name, addr in results[:10]:
 ## Summary
 
 - `Function` is a dict of blocks, keyed by block address
-- **FunctionType**: `NORMAL`, `IMPORTED`, `LIBRARY`, `THUNK`, `EXTERN`
+- **FunctionType**: `NORMAL`, `IMPORTED`, `LIBRARY`, `THUNK`, `EXTERN`, `INVALID`
 - Thunks need dereferencing (`dereference_thunk`) for accurate call graph analysis
 - `func.callees` / `func.callers` provide direct navigation
 - `func.graph` is a `networkx.DiGraph` (CFG)

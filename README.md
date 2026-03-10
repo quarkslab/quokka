@@ -104,9 +104,7 @@ Modes available are:
 
 #### IDA
 
-!!! note
-
-    This requires a working IDA installation.
+> **Note:** This requires a working IDA installation.
 
 ```commandline
 $ idat -OQuokkaAuto:true -OQuokkaDecompiled:true -A /path/to/hello.i64
@@ -158,15 +156,15 @@ import quokka
 from quokka.types import Disassembler
 
 # Directly from the binary (auto-detects available backend)
-ls = quokka.Program.from_binary("/bin/ls")
+prog = quokka.Program.from_binary("/bin/ls")
 
 # Explicitly choose a backend
-ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
-ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
+prog = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
+prog = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
 
 # From the exported file
-ls = quokka.Program("ls.quokka",  # the exported file
-                    "/bin/ls")    # the original binary
+prog = quokka.Program("ls.quokka",  # the exported file
+                      "/bin/ls")    # the original binary
 ```
 
 ### Editing and adding types

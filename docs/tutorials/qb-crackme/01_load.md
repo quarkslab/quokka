@@ -29,12 +29,12 @@ print(f'Program base address is 0x{prog.base_address:x}')
 We now have in `prog` a complete program representation.
 Using `dir(prog)`, you can see the different possibilities.
 
-For instance, you can list the strings found in the program using :
+For instance, you can list the functions found in the program using:
 
 ```python
 import quokka
 prog = quokka.Program("docs/samples/qb-crackme.quokka", "docs/samples/qb-crackme")
-print(f"Found {len(prog.strings)} in {prog.export_file.stem}")
+print(f"Found {len(prog)} functions in {prog.export_file.stem}")
 ```
 
 !!! note "Using the protobuf directly"
@@ -44,7 +44,7 @@ print(f"Found {len(prog.strings)} in {prog.export_file.stem}")
 
 
 ## Export and load
-If the IDA plugin has been installed you can also create the exported directly using the convenient method `from_binary`.
+If a disassembler plugin is installed (IDA with the Quokka plugin, or Ghidra with the QuokkaExporter extension), you can export and load directly using the `from_binary` method.
 
 ```python
 import quokka
@@ -54,16 +54,15 @@ assert prog is not None, "Unable to export qb-crackme"
 ```
 
 ## Tips & tricks
-When using IDA, the database is stored next to the binary file by default.
+When using IDA, the database (`.i64`) is stored next to the binary file by default.
 This is not convenient when dealing with read-only filesystems.
-Use the `database_file` option to control where it should be stored (IDA only).
+Use the `database_file` and `output_file` options to control where files should be stored.
 
 ```python
 import quokka
 
 prog = quokka.Program.from_binary('/bin/ls')
-# Will fail because /bin is not writable
-assert prog is None, "/bin is writable -- this is unusual"
+# May fail because /bin is not writable (IDA stores the database there by default)
 
 prog = quokka.Program.from_binary('/bin/ls',
                                   output_file='docs/samples/ls.quokka',                                      

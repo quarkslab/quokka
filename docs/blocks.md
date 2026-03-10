@@ -78,11 +78,11 @@ for pred_addr in block.predecessors:
 
 ## CFG Edge Types
 
-Edges carry a `type` attribute (a `RefType`):
+Edges carry a `condition` attribute (a `RefType`):
 
 ```python
 for src, dst, data in cfg.edges(data=True):
-    ref_type = data.get("type")
+    ref_type = data.get("condition")
     print(f"  0x{src:x} → 0x{dst:x}  [{ref_type}]")
 ```
 
@@ -200,6 +200,6 @@ for func in prog.values():
 - `Block` is a `MutableMapping` of instructions, keyed by address
 - **BlockType**: `NORMAL`, `RET`, `NORET`, `INDJUMP`, `CNDRET`, `ENORET`, `ERROR`, `EXTERN`
 - `func.graph` is a `networkx.DiGraph` of block addresses
-- CFG edges carry `RefType` (`JMP_COND`, `JMP_UNCOND`, `CALL`…)
+- CFG edges carry a `condition` attribute of type `RefType` (`JMP_COND`, `JMP_UNCOND`, `CALL`...)
 - `block.successors` / `block.predecessors` for convenient navigation
 - Use networkx algorithms: BFS, cycle detection, dominator trees

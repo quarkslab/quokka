@@ -63,8 +63,8 @@ Three methods control how modifications are saved.
 ### `write` -- save to the `.quokka` file only
 
 `Program.write` serialises the modified protobuf back to disk. It does **not**
-interact with IDA. Use it when you want to snapshot the current annotations or
-share them without modifying the IDA database.
+interact with any disassembler. Use it when you want to snapshot the current
+annotations or share them without modifying the disassembler database.
 
 ```python
 # Overwrite the original file
@@ -74,7 +74,12 @@ prog.write()
 prog.write("binary_annotated.quokka")
 ```
 
-### `commit` -- apply changes to IDA
+### `commit` -- apply changes to the disassembler database
+
+!!! warning
+    `commit` currently only supports the **IDA backend**. For Ghidra-exported
+    programs, `commit()` writes the `.quokka` file but does not apply edits
+    back to Ghidra (Ghidra write-back is not yet implemented).
 
 `Program.commit` calls `write()` and then spawns a headless IDA instance to
 apply all recorded edits (names, prototypes, comments) to the IDA database.
@@ -101,9 +106,12 @@ Returns the number of errors (0 = all edits applied successfully).
 ### `regenerate` -- commit then re-export
 
 `Program.regenerate` calls `commit()` and immediately re-exports the binary,
-returning a fresh `Program` instance that reflects the updated IDA database.
-This is the right choice when you want a clean `.quokka` file that incorporates
-your annotations as first-class exported data.
+returning a fresh `Program` instance that reflects the updated disassembler
+database. This is the right choice when you want a clean `.quokka` file that
+incorporates your annotations as first-class exported data.
+
+!!! warning
+    Like `commit`, `regenerate` currently only supports the **IDA backend**.
 
 ```python
 updated_prog = prog.regenerate(database_file="binary.i64", overwrite=True)
@@ -163,8 +171,8 @@ errors = apply_quokka(p)
 
 ## Summary
 
-| Method | Writes `.quokka` file | Applies to IDA database | Returns fresh `Program` |
+| Method | Writes `.quokka` file | Applies to disassembler database | Returns fresh `Program` |
 |---|:---:|:---:|:---:|
 | `prog.write()` | Yes | No | No |
-| `prog.commit(database_file=...)` | Yes | Yes | No |
-| `prog.regenerate(database_file=...)` | Yes | Yes | Yes |
+| `prog.commit(database_file=...)` | Yes | Yes (IDA only) | No |
+| `prog.regenerate(database_file=...)` | Yes | Yes (IDA only) | Yes |

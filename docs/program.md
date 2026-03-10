@@ -177,7 +177,7 @@ exe.read_type_value(offset, some_type)  # dispatches by type kind
 ```
 
 !!! tip
-    `prog.read_bytes(v_addr, size)` is a convenience wrapper: it converts the virtual address to a file offset then calls `executable.read_bytes`.
+    `prog.read_bytes(v_addr, size)` is a convenience wrapper that computes `v_addr - base_address` and passes the result as a file offset to `executable.read_bytes`. For binaries with non-contiguous segments, use `prog.address_to_offset(v_addr)` followed by `prog.executable.read_bytes(offset, size)` for correct segment-aware translation.
 
 ## Call Graph (Program Level)
 
@@ -210,5 +210,5 @@ for addr, degree in top_called[:10]:
 | Binary file access | `prog.executable.read_bytes/string/int/type_value(offset, ...)` |
 | Add a new type | `prog.add_type("struct foo { int x; };")` |
 | Save `.quokka` only | `prog.write()` |
-| Apply edits to IDA | `prog.commit(database_file="f.i64", overwrite=True)` |
-| Commit + re-export | `prog.regenerate(database_file="f.i64", overwrite=True)` |
+| Apply edits to IDA | `prog.commit(database_file="f.i64", overwrite=True)` (IDA only) |
+| Commit + re-export | `prog.regenerate(database_file="f.i64", overwrite=True)` (IDA only) |

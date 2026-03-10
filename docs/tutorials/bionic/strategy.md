@@ -152,8 +152,8 @@ from quokka import Program
 from quokka.types import AddressT, DataType
 
 def read_userid(prog: Program, address: AddressT) -> int:
-    """Read an user ID within the program at `address`"""
-    return prog.executable.read_data(
+    """Read a user ID within the program at `address`"""
+    return prog.executable.read_type_value(
         prog.address_to_offset(address), DataType.DOUBLE_WORD
     )
 ```

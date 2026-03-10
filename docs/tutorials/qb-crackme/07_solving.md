@@ -44,8 +44,8 @@ func = prog.fun_names["level0"]
 Then, let's examine it:
 ```python
 # Get the size
-print(len(func)) # 1 Chunk
-print(len(func[func.start])) # 7 basic blocks
+print(len(func)) # Number of basic blocks
+print(len(func[func.start])) # Number of instructions in the first block
 ```
 
 We see that the functions have 3 strings:
@@ -62,8 +62,8 @@ What's the flag?
 
 And it's calling 3 functions:
 ```python
-for chunk in func.calls:
-	print(chunk.name)
+for callee in func.callees:
+	print(callee.name)
 ```
 
 ```commandline

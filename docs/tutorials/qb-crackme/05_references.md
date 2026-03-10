@@ -25,7 +25,7 @@ class RefType(enum.IntEnum):
 
 ## Call References
 
-A `Call` reference is a link from one `Instruction` to a `Chunk`.
+A `Call` reference is a link from one `Instruction` to a `Function`.
 Usually, the mnemonic is something like `call`.
 
 For instance:
@@ -35,7 +35,7 @@ import quokka
 prog = quokka.Program('docs/samples/qb-crackme.quokka', 'docs/samples/qb-crackme')
 
 inst: quokka.Instruction = prog.get_instruction(0x804950f)
-target: quokka.Chunk = inst.call_target
+target: quokka.Function = inst.call_target
 print(f"Inst {inst} calls `{target.name}`")
 # Inst <call 0x8049270> calls `get_input`
 ```

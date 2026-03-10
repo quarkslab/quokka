@@ -112,7 +112,7 @@ except FunctionMissingError:
 
 ## Register Access Mode
 
-In FULL export mode, register read/write information is available:
+Register read/write information is available in both export modes (in LIGHT mode, it comes from Capstone; in FULL mode, from the exported data). Note that Capstone may not always provide access information, in which case the result is empty:
 
 ```python
 from quokka.types import AccessMode

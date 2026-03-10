@@ -50,19 +50,12 @@ prog.get_function(name='_init_pr',  # Something in the name
 
 
 ## The `Function` object
-Like most of the object in `quokka`, the function object is in itself a mapping. 
-The keys are the address and the values the corresponding **chunks**.
+Like most of the objects in `quokka`, the function object is in itself a mapping.
+The keys are block start addresses and the values are `Block` objects (basic blocks).
 
 !!! info
-    A chunk is an IDA specific concept to deal with code reuse across functions. 
-    A function must have at least one chunk but a chunk may be shared by multiple 
-    functions.
-    See [Igor's explanation](https://hex-rays.com/blog/igors-tip-of-the-week-86-function-chunks/)
-
-!!! warning
-    The direct successors of a function are chunks. However, the interface of 
-    function and chunk is similar and most of  the functions works the same on 
-    the both levels.
+    A function is a dict of basic blocks. Each block represents a straight-line
+    sequence of instructions with one entry and one exit point.
 
 !!! example
     ```python
