@@ -59,14 +59,15 @@ what is exported but the list here can give you a nice overview.
 * References (data and code xref)
 * Data (bytes, strings, ...)
 * Types (structures, enumerations, unions, arrays, pointers)
-* Decompiled pseudocode (optional)
+* Decompiled pseudocode (optional; IDA with Hex-Rays only)
 
 ## What are the trade-offs?
 
-The main trade-off is file size vs completeness. The LIGHT export mode produces
-small files but requires the original binary and Capstone for instruction
-decoding. The FULL (self-contained) mode includes all instruction data but
-produces larger files. See [Usage](usage.md#export-modes) for details.
+Currently only the LIGHT export mode is implemented. It produces small files
+but requires the original binary and Capstone for instruction decoding at
+runtime. A FULL (self-contained) mode that includes all instruction data in the
+export is planned but not yet functional. See [Usage](usage.md#export-modes)
+for details.
 
 ## Contributing
 

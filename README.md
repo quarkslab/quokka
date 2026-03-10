@@ -94,10 +94,10 @@ The default shortcut inside IDA is `Alt+A`. It opens the following dialog:
 
 Modes available are:
 
-* LIGHT: Exports data up to basic blocks start/stop *(instructions are disassembled by bindings)*
-* NORMAL: Exports data and instructions address *(instruction content and operands are retrieved by bindings)*
-* FULL: Exports data, instructions and operands *(self-contained mode, do not require disassembling
-in binding)*
+* LIGHT: Exports block-level data only *(instructions are decoded at runtime by Capstone from the original binary bytes)*
+* FULL: Exports instructions and operands *(self-contained mode, does not require the original binary for disassembly)*
+
+> **Note:** FULL mode is not yet implemented. Only LIGHT mode is currently functional.
 
 
 ### Exporting in headless
@@ -249,6 +249,8 @@ Documentation is available online at
 You can see a list of questions here [FAQ](docs/FAQ.md)
 
 ## Exporting modes
+
+> **Note:** Only LIGHT mode is currently implemented. FULL (self-contained) mode is planned but not yet functional.
 
 Quokka offers two modes to export the disassembly analysis: the **light mode** and the **self contained mode**.
 

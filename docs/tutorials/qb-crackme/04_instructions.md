@@ -48,24 +48,19 @@ for reg in inst.cs_inst.regs_read:
 ```
 
 ### Mnemonics and operands
-The mnemonic is given by IDA and found using `instruction.mnemonic`.
+The mnemonic is found using `instruction.mnemonic`. In LIGHT mode, it comes from
+Capstone decoding; in FULL mode, it comes from the disassembler export.
 
 !!! warning
-    There exists some discrepancies between IDA and Capstone, and they may not
-    agree all the time on the disassembly.
+    There can be discrepancies between the disassembler and Capstone. They may
+    not always agree on the disassembly.
     `quokka` tries to fall back to sane values.
 
 
 ### Operands
-!!! error
-    Operands are not fully implemented. Use carefully.
 
 The instruction operands are listed in the `operands` attribute.
-The fields of the operands are directly replicated from the protobuf (and found 
-in IDA).
+Each operand has a `type` (`REGISTER`, `IMMEDIATE`, `MEMORY`, `OTHER`),
+a `value`, and optional cross-reference properties.
 
-The `details` field replicates some attributes from capstone if needed.
-
-!!! warning
-    At some point, the information extracted from IDA will be unserialized, and
-    it will be possible to fully understand what the fields mean.
+See [Instructions & Operands](../../instructions.md) for the full API reference.

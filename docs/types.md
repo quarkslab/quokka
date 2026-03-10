@@ -1,8 +1,8 @@
 # Types
 
-**Quokka** exports the type information recorded by IDA (structures, unions,
-enumerations, arrays and pointers) and exposes it through a hierarchy of Python
-objects. These objects are useful for understanding data layout, reconstructing
+**Quokka** exports the type information recorded by the disassembler (structures,
+unions, enumerations, arrays and pointers) and exposes it through a hierarchy of
+Python objects. These objects are useful for understanding data layout, reconstructing
 high-level semantics, and cross-referencing types with the data or code that
 uses them.
 
@@ -57,8 +57,8 @@ for enum in prog.enums:
 
 ## BaseType — primitives
 
-`BaseType` is an `IntEnum` that represents the primitive C types IDA knows
-about:
+`BaseType` is an `IntEnum` that represents the primitive C types the
+disassembler knows about:
 
 | Name | C equivalent | Size (bytes) |
 |---|---|---|
@@ -90,7 +90,7 @@ starting at 0). Each value is a `StructureTypeMember`.
 
 | Attribute | Type | Description |
 |---|---|---|
-| `name` | `str` | Structure name as defined in IDA |
+| `name` | `str` | Structure name as defined in the disassembler |
 | `size` | `int` | Total size in bytes (0 if variable-length) |
 | `c_str` | `str` | C declaration of the structure |
 | `comments` | `list[str]` | Analyst comments |

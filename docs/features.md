@@ -30,7 +30,7 @@ The table below shows what each backend exports in each mode.
 | | Decompiled pseudocode | :material-check:{ .icon-green title="Requires Hex-Rays" } | :material-close:{ .icon-red } |
 | **Basic Blocks** | Address, size, type | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | | Instruction count | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
-| **Instructions** | Mnemonic, operands, bytes | :material-close:{ .icon-red title="Light mode only" } | :material-close:{ .icon-red title="Light mode only" } |
+| **Instructions** | Mnemonic, operands, bytes | :material-close:{ .icon-red title="Decoded at runtime by Capstone" } | :material-close:{ .icon-red title="Decoded at runtime by Capstone" } |
 | **Graphs** | Call graph | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | | CFG (per function) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | **Cross-references** | Code refs (call, jump) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |

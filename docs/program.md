@@ -31,7 +31,7 @@ len(prog)  # number of functions
 # Option 1: direct load (you already have the .quokka file)
 prog = quokka.Program("binary.quokka", "binary")
 
-# Option 2: from_binary (invokes IDA automatically)
+# Option 2: from_binary (invokes a disassembler automatically)
 prog = quokka.Program.from_binary(
     exec_path="binary",
     mode=ExporterMode.LIGHT,  # default
@@ -51,7 +51,7 @@ path = quokka.Program.generate("binary", output_file="out.quokka")
 
 ```python
 # Binary identity
-prog.name           # "bash"  (from IDA)
+prog.name           # "bash"
 prog.hash           # "a4f3..." (sha256 or MD5)
 
 # Architecture
@@ -99,15 +99,15 @@ Segments model the binary's memory layout (`.text`, `.data`, `.bss`, etc.)
 for seg_id, seg in prog.segments.items():
     print(f"[{seg_id}] {seg.name:15s}  "
           f"0x{seg.start:x}–0x{seg.end:x}  "
-          f"type={seg.type}  "
-          f"perm={seg.permissions}")
+          f"type={seg.type.name}  "
+          f"perm={seg.permissions!r}")
 ```
 
 ```
-[0] .text            0x401000–0x4b2000  type=CODE  perm=R|X
-[1] .rodata          0x4b2000–0x4c0000  type=DATA  perm=R
-[2] .data            0x4c1000–0x4c5000  type=DATA  perm=R|W
-[3] .bss             0x4c5000–0x4c8000  type=BSS   perm=R|W
+[0] .text            0x401000–0x4b2000  type=CODE  perm=<Perm.R|X: 5>
+[1] .rodata          0x4b2000–0x4c0000  type=DATA  perm=<Perm.R: 4>
+[2] .data            0x4c1000–0x4c5000  type=DATA  perm=<Perm.R|W: 6>
+[3] .bss             0x4c5000–0x4c8000  type=BSS   perm=<Perm.R|W: 6>
 ```
 
 ```python

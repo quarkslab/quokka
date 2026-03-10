@@ -139,7 +139,7 @@ first_id = bionic.get_data(user_table.address + 0x4).value
 # 1047
 ```
 
-However, the snippet above works only if IDA found the data in the program. Otherwise, it will fail with the following
+However, the snippet above works only if the disassembler found the data in the program. Otherwise, it will fail with the following
 error:
 
 ```shell

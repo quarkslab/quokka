@@ -16,14 +16,14 @@ auto-completion
     It's best to install quokka in a [virtualenv](https://virtualenv.pypa.io/en/latest/).
 
 ```commandline
-$ pip install pip install git+https://github.com/quarkslab/quokka.git
+$ pip install quokka-project
 ```
 
 ## Step 2: Download the binaries for the tutorial
 
 For this tutorial, we will use a simple CrackMe.
 You can download it [here](https://github.com/quarkslab/quokka/blob/main/docs/samples/qb-crackme).
-If you don't have IDA, you will also need the exported file: [here](https://github.com/quarkslab/quokka/blob/main/docs/samples/qb-crackme.qk).
+If you don't have a disassembler (IDA or Ghidra), you will also need the exported file: [here](https://github.com/quarkslab/quokka/blob/main/docs/samples/qb-crackme.quokka).
 
 ## Check
 

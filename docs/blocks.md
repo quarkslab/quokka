@@ -201,7 +201,7 @@ for func in prog.values():
 ## Summary
 
 - `Block` is a `MutableMapping` of instructions, keyed by address
-- **BlockType**: `NORMAL`, `RET`, `NORET`, `INDJUMP`, `CNDRET`, `ERROR`
+- **BlockType**: `NORMAL`, `RET`, `NORET`, `INDJUMP`, `CNDRET`, `ENORET`, `ERROR`, `EXTERN`
 - `func.graph` is a `networkx.DiGraph` of block addresses
 - CFG edges carry `RefType` (`JMP_COND`, `JMP_UNCOND`, `CALL`…)
 - `block.successors` / `block.predecessors` for convenient navigation

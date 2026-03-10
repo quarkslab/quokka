@@ -1,7 +1,7 @@
 # Functions
 
 One of the most common binary abstraction level is the `function`. Thus, 
-`quokka` offers nicer way to interact to them (compared to the default IDA API).
+`quokka` offers a nicer way to interact with them (compared to the disassembler API).
 
 !!! note "Prerequisites"
     For this part of the tutorial, I asssume you already have a working 

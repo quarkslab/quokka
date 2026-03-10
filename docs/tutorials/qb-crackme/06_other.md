@@ -1,7 +1,8 @@
 # Structures
 
-Structures exported from IDA are found in `program.structures`. A structure is 
-composed of his members and most of all the information found in IDA are extracted.
+Structures exported from the disassembler are found in `program.structures`. A
+structure is composed of its members and most of the information found in the
+disassembler is extracted.
 
 !!! note
     `Unions`, `enums` and `structures` are all merged into the more generic 
@@ -9,7 +10,7 @@ composed of his members and most of all the information found in IDA are extract
 
 # Segments
 
-The segments exported from IDA are available under `program.segments`
+The segments exported from the disassembler are available under `program.segments`
 
 # Strings
 

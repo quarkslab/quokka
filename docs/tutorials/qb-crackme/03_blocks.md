@@ -40,10 +40,10 @@ for successor in block.successors:
 
 ## Strings, constants and comments
 Strings, constants (and other data) are accessible with the eponyms attributes.
-Moreover, if a comment has been defined in IDA, it is accessible through 
-`comments`.
+Moreover, if a comment has been defined in the disassembler, it is
+accessible through `comments`.
 
 ## Type
 
-Basic blocks have types in IDA which is exported by `quokka`.
+Basic blocks have types which are exported by `quokka`.
 Use `block.type` to access it.

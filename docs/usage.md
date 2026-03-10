@@ -174,24 +174,20 @@ file used during export -- Quokka checks the hash on load.
 Quokka offers two export modes: **LIGHT** and **FULL** (also called
 self-contained).
 
+!!! warning
+    Only **LIGHT** mode is currently implemented. FULL mode is planned but not
+    yet functional.
+
 **LIGHT mode** focuses on exporting only essential information, producing fast
 and lightweight files. No information at instruction level or below is exported;
 the Capstone engine decodes instructions at runtime from the original binary
 bytes.
 
-**FULL mode** (self-contained) exports the full disassembly exactly as the
-backend disassembler shows it. This produces heavier files but does not require
-depending on third-party disassemblers at runtime.
+**FULL mode** (self-contained) will export the full disassembly exactly as the
+backend disassembler shows it. This will produce heavier files but will not
+require depending on third-party disassemblers at runtime.
 
-Both modes expose the same Python API.
-
-!!! warning
-    From the self-contained mode it is still possible to obtain the Capstone
-    instruction object, but the Capstone disassembly might differ from what
-    Quokka exported (instructions might be split, merged, not supported, have
-    different mnemonics, etc.). Different binary analysis platforms produce
-    different disassembly -- keep this in mind when mixing Capstone with the
-    self-contained mode.
+Both modes will expose the same Python API.
 
 |  | Light Mode | Self-contained Mode |
 | -------- | -------- | -------- |

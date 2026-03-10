@@ -132,6 +132,7 @@ for op in inst.operands:
 ```python
 import quokka
 from quokka.types import FunctionType
+from quokka.exc import FunctionMissingError
 
 prog = quokka.Program("bash.quokka", "bash")
 
@@ -142,11 +143,15 @@ for func in prog.values():
     for block in func.values():
         for addr, inst in block.items():
             if inst.mnemonic in ("call", "bl", "blx", "jal"):
-                target = inst.call_target
+                try:
+                    target = inst.call_target
+                    callee_name = target.name
+                except FunctionMissingError:
+                    callee_name = "indirect"
                 call_sites.append({
                     "caller": func.name,
                     "site": hex(addr),
-                    "callee": target.name if target else "indirect",
+                    "callee": callee_name,
                 })
 
 print(f"Found {len(call_sites)} call sites")
@@ -155,6 +160,8 @@ print(f"Found {len(call_sites)} call sites")
 ### Finding Dangerous Function Calls
 
 ```python
+from quokka.exc import FunctionMissingError
+
 DANGEROUS = {"strcpy", "gets", "sprintf", "system",
              "strcat", "scanf", "vsprintf"}
 
@@ -162,8 +169,11 @@ hits = []
 for func in prog.values():
     for block in func.values():
         for addr, inst in block.items():
-            target = inst.call_target
-            if target and target.name in DANGEROUS:
+            try:
+                target = inst.call_target
+            except FunctionMissingError:
+                continue
+            if target.name in DANGEROUS:
                 hits.append((func.name, hex(addr), target.name))
 
 for caller, site, callee in hits:

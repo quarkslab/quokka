@@ -54,9 +54,9 @@ assert prog is not None, "Unable to export qb-crackme"
 ```
 
 ## Tips & tricks
-By default, IDA will store the database of the exported file next to the binary
-file. However, this is not convenient when dealing with read only filesystems. 
-Use the ```database_file``` option to control where it should be stored.
+When using IDA, the database is stored next to the binary file by default.
+This is not convenient when dealing with read-only filesystems.
+Use the `database_file` option to control where it should be stored (IDA only).
 
 ```python
 import quokka
