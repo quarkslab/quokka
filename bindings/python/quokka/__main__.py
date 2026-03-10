@@ -298,11 +298,12 @@ def main(
     flag_value="regenerate",
     help="commit() then re-export a fresh .quokka from IDA (slower)",
 )
+@click.option("--overwrite", is_flag=True, default=False, help="Allow overwriting an existing disassembler database")
 @click.option("-v", "--verbose", count=True, help="Increase logging verbosity")
 @click.argument("quokka_file", type=click.Path(exists=True, dir_okay=False))
 @click.argument("binary_file", type=click.Path(exists=True, dir_okay=False))
 def apply_changes(
-    action: str, verbose: int, quokka_file: str, binary_file: str
+    action: str, overwrite: bool, verbose: int, quokka_file: str, binary_file: str
 ) -> None:
     """Apply pre-recorded edits from a .quokka file back to the disassembler.
 
@@ -323,16 +324,23 @@ def apply_changes(
         sys.exit(1)
 
     if action == "commit":
-        success = program.commit()
-        if success:
+        try:
+            errors = program.commit(overwrite=overwrite)
+        except FileExistsError as e:
+            logging.error(f"{e}\nUse --overwrite to allow modifying an existing database.")
+            sys.exit(1)
+        if errors == 0:
             logging.info(f"Edits committed to {quokka_file}")
         else:
-            logging.error("commit() failed")
+            logging.error(f"commit() reported {errors} error(s)")
             sys.exit(1)
     else:  # regenerate
         try:
-            new_program = program.regenerate()
+            new_program = program.regenerate(overwrite=overwrite)
             logging.info(f"Regenerated: {new_program.export_file}")
+        except FileExistsError as e:
+            logging.error(f"{e}\nUse --overwrite to allow modifying an existing database.")
+            sys.exit(1)
         except QuokkaError as e:
             logging.error(f"regenerate() failed: {e}")
             sys.exit(1)

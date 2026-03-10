@@ -1162,5 +1162,6 @@ class Program(dict):
             self.export_file,
             database_file=database_file,
             override=True,
+            disassembler=self.disassembler,
         )
         return Program.open(path, self.executable.exec_file)
