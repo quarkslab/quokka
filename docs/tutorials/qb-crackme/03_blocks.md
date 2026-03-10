@@ -14,8 +14,8 @@ func = prog.fun_names['level_1']
 
 block_start: int = 0x80494e8
 
-# Method 1 : Get a block through the function
-block = func.get_block(address=block_start)
+# Method 1 : Get a block through the function (dict-style access)
+block = func[block_start]
 
 # Method 2 : Get a block from an instruction
 inst = prog.get_instruction(block_start)

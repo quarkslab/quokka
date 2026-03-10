@@ -75,7 +75,7 @@ _strlen
 Let's now print the disassembly of the first block to understand what's happening:
 
 ```python
-for inst in func.get_block(func.start):
+for inst in func[func.start]:
     print(inst.cs_inst)
 ```
 
@@ -143,7 +143,7 @@ the `strlen` call is the data loaded from memory.
 
 ```python
 inst = func.get_instruction(0x80492eb)
-print(inst.string)
+print(inst.strings)
 ```
 
 The argument used by the second call at `strlen` is the result of the `get_input`
@@ -152,8 +152,8 @@ function.
 
 Let's consider the next block:
 ```python
-first = func.get_block(func.start)
-next_block = func.get_block(next(first.successors))
+first = func[func.start]
+next_block = func[next(first.successors)]
 ```
 
 We know there is only one successor because either :

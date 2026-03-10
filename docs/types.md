@@ -16,7 +16,8 @@ CoreType                         ← abstract base for every type
 │   ├── StructureType  (dict)    ← C struct
 │   │   └── UnionType            ← C union (subclass of StructureType)
 │   ├── ArrayType                ← C array (T[N])
-│   └── PointerType              ← C pointer (T*)
+│   ├── PointerType              ← C pointer (T*)
+│   └── TypedefType              ← C typedef / alias
 ├── EnumTypeMember               ← one value inside an EnumType
 └── StructureTypeMember          ← one field inside a StructureType/UnionType
 ```
@@ -32,7 +33,8 @@ its kind without `isinstance` calls:
 | `is_union` | `UnionType` |
 | `is_array` | `ArrayType` |
 | `is_pointer` | `PointerType` |
-| `is_composite` | Any `ComplexType` (enum, struct, union, array, pointer) |
+| `is_typedef` | `TypedefType` |
+| `is_composite` | Any `ComplexType` (enum, struct, union, array, pointer, typedef) |
 | `is_member` | `StructureTypeMember` or `EnumTypeMember` |
 
 ## Accessing types from a Program
@@ -218,6 +220,24 @@ for t in prog.types:
         print(f"{t.name} → {t.pointed_type}  (size={t.size})")
 ```
 
+## TypedefType -- C typedefs
+
+| Attribute | Type | Description |
+|---|---|---|
+| `name` | `str` | Typedef name (e.g. `DWORD`, `size_t`) |
+| `size` | `int` | Size of the aliased type in bytes |
+| `aliased_type` | `TypeT` | The type this typedef aliases (single step) |
+| `c_str` | `str` | C declaration (e.g. `typedef int DWORD;`) |
+
+`TypedefType.resolve()` follows typedef chains to the concrete type:
+
+```python
+for t in prog.types:
+    if t.is_typedef:
+        concrete = t.resolve()
+        print(f"typedef {t.name} -> {concrete}")
+```
+
 ## Adding new types
 
 You can define new types from Python and persist them back to the
@@ -301,7 +321,9 @@ def describe(t) -> str:
     elif t.is_array:
         return f"array {t.element_type}[{t.array_size}]"
     elif t.is_pointer:
-        return f"pointer → {t.pointed_type}"
+        return f"pointer -> {t.pointed_type}"
+    elif t.is_typedef:
+        return f"typedef {t.name} -> {t.resolve()}"
     return "unknown"
 
 for t in prog.types:

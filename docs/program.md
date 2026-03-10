@@ -28,6 +28,8 @@ len(prog)  # number of functions
 ## Loading Options
 
 ```python
+from quokka.types import ExporterMode
+
 # Option 1: direct load (you already have the .quokka file)
 prog = quokka.Program("binary.quokka", "binary")
 
@@ -78,11 +80,13 @@ Quokka leverages Capstone for runtime disassembly, so it supports all architectu
 | Architecture | ISA enum |
 |-------------|----------|
 | x86 / x86-64 | `X86` |
-| ARM / AArch64 | `ARM`, `AARCH64` |
+| ARM / AArch64 | `ARM`, `ARM64` |
 | MIPS | `MIPS` |
 | PowerPC | `PPC` |
 | SPARC | `SPARC` |
-| RISC-V | `RISCV` |
+| M68K | `M68K` |
+| SystemZ | `SYSZ` |
+| EVM | `EVM` |
 
 ```python
 from quokka.analysis import ArchEnum

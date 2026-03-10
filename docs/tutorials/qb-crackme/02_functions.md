@@ -101,9 +101,8 @@ for called in func.callees:
 The CFG of the function is accessible through the `func.graph` attribute. 
 It is a `networkx.DiGraph` where the nodes are the blocks (of all the chunks). 
 
-!!! warning
-    You must use the `get_block` method to retrieve a block from a function 
-    object as the dict in itself only refers `Chunk`.
+!!! tip
+    Access blocks via dict-style lookup: `func[block_address]`.
 
 
 ## Chunks & Super chunks

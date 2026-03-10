@@ -172,7 +172,7 @@ func.callers          # list[Function]
 func.strings          # list[str]
 func.graph            # networkx.DiGraph (CFG)
 func.in_function(addr)  # bool: is addr inside func?
-func.get_block(addr)    # Block at addr
+func[addr]              # Block at addr
 ```
 
 ## Example: Top Complexity Functions

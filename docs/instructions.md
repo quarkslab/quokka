@@ -6,7 +6,7 @@ Instructions are the lowest level of the Quokka object model. This page covers t
 
 ```python
 func = prog.get_function("main", approximative=False)
-entry = func.get_block(func.start)
+entry = func[func.start]
 
 # Iterate instructions in a block
 for addr, inst in entry.items():

@@ -18,8 +18,8 @@ func = prog.fun_names['level1']
 inst = func.get_instruction(0x80494e8)
 
 # Method 3: by the block
-block = func.get_block(func.start)
-inst = block.get_instruction(0x80494e8)
+block = func[func.start]
+inst = block[0x80494e8]
 ```
 
 ## Instructions attributes

@@ -90,7 +90,7 @@ errors = prog.commit(database_file="binary.i64", overwrite=True)
 |-----------|------|---------|-------------|
 | `database_file` | `Path\|str` | *required* | Path to the `.i64` database to modify |
 | `ida_path` | `Path\|str\|None` | `None` | IDA installation directory (auto-detected if omitted) |
-| `overwrite` | `bool` | `False` | Allow modifying an existing `.i64`. Raises `FileExistsError` when `False` and the file exists. Logs a warning when `True`. |
+| `overwrite` | `bool` | `True` | Allow modifying an existing `.i64`. Raises `FileExistsError` when `False` and the file exists. Logs a warning when `True`. |
 | `timeout` | `int` | `600` | Maximum seconds to wait for IDA |
 
 Returns the number of errors (0 = all edits applied successfully).
