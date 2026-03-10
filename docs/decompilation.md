@@ -6,9 +6,11 @@ high-level C-like code in your analysis scripts without keeping an IDA session
 open.
 
 !!! note
-    Decompilation requires a Hex-Rays decompiler licence for the target
-    architecture. The export will succeed even when the decompiler is
-    unavailable; in that case `Program.decompiled_activated` is `False` and
+    Decompilation export is currently supported only with the **IDA backend**
+    and requires a Hex-Rays decompiler licence for the target architecture.
+    The Ghidra extension does not yet export decompiled code.
+    The export will succeed even when the decompiler is unavailable; in that
+    case `Program.decompiled_activated` is `False` and
     `Function.decompiled_code` is an empty string for every function.
 
 ## Enabling decompilation at export time

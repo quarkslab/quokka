@@ -1,6 +1,6 @@
 # Features
 
-**Quokka** exports as much information from IDA as possible. The table below list the main exported elements.
+**Quokka** exports as much information from the disassembler (IDA Pro or Ghidra) as possible. The table below lists the main exported elements.
 
 ## Exported elements
 
@@ -376,6 +376,7 @@ To ease **Quokka** usage in various worfklows, the tool also provides several ad
 * Multiple export modes
 * Capstone integration
 * Pypcode integration
-* Decompiled pseudocode export (optional, requires Hex-Rays)
-* Function annotation and write-back to IDA
+* Decompiled pseudocode export (optional; requires Hex-Rays for IDA)
+* Function annotation and write-back to IDA database
+* User-defined type injection (`Program.add_type()`)
 

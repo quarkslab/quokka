@@ -10,7 +10,7 @@ Let's try to see how we can start to solve it with `quokka`.
 ```python
 import quokka
 
-prog = quokka.Program('docs/samples/qb-crackme.Quokka', 'docs/samples/qb-crackme')
+prog = quokka.Program('docs/samples/qb-crackme.quokka', 'docs/samples/qb-crackme')
 
 # Get the functions name
 for func in prog.fun_names:

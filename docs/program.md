@@ -120,11 +120,11 @@ seg.in_segment(0x401234)  # True
 # By address (dict key)
 func = prog[0x401000]
 
-# By exact name
-func = prog.get_function("main", approximative=False)
+# By exact name (default)
+func = prog.get_function("main")
 
-# By partial name (default — first match containing the substring)
-func = prog.get_function("parse")
+# By partial name (first match containing the substring)
+func = prog.get_function("parse", approximative=True)
 
 # Restrict to NORMAL functions (skip imports/thunks)
 func = prog.get_function("malloc", normal=True)

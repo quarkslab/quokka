@@ -3,95 +3,117 @@
 ## Introduction
 
 Quokka is a binary exporter: from the disassembly of a program, it generates
-an export file that can be used without the disassembler.
+an export file that can be used without the disassembler. It currently supports
+**IDA Pro** and **Ghidra** as disassembly backends.
 
 The main objective of **Quokka** is to enable to completely manipulate the
-binary without ever opening a disassembler after the initial step. Moreover, it
+binary without ever opening a disassembler after the initial export. Moreover, it
 abstracts the disassembler's API to expose a clean interface to the users.
 
 Quokka is heavily inspired by [BinExport](https://github.com/google/binexport),
 the binary exporter used by BinDiff.
 
+## Architecture
+
+```
+     IDA Pro                Ghidra
+        |                      |
+IDA Plugin (C++)    Ghidra Plugin (Java)
+        |                      |
+        +--- quokka.proto -----+
+          (protobuf schema)
+                   |
+             .quokka files
+                   |
+   Python bindings (quokka.Program)
+   +-- Capstone backend (primary)
+   +-- Pypcode backend (optional)
+```
+
 ## Installation
 
-### Python plugin
-
-The plugin is built in the CI and available in the
-[registry](https://github.com/quarkslab/quokka/packages).
-
-It should be possible to install directly from PIP using this kind of commmand:
+### Python library
 
 ```commandline
 $ pip install quokka-project
 ```
 
-### IDA Plugin
+### Disassembler plugins
 
-Note: The IDA plugin is not needed to read a `Quokka` generated file. It is
-only used to generate them.
+The IDA and Ghidra plugins are only needed to **generate** `.quokka` files.
+Reading them requires only the Python library above.
 
-The plugin is built on the CI and available in the
-[Release](https://github.com/quarkslab/quokka/releases).
+- **IDA Plugin** -- pre-built libraries available in [Releases](https://github.com/quarkslab/quokka/releases). Get the file named `quokka_plugin**.so`.
+- **Ghidra Extension** -- see the [Ghidra extension README](https://github.com/quarkslab/quokka/tree/main/ghidra_extension) for build and install instructions.
 
-To download the plugin, get the file named `quokka_plugin**.so`.
+For more details see [Installation](installation.md).
 
-## Usage
+## Quick Start
 
-### Export a file
+### Loading an export file
 
-!!! note
+`Program.from_binary()` invokes a disassembler to export and load the binary in
+one step. It requires the appropriate environment variable to locate the
+disassembler:
 
-    This requires a working IDA installation.
-
-
-- Either using command line:
-```commandline
-$ idat64 -OQuokkaAuto:true -A /path/to/hello.i64
-```
-
-Note: We are using `idat64` and not `ida64` to increase the export speed
-because we don't need the graphical interface.
-
-- Using the plugin shortcut inside IDA: (by default) Alt+A
-
-### Load an export file
+- **IDA**: set `IDA_PATH` to the IDA installation directory
+- **Ghidra**: set `GHIDRA_INSTALL_DIR` to the Ghidra installation directory
 
 ```python
 import quokka
+from quokka.types import Disassembler
 
-# Directly from the binary (requires the IDA plugin to be installed)
+# Directly from the binary (auto-detects available backend)
 ls = quokka.Program.from_binary("/bin/ls")
 
-# From the exported file
-ls = quokka.Program("ls.quokka",  # the exported file 
+# Explicitly choose a backend
+ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
+ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
+
+# From an already-exported file
+ls = quokka.Program("ls.quokka",  # the exported file
                     "/bin/ls")    # the original binary
 ```
 
+### Exploring the binary
+
+```python
+# Functions
+func = prog.get_function("main")
+print(func.name, hex(func.start), len(func), "blocks")
+
+# Basic blocks and instructions
+for block in func.values():
+    for addr, inst in block.items():
+        print(f"  0x{addr:x}: {inst.mnemonic}")
+
+# Cross-references
+for callee in func.callees:
+    print(f"  calls {callee.name}")
+
+# Strings
+for s in func.strings:
+    print(repr(s))
+```
+
+### Editing and adding types
+
+```python
+# Add new types from C declarations
+prog.add_type("struct context { int id; char name[64]; };")
+prog.add_type("enum status { OK=0, ERROR=1 };")
+
+# Save the .quokka file
+prog.write()
+
+# Or apply changes (including new types) back to the IDA database
+prog.commit(database_file="ls.i64", overwrite=True)
+```
+
+See the full [editing documentation](write_feature.md) for details on renaming
+functions, setting prototypes, and more.
+
 ## Building
 
-### Build
-
-```console
-user@host:~/quokka$ cmake -B build \ # Where to build 
-                          -S . \ # Where are the sources
-                          -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK 
-                          -DCMAKE_BUILD_TYPE:STRING=Release \ # Build Type 
-                          -DBUILD_TEST:BOOL=OFF # Don't build the tests
-
-user@host:~/quokka$ cmake --build build -- -j 8
-```
-
-To install the plugin:
-
-```console
-user@host:~/quokka$ cmake --install build
-```
-
-In any case, the plugin will also be in `build/quokka-install`. You can
-copy it to Ida plugin directory.
-
-```console
-user@host:~/quokka$ cp build/quokka-install/quokka*64.so $IDA_BIN_DIR/plugins/
-```
-
-For more detailed information about building, see [Building](installation.md#ida-plugin)
+See the [Installation](installation.md) page for full build instructions for
+both the IDA plugin and Ghidra extension.

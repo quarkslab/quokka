@@ -80,7 +80,7 @@ below list some of them :
 ```python
 import quokka
 
-prog = quokka.Program('docs/samples/qb-crackme.Quokka', 'docs/samples/qb-crackme')
+prog = quokka.Program('docs/samples/qb-crackme.quokka', 'docs/samples/qb-crackme')
 func = prog.fun_names['level_1']
 
 print(f'Func {func.name} starts at 0x{func.start:x} and finished at 0x{func.end:x}')

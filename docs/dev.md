@@ -51,9 +51,24 @@ user@host:~/quokka$ cmake -B build-tests \ # Where to build
 
 ### For the Python bindings
 
-The tests for the Python bindings are also limited but can be improved.
-To run them, use the following command.
-
 ```commandline
 user@host:~/quokka$ pytest tests/python
 ```
+
+### For the Ghidra extension
+
+The Ghidra extension has JUnit tests:
+
+```commandline
+user@host:~/quokka$ cd ghidra_extension && ./gradlew test
+```
+
+Python integration tests for the Ghidra export require `GHIDRA_INSTALL_DIR` to be
+set and the extension installed:
+
+```commandline
+user@host:~/quokka$ export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
+user@host:~/quokka$ pytest tests/python/tests/ghidra/ -v
+```
+
+Tests auto-skip when `GHIDRA_INSTALL_DIR` is unset or `analyzeHeadless` is not found.
