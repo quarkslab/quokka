@@ -5,19 +5,22 @@ Ghidra extension that exports analysis to `.quokka` protobuf files, consumable b
 ## Requirements
 
 - JDK 21+
-- Gradle >= 8.5 (a Gradle wrapper is included, so no system-wide install is needed)
-- Ghidra >= 12.0.3
+- Ghidra >= 12.0.3 (the `third_party/ghidra` submodule tag is the source of truth for the tested version)
+
+A Gradle wrapper (>= 8.5) is included -- no system-wide Gradle install is needed.
 
 ## Build
 
+`GHIDRA_INSTALL_DIR` must point to a Ghidra installation. You can use the helper script to fetch the matching release:
+
 ```bash
-export GHIDRA_INSTALL_DIR=/path/to/ghidra_12.0.3
+export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
 cd ghidra_extension
 rm -rf dist/
 ./gradlew buildExtension
 ```
 
-The extension ZIP is generated in `dist/` (e.g. `ghidra_12.0.3_PUBLIC_QuokkaExporter.zip`).
+The extension ZIP is generated in `dist/`.
 
 ## Install
 
@@ -27,6 +30,12 @@ Copy the generated ZIP from `dist/` into Ghidra:
 2. File > Install Extensions
 3. Add the ZIP file
 4. Restart Ghidra
+
+Or install from the command line:
+
+```bash
+unzip -o dist/ghidra_*_QuokkaExporter.zip -d "$GHIDRA_INSTALL_DIR/Ghidra/Extensions/"
+```
 
 ## Usage
 
@@ -38,14 +47,34 @@ Copy the generated ZIP from `dist/` into Ghidra:
 4. Choose output file
 5. Click Export
 
-### Headless
+### Headless (CLI)
+
+The recommended way to run a headless export is through `quokka-cli`:
 
 ```bash
-analyzeHeadless /tmp/proj Test \
+quokka-cli --backend ghidra /path/to/binary -o /tmp/output.quokka
+```
+
+Or via the Python API:
+
+```python
+import quokka
+p = quokka.Program.from_binary("/path/to/binary", disassembler=quokka.Disassembler.GHIDRA)
+```
+
+Both require `GHIDRA_INSTALL_DIR` to be set and the extension installed.
+
+### Headless (Advanced)
+
+For more fine-grained control over the Ghidra analysis pipeline, you can invoke `analyzeHeadless` directly. The extension **must be installed** into the Ghidra directory for this to work (Ghidra's OSGI classloader does not pick up external JARs for script dependencies).
+
+```bash
+export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
+
+"$GHIDRA_INSTALL_DIR/support/analyzeHeadless" /tmp/proj Test \
   -import /path/to/binary \
   -scriptPath ghidra_extension/src/script/ghidra_scripts \
-  -postScript QuokkaExportHeadless.java \
-  --out=/tmp/output.quokka --mode=LIGHT
+  -postScript QuokkaExportHeadless.java "--out=/tmp/output.quokka" "--mode=LIGHT"
 ```
 
 ### Verify
@@ -67,6 +96,8 @@ print(f'Segments: {len(p.proto.segments)}')
 ## Testing
 
 ```bash
+export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
+cd ghidra_extension
 ./gradlew test
 ```
 
@@ -76,12 +107,12 @@ print(f'Segments: {len(p.proto.segments)}')
 ghidra_extension/
   src/
     main/java/com/quarkslab/quokka/
-      QuokkaExporter.java          # GUI entry point
+      QuokkaExporter.java          # GUI entry point (File > Export > Quokka)
       ExportContext.java            # Shared export state
       ExportPipeline.java          # Phase orchestrator
       export/                      # One class per export phase
       util/                        # Mapper and utility classes
-      compat/                      # Version compatibility
+      compat/                      # Ghidra version compatibility
     main/proto/
       quokka.proto -> ../../proto/ # Symlink to shared schema
     test/java/                     # JUnit tests
