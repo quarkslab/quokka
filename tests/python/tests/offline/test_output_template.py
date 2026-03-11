@@ -122,3 +122,45 @@ class TestDirectoryOutputCollision:
         runner = CliRunner()
         result = runner.invoke(quokka_cli, ["-o", "fixed.quokka", str(f)])
         assert "no specifiers" not in result.output
+
+    def test_multiple_files_with_fixed_output_errors(self, tmp_path):
+        """Passing multiple files with -o that has no specifiers must fail."""
+        f1 = tmp_path / "bin1"
+        f2 = tmp_path / "bin2"
+        f1.touch()
+        f2.touch()
+        runner = CliRunner()
+        result = runner.invoke(quokka_cli, ["-o", "fixed.quokka", str(f1), str(f2)])
+        assert result.exit_code != 0
+        assert "no specifiers" in result.output
+
+    def test_multiple_files_with_template_output_passes(self, tmp_path):
+        """Multiple files with a parametrized -o should pass the collision check."""
+        f1 = tmp_path / "bin1"
+        f2 = tmp_path / "bin2"
+        f1.touch()
+        f2.touch()
+        runner = CliRunner()
+        result = runner.invoke(quokka_cli, ["-o", "%f.quokka", str(f1), str(f2)])
+        assert "no specifiers" not in result.output
+
+    def test_mixed_file_and_dir_with_fixed_output_errors(self, tmp_path):
+        """A file and a directory with no specifiers must fail."""
+        f = tmp_path / "bin1"
+        d = tmp_path / "subdir"
+        f.touch()
+        d.mkdir()
+        runner = CliRunner()
+        result = runner.invoke(quokka_cli, ["-o", "fixed.quokka", str(f), str(d)])
+        assert result.exit_code != 0
+        assert "no specifiers" in result.output
+
+    def test_multiple_dirs_with_template_output_passes(self, tmp_path):
+        """Multiple directories with a parametrized -o should pass validation."""
+        d1 = tmp_path / "dir1"
+        d2 = tmp_path / "dir2"
+        d1.mkdir()
+        d2.mkdir()
+        runner = CliRunner()
+        result = runner.invoke(quokka_cli, ["-o", "%f.quokka", str(d1), str(d2)])
+        assert "no specifiers" not in result.output

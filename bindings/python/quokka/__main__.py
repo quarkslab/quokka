@@ -181,7 +181,7 @@ def export_job(
 
 
 def run_async(
-    root_path: Path,
+    paths: list,
     threads: int,
     mode: ExporterMode,
     decompiled: bool,
@@ -204,9 +204,10 @@ def run_async(
 
     # Pre-fill ingress queue
     total = 0
-    for file in recursive_file_iter(root_path):
-        ingress.put(file)
-        total += 1
+    for p in paths:
+        for file in recursive_file_iter(p):
+            ingress.put(file)
+            total += 1
 
     logging.info(f"Start exporting {total} binaries")
 
@@ -226,7 +227,7 @@ def run_async(
     pool.terminate()
 
 def run_sequential(
-    root_path: Path,
+    paths: list,
     mode: ExporterMode,
     decompiled: bool,
     timeout: int,
@@ -234,8 +235,10 @@ def run_sequential(
     disassembler: Disassembler = Disassembler.UNKNOWN,
     output_template: str = "%F.quokka",
 ) -> None:
-    # Pre-fill ingress queue
-    total_files = list(recursive_file_iter(root_path))
+    # Collect all binaries from every input path
+    total_files = []
+    for p in paths:
+        total_files.extend(recursive_file_iter(p))
     total = len(total_files)
 
     logging.info(f"Start exporting {total} binaries")
@@ -276,12 +279,12 @@ def run_sequential(
 @click.option("-m", "--mode", type=click.Choice([x.name for x in ExporterMode], case_sensitive=False), default=ExporterMode.LIGHT.name, help="Export mode (LIGHT or FULL)")
 @click.option("--decompiled", is_flag=True, default=False, help="Export decompiled code")
 @click.option("-o", "--output", "output_template", type=str, default="%F.quokka", help=r"Output path or template (specifiers: %f stem, %F name, %P full path, %p parent, %e ext, %% literal %)")
-@click.argument("input_file", type=click.Path(exists=True), metavar="<binary file|directory>")
+@click.argument("input_files", type=click.Path(exists=True), nargs=-1, required=True, metavar="<file|directory>")
 def main(
     backend: str,
     ida_path: str,
     ghidra_path: str,
-    input_file: str,
+    input_files: tuple,
     threads: int,
     verbose: bool,
     mode: str,
@@ -292,8 +295,8 @@ def main(
 ) -> None:
     """
     quokka-cli is a very simple utility to generate a .Quokka file
-    for a given binary or a directory. It will open the binary file and export
-    files seamlessly.
+    for one or more binaries and/or directories. It will open every binary
+    file and export files seamlessly.
 
     Supports both IDA Pro and Ghidra backends. Use --backend to choose, or
     let auto-detection pick whichever is available.
@@ -340,12 +343,13 @@ def main(
         # Let Program._detect_disassembler() choose at export time
         disassembler = Disassembler.UNKNOWN
 
-    root_path = Path(input_file)
+    paths = [Path(f) for f in input_files]
 
-    if root_path.is_dir() and not _template_has_specifiers(output_template):
+    multiple_outputs = len(paths) > 1 or any(p.is_dir() for p in paths)
+    if multiple_outputs and not _template_has_specifiers(output_template):
         raise click.UsageError(
-            "The -o/--output template has no specifiers, so every binary "
-            "in the directory would be exported to the same file. "
+            "The -o/--output name has no specifiers, so multiple binaries "
+            "would be exported to the same file. "
             "Use a template with specifiers (e.g. '%f', '%F') to "
             "differentiate output paths, or export a single file instead."
         )
@@ -353,9 +357,9 @@ def main(
     export_mode = ExporterMode[mode.upper()]
 
     if threads > 1:
-        run_async(root_path, threads, export_mode, decompiled, timeout, override, disassembler, output_template)
+        run_async(paths, threads, export_mode, decompiled, timeout, override, disassembler, output_template)
     else:
-        run_sequential(root_path, export_mode, decompiled, timeout, override, disassembler, output_template)
+        run_sequential(paths, export_mode, decompiled, timeout, override, disassembler, output_template)
 
 
 
