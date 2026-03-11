@@ -58,4 +58,4 @@ To ease **Quokka** usage in various workflows, the tool also provides several ad
 * [Pypcode](https://github.com/angr/pypcode) integration (optional) for P-code based analysis
 * Function annotation and write-back to the disassembler database (`prog.commit()`, IDA only for now)
 * User-defined type injection (`prog.add_type()`)
-* CLI tool (`quokka-cli`) for batch export with both backends
+* CLI tool (`quokka-cli`) for batch export with both backends, with custom output naming via `-o`

@@ -32,12 +32,52 @@ Available options:
 | `--decompiled` | Export decompiled code (IDA only) |
 | `--timeout` | Timeout for each export in seconds |
 | `--override` | Override existing `.quokka` files |
+| `-o`, `--output` | Output path or template (default: `%F.quokka`). See [Output naming](#output-naming) below |
 | `-v`, `--verbose` | Enable verbose logging |
 
 !!! tip
     You can set the `IDA_PATH` environment variable (pointing to the IDA
     installation directory) and the `GHIDRA_INSTALL_DIR` environment variable
     instead of passing `--ida-path` / `--ghidra-path` every time.
+
+#### Output naming
+
+By default (when `-o` is not specified), the `.quokka` file is placed next to
+the input binary with the same name plus a `.quokka` extension. For example,
+exporting `/usr/bin/ls` produces `/usr/bin/ls.quokka`. More precisely, the
+output path is resolved **relative to the input file's location**, not the
+current working directory.
+
+The `-o` option accepts either a literal path or a **template string** that is
+expanded per file (useful in batch/directory mode). Template specifiers are
+substituted based on the input binary path:
+
+| Specifier | Meaning | Example (input: `/usr/bin/hello.elf`) |
+|-----------|---------|---------------------------------------|
+| `%f` | Filename without extension (stem) | `hello` |
+| `%F` | Filename with extension | `hello.elf` |
+| `%P` | Full absolute path including filename | `/usr/bin/hello.elf` |
+| `%p` | Parent directory (absolute) | `/usr/bin` |
+| `%e` | File extension without the dot | `elf` |
+| `%%` | Literal `%` character | `%` |
+
+Missing parent directories in the expanded path are created automatically.
+
+```commandline
+# Place output next to the binary (default behavior)
+$ quokka-cli /usr/bin/ls                          # -> /usr/bin/ls.quokka
+
+# Custom output directory, keeping the original filename
+$ quokka-cli -o "/tmp/exports/%F.quokka" /usr/bin/ls  # -> /tmp/exports/ls.quokka
+
+# Custom naming scheme in batch mode
+$ quokka-cli -o "%p/quokka/%f_ghidra.quokka" -t 4 /usr/bin/
+#   /usr/bin/ls      -> /usr/bin/quokka/ls_ghidra.quokka
+#   /usr/bin/cat     -> /usr/bin/quokka/cat_ghidra.quokka
+
+# Single file with a literal output path (no specifiers)
+$ quokka-cli -o /tmp/my_export.quokka /usr/bin/ls # -> /tmp/my_export.quokka
+```
 
 ### IDA Plugin
 

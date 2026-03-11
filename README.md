@@ -137,13 +137,21 @@ It supports both IDA Pro and Ghidra backends:
 $ quokka-cli --backend ghidra -t 8 dir/
 $ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/
 $ quokka-cli -t 8 dir/                          # auto-detect backend
+$ quokka-cli -o "%p/exports/%f.quokka" binary   # custom output directory
+$ quokka-cli -b ida -o %F_ida.quokka -t 4 dir/  # Using relative path
 ```
+
+By default, the `.quokka` file is placed next to the input binary (e.g.
+`/usr/bin/ls` produces `/usr/bin/ls.quokka`). Use `-o` to override this with a
+literal path or a template expanded per file (`%f` = stem, `%F` = filename,
+`%p` = parent dir, `%P` = full path, `%e` = extension, `%%` = literal `%`).
 
 Run `quokka-cli --help` for all options. Key flags include:
 
 * `-b`, `--backend` to choose the disassembler backend (`ida`, `ghidra`, or `auto`)
 * `-i`, `--ida-path` to provide the path to the IDA installation directory (the folder containing `idat`)
 * `--ghidra-path` to provide the Ghidra installation directory (overrides `GHIDRA_INSTALL_DIR`)
+* `-o`, `--output` to set the output path or template (default: `%F.quokka`)
 * `-m`, `--mode` to choose the export mode (`light` or `full`)
 * `--decompiled` to enable decompiled code export (IDA only)
 * `-v`, `--verbose` to enable verbose logging

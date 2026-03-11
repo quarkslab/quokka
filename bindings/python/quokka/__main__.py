@@ -31,6 +31,48 @@ EXTENSIONS_WHITELIST = {"application/octet-stream": [".dex"]}
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"], max_content_width=300)
 
+_TEMPLATE_SPECIFIERS = {
+    "f": lambda p: p.stem,
+    "F": lambda p: p.name,
+    "P": lambda p: str(p.resolve()),
+    "p": lambda p: str(p.resolve().parent),
+    "e": lambda p: p.suffix.lstrip("."),
+}
+
+
+def expand_output_template(template: str, exec_path: Path) -> Path:
+    """Expand output template specifiers against the input binary path.
+
+    Specifiers: %f (stem), %F (name), %P (full path), %p (parent), %e (ext), %% (literal %).
+    """
+    result = []
+    i = 0
+    while i < len(template):
+        if template[i] == "%":
+            if i + 1 >= len(template):
+                raise click.BadParameter(
+                    "Trailing '%' at end of template. "
+                    "Use '%%' for a literal percent sign.",
+                    param_hint="'-o'",
+                )
+            c = template[i + 1]
+            if c == "%":
+                result.append("%")
+            elif c in _TEMPLATE_SPECIFIERS:
+                result.append(_TEMPLATE_SPECIFIERS[c](exec_path))
+            else:
+                raise click.BadParameter(
+                    f"Unknown specifier '%{c}' in output template. "
+                    f"Supported: %f (stem), %F (filename), %p (parent dir), "
+                    f"%P (full path), %e (extension), %% (literal %).",
+                    param_hint="'-o'",
+                )
+            i += 2
+        else:
+            result.append(template[i])
+            i += 1
+    return Path("".join(result))
+
 class Bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -66,11 +108,15 @@ def do_quokka(
     timeout: int,
     override: bool,
     disassembler: Disassembler = Disassembler.UNKNOWN,
+    output_template: str = "%F.quokka",
 ) -> bool:
 
     try:
+        output_file = expand_output_template(output_template, exec_path)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         Program.generate(
             exec_path=exec_path,
+            output_file=output_file,
             mode=mode,
             decompiled=decompiled,
             timeout=timeout,
@@ -105,11 +151,12 @@ def export_job(
     timeout: int,
     override: bool,
     disassembler: Disassembler = Disassembler.UNKNOWN,
+    output_template: str = "%F.quokka",
 ) -> None:
     while True:
         try:
             file = ingress.get(timeout=0.5)
-            res = do_quokka(file, mode, decompiled, timeout, override, disassembler)
+            res = do_quokka(file, mode, decompiled, timeout, override, disassembler, output_template)
             egress.put((file, res))
         except queue.Empty:
             pass
@@ -125,6 +172,7 @@ def run_async(
     timeout: int,
     override: bool,
     disassembler: Disassembler = Disassembler.UNKNOWN,
+    output_template: str = "%F.quokka",
 ) -> None:
     manager = Manager()
     ingress = manager.Queue()
@@ -135,7 +183,7 @@ def run_async(
     for _ in range(threads):
         pool.apply_async(
             export_job,
-            (ingress, egress, mode, decompiled, timeout, override, disassembler),
+            (ingress, egress, mode, decompiled, timeout, override, disassembler, output_template),
         )
 
     # Pre-fill ingress queue
@@ -168,6 +216,7 @@ def run_sequential(
     timeout: int,
     override: bool,
     disassembler: Disassembler = Disassembler.UNKNOWN,
+    output_template: str = "%F.quokka",
 ) -> None:
     # Pre-fill ingress queue
     total_files = list(recursive_file_iter(root_path))
@@ -176,7 +225,7 @@ def run_sequential(
     logging.info(f"Start exporting {total} binaries")
 
     for i, exe_path in enumerate(total_files):
-        if do_quokka(exe_path, mode, decompiled, timeout, override, disassembler):
+        if do_quokka(exe_path, mode, decompiled, timeout, override, disassembler, output_template):
             pp_res = Bcolors.OKGREEN + "OK" + Bcolors.ENDC
         else:
             pp_res = Bcolors.FAIL + "KO" + Bcolors.ENDC
@@ -210,6 +259,7 @@ def run_sequential(
 @click.option("-v", "--verbose", count=True, help="To activate or not the verbosity")
 @click.option("-m", "--mode", type=click.Choice([x.name for x in ExporterMode], case_sensitive=False), default=ExporterMode.LIGHT.name, help="Export mode (LIGHT or FULL)")
 @click.option("--decompiled", is_flag=True, default=False, help="Export decompiled code")
+@click.option("-o", "--output", "output_template", type=str, default="%F.quokka", help=r"Output path or template (specifiers: %f stem, %F name, %P full path, %p parent, %e ext, %% literal %)")
 @click.argument("input_file", type=click.Path(exists=True), metavar="<binary file|directory>")
 def main(
     backend: str,
@@ -222,6 +272,7 @@ def main(
     decompiled: bool,
     timeout: int,
     override: bool,
+    output_template: str,
 ) -> None:
     """
     quokka-cli is a very simple utility to generate a .Quokka file
@@ -278,9 +329,9 @@ def main(
     export_mode = ExporterMode[mode.upper()]
 
     if threads > 1:
-        run_async(root_path, threads, export_mode, decompiled, timeout, override, disassembler)
+        run_async(root_path, threads, export_mode, decompiled, timeout, override, disassembler, output_template)
     else:
-        run_sequential(root_path, export_mode, decompiled, timeout, override, disassembler)
+        run_sequential(root_path, export_mode, decompiled, timeout, override, disassembler, output_template)
 
 
 
