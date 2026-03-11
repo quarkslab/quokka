@@ -24,14 +24,25 @@ The extension ZIP is generated in `dist/`.
 
 ## Install
 
-Copy the generated ZIP from `dist/` into Ghidra:
+### Gradle task (recommended)
 
-1. Open Ghidra
-2. File > Install Extensions
-3. Add the ZIP file
-4. Restart Ghidra
+The simplest method -- builds and installs in one step:
 
-Or install from the command line:
+```bash
+export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
+cd ghidra_extension
+./gradlew installExtension   # builds + copies to $GHIDRA_INSTALL_DIR/Ghidra/Extensions/
+```
+
+### Ghidra GUI
+
+1. Build the extension ZIP first (see Build above)
+2. Open Ghidra
+3. File > Install Extensions
+4. Click the **+** button and select the ZIP from `dist/`
+5. Restart Ghidra
+
+### Manual command-line
 
 ```bash
 unzip -o dist/ghidra_*_QuokkaExporter.zip -d "$GHIDRA_INSTALL_DIR/Ghidra/Extensions/"
