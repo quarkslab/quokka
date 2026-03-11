@@ -8,6 +8,9 @@ import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
 import quokka.QuokkaOuterClass.Quokka;
 
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZOutputStream;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Iterator;
@@ -89,17 +92,26 @@ public class ExportPipeline {
         monitor.setMessage("Quokka: collecting headers...");
         builder.setHeaders(collectHeaders(program));
 
-        // Phase 8: Serialize
-        monitor.setMessage("Quokka: writing protobuf...");
+        // Phase 8: Compress & serialize (LZMA/XZ)
+        monitor.setMessage("Quokka: compressing & writing protobuf...");
         Quokka proto = builder.build();
-        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-            proto.writeTo(fos);
+        int rawSize = proto.getSerializedSize();
+        try (FileOutputStream fos = new FileOutputStream(outputFile);
+             XZOutputStream xzOut = new XZOutputStream(fos, new LZMA2Options())) {
+            proto.writeTo(xzOut);
         }
 
+        long compressedSize = outputFile.length();
         long elapsed = System.currentTimeMillis() - startTime;
+        if (rawSize > 0) {
+            Msg.info(ExportPipeline.class, String.format(
+                    "Compressed %d bytes -> %d bytes (%.1f%%)",
+                    rawSize, compressedSize,
+                    100.0 * (rawSize - compressedSize) / rawSize));
+        }
         Msg.info(ExportPipeline.class, "Quokka export complete in " + elapsed
                 + "ms -> " + outputFile.getAbsolutePath()
-                + " (" + outputFile.length() + " bytes)");
+                + " (" + compressedSize + " bytes)");
     }
 
     /**
