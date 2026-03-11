@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ida_versions: ${{ steps.set-matrix.outputs.ida_versions }}
+      full_build: ${{ steps.set-matrix.outputs.full_build }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -55,6 +56,7 @@ jobs:
           # Full build for releases (tag pushes)
           if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             echo "ida_versions=$RELEASE" >> "$GITHUB_OUTPUT"
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "Building all SDK versions (tag push)"
             exit 0
           fi
@@ -63,12 +65,14 @@ jobs:
           COMMIT_COUNT=$(git rev-list --count HEAD)
           if (( COMMIT_COUNT % 30 == 0 )); then
             echo "ida_versions=$FULL" >> "$GITHUB_OUTPUT"
+            echo "full_build=true" >> "$GITHUB_OUTPUT"
             echo "Building all SDK versions (commit #$COMMIT_COUNT)"
             exit 0
           fi
 
           # Light build otherwise
           echo "ida_versions=$LIGHT" >> "$GITHUB_OUTPUT"
+          echo "full_build=false" >> "$GITHUB_OUTPUT"
           echo "Light build (commit #$COMMIT_COUNT)"
 
   warm-cache:
@@ -250,6 +254,74 @@ jobs:
         if: always()
         shell: bash
         run: ccache -sv || true
+
+  ghidra-integration:
+    name: Ghidra integration tests
+    needs: [setup]
+    if: needs.setup.outputs.full_build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          lfs: true
+          submodules: false
+
+      - name: Checkout Ghidra submodule
+        run: git submodule update --init third_party/ghidra
+
+      - name: Resolve Ghidra version from submodule
+        id: ghidra-version
+        run: |
+          TAG="$(git -C third_party/ghidra describe --tags --exact-match)"
+          VERSION="$(echo "$TAG" | sed -n 's/^Ghidra_\([0-9]*\.[0-9]*\.[0-9]*\)_build$/\1/p')"
+          if [[ -z "$VERSION" ]]; then
+            echo "Error: tag '$TAG' does not match Ghidra_X.Y.Z_build" >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache Ghidra installation
+        id: ghidra-cache
+        uses: actions/cache/restore@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: /opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC
+          key: ghidra-${{ steps.ghidra-version.outputs.tag }}
+
+      - name: Download Ghidra
+        if: steps.ghidra-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch_ghidra.sh --dest /opt
+
+      - name: Save Ghidra cache
+        if: github.event_name == 'push' && steps.ghidra-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        with:
+          path: /opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC
+          key: ghidra-${{ steps.ghidra-version.outputs.tag }}
+
+      - name: Set Ghidra environment
+        env:
+          GHIDRA_VERSION: ${{ steps.ghidra-version.outputs.version }}
+        run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${GHIDRA_VERSION}_PUBLIC" >> $GITHUB_ENV
+
+      - name: Build and install extension
+        working-directory: ghidra_extension
+        run: ./gradlew installExtension
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+
+      - run: pip install '.[test]'
+
+      - name: Run Ghidra integration tests
+        run: pytest tests/python/tests/ghidra/ -v
 
   build:
     needs: [setup, warm-cache]
