@@ -71,7 +71,10 @@ def expand_output_template(template: str, exec_path: Path) -> Path:
         else:
             result.append(template[i])
             i += 1
-    return Path("".join(result))
+    expanded = Path("".join(result))
+    if not expanded.is_absolute():
+        expanded = exec_path.resolve().parent / expanded
+    return expanded
 
 class Bcolors:
     HEADER = '\033[95m'
