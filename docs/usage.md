@@ -10,14 +10,16 @@ Ghidra extension directly.
 ### CLI (`quokka-cli`)
 
 The `quokka-cli` tool is the easiest way to export binaries in headless mode.
-It automatically detects available backends (IDA or Ghidra) and can export a
-single file or all executable files in a directory in parallel.
+It automatically detects available backends (IDA or Ghidra) and can export one
+or more files and/or directories (all executable files in each directory) in
+parallel.
 
 ```commandline
 $ quokka-cli /path/to/binary                    # export a single file
 $ quokka-cli -t 8 dir/                           # export a directory in parallel
 $ quokka-cli --backend ghidra -t 8 dir/          # use Ghidra explicitly
 $ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/  # use IDA explicitly
+$ quokka-cli -t 8 dir1/ dir2/ bin1 bin2          # multiple inputs at once
 ```
 
 Available options:

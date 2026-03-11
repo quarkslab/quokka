@@ -129,8 +129,8 @@ See the [Ghidra extension README](ghidra_extension/README.md) for more details.
 
 ### Exporting in CLI
 
-Quokka provides a CLI utility tool to automatically export a single file or
-all executable files of a given directory in parallel.
+Quokka provides a CLI utility tool to automatically export one or more files
+and/or directories (all executable files in each directory) in parallel.
 It supports both IDA Pro and Ghidra backends:
 
 ```commandline
@@ -139,6 +139,7 @@ $ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/
 $ quokka-cli -t 8 dir/                          # auto-detect backend
 $ quokka-cli -o "%p/exports/%f.quokka" binary   # custom output directory
 $ quokka-cli -b ida -o %F_ida.quokka -t 4 dir/  # Using relative path
+$ quokka-cli -t 8 dir1/ dir2/ binary1 binary2   # multiple inputs
 ```
 
 By default, the `.quokka` file is placed next to the input binary (e.g.
