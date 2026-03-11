@@ -40,6 +40,19 @@ _TEMPLATE_SPECIFIERS = {
 }
 
 
+def _template_has_specifiers(template: str) -> bool:
+    """Return True if *template* contains at least one %f/%F/%P/%p/%e specifier."""
+    i = 0
+    while i < len(template):
+        if template[i] == "%" and i + 1 < len(template):
+            if template[i + 1] in _TEMPLATE_SPECIFIERS:
+                return True
+            i += 2  # skip %% or unknown
+        else:
+            i += 1
+    return False
+
+
 def expand_output_template(template: str, exec_path: Path) -> Path:
     """Expand output template specifiers against the input binary path.
 
@@ -328,6 +341,14 @@ def main(
         disassembler = Disassembler.UNKNOWN
 
     root_path = Path(input_file)
+
+    if root_path.is_dir() and not _template_has_specifiers(output_template):
+        raise click.UsageError(
+            "The -o/--output template has no specifiers, so every binary "
+            "in the directory would be exported to the same file. "
+            "Use a template with specifiers (e.g. '%f', '%F') to "
+            "differentiate output paths, or export a single file instead."
+        )
 
     export_mode = ExporterMode[mode.upper()]
 
