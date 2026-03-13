@@ -67,10 +67,10 @@ $ pip install quokka-project
 Note: The IDA plugin is not needed to read a `Quokka` generated file. It is
 only used to generate them.
 
-Quokka is currently compatible with IDA 7.3+
+Quokka is compatible with IDA 9.1+.
 
 The plugin is built on the CI and available in the
-[Release](https://github.com/quarkslab/quokka/releases/new) tab.
+[Releases](https://github.com/quarkslab/quokka/releases) tab.
 
 To download the plugin, get the file named `quokka_plugin**.so`.
 
@@ -94,19 +94,17 @@ The default shortcut inside IDA is `Alt+A`. It opens the following dialog:
 
 Modes available are:
 
-* LIGHT: Exports data up to basic blocks start/stop *(instructions are disassembled by bindings)*
-* NORMAL: Exports data and instructions address *(instruction content and operands are retrieved by bindings)*
-* FULL: Exports data, instructions and operands *(self-contained mode, do not require disassembling
-in binding)*
+* LIGHT: Exports block-level data only *(instructions are decoded at runtime by Capstone from the original binary bytes)*
+* FULL: Exports instructions and operands *(self-contained mode, does not require the original binary for disassembly)*
+
+> **Note:** FULL mode is not yet implemented. Only LIGHT mode is currently functional.
 
 
 ### Exporting in headless
 
 #### IDA
 
-!!! note
-
-    This requires a working IDA installation.
+> **Note:** This requires a working IDA installation.
 
 ```commandline
 $ idat -OQuokkaAuto:true -OQuokkaDecompiled:true -A /path/to/hello.i64
@@ -131,23 +129,33 @@ See the [Ghidra extension README](ghidra_extension/README.md) for more details.
 
 ### Exporting in CLI
 
-Quokka provides a CLI utility tool to automatically export a single file or
-all executable files of a given directory in parallel.
+Quokka provides a CLI utility tool to automatically export one or more files
+and/or directories (all executable files in each directory) in parallel.
 It supports both IDA Pro and Ghidra backends:
 
 ```commandline
 $ quokka-cli --backend ghidra -t 8 dir/
 $ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/
 $ quokka-cli -t 8 dir/                          # auto-detect backend
+$ quokka-cli -o "%p/exports/%f.quokka" binary   # custom output directory
+$ quokka-cli -b ida -o %F_ida.quokka -t 4 dir/  # Using relative path
+$ quokka-cli -t 8 dir1/ dir2/ binary1 binary2   # multiple inputs
 ```
 
-It also accepts various arguments:
+By default, the `.quokka` file is placed next to the input binary (e.g.
+`/usr/bin/ls` produces `/usr/bin/ls.quokka`). Use `-o` to override this with a
+literal path or a template expanded per file (`%f` = stem, `%F` = filename,
+`%p` = parent dir, `%P` = full path, `%e` = extension, `%%` = literal `%`).
 
-* `--backend` to choose the disassembler backend (`ida`, `ghidra`, or `auto`)
-* `--ida-path` to provide the path to IDA Pro (sets `IDA_PATH`)
-* `--ghidra-path` to provide the Ghidra installation directory (sets `GHIDRA_INSTALL_DIR`)
+Run `quokka-cli --help` for all options. Key flags include:
+
+* `-b`, `--backend` to choose the disassembler backend (`ida`, `ghidra`, or `auto`)
+* `-i`, `--ida-path` to provide the path to the IDA installation directory (the folder containing `idat`)
+* `--ghidra-path` to provide the Ghidra installation directory (overrides `GHIDRA_INSTALL_DIR`)
+* `-o`, `--output` to set the output path or template (default: `%F.quokka`)
+* `-m`, `--mode` to choose the export mode (`light` or `full`)
 * `--decompiled` to enable decompiled code export (IDA only)
-* `--verbose` to enable verbose logging
+* `-v`, `--verbose` to enable verbose logging
 
 
 ### Loading an export file
@@ -157,15 +165,15 @@ import quokka
 from quokka.types import Disassembler
 
 # Directly from the binary (auto-detects available backend)
-ls = quokka.Program.from_binary("/bin/ls")
+prog = quokka.Program.from_binary("/bin/ls")
 
 # Explicitly choose a backend
-ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
-ls = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
+prog = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.GHIDRA)
+prog = quokka.Program.from_binary("/bin/ls", disassembler=Disassembler.IDA)
 
 # From the exported file
-ls = quokka.Program("ls.quokka",  # the exported file
-                    "/bin/ls")    # the original binary
+prog = quokka.Program("ls.quokka",  # the exported file
+                      "/bin/ls")    # the original binary
 ```
 
 ### Editing and adding types
@@ -248,6 +256,8 @@ Documentation is available online at
 You can see a list of questions here [FAQ](docs/FAQ.md)
 
 ## Exporting modes
+
+> **Note:** Only LIGHT mode is currently implemented. FULL (self-contained) mode is planned but not yet functional.
 
 Quokka offers two modes to export the disassembly analysis: the **light mode** and the **self contained mode**.
 

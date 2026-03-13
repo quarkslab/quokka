@@ -10,7 +10,7 @@ Let's try to see how we can start to solve it with `quokka`.
 ```python
 import quokka
 
-prog = quokka.Program('docs/samples/qb-crackme.Quokka', 'docs/samples/qb-crackme')
+prog = quokka.Program('docs/samples/qb-crackme.quokka', 'docs/samples/qb-crackme')
 
 # Get the functions name
 for func in prog.fun_names:
@@ -44,8 +44,8 @@ func = prog.fun_names["level0"]
 Then, let's examine it:
 ```python
 # Get the size
-print(len(func)) # 1 Chunk
-print(len(func[func.start])) # 7 basic blocks
+print(len(func)) # Number of basic blocks
+print(len(func[func.start])) # Number of instructions in the first block
 ```
 
 We see that the functions have 3 strings:
@@ -62,8 +62,8 @@ What's the flag?
 
 And it's calling 3 functions:
 ```python
-for chunk in func.calls:
-	print(chunk.name)
+for callee in func.callees:
+	print(callee.name)
 ```
 
 ```commandline
@@ -75,7 +75,7 @@ _strlen
 Let's now print the disassembly of the first block to understand what's happening:
 
 ```python
-for inst in func.get_block(func.start):
+for inst in func[func.start]:
     print(inst.cs_inst)
 ```
 
@@ -143,7 +143,7 @@ the `strlen` call is the data loaded from memory.
 
 ```python
 inst = func.get_instruction(0x80492eb)
-print(inst.string)
+print(inst.strings)
 ```
 
 The argument used by the second call at `strlen` is the result of the `get_input`
@@ -152,8 +152,8 @@ function.
 
 Let's consider the next block:
 ```python
-first = func.get_block(func.start)
-next_block = func.get_block(next(first.successors))
+first = func[func.start]
+next_block = func[next(first.successors)]
 ```
 
 We know there is only one successor because either :

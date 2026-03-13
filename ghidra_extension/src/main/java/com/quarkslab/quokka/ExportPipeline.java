@@ -1,10 +1,11 @@
 package com.quarkslab.quokka;
 
 import com.quarkslab.quokka.export.*;
-import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.DataTypeManager;
+import ghidra.program.model.data.DataTypeWriter;
 import ghidra.program.model.listing.Program;
 import ghidra.util.Msg;
+import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 import quokka.QuokkaOuterClass.Quokka;
 
@@ -13,7 +14,8 @@ import org.tukaani.xz.XZOutputStream;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Iterator;
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * Orchestrates the 8-phase export pipeline.
@@ -90,7 +92,7 @@ public class ExportPipeline {
 
         // Headers: collect C-style type declarations
         monitor.setMessage("Quokka: collecting headers...");
-        builder.setHeaders(collectHeaders(program));
+        builder.setHeaders(collectHeaders(program, monitor));
 
         // Phase 8: Compress & serialize (LZMA/XZ)
         monitor.setMessage("Quokka: compressing & writing protobuf...");
@@ -115,19 +117,24 @@ public class ExportPipeline {
     }
 
     /**
-     * Collect C-style type declarations from the DataTypeManager.
+     * Collect C-style type declarations using Ghidra's DataTypeWriter.
+     *
+     * Produces a complete C header with built-in type preamble, forward
+     * declarations, and dependency-ordered type definitions. Equivalent to
+     * IDA's {@code print_decls()} with PDF_INCL_DEPS | PDF_DEF_FWD |
+     * PDF_DEF_BASE.
      */
-    private static String collectHeaders(Program program) {
+    private static String collectHeaders(Program program, TaskMonitor monitor) {
         DataTypeManager dtm = program.getDataTypeManager();
-        StringBuilder sb = new StringBuilder();
-        Iterator<DataType> dtIter = dtm.getAllDataTypes();
-        while (dtIter.hasNext()) {
-            DataType dt = dtIter.next();
-            String repr = dt.toString();
-            if (repr != null && !repr.isEmpty()) {
-                sb.append(repr).append('\n');
-            }
+        StringWriter sw = new StringWriter();
+        try {
+            DataTypeWriter dtw = new DataTypeWriter(dtm, sw);
+            dtw.write(dtm, monitor);
+        } catch (IOException e) {
+            Msg.error(ExportPipeline.class, "Failed to write type headers", e);
+        } catch (CancelledException e) {
+            Msg.warn(ExportPipeline.class, "Header collection cancelled");
         }
-        return sb.toString();
+        return sw.toString();
     }
 }

@@ -8,11 +8,11 @@ import quokka
 # https://android.googlesource.com/platform/system/bt/+/02fc52878d8dba16b860fbdf415b6e4425922b2c%5E%21/#F0
 
 # Load the vuln program using its export
-vuln = quokka.Program('vuln.Quokka',
+vuln = quokka.Program('vuln.quokka',
                           'vuln_bluetooth.so')
 
 # Load the fix program using its export
-fix = quokka.Program('fix.Quokka',
+fix = quokka.Program('fix.quokka',
                          'fix_bluetooth.so')
 
 # Assume we know that the patched function is "l2c_lcc_proc_pdu"

@@ -25,9 +25,6 @@ A **basic block** is a maximal straight-line sequence of instructions with one e
 func = prog.get_function("parse_args", approximative=False)
 
 # Get the entry block
-entry = func.get_block(func.start)
-
-# Or access via the function dict
 entry = func[func.start]
 
 print(f"Block @ 0x{entry.start:x}")
@@ -72,7 +69,7 @@ successors = list(cfg.successors(entry_addr))
 predecessors = list(cfg.predecessors(some_block_addr))
 
 # Via Block convenience properties
-block = func.get_block(func.start)
+block = func[func.start]
 for succ_addr in block.successors:
     print(f"  → 0x{succ_addr:x}")
 for pred_addr in block.predecessors:
@@ -81,11 +78,11 @@ for pred_addr in block.predecessors:
 
 ## CFG Edge Types
 
-Edges carry a `type` attribute (a `RefType`):
+Edges carry a `condition` attribute (a `RefType`):
 
 ```python
 for src, dst, data in cfg.edges(data=True):
-    ref_type = data.get("type")
+    ref_type = data.get("condition")
     print(f"  0x{src:x} → 0x{dst:x}  [{ref_type}]")
 ```
 
@@ -124,7 +121,7 @@ dom_tree = nx.immediate_dominators(cfg, func.start)
 for block_addr in cfg.nodes():
     succs = list(cfg.successors(block_addr))
     if len(succs) == 2:
-        block = func.get_block(block_addr)
+        block = func[block_addr]
         print(f"Conditional block @ 0x{block_addr:x}")
         print(f"  True  → 0x{succs[0]:x}")
         print(f"  False → 0x{succs[1]:x}")
@@ -148,7 +145,7 @@ cfg = func.graph
 
 # BFS from entry
 for block_addr in nx.bfs_tree(cfg, func.start).nodes():
-    block = func.get_block(block_addr)
+    block = func[block_addr]
     print(f"Block 0x{block_addr:x}: {len(block)} insts, type={block.type}")
 
 # Topological order (for acyclic CFGs)
@@ -163,7 +160,7 @@ except nx.NetworkXUnfeasible:
 
 ```python
 # Entry = the block at func.start
-entry = func.get_block(func.start)
+entry = func[func.start]
 
 # Exit blocks = blocks with no successors in the CFG
 exits = [addr for addr in cfg.nodes()
@@ -201,8 +198,8 @@ for func in prog.values():
 ## Summary
 
 - `Block` is a `MutableMapping` of instructions, keyed by address
-- **BlockType**: `NORMAL`, `RET`, `NORET`, `INDJUMP`, `CNDRET`, `ERROR`
+- **BlockType**: `NORMAL`, `RET`, `NORET`, `INDJUMP`, `CNDRET`, `ENORET`, `ERROR`, `EXTERN`
 - `func.graph` is a `networkx.DiGraph` of block addresses
-- CFG edges carry `RefType` (`JMP_COND`, `JMP_UNCOND`, `CALL`…)
+- CFG edges carry a `condition` attribute of type `RefType` (`JMP_COND`, `JMP_UNCOND`, `CALL`...)
 - `block.successors` / `block.predecessors` for convenient navigation
 - Use networkx algorithms: BFS, cycle detection, dominator trees

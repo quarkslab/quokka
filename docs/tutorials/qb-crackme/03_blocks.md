@@ -14,12 +14,12 @@ func = prog.fun_names['level_1']
 
 block_start: int = 0x80494e8
 
-# Method 1 : Get a block through the function
-block = func.get_block(address=block_start)
+# Method 1: Get a block through the function (dict-style access)
+block = func[block_start]
 
-# Method 2 : Get a block from an instruction
+# Method 2: Get a block from an instruction
 inst = prog.get_instruction(block_start)
-block = inst.parent
+block = inst.block
 ```
 
 ## Block attributes
@@ -40,10 +40,10 @@ for successor in block.successors:
 
 ## Strings, constants and comments
 Strings, constants (and other data) are accessible with the eponyms attributes.
-Moreover, if a comment has been defined in IDA, it is accessible through 
-`comments`.
+Moreover, if a comment has been defined in the disassembler, it is
+accessible through `comments`.
 
 ## Type
 
-Basic blocks have types in IDA which is exported by `quokka`.
+Basic blocks have types which are exported by `quokka`.
 Use `block.type` to access it.

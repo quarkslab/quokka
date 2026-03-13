@@ -6,7 +6,7 @@ variable, which data object holds a pointer to another, which instruction
 accesses a specific struct field, and so on.
 
 !!! warning
-    On IDA Pro, xrefs are retrieve using disassembler engine (not decompiler).
+    Xrefs are retrieved using the disassembler engine (not the decompiler).
 
 Quokka organises xrefs into three orthogonal dimensions:
 

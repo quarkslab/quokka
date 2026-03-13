@@ -34,7 +34,7 @@ The **block-level** call is faster because it translates the whole block in a si
 
 ```python
 func = prog.get_function("main", approximative=False)
-block = func.get_block(func.start)
+block = func[func.start]
 
 for addr, inst in block.items():
     print(f"0x{addr:x}  {inst.mnemonic}")

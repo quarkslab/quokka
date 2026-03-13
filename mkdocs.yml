@@ -54,6 +54,9 @@ nav:
       - Tips & Tricks: dev.md
   - FAQ: FAQ.md
 
+extra_css:
+  - css/extra.css
+
 markdown_extensions:
   - admonition
   - pymdownx.tasklist:

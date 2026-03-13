@@ -1,381 +1,61 @@
 # Features
 
-**Quokka** exports as much information from IDA as possible. The table below list the main exported elements.
+**Quokka** exports as much information from the disassembler (IDA Pro or Ghidra) as possible. Both backends produce `.quokka` files with the same protobuf schema, but they differ in a few areas.
+
+## Export modes
+
+Quokka supports two export modes that control how much detail is written to the `.quokka` file:
+
+- **Light** -- only block-level information is exported. Instructions are decoded at runtime by [Capstone](https://www.capstone-engine.org/) from the original binary bytes.
+- **Full** (self-contained) -- instructions, operands, and their string representations are exported directly. The original binary is not strictly required for disassembly at analysis time.
+
+Both modes expose the **same Python API**.
+
+!!! warning
+    The **Full** export mode is not yet implemented in either backend. The proto schema and Python bindings are ready, but both the IDA plugin and the Ghidra extension currently only produce Light exports. This will be addressed in a future release.
 
 ## Exported elements
 
-<table>
-  <thead>
-    <tr>
-      <th>Feature</th>
-      <th>Exported</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td colspan="2" align="center">Metadata</td>
-    </tr>
-    <tr>
-      <td>Name</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Architecture</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>ISA</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Compiler</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Layout</td>
-    </tr>    
-    <tr>
-      <td>Segments</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Code Layout</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>    
-    <tr>
-      <td colspan="2" align="center">Symbols</td>
-    </tr>        
-    <tr>
-      <td>Name</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Value</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Type</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Data</td>
-    </tr>    
-    <tr>
-      <td>Address</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Type</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Size</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Name</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Graphs</td>
-    </tr>        
-    <tr>
-      <td>Call Graph</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>CFG</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Comments</td>
-    </tr>    
-    <tr>
-      <td>Address</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Type</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Content</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Functions</td>
-    </tr>        
-    <tr>
-      <td>Name</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Type</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Boundaries</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Decompiled Pseudocode</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Instructions</td>
-    </tr>
-    <tr>
-      <td>Mnemonic</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Operand</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Operand Type</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Bytes</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Address</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Expressions</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>XRef (code, data)</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Basic Block</td>
-    </tr>    
-    <tr>
-      <td>Address</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Instructions</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Type</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Content</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Strings</td>
-    </tr>    
-    <tr>
-      <td>Address</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Content</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">Data Structures</td>
-    </tr>    
-    <tr>
-      <td>Structures</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Unions</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Enumerations</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Arrays</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>Pointers</td>
-      <td>
-        <div class="md-source__icon md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+The table below shows what each backend exports in each mode.
 
+| Category | Feature | IDA | Ghidra |
+|----------|---------|:---:|:------:|
+| **Metadata** | Binary name | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Architecture / ISA | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Compiler | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Layout** | Segments | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Code layout (code/data/gap regions) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Functions** | Name, type, boundaries | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Prototype / calling convention | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Decompiled pseudocode | :material-check:{ .icon-green title="Requires Hex-Rays" } | :material-close:{ .icon-red } |
+| **Basic Blocks** | Address, size, type | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Instruction count | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Instructions** | Mnemonic, operands, bytes | :material-close:{ .icon-red title="Decoded at runtime by Capstone" } | :material-close:{ .icon-red title="Decoded at runtime by Capstone" } |
+| **Graphs** | Call graph | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | CFG (per function) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Cross-references** | Code refs (call, jump) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Data refs | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Data** | Address, type, size, name | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Strings** | Address and content | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Symbols** | Name, value, type | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| **Comments** | Function and instruction comments | :material-check:{ .icon-green } | :material-close:{ .icon-red } |
+| **Data Structures** | Structs / unions | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Enumerations | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Arrays, pointers, typedefs | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+| | Type-to-type cross-references | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
+
+!!! note
+    Even in **Light** mode, instructions are still available through the Python API -- they are decoded transparently by Capstone when you access them. The "Instructions" row above refers to whether the exporter writes them into the `.quokka` file.
+
+!!! note
+    **Decompiled pseudocode** requires the Hex-Rays decompiler (IDA only) and must be explicitly enabled with `-OQuokkaDecompiled:true` or the `--decompiled` CLI flag.
 
 ## Other features
 
-To ease **Quokka** usage in various worfklows, the tool also provides several additional features:
+To ease **Quokka** usage in various workflows, the tool also provides several additional features:
 
-* Multiple export modes
-* Capstone integration
-* Pypcode integration
-* Decompiled pseudocode export (optional, requires Hex-Rays)
-* Function annotation and write-back to IDA
-
+* [Capstone](https://www.capstone-engine.org/) integration for transparent instruction decoding
+* [Pypcode](https://github.com/angr/pypcode) integration (optional) for P-code based analysis
+* Function annotation and write-back to the disassembler database (`prog.commit()`, IDA only for now)
+* User-defined type injection (`prog.add_type()`)
+* CLI tool (`quokka-cli`) for batch export with both backends, with custom output naming via `-o`
