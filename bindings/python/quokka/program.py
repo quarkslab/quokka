@@ -1244,7 +1244,7 @@ class Program(dict):
         self,
         database_file: "Path|str|None" = None,
         ida_path: "Path|str|None" = None,
-        overwrite: bool = False,
+        overwrite: bool = True,
         timeout: int = 600,
     ) -> 'Program':
         """Apply edits, re-export, and return a fresh Program.
