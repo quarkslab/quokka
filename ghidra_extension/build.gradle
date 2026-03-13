@@ -31,6 +31,7 @@ def protobufVersion = '4.31.0'
 
 dependencies {
     compileOnly "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation 'org.tukaani:xz:1.12'
 
     testImplementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     testImplementation 'junit:junit:4.13.2'
@@ -45,6 +46,13 @@ protobuf {
 
 // Ensure proto generation runs before compilation
 compileJava.dependsOn 'generateProto'
+
+// Ghidra's copyDependencies copies implementation JARs to lib/.
+// The protobuf plugin's extractIncludeProto scans those same JARs,
+// so it must run after copyDependencies to avoid implicit dependency errors.
+tasks.matching { it.name.startsWith('extractInclude') && it.name.endsWith('Proto') }.configureEach {
+    dependsOn 'copyDependencies'
+}
 
 test {
     useJUnit()
