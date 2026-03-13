@@ -7,5 +7,7 @@ var searchData=
   ['logger_4',['Logger',['../classquokka_1_1Logger.html',1,'quokka']]],
   ['logger_2eh_5',['Logger.h',['../Logger_8h.html',1,'']]],
   ['loglevel_6',['LogLevel',['../Logger_8h.html#a7465d4d46d418e2c019aeea78954b818',1,'quokka']]],
-  ['logleveltostring_7',['LogLevelToString',['../classquokka_1_1Logger.html#aa0dfb13fc74b1081522ed6f4fa2b4471',1,'quokka::Logger']]]
+  ['logleveltostring_7',['LogLevelToString',['../classquokka_1_1Logger.html#aa0dfb13fc74b1081522ed6f4fa2b4471',1,'quokka::Logger']]],
+  ['lzmastreambuf_8',['LzmaStreambuf',['../classquokka_1_1LzmaStreambuf.html',1,'quokka']]],
+  ['lzmastreambuf_2eh_9',['LzmaStreambuf.h',['../LzmaStreambuf_8h.html',1,'']]]
 ];

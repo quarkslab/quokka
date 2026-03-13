@@ -6,10 +6,11 @@ var searchData=
   ['filemetadata_2eh_3',['FileMetadata.h',['../FileMetadata_8h.html',1,'']]],
   ['filter_5ftype_5fadaptor_5ft_4',['filter_type_adaptor_t',['../structquokka_1_1filter__type__adaptor__t.html',1,'quokka']]],
   ['find_5fby_5ftuid_5',['find_by_tuid',['../classquokka_1_1DataTypes.html#a1b8b6168ab5770b2c0b04456d09ff114',1,'quokka::DataTypes']]],
-  ['finish_6',['FINISH',['../Layout_8h.html#a628a016044fed1eac52c7522479585eba9930b3fdaa2403d241a48b3e897e1d4f',1,'quokka']]],
-  ['freeze_7',['Freeze',['../classquokka_1_1CommonSortableBucket.html#a56caa53bf1b3be3f14e8b71384cebf5b',1,'quokka::CommonSortableBucket']]],
-  ['func_5ftype_8',['func_type',['../classquokka_1_1Function.html#a34ee0862db093b997dd3214cac72778a',1,'quokka::Function']]],
-  ['function_9',['function',['../classquokka_1_1Function.html',1,'quokka::Function'],['../classquokka_1_1Function.html#ad75050201608b6109aa15c85b79c6a5a',1,'quokka::Function::Function()']]],
-  ['function_2eh_10',['Function.h',['../Function_8h.html',1,'']]],
-  ['functiontype_11',['FunctionType',['../Function_8h.html#a7117ebc41154e6ab6e2b8757e41d1e03',1,'quokka']]]
+  ['finish_6',['finish',['../Layout_8h.html#a628a016044fed1eac52c7522479585eba9930b3fdaa2403d241a48b3e897e1d4f',1,'quokka::FINISH'],['../classquokka_1_1LzmaStreambuf.html#a3ff6c02288e7334aab0c8cf04015216c',1,'quokka::LzmaStreambuf::finish()']]],
+  ['flush_7',['Flush',['../classquokka_1_1Logger.html#a1826f2abeff41074892fb1ab243178a2',1,'quokka::Logger']]],
+  ['freeze_8',['Freeze',['../classquokka_1_1CommonSortableBucket.html#a56caa53bf1b3be3f14e8b71384cebf5b',1,'quokka::CommonSortableBucket']]],
+  ['func_5ftype_9',['func_type',['../classquokka_1_1Function.html#a34ee0862db093b997dd3214cac72778a',1,'quokka::Function']]],
+  ['function_10',['function',['../classquokka_1_1Function.html',1,'quokka::Function'],['../classquokka_1_1Function.html#ad75050201608b6109aa15c85b79c6a5a',1,'quokka::Function::Function()']]],
+  ['function_2eh_11',['Function.h',['../Function_8h.html',1,'']]],
+  ['functiontype_12',['FunctionType',['../Function_8h.html#a7117ebc41154e6ab6e2b8757e41d1e03',1,'quokka']]]
 ];

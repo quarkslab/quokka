@@ -214,46 +214,58 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>  }</div>
 </div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="foldopen" id="foldopen00193" data-start="{" data-end="}">
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="classquokka_1_1Logger.html#a831f26f247fe5b88805f43a7e2fc3598">  193</a></span>  <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1Logger.html">Logger</a>&amp; <a class="code hl_function" href="classquokka_1_1Logger.html#a831f26f247fe5b88805f43a7e2fc3598">GetInstance</a>() {</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1Logger.html">Logger</a> instance;</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">return</span> instance;</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  }</div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="}">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classquokka_1_1Logger.html#a1826f2abeff41074892fb1ab243178a2">  192</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Logger.html#a1826f2abeff41074892fb1ab243178a2">Flush</a>() {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    fflush(stderr);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    fflush(stdout);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">if</span> (m_defaultui) {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>      <span class="comment">// Force IDA to flush its message buffer</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>      refresh_idaview_anyway();</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    }</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>  }</div>
 </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="foldopen" id="foldopen00202" data-start="{" data-end="}">
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="classquokka_1_1Logger.html#a137c285c32b4c5445ad70017c5759b5e">  202</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Logger.html#a137c285c32b4c5445ad70017c5759b5e">operator+=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Record.html">Record</a>&amp; record) {</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classquokka_1_1Logger.html#a8814e38818cd2ffd9d7f79b30d9e3e38">CheckLevel</a>(record.<a class="code hl_function" href="classquokka_1_1Record.html#a6502a05d5a979845994c6306c5705051">GetLevel</a>())) {</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>      <a class="code hl_function" href="classquokka_1_1Logger.html#af6200e855836410fad9d9ca59d3c8140">WriteLine</a>(record);</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>  }</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="foldopen" id="foldopen00205" data-start="{" data-end="}">
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno"><a class="line" href="classquokka_1_1Logger.html#a831f26f247fe5b88805f43a7e2fc3598">  205</a></span>  <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1Logger.html">Logger</a>&amp; <a class="code hl_function" href="classquokka_1_1Logger.html#a831f26f247fe5b88805f43a7e2fc3598">GetInstance</a>() {</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keyword">static</span> <a class="code hl_class" href="classquokka_1_1Logger.html">Logger</a> instance;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordflow">return</span> instance;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>  }</div>
 </div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>};</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="foldopen" id="foldopen00214" data-start="{" data-end="}">
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classquokka_1_1Logger.html#a137c285c32b4c5445ad70017c5759b5e">  214</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classquokka_1_1Logger.html#a137c285c32b4c5445ad70017c5759b5e">operator+=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classquokka_1_1Record.html">Record</a>&amp; record) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classquokka_1_1Logger.html#a8814e38818cd2ffd9d7f79b30d9e3e38">CheckLevel</a>(record.<a class="code hl_function" href="classquokka_1_1Record.html#a6502a05d5a979845994c6306c5705051">GetLevel</a>())) {</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>      <a class="code hl_function" href="classquokka_1_1Logger.html#af6200e855836410fad9d9ca59d3c8140">WriteLine</a>(record);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    }</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>  }</div>
 </div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="preprocessor">#define QLOG(level) \</span></div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="preprocessor">  Logger::GetInstance() += Record(level, __PRETTY_FUNCTION__, __LINE__).ref()</span></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="preprocessor">#define QLOG_DEBUG QLOG(LogLevel::DEBUG)</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="preprocessor">#define QLOG_INFO QLOG(LogLevel::INFO)</span></div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="preprocessor">#define QLOG_WARNING QLOG(LogLevel::WARNING)</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span><span class="preprocessor">#define QLOG_ERROR QLOG(LogLevel::ERROR)</span></div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="preprocessor">#define QLOG_FATAL QLOG(LogLevel::FATAL)</span></div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="preprocessor">#define QLOGD QLOG_DEBUG</span></div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="preprocessor">#define QLOGI QLOG_INFO</span></div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span><span class="preprocessor">#define QLOGW QLOG_WARNING</span></div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="preprocessor">#define QLOGE QLOG_ERROR</span></div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#define QLOGF QLOG_FATAL</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>}  <span class="comment">// namespace quokka</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_LOGGER_H</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>};</div>
+</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#define QLOG(level) \</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="preprocessor">  Logger::GetInstance() += Record(level, __PRETTY_FUNCTION__, __LINE__).ref()</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="preprocessor">#define QLOG_DEBUG QLOG(LogLevel::DEBUG)</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="preprocessor">#define QLOG_INFO QLOG(LogLevel::INFO)</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="preprocessor">#define QLOG_WARNING QLOG(LogLevel::WARNING)</span></div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="preprocessor">#define QLOG_ERROR QLOG(LogLevel::ERROR)</span></div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="preprocessor">#define QLOG_FATAL QLOG(LogLevel::FATAL)</span></div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="preprocessor">#define QLOGD QLOG_DEBUG</span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="preprocessor">#define QLOGI QLOG_INFO</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="preprocessor">#define QLOGW QLOG_WARNING</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="preprocessor">#define QLOGE QLOG_ERROR</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="preprocessor">#define QLOGF QLOG_FATAL</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>}  <span class="comment">// namespace quokka</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span><span class="preprocessor">#endif  </span><span class="comment">// QUOKKA_LOGGER_H</span></div>
 <div class="ttc" id="aCompatibility_8h_html"><div class="ttname"><a href="Compatibility_8h.html">Compatibility.h</a></div></div>
 <div class="ttc" id="aLogger_8h_html_a7465d4d46d418e2c019aeea78954b818"><div class="ttname"><a href="Logger_8h.html#a7465d4d46d418e2c019aeea78954b818">quokka::LogLevel</a></div><div class="ttdeci">LogLevel</div><div class="ttdef"><b>Definition</b> Logger.h:45</div></div>
 <div class="ttc" id="aWindows_8h_html"><div class="ttname"><a href="Windows_8h.html">Windows.h</a></div></div>
 <div class="ttc" id="aclassquokka_1_1Logger_html"><div class="ttname"><a href="classquokka_1_1Logger.html">quokka::Logger</a></div><div class="ttdef"><b>Definition</b> Logger.h:107</div></div>
-<div class="ttc" id="aclassquokka_1_1Logger_html_a137c285c32b4c5445ad70017c5759b5e"><div class="ttname"><a href="classquokka_1_1Logger.html#a137c285c32b4c5445ad70017c5759b5e">quokka::Logger::operator+=</a></div><div class="ttdeci">void operator+=(const Record &amp;record)</div><div class="ttdef"><b>Definition</b> Logger.h:202</div></div>
-<div class="ttc" id="aclassquokka_1_1Logger_html_a831f26f247fe5b88805f43a7e2fc3598"><div class="ttname"><a href="classquokka_1_1Logger.html#a831f26f247fe5b88805f43a7e2fc3598">quokka::Logger::GetInstance</a></div><div class="ttdeci">static Logger &amp; GetInstance()</div><div class="ttdef"><b>Definition</b> Logger.h:193</div></div>
+<div class="ttc" id="aclassquokka_1_1Logger_html_a137c285c32b4c5445ad70017c5759b5e"><div class="ttname"><a href="classquokka_1_1Logger.html#a137c285c32b4c5445ad70017c5759b5e">quokka::Logger::operator+=</a></div><div class="ttdeci">void operator+=(const Record &amp;record)</div><div class="ttdef"><b>Definition</b> Logger.h:214</div></div>
+<div class="ttc" id="aclassquokka_1_1Logger_html_a1826f2abeff41074892fb1ab243178a2"><div class="ttname"><a href="classquokka_1_1Logger.html#a1826f2abeff41074892fb1ab243178a2">quokka::Logger::Flush</a></div><div class="ttdeci">void Flush()</div><div class="ttdef"><b>Definition</b> Logger.h:192</div></div>
+<div class="ttc" id="aclassquokka_1_1Logger_html_a831f26f247fe5b88805f43a7e2fc3598"><div class="ttname"><a href="classquokka_1_1Logger.html#a831f26f247fe5b88805f43a7e2fc3598">quokka::Logger::GetInstance</a></div><div class="ttdeci">static Logger &amp; GetInstance()</div><div class="ttdef"><b>Definition</b> Logger.h:205</div></div>
 <div class="ttc" id="aclassquokka_1_1Logger_html_a8814e38818cd2ffd9d7f79b30d9e3e38"><div class="ttname"><a href="classquokka_1_1Logger.html#a8814e38818cd2ffd9d7f79b30d9e3e38">quokka::Logger::CheckLevel</a></div><div class="ttdeci">bool CheckLevel(LogLevel level)</div><div class="ttdef"><b>Definition</b> Logger.h:156</div></div>
 <div class="ttc" id="aclassquokka_1_1Logger_html_aa0dfb13fc74b1081522ed6f4fa2b4471"><div class="ttname"><a href="classquokka_1_1Logger.html#aa0dfb13fc74b1081522ed6f4fa2b4471">quokka::Logger::LogLevelToString</a></div><div class="ttdeci">static constexpr const char * LogLevelToString(LogLevel level)</div><div class="ttdef"><b>Definition</b> Logger.h:132</div></div>
 <div class="ttc" id="aclassquokka_1_1Logger_html_aa3eb814a8bebd8fdc4c284d505b94da7"><div class="ttname"><a href="classquokka_1_1Logger.html#aa3eb814a8bebd8fdc4c284d505b94da7">quokka::Logger::SetLevel</a></div><div class="ttdeci">void SetLevel(LogLevel level)</div><div class="ttdef"><b>Definition</b> Logger.h:162</div></div>

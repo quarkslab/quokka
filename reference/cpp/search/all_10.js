@@ -2,7 +2,7 @@ var searchData=
 [
   ['scan_0',['Scan',['../classquokka_1_1HeadIterator.html#a5bcb29ec0dc07b1f0c810f27a86968a4',1,'quokka::HeadIterator']]],
   ['scope_5fexit_5fguard_1',['scope_exit_guard',['../classquokka_1_1scope__exit__guard.html',1,'quokka']]],
-  ['segment_2',['segment',['../structquokka_1_1Segment.html',1,'quokka::Segment'],['../classquokka_1_1Function.html#a9967295c316bbcc89c85c9e84adcf650',1,'quokka::Function::segment'],['../classquokka_1_1Data.html#a4d69ae79e7523316f35a5ae444005b98',1,'quokka::Data::segment'],['../classquokka_1_1Block.html#aa731ef4c0bc32b1ca6dd13fe7757fc4c',1,'quokka::Block::segment'],['../structquokka_1_1Segment.html#a7f58ed97a1f378209f9f29bb4233abce',1,'quokka::Segment::Segment()']]],
+  ['segment_2',['segment',['../structquokka_1_1Segment.html',1,'quokka::Segment'],['../structquokka_1_1Segment.html#a7f58ed97a1f378209f9f29bb4233abce',1,'quokka::Segment::Segment()'],['../classquokka_1_1Function.html#a9967295c316bbcc89c85c9e84adcf650',1,'quokka::Function::segment'],['../classquokka_1_1Data.html#a4d69ae79e7523316f35a5ae444005b98',1,'quokka::Data::segment'],['../classquokka_1_1Block.html#aa731ef4c0bc32b1ca6dd13fe7757fc4c',1,'quokka::Block::segment']]],
   ['segment_2eh_3',['Segment.h',['../Segment_8h.html',1,'']]],
   ['segments_4',['Segments',['../classquokka_1_1Segments.html',1,'quokka']]],
   ['segmenttype_5',['SegmentType',['../Segment_8h.html#ad5b8a38b40c134ca24e5d7e7433ceede',1,'quokka']]],
