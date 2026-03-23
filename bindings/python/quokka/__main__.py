@@ -130,7 +130,7 @@ def do_quokka(
     try:
         output_file = expand_output_template(output_template, exec_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        Program.generate(
+        output_file = Program.generate(
             exec_path=exec_path,
             output_file=output_file,
             mode=mode,
@@ -139,7 +139,7 @@ def do_quokka(
             override=override,
             disassembler=disassembler,
         )
-        return True
+        return output_file.exists() # return True if export succeeded and file was created
     except StaleIDBError as e:
         indented_err = str(e).replace('\n', '\n  ')
         logging.error(
@@ -211,6 +211,11 @@ def run_async(
 
     logging.info(f"Start exporting {total} binaries")
 
+    if total == 0:
+        logging.info("No binaries found to export. Exiting.")
+        pool.terminate()
+        return
+    
     i = 0
     while True:
         item = egress.get()
