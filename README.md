@@ -198,6 +198,22 @@ for details on renaming functions, setting prototypes, and more.
 The process for building depends on which version of the IDA SDK you are using.
 These two modes are also referred as *the new mode* and *the old mode*.
 
+### IDA >= 9.2 (The new way)
+
+Ida SDK has been finally [open sourced](https://github.com/HexRaysSA/ida-sdk) so there is no need
+anymore to download it separately.
+
+You can use the cmake option `-DIDA_VERSION=<major>.<minor>` to automatically sync it from github.
+
+```console
+user@host:~/quokka$ cmake -B build \ # Where to build
+                          -S . \ # Where are the sources
+                          -DIDA_VERSION=9.2 \ # IDA SDK version
+                          -DCMAKE_BUILD_TYPE:STRING=Release \ # Build Type
+
+user@host:~/quokka$ cmake --build build -- -j
+```
+
 ### IDA < 9.2 (The old way)
 
 Since the IDA SDK is still proprietary code, you have to fetch it yourself and provide
@@ -210,22 +226,6 @@ the users as they will have to download the sdk themselves.
 user@host:~/quokka$ cmake -B build \ # Where to build
                           -S . \ # Where are the sources
                           -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK 
-                          -DCMAKE_BUILD_TYPE:STRING=Release \ # Build Type
-
-user@host:~/quokka$ cmake --build build --target quokka_plugin -- -j
-```
-
-### IDA >= 9.2 (The new way)
-
-Ida SDK has been finally [open sourced](https://github.com/HexRaysSA/ida-sdk) so there is no need
-anymore to download it separately.
-
-You can use the cmake option `-DIDA_VERSION=<major>.<minor>` to automatically sync it from github.
-
-```console
-user@host:~/quokka$ cmake -B build \ # Where to build
-                          -S . \ # Where are the sources
-                          -DIDA_VERSION=9.2 \ # IDA SDK version
                           -DCMAKE_BUILD_TYPE:STRING=Release \ # Build Type
 
 user@host:~/quokka$ cmake --build build --target quokka_plugin -- -j
