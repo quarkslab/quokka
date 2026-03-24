@@ -63,6 +63,9 @@ jobs:
           attestations: true
 
       - name: Upload Python packages for release notes
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
-        with:
-          files: dist/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: gh release upload "$TAG_NAME" dist/* --clobber
