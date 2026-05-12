@@ -127,8 +127,8 @@ jobs:
         if: steps.ccache-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
-          echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
+          echo "CCACHE_DIR=$HOME/.ccache" >> "$GITHUB_ENV"
+          echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> "$GITHUB_ENV"
 
       - name: Configure ccache
         if: steps.ccache-cache.outputs.cache-hit != 'true'
@@ -141,22 +141,22 @@ jobs:
       - name: Set LLVM_ROOT (macOS)
         if: ${{ runner.os == 'macOS' && steps.ccache-cache.outputs.cache-hit != 'true' }}
         shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> $GITHUB_ENV
+        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
 
       - name: Configure cmake
         if: steps.ccache-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          cmake -B build-deps -S $GITHUB_WORKSPACE -G Ninja \
-                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+          cmake -B build-deps -S "$GITHUB_WORKSPACE" -G Ninja \
+                -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
                 -DIDA_VERSION=9.3 \
-                -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR \
-                ${LLVM_ROOT_PARAM}
+                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR" \
+                ${LLVM_ROOT_PARAM:+"$LLVM_ROOT_PARAM"}
 
       - name: Build
         if: steps.ccache-cache.outputs.cache-hit != 'true'
         shell: bash
-        run: cmake --build build-deps --config $BUILD_TYPE
+        run: cmake --build build-deps --config "$BUILD_TYPE"
 
       - name: Show ccache stats
         if: ${{ always() && steps.ccache-cache.outputs.cache-hit != 'true' }}
@@ -197,8 +197,8 @@ jobs:
       - name: Set up build caching
         shell: bash
         run: |
-          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
-          echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
+          echo "CCACHE_DIR=$HOME/.ccache" >> "$GITHUB_ENV"
+          echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> "$GITHUB_ENV"
 
       - name: Restore FetchContent cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -226,17 +226,17 @@ jobs:
       - name: Set LLVM_ROOT (macOS)
         if: ${{ runner.os == 'macOS' }}
         shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> $GITHUB_ENV
+        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
 
       - name: Configure cmake
         shell: bash
         run: |
-          cmake -B build-tests -S $GITHUB_WORKSPACE -G Ninja \
+          cmake -B build-tests -S "$GITHUB_WORKSPACE" -G Ninja \
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DNO_BUILD=On \
                 -DBUILD_TEST=On \
-                -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR \
-                ${LLVM_ROOT_PARAM}
+                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR" \
+                ${LLVM_ROOT_PARAM:+"$LLVM_ROOT_PARAM"}
 
       - name: Build tests
         shell: bash
@@ -300,9 +300,9 @@ jobs:
         shell: bash
         run: |
           if [[ "$IDA_SDK" =~ ^(7|8|90|91) ]]; then
-            echo "CMAKE_IDA_PARAM=-DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/$IDA_SDK_VERSION" >> $GITHUB_ENV
+            echo "CMAKE_IDA_PARAM=-DIdaSdk_ROOT_DIR=${GITHUB_WORKSPACE}/third_party/${IDA_SDK_VERSION}" >> "$GITHUB_ENV"
           else
-            echo "CMAKE_IDA_PARAM=-DIDA_VERSION=$IDA_SDK" >> $GITHUB_ENV
+            echo "CMAKE_IDA_PARAM=-DIDA_VERSION=$IDA_SDK" >> "$GITHUB_ENV"
           fi
 
       - name: Checkout
@@ -336,8 +336,8 @@ jobs:
       - name: Set up build caching
         shell: bash
         run: |
-          echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
-          echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> $GITHUB_ENV
+          echo "CCACHE_DIR=$HOME/.ccache" >> "$GITHUB_ENV"
+          echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> "$GITHUB_ENV"
 
       - name: Restore FetchContent cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
@@ -382,8 +382,8 @@ jobs:
           cd scripts
           ./fetch_sdk.sh "$IDA_SDK"
           cd ..
-          [ ! -d third_party/$IDA_SDK_VERSION ] && unzip -d third_party -P $IDA_SDK_PASSWORD third_party/$IDA_SDK_VERSION.zip
-          [ -f third_party/$IDA_SDK_VERSION/include/regex.h ] && rm third_party/$IDA_SDK_VERSION/include/regex.h
+          [ ! -d "third_party/$IDA_SDK_VERSION" ] && unzip -d third_party -P "$IDA_SDK_PASSWORD" "third_party/$IDA_SDK_VERSION.zip"
+          [ -f "third_party/$IDA_SDK_VERSION/include/regex.h" ] && rm "third_party/$IDA_SDK_VERSION/include/regex.h"
 
       - name: Fetch IDA SDK (Windows)
         if:
@@ -393,12 +393,13 @@ jobs:
         env:
           IDA_SDK: ${{ matrix.ida_sdk }}
           IDA_SDK_VERSION: idasdk${{ matrix.ida_sdk }}
+        shell: pwsh
         run: |
           cd scripts
           .\fetch_sdk.bat $env:IDA_SDK
           cd ..
-          7z.exe x -p"${env:IDA_SDK_PASSWORD}" -y -o"third_party" "third_party\${env:IDA_SDK_VERSION}.zip"
-          rm "third_party\${env:IDA_SDK_VERSION}\include\regex.h"
+          7z.exe x -p"$($env:IDA_SDK_PASSWORD)" -y -o"third_party" "third_party\$($env:IDA_SDK_VERSION).zip"
+          rm "third_party\$($env:IDA_SDK_VERSION)\include\regex.h"
 
       - name: Save IDA SDK cache
         if: ${{ steps.cache-sdk.outputs.cache-hit != 'true' && contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) }}
@@ -429,9 +430,9 @@ jobs:
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         shell: bash
         run: |
-          cmake -B $CMAKE_BUILD_DIR -S $GITHUB_WORKSPACE -G Ninja \
-                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "$CMAKE_IDA_PARAM" \
-                -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR
+          cmake -B "$CMAKE_BUILD_DIR" -S "$GITHUB_WORKSPACE" -G Ninja \
+                -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" "$CMAKE_IDA_PARAM" \
+                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
       # We need to differentiate MacOS build from Linux because we want to use a specific compiler on MacOS
       - name: Prepare build environment (MacOS)
@@ -440,13 +441,13 @@ jobs:
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         shell: bash
         run: |
-          cmake -B $CMAKE_BUILD_DIR \
-                -S $GITHUB_WORKSPACE \
+          cmake -B "$CMAKE_BUILD_DIR" \
+                -S "$GITHUB_WORKSPACE" \
                 -G Ninja \
-                -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-                $CMAKE_IDA_PARAM \
-                -DLLVM_ROOT=$(brew --prefix llvm@18) \
-                -DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR
+                -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+                "$CMAKE_IDA_PARAM" \
+                -DLLVM_ROOT="$(brew --prefix llvm@18)" \
+                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
       - name: Prepare build environment (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
@@ -455,16 +456,16 @@ jobs:
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         shell: bash
         run: |
-          cmake -B "$CMAKE_BUILD_DIR" -S "$GITHUB_WORKSPACE" -DCMAKE_BUILD_TYPE=${BUILD_TYPE} $CMAKE_IDA_PARAM \
-                ${FETCHCONTENT_BASE_DIR:+-DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR}
+          cmake -B "$CMAKE_BUILD_DIR" -S "$GITHUB_WORKSPACE" -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" "$CMAKE_IDA_PARAM" \
+                ${FETCHCONTENT_BASE_DIR:+"-DFETCHCONTENT_BASE_DIR=$FETCHCONTENT_BASE_DIR"}
 
       - name: Build
         env:
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         shell: bash
         run: |
-          cmake --build $CMAKE_BUILD_DIR --config $BUILD_TYPE
-          cmake --install $CMAKE_BUILD_DIR
+          cmake --build "$CMAKE_BUILD_DIR" --config "$BUILD_TYPE"
+          cmake --install "$CMAKE_BUILD_DIR"
 
       - name: Show ccache stats
         if: always()
@@ -538,7 +539,16 @@ jobs:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}${{ matrix.bitness }}
 
       - name: Release
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
-        with:
-          files: ${{ matrix.ida_sdk }}-quokka_*
-          fail_on_unmatched_files: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          IDA_SDK: ${{ matrix.ida_sdk }}
+          TAG_NAME: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=( "${IDA_SDK}"-quokka_* )
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo "::error::No matching files found" && exit 1
+          fi
+          gh release upload "$TAG_NAME" "${files[@]}" --clobber
