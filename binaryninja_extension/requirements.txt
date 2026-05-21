@@ -1,0 +1,2 @@
+grpcio-tools
+protobuf>=3.12.2
