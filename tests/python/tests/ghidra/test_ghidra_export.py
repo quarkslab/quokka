@@ -1315,3 +1315,105 @@ class TestManyTypesCppGhidraExport:
             f"TdEnumDArr3 array element should be TdEnumD, "
             f"got {elem.composite_type.name!r}"
         )
+
+    # -- C type declarations (c_str / headers) -----------------------------
+
+    def test_headers_non_empty(self):
+        """The headers field must be a non-empty C header string."""
+        h = self.prog.proto.headers
+        assert h, "headers field should be non-empty"
+        assert len(h) > 100, "headers should contain substantial type declarations"
+
+    def test_headers_contains_struct_keyword(self):
+        """headers should contain at least one 'struct' C declaration."""
+        assert "struct " in self.prog.proto.headers
+
+    def test_headers_no_ghidra_debug_format(self):
+        """headers must not contain Ghidra's internal debug format artifacts."""
+        h = self.prog.proto.headers
+        # DataType.toString() produces lines like "Length: 64 Alignment: 1"
+        assert "Length:" not in h, "headers contains Ghidra debug 'Length:' artifact"
+        assert "Alignment:" not in h, "headers contains Ghidra debug 'Alignment:' artifact"
+
+    def test_enum_d_c_str(self):
+        """enum D c_str must be a valid C enum declaration."""
+        for t in self.prog.proto.types:
+            if t.WhichOneof("OneofType") == "enum_type":
+                if t.enum_type.name == "D":
+                    c = t.enum_type.c_str
+                    assert c, "enum D c_str should be non-empty"
+                    assert "typedef enum" in c, (
+                        f"enum D c_str should start with typedef enum, got: {c!r}"
+                    )
+                    assert "FIRST" in c, f"enum D c_str should contain FIRST: {c!r}"
+                    assert "SECOND" in c, f"enum D c_str should contain SECOND: {c!r}"
+                    assert "THIRD" in c, f"enum D c_str should contain THIRD: {c!r}"
+                    # Must NOT contain Ghidra debug artifacts
+                    assert "Length:" not in c
+                    return
+        pytest.fail("enum D not found")
+
+    def test_struct_a_c_str(self):
+        """struct A c_str must be a valid C struct declaration."""
+        _, st = self._find_composite("A", self.TYPE_STRUCT)
+        if st is None:
+            pytest.fail("struct A not found")
+        c = st.c_str
+        assert c, "struct A c_str should be non-empty"
+        assert c.startswith("struct A {"), (
+            f"struct A c_str should start with 'struct A {{', got: {c[:40]!r}"
+        )
+        assert c.rstrip().endswith("};"), (
+            f"struct A c_str should end with '}};\', got: {c[-20:]!r}"
+        )
+        # Should contain field names, not Ghidra debug format
+        assert "Length:" not in c
+        assert "Alignment:" not in c
+
+    def test_union_e_c_str(self):
+        """union E c_str must be a valid C union declaration."""
+        _, ut = self._find_composite("E", self.TYPE_UNION)
+        if ut is None:
+            pytest.fail("union E not found")
+        c = ut.c_str
+        assert c, "union E c_str should be non-empty"
+        assert c.startswith("union E {"), (
+            f"union E c_str should start with 'union E {{', got: {c[:40]!r}"
+        )
+        assert c.rstrip().endswith("};"), (
+            f"union E c_str should end with '}};\', got: {c[-20:]!r}"
+        )
+
+    def test_typedef_u32_c_str(self):
+        """typedef U32 c_str must be a valid C typedef declaration."""
+        _, ct = self._find_typedef("U32")
+        if ct is None:
+            pytest.fail("typedef U32 not found")
+        c = ct.c_str
+        assert c, "U32 c_str should be non-empty"
+        assert "typedef" in c, f"U32 c_str should contain 'typedef': {c!r}"
+        assert "U32" in c, f"U32 c_str should contain 'U32': {c!r}"
+
+    def test_pointer_type_c_str_set(self):
+        """At least one TYPE_POINTER should have a non-empty c_str."""
+        for t in self.prog.proto.types:
+            if t.WhichOneof("OneofType") == "composite_type":
+                ct = t.composite_type
+                if ct.type == self.TYPE_POINTER and ct.c_str:
+                    # Must not contain Ghidra debug format
+                    assert "Length:" not in ct.c_str
+                    return
+        pytest.fail("No TYPE_POINTER with non-empty c_str found")
+
+    def test_array_type_c_str_set(self):
+        """At least one TYPE_ARRAY should have a non-empty c_str."""
+        for t in self.prog.proto.types:
+            if t.WhichOneof("OneofType") == "composite_type":
+                ct = t.composite_type
+                if ct.type == self.TYPE_ARRAY and ct.c_str:
+                    assert "[" in ct.c_str, (
+                        f"Array c_str should contain '[': {ct.c_str!r}"
+                    )
+                    assert "Length:" not in ct.c_str
+                    return
+        pytest.fail("No TYPE_ARRAY with non-empty c_str found")

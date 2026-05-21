@@ -24,9 +24,12 @@ Author:
     Written by dm (Alexis Challande) in 2022.
 """
 
+import sys
+
 import quokka
 from quokka import Data
-from quokka.types import AddressT, DataType
+from quokka.data_type import BaseType
+from quokka.types import AddressT
 
 
 def print_usertable(bionic: quokka.Program):
@@ -36,7 +39,12 @@ def print_usertable(bionic: quokka.Program):
     getpwuid = bionic.get_function("getpwuid", approximative=False)
 
     # Step 2: find the data ref
-    user_table: Data = getpwuid.data_references[1]
+    data_refs = []
+    for inst in getpwuid.instructions:
+        for data in inst.data_refs_from:
+            if isinstance(data, Data):
+                data_refs.append(data)
+    user_table: Data = data_refs[1]
 
     # Step 3: Read the first entry
     users = []
@@ -47,15 +55,15 @@ def print_usertable(bionic: quokka.Program):
 
     # Read other entries
     def read_userid(prog: quokka.Program, address: AddressT) -> int:
-        return prog.executable.read_data(
-            prog.address_to_offset(address), DataType.DOUBLE_WORD
+        return prog.executable.read_type_value(
+            prog.address_to_offset(address), BaseType.DOUBLE_WORD
         )
 
     # Gather all components together
     start = user_table.address + 0x8
     while True:
         data: Data = bionic.get_data(start)
-        if data.code_references:
+        if data.code_refs_to:
             break
 
         user_name = bionic.executable.read_string(data.value)

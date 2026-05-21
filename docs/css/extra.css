@@ -1,0 +1,3 @@
+/* Green checkmark and red cross for feature tables */
+.icon-green svg { color: #4caf50; }
+.icon-red svg { color: #e53935; }

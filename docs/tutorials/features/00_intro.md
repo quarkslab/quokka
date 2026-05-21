@@ -12,10 +12,10 @@ Similarity Problem`[^1] paper.
 ## Idea
 
 This tutorial simply tries to demonstrate how to perform common feature extraction using `Quokka` API instead of using
-IDA's API. By using Quokka, you gain several advantages:
+the disassembler API directly. By using Quokka, you gain several advantages:
 
 * A saner API
-* A compatibility with multiple IDA versions
+* A compatibility with multiple disassemblers and versions
 * Reusable scripts
 * A faster feature extraction
 

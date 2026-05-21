@@ -25,6 +25,7 @@ from itertools import product
 import logging
 import os
 import sys
+import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Type, Iterable
 import lzma
@@ -69,6 +70,125 @@ from quokka.exc import QuokkaError, StaleIDBError
 
 if TYPE_CHECKING:
     import pypcode
+
+
+logger = logging.getLogger(__name__)
+
+
+def _parse_ghidra_application_properties(ghidra_dir: Path) -> dict[str, str]:
+    """Parse Ghidra's application.properties into a dict."""
+
+    props_file = ghidra_dir / "Ghidra" / "application.properties"
+    props: dict[str, str] = {}
+    if not props_file.exists():
+        return props
+    for line in props_file.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" in line:
+            key, _, value = line.partition("=")
+            props[key.strip()] = value.strip()
+    return props
+
+
+def _get_ghidra_versioned_name(ghidra_dir: Path) -> str | None:
+    """Return the versioned settings directory name (e.g. 'ghidra_12.0.4_PUBLIC')."""
+
+    props = _parse_ghidra_application_properties(ghidra_dir)
+    version = props.get("application.version")
+    release = props.get("application.release.name")
+    if not version or not release:
+        return None
+    name = props.get("application.name", "Ghidra").lower().replace(" ", "")
+    return f"{name}_{version}_{release}"
+
+
+def _get_ghidra_user_extensions_dir(ghidra_dir: Path) -> Path | None:
+    """Compute the user settings Extensions dir (where the GUI installs extensions).
+
+    Mirrors Ghidra's ``ApplicationUtilities.getDefaultUserSettingsDir()`` logic.
+
+    Does not handle the ``-Dapplication.settingsdir`` JVM system property (not
+    readable from Python).
+
+    Returns None if application.properties cannot be parsed.
+    """
+
+    versioned = _get_ghidra_versioned_name(ghidra_dir)
+    if versioned is None:
+        return None
+
+    import getpass
+    import platform
+    system = platform.system()
+    home = Path.home()
+    app_name = "ghidra"
+
+    # Ghidra prepends "<user>-" when the parent dir is outside $HOME
+    # (see getUserSpecificDirName in ApplicationUtilities.java).
+    def _user_specific_name(parent: Path) -> str:
+        try:
+            parent.resolve().relative_to(home.resolve())
+            return app_name
+        except ValueError:
+            return f"{getpass.getuser()}-{app_name}"
+
+    # Priority 1: XDG_CONFIG_HOME (checked on all platforms per Ghidra source)
+    xdg = os.environ.get("XDG_CONFIG_HOME")
+    if xdg:
+        xdg_path = Path(xdg)
+        return xdg_path / _user_specific_name(xdg_path) / versioned / "Extensions"
+
+    # Priority 2: platform default
+    if system == "Darwin":
+        base = home / "Library"
+    elif system == "Windows":
+        appdata = os.environ.get("APPDATA")
+        if not appdata:
+            return None
+        base = Path(appdata)
+    else:  # Linux, FreeBSD, etc.
+        base = home / ".config"
+
+    return base / app_name / versioned / "Extensions"
+
+
+def _find_ghidra_extension(ghidra_dir: Path) -> Path | None:
+    """Find the QuokkaExporter extension directory.
+
+    Checks both the Ghidra install dir (Gradle install) and the user settings
+    dir (GUI install). Returns the path to the QuokkaExporter directory,
+    or None if not found.
+
+    Logs a warning if the extension is found in both locations (duplicate
+    installs can cause class-loading conflicts).
+    """
+
+    install_ext = ghidra_dir / "Ghidra" / "Extensions" / "QuokkaExporter"
+    found_gradle = (install_ext / "extension.properties").exists()
+
+    user_ext = None
+    found_gui = False
+    if (user_ext_dir := _get_ghidra_user_extensions_dir(ghidra_dir)) is not None:
+        user_ext = user_ext_dir / "QuokkaExporter"
+        if (user_ext / "extension.properties").exists() and not (user_ext / "extension.properties.uninstalled").exists():
+            found_gui = True
+
+    if found_gradle and found_gui:
+        logger.warning(
+            "QuokkaExporter found in BOTH the Ghidra install dir and user "
+            "settings dir. This may cause class-loading conflicts.\n"
+            f"  Install dir: {install_ext}\n"
+            f"  User dir:    {user_ext}\n"
+            "Remove one to avoid issues."
+        )
+
+    if found_gradle:
+        return install_ext
+    if found_gui:
+        return user_ext
+    return None
 
 
 class Program(dict):
@@ -825,21 +945,20 @@ class Program(dict):
                 f"analyzeHeadless not found at {analyze_headless}"
             )
 
-        # Verify extension is installed
-        ext_dir = ghidra_dir / "Ghidra" / "Extensions"
-        if not ext_dir.exists() or not any(ext_dir.rglob("QuokkaExporter*")):
+        # Find the installed extension (checks both install dir and user
+        # settings dir for GUI installs).
+        ext_path = _find_ghidra_extension(ghidra_dir)
+        if ext_path is None:
             raise QuokkaError(
-                "QuokkaExporter extension not found in "
-                f"{ext_dir}. Install it first -- see ghidra_extension/README.md."
+                "QuokkaExporter extension not found. Install it from https://github.com/quarkslab/quokka/tree/main/ghidra_extension"
             )
 
         # Locate the headless export script.
         # Search order: installed extension dir, then repo source tree.
         script_path = None
-        for d in ext_dir.rglob("ghidra_scripts"):
-            if (d / "QuokkaExportHeadless.java").exists():
-                script_path = d
-                break
+        scripts_dir = ext_path / "ghidra_scripts"
+        if (scripts_dir / "QuokkaExportHeadless.java").exists():
+            script_path = scripts_dir
         if script_path is None:
             # Fall back to repo source tree (works for dev installs)
             repo_script = (
@@ -897,7 +1016,6 @@ class Program(dict):
                     f"{result.stdout[-2000:] if result.stdout else ''}"
                 )
         finally:
-            import shutil
             shutil.rmtree(proj_dir, ignore_errors=True)
 
         return output_file
@@ -1126,7 +1244,7 @@ class Program(dict):
         self,
         database_file: "Path|str|None" = None,
         ida_path: "Path|str|None" = None,
-        overwrite: bool = False,
+        overwrite: bool = True,
         timeout: int = 600,
     ) -> 'Program':
         """Apply edits, re-export, and return a fresh Program.
@@ -1162,5 +1280,6 @@ class Program(dict):
             self.export_file,
             database_file=database_file,
             override=True,
+            disassembler=self.disassembler,
         )
         return Program.open(path, self.executable.exec_file)

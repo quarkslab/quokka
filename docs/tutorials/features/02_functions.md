@@ -45,7 +45,7 @@ def sum_block_features(bb_features: FeaturesDict, feature: str) -> int:
 def get_func_features(func: quokka.Function) -> FeaturesDict:
     bb_features = {}
     for block_start in func.graph:
-        block = func.get_block(block_start)
+        block = func[block_start]
         bb_features[block_start] = get_bb_features(block)
         
     return {
