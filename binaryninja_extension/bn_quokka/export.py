@@ -9,29 +9,30 @@ import lzma
 import os
 from pathlib import Path
 import re
-from typing import Any, Iterable, Optional, Union
+from typing import TYPE_CHECKING, Any, Iterable, Optional, Union
+
+if TYPE_CHECKING:
+    # Annotation-only names: with deferred annotation evaluation (PEP 563)
+    # these are never looked up at runtime.
+    from binaryninja import BinaryView, Type
 
 try:
     import binaryninja  # type: ignore
     from binaryninja import (  # type: ignore
-        BinaryView,
         BranchType,
         Endianness,
         InstructionTextTokenType,
         LowLevelILOperation,
         SymbolType,
-        Type,
         TypeClass,
     )
 except ImportError:  # Allows tests to import this module outside BinaryNinja.
     binaryninja = None  # type: ignore
-    BinaryView = Any  # type: ignore
     BranchType = None  # type: ignore
     Endianness = None  # type: ignore
     InstructionTextTokenType = None  # type: ignore
     LowLevelILOperation = None  # type: ignore
     SymbolType = None  # type: ignore
-    Type = Any  # type: ignore
     TypeClass = None  # type: ignore
 
 try:

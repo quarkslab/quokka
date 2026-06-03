@@ -2,11 +2,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Any, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Optional, Sequence
+
+if TYPE_CHECKING:
+    # Annotation-only names: with deferred annotation evaluation (PEP 563)
+    # these are never looked up at runtime.
+    from binaryninja import BinaryView
 
 try:
     from binaryninja import (  # type: ignore
-        BinaryView,
         NamedTypeReferenceClass,
         Section,
         SectionSemantics,
@@ -18,13 +22,12 @@ try:
 
     BN_AVAILABLE = True
 except ImportError:
-    BinaryView = Any  # type: ignore
     NamedTypeReferenceClass = None  # type: ignore
-    Section = Any  # type: ignore
+    Section = None  # type: ignore
     SectionSemantics = None  # type: ignore
-    Segment = Any  # type: ignore
+    Segment = None  # type: ignore
     StructureVariant = None  # type: ignore
-    Type = Any  # type: ignore
+    Type = None  # type: ignore
     TypeClass = None  # type: ignore
     BN_AVAILABLE = False
 
