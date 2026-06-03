@@ -2,18 +2,36 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import logging
 import sys
 from pathlib import Path
-from typing import Sequence
-
-
-PLUGIN_ROOT = Path(__file__).resolve().parent
-if str(PLUGIN_ROOT) not in sys.path:
-    sys.path.insert(0, str(PLUGIN_ROOT))
+from typing import Callable, Sequence
 
 
 LOGGER = logging.getLogger("bn_quokka.export_headless")
+
+
+def _load_export_file() -> Callable[..., Path]:
+    """Import bn_quokka.export.export_file for any invocation style.
+
+    When this module is imported as part of the plugin package, the relative
+    import resolves directly. When executed as a standalone script there is no
+    parent package, so make the plugin package importable under its on-disk
+    name instead of exposing its internals (bn_quokka, quokka_pb2, ...) as
+    top-level modules.
+    """
+    if __package__:
+        from .bn_quokka.export import export_file
+
+        return export_file
+
+    plugin_root = Path(__file__).resolve().parent
+    parent_dir = str(plugin_root.parent)
+    if parent_dir not in sys.path:
+        sys.path.insert(0, parent_dir)
+    module = importlib.import_module(f"{plugin_root.name}.bn_quokka.export")
+    return module.export_file
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -74,7 +92,7 @@ def _export_file(
     compressed: bool,
     update_analysis: bool,
 ) -> Path:
-    from bn_quokka.export import export_file
+    export_file = _load_export_file()
 
     return export_file(
         input_file,
