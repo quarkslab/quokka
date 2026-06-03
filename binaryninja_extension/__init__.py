@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 from binaryninja import PluginCommand, log_error, log_info  # type: ignore
@@ -11,11 +10,7 @@ from binaryninja.interaction import (  # type: ignore
     show_message_box,
 )
 
-PLUGIN_ROOT = Path(__file__).resolve().parent
-if str(PLUGIN_ROOT) not in sys.path:
-    sys.path.insert(0, str(PLUGIN_ROOT))
-
-from bn_quokka.export import export_binary_view  # noqa: E402
+from .bn_quokka.export import export_binary_view
 
 
 def _default_output_path(bv) -> Path:
