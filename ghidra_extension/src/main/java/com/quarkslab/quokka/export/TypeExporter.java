@@ -1,6 +1,7 @@
 package com.quarkslab.quokka.export;
 
 import com.quarkslab.quokka.ExportContext;
+import com.quarkslab.quokka.util.CTypeRenderer;
 import com.quarkslab.quokka.util.GhidraTypeMapper;
 import ghidra.program.model.data.*;
 import ghidra.program.model.listing.Program;
@@ -258,7 +259,7 @@ public class TypeExporter {
     // ------------------------------------------------------------------
 
     private static void setCStr(Quokka.CompositeType.Builder cb, DataType dt) {
-        String cStr = dt.toString();
+        String cStr = CTypeRenderer.render(dt);
         if (cStr != null && !cStr.isEmpty()) {
             cb.setCStr(cStr);
         }
@@ -266,7 +267,7 @@ public class TypeExporter {
 
     private static void setCStr(Quokka.EnumType.Builder eb,
             ghidra.program.model.data.Enum dt) {
-        String cStr = dt.toString();
+        String cStr = CTypeRenderer.render(dt);
         if (cStr != null && !cStr.isEmpty()) {
             eb.setCStr(cStr);
         }

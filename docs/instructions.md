@@ -6,7 +6,7 @@ Instructions are the lowest level of the Quokka object model. This page covers t
 
 ```python
 func = prog.get_function("main", approximative=False)
-entry = func.get_block(func.start)
+entry = func[func.start]
 
 # Iterate instructions in a block
 for addr, inst in entry.items():
@@ -83,34 +83,36 @@ reg_ops = [op for op in inst.operands
 
 ## String References
 
-An instruction can reference a string literal in the binary:
+An instruction can reference string literals in the binary:
 
 ```python
 inst = func.get_instruction(0x401250)
 
-s = inst.string
-if s is not None:
-    print(f"String ref: {repr(s.value)}")
-# String ref: b"Error: invalid argument\n"
+for s in inst.strings:
+    print(f"String ref: {repr(s)}")
+# String ref: 'Error: invalid argument\n'
 ```
 
 ## Call Targets
 
-For call instructions, `call_target` resolves the callee (thunks are resolved automatically):
+For call instructions, `call_target` resolves the callee. It raises
+`FunctionMissingError` if the target cannot be resolved (e.g. indirect calls):
 
 ```python
+from quokka.exc import FunctionMissingError
+
 call_inst = func.get_instruction(0x4012a0)
 
-target = call_inst.call_target
-if target is not None:
+try:
+    target = call_inst.call_target
     print(f"Calls: {target.name}")
-else:
+except FunctionMissingError:
     print("Indirect call (function pointer)")
 ```
 
 ## Register Access Mode
 
-In FULL export mode, register read/write information is available:
+Register read/write information is available in both export modes (in LIGHT mode, it comes from Capstone; in FULL mode, from the exported data). Note that Capstone may not always provide access information, in which case the result is empty:
 
 ```python
 from quokka.types import AccessMode
@@ -130,6 +132,7 @@ for op in inst.operands:
 ```python
 import quokka
 from quokka.types import FunctionType
+from quokka.exc import FunctionMissingError
 
 prog = quokka.Program("bash.quokka", "bash")
 
@@ -140,11 +143,15 @@ for func in prog.values():
     for block in func.values():
         for addr, inst in block.items():
             if inst.mnemonic in ("call", "bl", "blx", "jal"):
-                target = inst.call_target
+                try:
+                    target = inst.call_target
+                    callee_name = target.name
+                except FunctionMissingError:
+                    callee_name = "indirect"
                 call_sites.append({
                     "caller": func.name,
                     "site": hex(addr),
-                    "callee": target.name if target else "indirect",
+                    "callee": callee_name,
                 })
 
 print(f"Found {len(call_sites)} call sites")
@@ -153,6 +160,8 @@ print(f"Found {len(call_sites)} call sites")
 ### Finding Dangerous Function Calls
 
 ```python
+from quokka.exc import FunctionMissingError
+
 DANGEROUS = {"strcpy", "gets", "sprintf", "system",
              "strcat", "scanf", "vsprintf"}
 
@@ -160,8 +169,11 @@ hits = []
 for func in prog.values():
     for block in func.values():
         for addr, inst in block.items():
-            target = inst.call_target
-            if target and target.name in DANGEROUS:
+            try:
+                target = inst.call_target
+            except FunctionMissingError:
+                continue
+            if target.name in DANGEROUS:
                 hits.append((func.name, hex(addr), target.name))
 
 for caller, site, callee in hits:
@@ -180,7 +192,7 @@ for caller, site, callee in hits:
 | `inst.operands` | `list[Operand]` | Decoded operands |
 | `inst.cs_inst` | `CsInsn` | Capstone instruction object |
 | `inst.pcode_insts` | `list[PcodeOp]` | Lifted P-code operations |
-| `inst.string` | `Data \| None` | Referenced string literal |
+| `inst.strings` | `list[str]` | Referenced string literals |
 | `inst.constants` | `list[int]` | Immediate constant values |
 | `inst.comments` | `Iterable[str]` | IDA comments on instruction |
 | `inst.call_target` | `Function` | Resolved call target (raises if none) |

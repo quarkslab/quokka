@@ -10,12 +10,12 @@ $ python -m venv env
 $ source ./env/bin/activate
 $ cd quokka
 (env) $ pip install -e '.[dev]'
-(env) $ python -c "import quokka; print(quokka.__version__)" 
+(env) $ python -c "import quokka; print(quokka.__version__)"
 ```
 
 ## Format the code
 
-The project use the [`black`](https://github.com/psf/black) formatter for the 
+The project uses the [`black`](https://github.com/psf/black) formatter for the
 Python code with the **defaults** settings.
 
 !!! example "Running Black"
@@ -27,19 +27,19 @@ The C++ code is formatted using `clang-format`.
 
 ## Updating the Protobuf definition
 
-To update the Protobuf definition, follow this steps:
+To update the Protobuf definition, follow these steps:
 
 1. <!> IMPORTANT <!> Open an issue on the official repository
 2. Update the `proto/quokka.proto` file with the new fields
-3. Increase the version number in `CMakeLists.txt` by :
+3. Increase the version number in `CMakeLists.txt` by:
    - A major version if the change breaks backward compatibility
    - A minor version otherwise
-4. Write the exporter code
+4. Write the exporter code (IDA and/or Ghidra)
 5. Update the python bindings accordingly
-6. Update the `__quokka_version__` in `bindings/python/__init__.py` to match 
+6. Update the `__version__` in `bindings/python/quokka/version.py` to match
    the one in step 3.
-7. Update the protobuf generated files for python using:
-   `python setup.py generate_py_protobufs`
+7. Regenerate the protobuf Python bindings by reinstalling:
+   `pip install -e .`
 
 ## Add a new IDA Version / SDK
 
@@ -58,18 +58,14 @@ For example, using `Version 7.7`:
 	         --build-arg IDA_PASSWORD=<install password> \
 	         .
 	```
-1. (Optional). If you did not copy a `ida.reg` file, you should run the 
-   container first, open IDA (`/opt/ida/idat64`), accept the license and 
+1. (Optional). If you did not copy a `ida.reg` file, you should run the
+   container first, open IDA (`/opt/ida/idat64`), accept the license and
    **save** the container (using `docker commit`).
 
 ### Add the SDK in the repo
 
-1. Download the SDK from HexRays website
-2. Extract it
-3. Generate a password for the SDK archive.
-4. Compress the inner `idasdk77/` directory in an archive protected by the
-   password.
-5. Add the `idasdk77.zip` to the repository.
+For IDA >= 9.2, the SDK is [open source](https://github.com/HexRaysSA/ida-sdk)
+and fetched automatically by CMake via `-DIDA_VERSION=<major>.<minor>`.
 
 
 ## Other tips and tricks

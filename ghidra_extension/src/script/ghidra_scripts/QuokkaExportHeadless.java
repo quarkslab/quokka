@@ -4,8 +4,7 @@
 //   analyzeHeadless /tmp/proj Test \
 //     -import /path/to/binary \
 //     -scriptPath ghidra_extension/src/script/ghidra_scripts \
-//     -postScript QuokkaExportHeadless.java \
-//     --out=/tmp/output.quokka --mode=LIGHT
+//     -postScript QuokkaExportHeadless.java "--out=/tmp/output.quokka" "--mode=LIGHT"
 //
 // @category Quokka
 // @description Export Ghidra analysis to Quokka protobuf format

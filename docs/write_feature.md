@@ -63,8 +63,8 @@ Three methods control how modifications are saved.
 ### `write` -- save to the `.quokka` file only
 
 `Program.write` serialises the modified protobuf back to disk. It does **not**
-interact with IDA. Use it when you want to snapshot the current annotations or
-share them without modifying the IDA database.
+interact with any disassembler. Use it when you want to snapshot the current
+annotations or share them without modifying the disassembler database.
 
 ```python
 # Overwrite the original file
@@ -74,7 +74,12 @@ prog.write()
 prog.write("binary_annotated.quokka")
 ```
 
-### `commit` -- apply changes to IDA
+### `commit` -- apply changes to the disassembler database
+
+!!! warning
+    `commit` currently only supports the **IDA backend**. For Ghidra-exported
+    programs, `commit()` writes the `.quokka` file but does not apply edits
+    back to Ghidra (Ghidra write-back is not yet implemented).
 
 `Program.commit` calls `write()` and then spawns a headless IDA instance to
 apply all recorded edits (names, prototypes, comments) to the IDA database.
@@ -90,7 +95,7 @@ errors = prog.commit(database_file="binary.i64", overwrite=True)
 |-----------|------|---------|-------------|
 | `database_file` | `Path\|str` | *required* | Path to the `.i64` database to modify |
 | `ida_path` | `Path\|str\|None` | `None` | IDA installation directory (auto-detected if omitted) |
-| `overwrite` | `bool` | `False` | Allow modifying an existing `.i64`. Raises `FileExistsError` when `False` and the file exists. Logs a warning when `True`. |
+| `overwrite` | `bool` | `True` | Allow modifying an existing `.i64`. Raises `FileExistsError` when `False` and the file exists. Logs a warning when `True`. |
 | `timeout` | `int` | `600` | Maximum seconds to wait for IDA |
 
 Returns the number of errors (0 = all edits applied successfully).
@@ -101,9 +106,12 @@ Returns the number of errors (0 = all edits applied successfully).
 ### `regenerate` -- commit then re-export
 
 `Program.regenerate` calls `commit()` and immediately re-exports the binary,
-returning a fresh `Program` instance that reflects the updated IDA database.
-This is the right choice when you want a clean `.quokka` file that incorporates
-your annotations as first-class exported data.
+returning a fresh `Program` instance that reflects the updated disassembler
+database. This is the right choice when you want a clean `.quokka` file that
+incorporates your annotations as first-class exported data.
+
+!!! warning
+    Like `commit`, `regenerate` currently only supports the **IDA backend**.
 
 ```python
 updated_prog = prog.regenerate(database_file="binary.i64", overwrite=True)
@@ -131,6 +139,23 @@ func.add_comment("Validates credentials against the internal user table.")
 prog.commit(database_file="binary.i64", overwrite=True)
 ```
 
+## From the command line (`quokka-apply`)
+
+The `quokka-apply` CLI applies edits stored in a `.quokka` file back to the
+disassembler database without writing Python code:
+
+```commandline
+$ quokka-apply binary.quokka binary --overwrite
+$ quokka-apply binary.quokka binary --regenerate --overwrite
+```
+
+| Option | Description |
+|--------|-------------|
+| `--commit` | Write `.quokka` and apply edits to the disassembler (default) |
+| `--regenerate` | Commit then re-export a fresh `.quokka` from IDA |
+| `--overwrite` | Allow overwriting an existing disassembler database |
+| `-v`, `--verbose` | Increase logging verbosity |
+
 ## From IDA
 
 If you are already running inside IDA (e.g. via IDAPython), you can apply
@@ -146,8 +171,8 @@ errors = apply_quokka(p)
 
 ## Summary
 
-| Method | Writes `.quokka` file | Applies to IDA database | Returns fresh `Program` |
+| Method | Writes `.quokka` file | Applies to disassembler database | Returns fresh `Program` |
 |---|:---:|:---:|:---:|
 | `prog.write()` | Yes | No | No |
-| `prog.commit(database_file=...)` | Yes | Yes | No |
-| `prog.regenerate(database_file=...)` | Yes | Yes | Yes |
+| `prog.commit(database_file=...)` | Yes | Yes (IDA only) | No |
+| `prog.regenerate(database_file=...)` | Yes | Yes (IDA only) | Yes |

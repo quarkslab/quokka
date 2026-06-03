@@ -1,8 +1,8 @@
 # Types
 
-**Quokka** exports the type information recorded by IDA (structures, unions,
-enumerations, arrays and pointers) and exposes it through a hierarchy of Python
-objects. These objects are useful for understanding data layout, reconstructing
+**Quokka** exports the type information recorded by the disassembler (structures,
+unions, enumerations, arrays and pointers) and exposes it through a hierarchy of
+Python objects. These objects are useful for understanding data layout, reconstructing
 high-level semantics, and cross-referencing types with the data or code that
 uses them.
 
@@ -16,7 +16,8 @@ CoreType                         ← abstract base for every type
 │   ├── StructureType  (dict)    ← C struct
 │   │   └── UnionType            ← C union (subclass of StructureType)
 │   ├── ArrayType                ← C array (T[N])
-│   └── PointerType              ← C pointer (T*)
+│   ├── PointerType              ← C pointer (T*)
+│   └── TypedefType              ← C typedef / alias
 ├── EnumTypeMember               ← one value inside an EnumType
 └── StructureTypeMember          ← one field inside a StructureType/UnionType
 ```
@@ -32,7 +33,8 @@ its kind without `isinstance` calls:
 | `is_union` | `UnionType` |
 | `is_array` | `ArrayType` |
 | `is_pointer` | `PointerType` |
-| `is_composite` | Any `ComplexType` (enum, struct, union, array, pointer) |
+| `is_typedef` | `TypedefType` |
+| `is_composite` | Any `ComplexType` (enum, struct, union, array, pointer, typedef) |
 | `is_member` | `StructureTypeMember` or `EnumTypeMember` |
 
 ## Accessing types from a Program
@@ -57,8 +59,8 @@ for enum in prog.enums:
 
 ## BaseType — primitives
 
-`BaseType` is an `IntEnum` that represents the primitive C types IDA knows
-about:
+`BaseType` is an `IntEnum` that represents the primitive C types the
+disassembler knows about:
 
 | Name | C equivalent | Size (bytes) |
 |---|---|---|
@@ -83,14 +85,14 @@ print(bt.is_base_type)  # True
 
 ## StructureType — C structs
 
-`StructureType` behaves like a `dict` keyed by **positional index** (integer,
-starting at 0). Each value is a `StructureTypeMember`.
+`StructureType` behaves like a `dict` keyed by **bit offset** (integer). Each
+value is a `StructureTypeMember`. A `members` list provides positional access.
 
 ### Key attributes
 
 | Attribute | Type | Description |
 |---|---|---|
-| `name` | `str` | Structure name as defined in IDA |
+| `name` | `str` | Structure name as defined in the disassembler |
 | `size` | `int` | Total size in bytes (0 if variable-length) |
 | `c_str` | `str` | C declaration of the structure |
 | `comments` | `list[str]` | Analyst comments |
@@ -134,7 +136,8 @@ print(first_member.type)           # e.g. <TPtr: next->...>
 
 `UnionType` is a subclass of `StructureType`. It works identically except that
 all members conceptually share offset 0 (all variants overlay the same memory).
-The dict is still keyed by **positional index** to avoid collisions.
+The dict is still keyed by **bit offset**, so for unions all members share
+offset 0. Use the `members` list for positional access.
 
 ```python
 for t in prog.types:
@@ -216,6 +219,24 @@ for t in prog.types:
 for t in prog.types:
     if t.is_pointer:
         print(f"{t.name} → {t.pointed_type}  (size={t.size})")
+```
+
+## TypedefType -- C typedefs
+
+| Attribute | Type | Description |
+|---|---|---|
+| `name` | `str` | Typedef name (e.g. `DWORD`, `size_t`) |
+| `size` | `int` | Size of the aliased type in bytes |
+| `aliased_type` | `TypeT` | The type this typedef aliases (single step) |
+| `c_str` | `str` | C declaration (e.g. `typedef int DWORD;`) |
+
+`TypedefType.resolve()` follows typedef chains to the concrete type:
+
+```python
+for t in prog.types:
+    if t.is_typedef:
+        concrete = t.resolve()
+        print(f"typedef {t.name} -> {concrete}")
 ```
 
 ## Adding new types
@@ -301,7 +322,9 @@ def describe(t) -> str:
     elif t.is_array:
         return f"array {t.element_type}[{t.array_size}]"
     elif t.is_pointer:
-        return f"pointer → {t.pointed_type}"
+        return f"pointer -> {t.pointed_type}"
+    elif t.is_typedef:
+        return f"typedef {t.name} -> {t.resolve()}"
     return "unknown"
 
 for t in prog.types:

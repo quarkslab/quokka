@@ -1,6 +1,7 @@
 package com.quarkslab.quokka.export;
 
 import com.quarkslab.quokka.ExportContext;
+import com.quarkslab.quokka.Version;
 import com.quarkslab.quokka.compat.Compat;
 import com.quarkslab.quokka.util.CallingConventionMapper;
 import com.quarkslab.quokka.util.HashUtil;
@@ -25,7 +26,7 @@ public class MetaExporter {
         // ExporterMeta
         builder.setExporterMeta(Quokka.ExporterMeta.newBuilder()
                 .setMode(ctx.getMode())
-                .setVersion("1.0.0"));
+                .setVersion(Version.QUOKKA_VERSION));
 
         // Meta
         Quokka.Meta.Builder meta = Quokka.Meta.newBuilder();

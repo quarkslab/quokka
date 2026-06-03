@@ -28,10 +28,12 @@ len(prog)  # number of functions
 ## Loading Options
 
 ```python
+from quokka.types import ExporterMode
+
 # Option 1: direct load (you already have the .quokka file)
 prog = quokka.Program("binary.quokka", "binary")
 
-# Option 2: from_binary (invokes IDA automatically)
+# Option 2: from_binary (invokes a disassembler automatically)
 prog = quokka.Program.from_binary(
     exec_path="binary",
     mode=ExporterMode.LIGHT,  # default
@@ -43,14 +45,16 @@ path = quokka.Program.generate("binary", output_file="out.quokka")
 ```
 
 !!! note
-    `from_binary` requires a working IDA installation with the Quokka plugin.
+    `from_binary` requires a working disassembler installation: either IDA
+    with the Quokka plugin, or Ghidra with the QuokkaExporter extension.
+    Set the `disassembler` parameter to choose, or let it auto-detect.
 
 ## Program Metadata
 
 ```python
 # Binary identity
-prog.name           # "bash"  (from IDA)
-prog.hash           # "a4f3..." (sha256 or MD5)
+prog.name           # "bash"
+prog.hash           # "a4f3..." (hex string, SHA-256 or MD5)
 
 # Architecture
 prog.isa            # ArchEnum.X86
@@ -76,11 +80,13 @@ Quokka leverages Capstone for runtime disassembly, so it supports all architectu
 | Architecture | ISA enum |
 |-------------|----------|
 | x86 / x86-64 | `X86` |
-| ARM / AArch64 | `ARM`, `AARCH64` |
+| ARM / AArch64 | `ARM`, `ARM64` |
 | MIPS | `MIPS` |
 | PowerPC | `PPC` |
 | SPARC | `SPARC` |
-| RISC-V | `RISCV` |
+| M68K | `M68K` |
+| SystemZ | `SYSZ` |
+| EVM | `EVM` |
 
 ```python
 from quokka.analysis import ArchEnum
@@ -97,15 +103,15 @@ Segments model the binary's memory layout (`.text`, `.data`, `.bss`, etc.)
 for seg_id, seg in prog.segments.items():
     print(f"[{seg_id}] {seg.name:15s}  "
           f"0x{seg.start:x}–0x{seg.end:x}  "
-          f"type={seg.type}  "
-          f"perm={seg.permissions}")
+          f"type={seg.type.name}  "
+          f"perm={seg.permissions!r}")
 ```
 
 ```
-[0] .text            0x401000–0x4b2000  type=CODE  perm=R|X
-[1] .rodata          0x4b2000–0x4c0000  type=DATA  perm=R
-[2] .data            0x4c1000–0x4c5000  type=DATA  perm=R|W
-[3] .bss             0x4c5000–0x4c8000  type=BSS   perm=R|W
+[0] .text            0x401000–0x4b2000  type=CODE  perm=<Perm.R|X: 5>
+[1] .rodata          0x4b2000–0x4c0000  type=DATA  perm=<Perm.R: 4>
+[2] .data            0x4c1000–0x4c5000  type=DATA  perm=<Perm.R|W: 6>
+[3] .bss             0x4c5000–0x4c8000  type=BSS   perm=<Perm.R|W: 6>
 ```
 
 ```python
@@ -120,11 +126,11 @@ seg.in_segment(0x401234)  # True
 # By address (dict key)
 func = prog[0x401000]
 
-# By exact name
-func = prog.get_function("main", approximative=False)
+# By exact name (default)
+func = prog.get_function("main")
 
-# By partial name (default — first match containing the substring)
-func = prog.get_function("parse")
+# By partial name (first match containing the substring)
+func = prog.get_function("parse", approximative=True)
 
 # Restrict to NORMAL functions (skip imports/thunks)
 func = prog.get_function("malloc", normal=True)
@@ -171,7 +177,7 @@ exe.read_type_value(offset, some_type)  # dispatches by type kind
 ```
 
 !!! tip
-    `prog.read_bytes(v_addr, size)` is a convenience wrapper: it converts the virtual address to a file offset then calls `executable.read_bytes`.
+    `prog.read_bytes(v_addr, size)` is a convenience wrapper that computes `v_addr - base_address` and passes the result as a file offset to `executable.read_bytes`. For binaries with non-contiguous segments, use `prog.address_to_offset(v_addr)` followed by `prog.executable.read_bytes(offset, size)` for correct segment-aware translation.
 
 ## Call Graph (Program Level)
 
@@ -204,5 +210,5 @@ for addr, degree in top_called[:10]:
 | Binary file access | `prog.executable.read_bytes/string/int/type_value(offset, ...)` |
 | Add a new type | `prog.add_type("struct foo { int x; };")` |
 | Save `.quokka` only | `prog.write()` |
-| Apply edits to IDA | `prog.commit(database_file="f.i64", overwrite=True)` |
-| Commit + re-export | `prog.regenerate(database_file="f.i64", overwrite=True)` |
+| Apply edits to IDA | `prog.commit(database_file="f.i64", overwrite=True)` (IDA only) |
+| Commit + re-export | `prog.regenerate(database_file="f.i64", overwrite=True)` (IDA only) |

@@ -29,7 +29,7 @@ running `Debug` in CLion interface.
 
 ### Use Sanitizers
 
-By using the `ENABLE_SANITIZERS` option in `CMake`, you enable 
+By using the `ENABLE_SANITIZER` option in `CMake`, you enable
 [ASan](https://github.com/google/sanitizers/wiki/AddressSanitizer).
 
 Of note, to run with IDA, you need to specify the path to Asan using `LD_PRELOAD`.
@@ -40,20 +40,52 @@ Of note, to run with IDA, you need to specify the path to Asan using `LD_PRELOAD
 
 The C++ tests are at best lackluster but the framework is here to improve them.
 
-To compile tests:
-```commandline
-user@host:~/quokka$ cmake -B build-tests \ # Where to build 
-                          -S . \ # Where are the sources
-                          -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK 
-                          -DCMAKE_BUILD_TYPE:STRING=Debug \ # Build Type 
-                          -DBUILD_TEST:BOOL=On
-```
+To compile and run the tests:
+
+=== "IDA >= 9.2"
+
+    ```console
+    user@host:~/quokka$ cmake -B build-tests \
+                              -S . \
+                              -DIDA_VERSION=9.2 \
+                              -DCMAKE_BUILD_TYPE:STRING=Debug \
+                              -DBUILD_TEST:BOOL=On
+    user@host:~/quokka$ cmake --build build-tests -- -j
+    user@host:~/quokka$ ctest --test-dir build-tests
+    ```
+
+=== "IDA < 9.2"
+
+    ```console
+    user@host:~/quokka$ cmake -B build-tests \
+                              -S . \
+                              -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \
+                              -DCMAKE_BUILD_TYPE:STRING=Debug \
+                              -DBUILD_TEST:BOOL=On
+    user@host:~/quokka$ cmake --build build-tests -- -j
+    user@host:~/quokka$ ctest --test-dir build-tests
+    ```
 
 ### For the Python bindings
-
-The tests for the Python bindings are also limited but can be improved.
-To run them, use the following command.
 
 ```commandline
 user@host:~/quokka$ pytest tests/python
 ```
+
+### For the Ghidra extension
+
+The Ghidra extension has JUnit tests:
+
+```commandline
+user@host:~/quokka$ cd ghidra_extension && ./gradlew test
+```
+
+Python integration tests for the Ghidra export require `GHIDRA_INSTALL_DIR` to be
+set and the extension installed:
+
+```commandline
+user@host:~/quokka$ export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
+user@host:~/quokka$ pytest tests/python/tests/ghidra/ -v
+```
+
+Tests auto-skip when `GHIDRA_INSTALL_DIR` is unset or `analyzeHeadless` is not found.

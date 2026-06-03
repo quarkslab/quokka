@@ -42,6 +42,7 @@ func.type  # FunctionType.NORMAL
 | `LIBRARY` | Identified library code (FLIRT signature match) |
 | `THUNK` | Short stub that jumps to another function |
 | `EXTERN` | External / unresolved |
+| `INVALID` | Invalid / unrecognized function type |
 
 ```python
 # Filter by type
@@ -95,7 +96,7 @@ print(func.in_degree)   # how many functions call this
 print(func.out_degree)  # how many functions this calls
 ```
 
-## Strings and Data References
+## Strings
 
 ```python
 # All strings referenced by the function
@@ -105,18 +106,24 @@ for s in func.strings:
 # Example output:
 # "Usage: %s [-h] [-v] filename"
 # "Error: file not found"
-
-# All data items referenced by the function
-for data in func.data_references:
-    print(f"  {data.name} @ 0x{data.address:x}  type={data.type}")
 ```
+
+!!! tip
+    To find all data references from a function, iterate over its instructions
+    and collect their `data_refs_from`:
+
+    ```python
+    data_refs = []
+    for inst in func.instructions:
+        data_refs.extend(inst.data_refs_from)
+    ```
 
 ## Control Flow Graph
 
 The `func.graph` property returns a `networkx.DiGraph` where:
 
 - **Nodes** are block start addresses
-- **Edges** are `(src_addr, dst_addr, {type: RefType})` tuples
+- **Edges** are `(src_addr, dst_addr, {condition: RefType})` tuples
 
 ```python
 import networkx as nx
@@ -163,11 +170,10 @@ func.in_degree        # int (raw caller count)
 func.out_degree       # int (raw callee count)
 func.callees          # list[Function]
 func.callers          # list[Function]
-func.strings          # list[Data]
-func.data_references  # list[Data]
+func.strings          # list[str]
 func.graph            # networkx.DiGraph (CFG)
 func.in_function(addr)  # bool: is addr inside func?
-func.get_block(addr)    # Block at addr
+func[addr]              # Block at addr
 ```
 
 ## Example: Top Complexity Functions
@@ -195,7 +201,7 @@ for complexity, name, addr in results[:10]:
 ## Summary
 
 - `Function` is a dict of blocks, keyed by block address
-- **FunctionType**: `NORMAL`, `IMPORTED`, `LIBRARY`, `THUNK`, `EXTERN`
+- **FunctionType**: `NORMAL`, `IMPORTED`, `LIBRARY`, `THUNK`, `EXTERN`, `INVALID`
 - Thunks need dereferencing (`dereference_thunk`) for accurate call graph analysis
 - `func.callees` / `func.callers` provide direct navigation
 - `func.graph` is a `networkx.DiGraph` (CFG)
