@@ -82,7 +82,7 @@ def get_func_features(func: quokka.Function) -> FeaturesDict:
     """Extracts features from a Function"""
     bb_features = {}
     for block_start in func.graph:
-        block = func.get_block(block_start)
+        block = func[block_start]
         bb_features[block_start] = get_bb_features(block)
 
     return {
@@ -110,6 +110,6 @@ def export_binary(binary: quokka.Program) -> None:
         json.dump(prog_features, fp, indent=True)
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     program: quokka.Program = quokka.Program.from_binary(sys.argv[1])
     export_binary(program)

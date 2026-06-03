@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -50,6 +50,8 @@
     
     
       <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="css/extra.css">
     
     <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -327,6 +329,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -339,10 +352,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#python-plugin" class="md-nav__link">
+  <a href="#python-library" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Python plugin
+        Python library
       
     </span>
   </a>
@@ -350,10 +363,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ida-plugin" class="md-nav__link">
+  <a href="#disassembler-plugins" class="md-nav__link">
     <span class="md-ellipsis">
       
-        IDA Plugin
+        Disassembler plugins
       
     </span>
   </a>
@@ -366,22 +379,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Usage
+        Quick Start
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Usage">
+    <nav class="md-nav" aria-label="Quick Start">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#export-a-file" class="md-nav__link">
+  <a href="#loading-an-export-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export a file
+        Loading an export file
       
     </span>
   </a>
@@ -389,10 +402,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#load-an-export-file" class="md-nav__link">
+  <a href="#exploring-the-binary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Load an export file
+        Exploring the binary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-and-adding-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing and adding types
       
     </span>
   </a>
@@ -412,23 +436,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Building">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Build
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1547,34 +1554,6 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/python/version/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    version
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="reference/python/executable/" class="md-nav__link">
         
   
@@ -1583,202 +1562,6 @@
     
   
     executable
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reference/python/program/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    program
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reference/python/utils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    utils
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reference/python/exc/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    exc
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reference/python/function/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    function
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reference/python/data_type/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    data_type
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reference/python/types/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    types
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="reference/python/instruction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    instruction
   
 
     
@@ -1827,6 +1610,174 @@
   
   
     <li class="md-nav__item">
+      <a href="reference/python/block/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    block
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/python/function/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    function
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/python/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/python/instruction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    instruction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/python/version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/python/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="reference/python/data/" class="md-nav__link">
         
   
@@ -1855,14 +1806,70 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/python/block/" class="md-nav__link">
+      <a href="reference/python/data_type/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    block
+    data_type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/python/program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/python/exc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exc
   
 
     
@@ -1930,14 +1937,14 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/python/backends/pypcode/" class="md-nav__link">
+      <a href="reference/python/backends/capstone/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    pypcode
+    capstone
   
 
     
@@ -1958,14 +1965,14 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/python/backends/capstone/" class="md-nav__link">
+      <a href="reference/python/backends/pypcode/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    capstone
+    pypcode
   
 
     
@@ -2124,14 +2131,14 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/python/analysis/calling_convention/" class="md-nav__link">
+      <a href="reference/python/analysis/env/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    calling_convention
+    env
   
 
     
@@ -2180,14 +2187,14 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/python/analysis/replacer/" class="md-nav__link">
+      <a href="reference/python/analysis/calling_convention/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    replacer
+    calling_convention
   
 
     
@@ -2208,14 +2215,14 @@
   
   
     <li class="md-nav__item">
-      <a href="reference/python/analysis/env/" class="md-nav__link">
+      <a href="reference/python/analysis/replacer/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    env
+    replacer
   
 
     
@@ -2500,6 +2507,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2512,10 +2530,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#python-plugin" class="md-nav__link">
+  <a href="#python-library" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Python plugin
+        Python library
       
     </span>
   </a>
@@ -2523,10 +2541,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ida-plugin" class="md-nav__link">
+  <a href="#disassembler-plugins" class="md-nav__link">
     <span class="md-ellipsis">
       
-        IDA Plugin
+        Disassembler plugins
       
     </span>
   </a>
@@ -2539,22 +2557,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Usage
+        Quick Start
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Usage">
+    <nav class="md-nav" aria-label="Quick Start">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#export-a-file" class="md-nav__link">
+  <a href="#loading-an-export-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export a file
+        Loading an export file
       
     </span>
   </a>
@@ -2562,10 +2580,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#load-an-export-file" class="md-nav__link">
+  <a href="#exploring-the-binary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Load an export file
+        Exploring the binary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editing-and-adding-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing and adding types
       
     </span>
   </a>
@@ -2585,23 +2614,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Building">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Build
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2628,69 +2640,96 @@
 <h1 id="quokka-a-fast-and-accurate-binary-exporter">Quokka: A Fast and Accurate Binary Exporter</h1>
 <h2 id="introduction">Introduction</h2>
 <p>Quokka is a binary exporter: from the disassembly of a program, it generates
-an export file that can be used without the disassembler.</p>
+an export file that can be used without the disassembler. It currently supports
+<strong>IDA Pro</strong> and <strong>Ghidra</strong> as disassembly backends.</p>
 <p>The main objective of <strong>Quokka</strong> is to enable to completely manipulate the
-binary without ever opening a disassembler after the initial step. Moreover, it
+binary without ever opening a disassembler after the initial export. Moreover, it
 abstracts the disassembler's API to expose a clean interface to the users.</p>
 <p>Quokka is heavily inspired by <a href="https://github.com/google/binexport">BinExport</a>,
 the binary exporter used by BinDiff.</p>
+<h2 id="architecture">Architecture</h2>
+<div class="highlight"><pre><span></span><code>     IDA Pro                Ghidra
+        |                      |
+IDA Plugin (C++)    Ghidra Plugin (Java)
+        |                      |
+        +--- quokka.proto -----+
+          (protobuf schema)
+                   |
+             .quokka files
+                   |
+   Python bindings (quokka.Program)
+   +-- Capstone backend (primary)
+   +-- Pypcode backend (optional)
+</code></pre></div>
 <h2 id="installation">Installation</h2>
-<h3 id="python-plugin">Python plugin</h3>
-<p>The plugin is built in the CI and available in the
-<a href="https://github.com/quarkslab/quokka/packages">registry</a>.</p>
-<p>It should be possible to install directly from PIP using this kind of commmand:</p>
+<h3 id="python-library">Python library</h3>
 <div class="highlight"><pre><span></span><code>$ pip install quokka-project
 </code></pre></div>
-<h3 id="ida-plugin">IDA Plugin</h3>
-<p>Note: The IDA plugin is not needed to read a <code>Quokka</code> generated file. It is
-only used to generate them.</p>
-<p>The plugin is built on the CI and available in the
-<a href="https://github.com/quarkslab/quokka/releases">Release</a>.</p>
-<p>To download the plugin, get the file named <code>quokka_plugin**.so</code>.</p>
-<h2 id="usage">Usage</h2>
-<h3 id="export-a-file">Export a file</h3>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This requires a working IDA installation.</p>
-</div>
+<h3 id="disassembler-plugins">Disassembler plugins</h3>
+<p>The IDA and Ghidra plugins are only needed to <strong>generate</strong> <code>.quokka</code> files.
+Reading them requires only the Python library above.</p>
 <ul>
-<li>Either using command line:
-<div class="highlight"><pre><span></span><code>$ idat64 -OQuokkaAuto:true -A /path/to/hello.i64
-</code></pre></div></li>
+<li><strong>IDA Plugin</strong> -- pre-built libraries available in <a href="https://github.com/quarkslab/quokka/releases">Releases</a>. Get the file named <code>quokka_plugin**.so</code>.</li>
+<li><strong>Ghidra Extension</strong> -- see the <a href="https://github.com/quarkslab/quokka/tree/main/ghidra_extension">Ghidra extension README</a> for build and install instructions.</li>
 </ul>
-<p>Note: We are using <code>idat64</code> and not <code>ida64</code> to increase the export speed
-because we don't need the graphical interface.</p>
+<p>For more details see <a href="installation/">Installation</a>.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="loading-an-export-file">Loading an export file</h3>
+<p><code>Program.from_binary()</code> invokes a disassembler to export and load the binary in
+one step. It requires the appropriate environment variable to locate the
+disassembler:</p>
 <ul>
-<li>Using the plugin shortcut inside IDA: (by default) Alt+A</li>
+<li><strong>IDA</strong>: set <code>IDA_PATH</code> to the IDA installation directory</li>
+<li><strong>Ghidra</strong>: set <code>GHIDRA_INSTALL_DIR</code> to the Ghidra installation directory</li>
 </ul>
-<h3 id="load-an-export-file">Load an export file</h3>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Disassembler</span>
 
-<span class="c1"># Directly from the binary (requires the IDA plugin to be installed)</span>
-<span class="n">ls</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span><span class="s2">&quot;/bin/ls&quot;</span><span class="p">)</span>
+<span class="c1"># Directly from the binary (auto-detects available backend)</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span><span class="s2">&quot;/bin/ls&quot;</span><span class="p">)</span>
 
-<span class="c1"># From the exported file</span>
-<span class="n">ls</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;ls.quokka&quot;</span><span class="p">,</span>  <span class="c1"># the exported file </span>
-                    <span class="s2">&quot;/bin/ls&quot;</span><span class="p">)</span>    <span class="c1"># the original binary</span>
+<span class="c1"># Explicitly choose a backend</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span><span class="s2">&quot;/bin/ls&quot;</span><span class="p">,</span> <span class="n">disassembler</span><span class="o">=</span><span class="n">Disassembler</span><span class="o">.</span><span class="n">GHIDRA</span><span class="p">)</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span><span class="s2">&quot;/bin/ls&quot;</span><span class="p">,</span> <span class="n">disassembler</span><span class="o">=</span><span class="n">Disassembler</span><span class="o">.</span><span class="n">IDA</span><span class="p">)</span>
+
+<span class="c1"># From an already-exported file</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;ls.quokka&quot;</span><span class="p">,</span>  <span class="c1"># the exported file</span>
+                      <span class="s2">&quot;/bin/ls&quot;</span><span class="p">)</span>    <span class="c1"># the original binary</span>
 </code></pre></div>
+<h3 id="exploring-the-binary">Exploring the binary</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Functions</span>
+<span class="n">func</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">get_function</span><span class="p">(</span><span class="s2">&quot;main&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="n">start</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">func</span><span class="p">),</span> <span class="s2">&quot;blocks&quot;</span><span class="p">)</span>
+
+<span class="c1"># Basic blocks and instructions</span>
+<span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">inst</span> <span class="ow">in</span> <span class="n">block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  0x</span><span class="si">{</span><span class="n">addr</span><span class="si">:</span><span class="s2">x</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">inst</span><span class="o">.</span><span class="n">mnemonic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Cross-references</span>
+<span class="k">for</span> <span class="n">callee</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">callees</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  calls </span><span class="si">{</span><span class="n">callee</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Strings</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">func</span><span class="o">.</span><span class="n">strings</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="editing-and-adding-types">Editing and adding types</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Add new types from C declarations</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;struct context { int id; char name[64]; };&quot;</span><span class="p">)</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;enum status { OK=0, ERROR=1 };&quot;</span><span class="p">)</span>
+
+<span class="c1"># Save the .quokka file</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+
+<span class="c1"># Or apply changes (including new types) back to the IDA database</span>
+<span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;ls.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p>See the full <a href="write_feature/">editing documentation</a> for details on renaming
+functions, setting prototypes, and more.</p>
 <h2 id="building">Building</h2>
-<h3 id="build">Build</h3>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="se">\ </span><span class="c1"># Where to build </span>
-<span class="go">                          -S . \ # Where are the sources</span>
-<span class="go">                          -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK </span>
-<span class="go">                          -DCMAKE_BUILD_TYPE:STRING=Release \ # Build Type </span>
-<span class="go">                          -DBUILD_TEST:BOOL=OFF # Don&#39;t build the tests</span>
-
-<span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--<span class="w"> </span>-j<span class="w"> </span><span class="m">8</span>
-</code></pre></div>
-<p>To install the plugin:</p>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>--install<span class="w"> </span>build
-</code></pre></div>
-<p>In any case, the plugin will also be in <code>build/quokka-install</code>. You can
-copy it to Ida plugin directory.</p>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cp<span class="w"> </span>build/quokka-install/quokka*64.so<span class="w"> </span><span class="nv">$IDA_BIN_DIR</span>/plugins/
-</code></pre></div>
-<p>For more detailed information about building, see <a href="installation/#ida-plugin">Building</a></p>
+<p>See the <a href="installation/">Installation</a> page for full build instructions for
+both the IDA plugin and Ghidra extension.</p>
 
 
 
@@ -2713,7 +2752,7 @@ copy it to Ida plugin directory.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 13, 2025 23:27:47 UTC">February 13, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 10, 2026 12:48:12 UTC">March 10, 2026</span>
   </span>
 
     

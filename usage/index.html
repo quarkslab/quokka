@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -52,6 +52,8 @@
     
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -372,34 +374,96 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#export-plugin" class="md-nav__link">
+  <a href="#exporting-a-binary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export plugin
+        Exporting a binary
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Export plugin">
+    <nav class="md-nav" aria-label="Exporting a binary">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#export-options" class="md-nav__link">
+  <a href="#cli-quokka-cli" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export Options
+        CLI (quokka-cli)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Export Options">
+    <nav class="md-nav" aria-label="CLI (quokka-cli)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#output-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ida-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDA Plugin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IDA Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command line
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ida-export-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDA Export Options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IDA Export Options">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#log-log-level" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Log - Log level
+        Log -- Log level
       
     </span>
   </a>
@@ -410,7 +474,7 @@
   <a href="#file-output-filename" class="md-nav__link">
     <span class="md-ellipsis">
       
-        File - Output filename
+        File -- Output filename
       
     </span>
   </a>
@@ -421,7 +485,7 @@
   <a href="#auto-auto-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Auto - Auto mode
+        Auto -- Auto mode
       
     </span>
   </a>
@@ -457,6 +521,83 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ghidra-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ghidra Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ghidra Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gui_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-an-export-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading an export file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export Modes
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1521,34 +1662,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/version/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    version
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/python/executable/" class="md-nav__link">
         
   
@@ -1557,202 +1670,6 @@
     
   
     executable
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/program/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    program
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/utils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    utils
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/exc/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    exc
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/function/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    function
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/data_type/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    data_type
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/types/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    types
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/instruction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    instruction
   
 
     
@@ -1801,6 +1718,174 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/python/block/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    block
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/function/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    function
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/instruction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    instruction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/python/data/" class="md-nav__link">
         
   
@@ -1829,14 +1914,70 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/block/" class="md-nav__link">
+      <a href="../reference/python/data_type/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    block
+    data_type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/exc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exc
   
 
     
@@ -1904,14 +2045,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/pypcode/" class="md-nav__link">
+      <a href="../reference/python/backends/capstone/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    pypcode
+    capstone
   
 
     
@@ -1932,14 +2073,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/capstone/" class="md-nav__link">
+      <a href="../reference/python/backends/pypcode/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    capstone
+    pypcode
   
 
     
@@ -2098,14 +2239,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/calling_convention/" class="md-nav__link">
+      <a href="../reference/python/analysis/env/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    calling_convention
+    env
   
 
     
@@ -2154,14 +2295,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/replacer/" class="md-nav__link">
+      <a href="../reference/python/analysis/calling_convention/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    replacer
+    calling_convention
   
 
     
@@ -2182,14 +2323,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/env/" class="md-nav__link">
+      <a href="../reference/python/analysis/replacer/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    env
+    replacer
   
 
     
@@ -2463,34 +2604,96 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#export-plugin" class="md-nav__link">
+  <a href="#exporting-a-binary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export plugin
+        Exporting a binary
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Export plugin">
+    <nav class="md-nav" aria-label="Exporting a binary">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#export-options" class="md-nav__link">
+  <a href="#cli-quokka-cli" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Export Options
+        CLI (quokka-cli)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Export Options">
+    <nav class="md-nav" aria-label="CLI (quokka-cli)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#output-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ida-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDA Plugin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IDA Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command line
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ida-export-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IDA Export Options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="IDA Export Options">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#log-log-level" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Log - Log level
+        Log -- Log level
       
     </span>
   </a>
@@ -2501,7 +2704,7 @@
   <a href="#file-output-filename" class="md-nav__link">
     <span class="md-ellipsis">
       
-        File - Output filename
+        File -- Output filename
       
     </span>
   </a>
@@ -2512,7 +2715,7 @@
   <a href="#auto-auto-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Auto - Auto mode
+        Auto -- Auto mode
       
     </span>
   </a>
@@ -2550,6 +2753,83 @@
     </nav>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#ghidra-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ghidra Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ghidra Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gui_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-an-export-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading an export file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Export Modes
+      
+    </span>
+  </a>
+  
+</li>
       
     </ul>
   
@@ -2572,88 +2852,319 @@
 
 
 <h1 id="usage">Usage</h1>
-<h2 id="export-plugin">Export plugin</h2>
+<h2 id="exporting-a-binary">Exporting a binary</h2>
+<p>Quokka supports multiple ways to generate <code>.quokka</code> files. The recommended
+approach for most users is the <code>quokka-cli</code> command-line tool, which works with
+both IDA Pro and Ghidra. For more control, you can use the IDA plugin or the
+Ghidra extension directly.</p>
+<h3 id="cli-quokka-cli">CLI (<code>quokka-cli</code>)</h3>
+<p>The <code>quokka-cli</code> tool is the easiest way to export binaries in headless mode.
+It automatically detects available backends (IDA or Ghidra) and can export one
+or more files and/or directories (all executable files in each directory) in
+parallel.</p>
+<div class="highlight"><pre><span></span><code>$ quokka-cli /path/to/binary                    # export a single file
+$ quokka-cli -t 8 dir/                           # export a directory in parallel
+$ quokka-cli --backend ghidra -t 8 dir/          # use Ghidra explicitly
+$ quokka-cli --backend ida --ida-path /opt/ida -t 8 dir/  # use IDA explicitly
+$ quokka-cli -t 8 dir1/ dir2/ bin1 bin2          # multiple inputs at once
+</code></pre></div>
+<p>Available options:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-b</code>, <code>--backend</code></td>
+<td>Disassembler backend: <code>ida</code>, <code>ghidra</code>, or <code>auto</code> (default: <code>auto</code>)</td>
+</tr>
+<tr>
+<td><code>-i</code>, <code>--ida-path</code></td>
+<td>Path to the IDA installation directory (the folder containing <code>idat</code>)</td>
+</tr>
+<tr>
+<td><code>--ghidra-path</code></td>
+<td>Ghidra installation directory (overrides <code>GHIDRA_INSTALL_DIR</code>)</td>
+</tr>
+<tr>
+<td><code>-t</code>, <code>--threads</code></td>
+<td>Number of parallel workers (default: 1)</td>
+</tr>
+<tr>
+<td><code>-m</code>, <code>--mode</code></td>
+<td>Export mode: <code>light</code> or <code>full</code> (default: <code>light</code>)</td>
+</tr>
+<tr>
+<td><code>--decompiled</code></td>
+<td>Export decompiled code (IDA only)</td>
+</tr>
+<tr>
+<td><code>--timeout</code></td>
+<td>Timeout for each export in seconds</td>
+</tr>
+<tr>
+<td><code>--override</code></td>
+<td>Override existing <code>.quokka</code> files</td>
+</tr>
+<tr>
+<td><code>-o</code>, <code>--output</code></td>
+<td>Output path or template (default: <code>%F.quokka</code>). See <a href="#output-naming">Output naming</a> below</td>
+</tr>
+<tr>
+<td><code>-v</code>, <code>--verbose</code></td>
+<td>Enable verbose logging</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can set the <code>IDA_PATH</code> environment variable (pointing to the IDA
+installation directory) and the <code>GHIDRA_INSTALL_DIR</code> environment variable
+instead of passing <code>--ida-path</code> / <code>--ghidra-path</code> every time.</p>
+</div>
+<h4 id="output-naming">Output naming</h4>
+<p>By default (when <code>-o</code> is not specified), the <code>.quokka</code> file is placed next to
+the input binary with the same name plus a <code>.quokka</code> extension. For example,
+exporting <code>/usr/bin/ls</code> produces <code>/usr/bin/ls.quokka</code>. More precisely, the
+output path is resolved <strong>relative to the input file's location</strong>, not the
+current working directory.</p>
+<p>The <code>-o</code> option accepts either a literal path or a <strong>template string</strong> that is
+expanded per file (useful in batch/directory mode). Template specifiers are
+substituted based on the input binary path:</p>
+<table>
+<thead>
+<tr>
+<th>Specifier</th>
+<th>Meaning</th>
+<th>Example (input: <code>/usr/bin/hello.elf</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%f</code></td>
+<td>Filename without extension (stem)</td>
+<td><code>hello</code></td>
+</tr>
+<tr>
+<td><code>%F</code></td>
+<td>Filename with extension</td>
+<td><code>hello.elf</code></td>
+</tr>
+<tr>
+<td><code>%P</code></td>
+<td>Full absolute path including filename</td>
+<td><code>/usr/bin/hello.elf</code></td>
+</tr>
+<tr>
+<td><code>%p</code></td>
+<td>Parent directory (absolute)</td>
+<td><code>/usr/bin</code></td>
+</tr>
+<tr>
+<td><code>%e</code></td>
+<td>File extension without the dot</td>
+<td><code>elf</code></td>
+</tr>
+<tr>
+<td><code>%%</code></td>
+<td>Literal <code>%</code> character</td>
+<td><code>%</code></td>
+</tr>
+</tbody>
+</table>
+<p>Missing parent directories in the expanded path are created automatically.</p>
+<div class="highlight"><pre><span></span><code># Place output next to the binary (default behavior)
+$ quokka-cli /usr/bin/ls                          # -&gt; /usr/bin/ls.quokka
+
+# Custom output directory, keeping the original filename
+$ quokka-cli -o &quot;/tmp/exports/%F.quokka&quot; /usr/bin/ls  # -&gt; /tmp/exports/ls.quokka
+
+# Custom naming scheme in batch mode
+$ quokka-cli -o &quot;%p/quokka/%f_ghidra.quokka&quot; -t 4 /usr/bin/
+#   /usr/bin/ls      -&gt; /usr/bin/quokka/ls_ghidra.quokka
+#   /usr/bin/cat     -&gt; /usr/bin/quokka/cat_ghidra.quokka
+
+# Single file with a literal output path (no specifiers)
+$ quokka-cli -o /tmp/my_export.quokka /usr/bin/ls # -&gt; /tmp/my_export.quokka
+</code></pre></div>
+<h3 id="ida-plugin">IDA Plugin</h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This requires a working IDA installation.</p>
+<p>This requires a working IDA installation with the Quokka plugin installed.</p>
 </div>
-<ul>
-<li>Either using command line:
-<div class="highlight"><pre><span></span><code>$ idat64 -OQuokkaAuto:true -A /path/to/hello.i64
-</code></pre></div></li>
-</ul>
-<p>Note: We are using <code>idat64</code> and not <code>ida64</code> to increase the export speed
-because we don't need the graphical interface.</p>
-<ul>
-<li>Using the plugin shortcut inside IDA: (by default) Alt+A</li>
-</ul>
-<h3 id="export-options">Export Options</h3>
-<p>To pass option to an IDA plugin, use the <code>-O</code> switch on the command line.
-Ex: <code>-OQuokka&lt;OPTION_NAME&gt;:&lt;OPTION_VALUE&gt;</code>.</p>
-<h4 id="log-log-level">Log - Log level</h4>
+<h4 id="gui">GUI</h4>
+<p>Use the plugin shortcut inside IDA: (by default) <strong>Alt+A</strong></p>
+<h4 id="command-line">Command line</h4>
+<div class="highlight"><pre><span></span><code>$ idat -OQuokkaAuto:true -A /path/to/hello.i64
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code>idat</code> is used instead of <code>ida</code> to increase the export speed as the graphical
+interface is not needed.</p>
+</div>
+<h4 id="ida-export-options">IDA Export Options</h4>
+<p>To pass options to the IDA plugin, use the <code>-O</code> switch on the command line:
+<code>-OQuokka&lt;OPTION_NAME&gt;:&lt;OPTION_VALUE&gt;</code>.</p>
+<h5 id="log-log-level">Log -- Log level</h5>
 <ul>
 <li>Usage: <code>-OQuokkaLog:&lt;LEVEL&gt;</code></li>
-<li>Values: Debug,<em>Info</em>,Error</li>
+<li>Values: Debug, <em>Info</em>, Error</li>
 </ul>
-<p>This option toggle the reporting of the exporter.</p>
+<p>This option controls the reporting level of the exporter.</p>
 <p>Note: The debug log level also prints the line and the function.</p>
-<h4 id="file-output-filename">File - Output filename</h4>
+<h5 id="file-output-filename">File -- Output filename</h5>
 <ul>
 <li>Usage: <code>-OQuokkaFile:&lt;NAME&gt;</code></li>
 <li>Values: A path where the user is allowed to write</li>
 </ul>
 <p>Use this option to override the file written by quokka.
-If none is given, <path_to_idb>.quokka is used.</p>
-<h4 id="auto-auto-mode">Auto - Auto mode</h4>
+If none is given, <code>&lt;path_to_idb&gt;.quokka</code> is used.</p>
+<h5 id="auto-auto-mode">Auto -- Auto mode</h5>
 <ul>
 <li>Usage: <code>-OQuokkaAuto:&lt;true|false&gt;</code></li>
 </ul>
 <p>Use this option to launch quokka directly from the command line.</p>
-<h4 id="decompilation">Decompilation</h4>
+<h5 id="decompilation">Decompilation</h5>
 <ul>
 <li>Usage: <code>-OQuokkaDecompiled:&lt;true|false&gt;</code></li>
 </ul>
 <p>Use this option to also export decompiled code in the resulting export.</p>
-<h4 id="export-level">Export Level</h4>
+<h5 id="export-level">Export Level</h5>
 <ul>
 <li>Usage: <code>-OQuokkaMode:&lt;MODE&gt;</code></li>
-<li>Values: LIGHT, FULL</li>
+<li>Values: <code>LIGHT</code>, <code>FULL</code></li>
 </ul>
 <p>Controls the export level for the instructions:</p>
 <ul>
-<li>If the <code>Light</code> mode is selected, only the block starting addresses will be 
-exported.</li>
-<li>For <code>Full</code>, the instruction <strong>and</strong> the string representation of the 
-  instruction is exported.</li>
+<li><strong>Light</strong> mode: only block boundaries are exported. Instructions are decoded
+  at runtime by Capstone from the original binary bytes.</li>
+<li><strong>Full</strong> mode: the instruction mnemonics, operands, and their string
+  representation are exported directly. The original binary is not required
+  for disassembly at analysis time.</li>
 </ul>
-<p>Example:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Light mode</label><label for="__tabbed_1_2">Full mode</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="n">prog</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">instructions</span> <span class="o">==</span> <span class="p">[]</span>
+<p>Both modes expose the same Python API.</p>
+<h3 id="ghidra-extension">Ghidra Extension</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This requires a Ghidra installation with the QuokkaExporter extension installed.</p>
+</div>
+<h4 id="gui_1">GUI</h4>
+<ol>
+<li>Open a binary in Ghidra's CodeBrowser</li>
+<li>File &gt; Export Program</li>
+<li>Select <strong>Quokka</strong> format</li>
+<li>Choose output file</li>
+<li>Click Export</li>
+</ol>
+<h4 id="headless">Headless</h4>
+<div class="highlight"><pre><span></span><code>$ analyzeHeadless /tmp/proj Test \
+    -import /path/to/binary \
+    -scriptPath ghidra_extension/src/script/ghidra_scripts \
+    -postScript QuokkaExportHeadless.java \
+    --out=/path/to/output.quokka --mode=LIGHT
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Ghidra extension must be installed into <code>$GHIDRA_INSTALL_DIR/Ghidra/Extensions/</code>
+for headless export to work.</p>
 </div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="n">prog</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">instructions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>
-  <span class="n">size</span><span class="p">:</span> <span class="mi">3</span>
-  <span class="n">mnemonic_index</span><span class="p">:</span> <span class="mi">3</span>
-  <span class="n">operand_index</span><span class="p">:</span> <span class="mi">1</span>
-  <span class="n">operand_index</span><span class="p">:</span> <span class="mi">6</span>
-  <span class="n">operand_strings</span><span class="p">:</span> <span class="mi">1</span>
-  <span class="n">operand_strings</span><span class="p">:</span> <span class="mi">6</span>
+<h3 id="python-api">Python API</h3>
+<p>You can also trigger an export programmatically:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">quokka.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Disassembler</span>
+
+<span class="c1"># Export and load in one step (auto-detects backend)</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span><span class="s2">&quot;/path/to/binary&quot;</span><span class="p">)</span>
+
+<span class="c1"># Explicitly choose a backend</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">from_binary</span><span class="p">(</span>
+    <span class="s2">&quot;/path/to/binary&quot;</span><span class="p">,</span>
+    <span class="n">disassembler</span><span class="o">=</span><span class="n">Disassembler</span><span class="o">.</span><span class="n">GHIDRA</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Export only (no Program returned)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="s2">&quot;/path/to/binary&quot;</span><span class="p">,</span> <span class="n">output_file</span><span class="o">=</span><span class="s2">&quot;out.quokka&quot;</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="loading-an-export-file">Loading an export file</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">quokka</span>
+
+<span class="c1"># From an already-exported .quokka file</span>
+<span class="n">prog</span> <span class="o">=</span> <span class="n">quokka</span><span class="o">.</span><span class="n">Program</span><span class="p">(</span><span class="s2">&quot;binary.quokka&quot;</span><span class="p">,</span>  <span class="c1"># the exported file</span>
+                      <span class="s2">&quot;binary&quot;</span><span class="p">)</span>          <span class="c1"># the original binary</span>
+</code></pre></div>
+<p>The original binary is needed because Quokka reads raw bytes from it at runtime
+(e.g. for instruction decoding in LIGHT mode). The binary must be the exact same
+file used during export -- Quokka checks the hash on load.</p>
+<h2 id="export-modes">Export Modes</h2>
+<p>Quokka offers two export modes: <strong>LIGHT</strong> and <strong>FULL</strong> (also called
+self-contained).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Only <strong>LIGHT</strong> mode is currently implemented. FULL mode is planned but not
+yet functional.</p>
 </div>
-</div>
-</div>
-<div class="admonition tip">
-<p class="admonition-title">How to choose a mode?</p>
-<p>By default, use the <code>Normal</code> mode.
-If you know you are going to ask for another disassembler for specific bytes 
-(or have reversed the IDA way of storing data), consider using the <code>Light</code> 
-mode.
-Finally, if you have an exotic architecture, you may be interested in the full
-disassembly: in this case, use the <code>Full</code> mode.</p>
-</div>
+<p><strong>LIGHT mode</strong> focuses on exporting only essential information, producing fast
+and lightweight files. No information at instruction level or below is exported;
+the Capstone engine decodes instructions at runtime from the original binary
+bytes.</p>
+<p><strong>FULL mode</strong> (self-contained) will export the full disassembly exactly as the
+backend disassembler shows it. This will produce heavier files but will not
+require depending on third-party disassemblers at runtime.</p>
+<p>Both modes will expose the same Python API.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Light Mode</th>
+<th>Self-contained Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Functions</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Basic Blocks</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Instructions</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Operands</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Data References</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Cross References</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Sections/Layout</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Decompilation</td>
+<td>Optional</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -2676,7 +3187,7 @@ disassembly: in this case, use the <code>Full</code> mode.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 5, 2026 14:01:10 UTC">March 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 11, 2026 18:10:16 UTC">March 11, 2026</span>
   </span>
 
     

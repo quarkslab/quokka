@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -52,6 +52,8 @@
     
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -446,34 +448,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Requirements
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ida-plugin_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        IDA Plugin
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="IDA Plugin">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#from-the-ci" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -497,27 +471,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#requirements_1" class="md-nav__link">
+  <a href="#requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Requirements :
+        Requirements
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#standard-build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Standard build
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Standard build">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#ida-92-the-old-way" class="md-nav__link">
@@ -530,16 +492,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
           <li class="md-nav__item">
   <a href="#ida-92-the-new-way" class="md-nav__link">
     <span class="md-ellipsis">
@@ -549,8 +501,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="IDA &gt;= 9.2 (The new way)">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#finalize-the-build" class="md-nav__link">
@@ -569,19 +520,30 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#build-on-windows" class="md-nav__link">
+  <a href="#installing-the-plugin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Build On Windows
+        Installing the plugin
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Build On Windows">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-on-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build on Windows
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Build on Windows">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#requirements_2" class="md-nav__link">
+  <a href="#requirements_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Requirements
@@ -604,6 +566,56 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ghidra-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ghidra Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ghidra Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirements_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing
+      
+    </span>
+  </a>
   
 </li>
         
@@ -1700,34 +1712,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/version/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    version
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/python/executable/" class="md-nav__link">
         
   
@@ -1736,202 +1720,6 @@
     
   
     executable
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/program/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    program
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/utils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    utils
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/exc/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    exc
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/function/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    function
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/data_type/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    data_type
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/types/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    types
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/instruction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    instruction
   
 
     
@@ -1980,6 +1768,174 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/python/block/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    block
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/function/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    function
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/instruction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    instruction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/python/data/" class="md-nav__link">
         
   
@@ -2008,14 +1964,70 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/block/" class="md-nav__link">
+      <a href="../reference/python/data_type/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    block
+    data_type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/exc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exc
   
 
     
@@ -2083,14 +2095,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/pypcode/" class="md-nav__link">
+      <a href="../reference/python/backends/capstone/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    pypcode
+    capstone
   
 
     
@@ -2111,14 +2123,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/capstone/" class="md-nav__link">
+      <a href="../reference/python/backends/pypcode/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    capstone
+    pypcode
   
 
     
@@ -2277,14 +2289,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/calling_convention/" class="md-nav__link">
+      <a href="../reference/python/analysis/env/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    calling_convention
+    env
   
 
     
@@ -2333,14 +2345,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/replacer/" class="md-nav__link">
+      <a href="../reference/python/analysis/calling_convention/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    replacer
+    calling_convention
   
 
     
@@ -2361,14 +2373,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/env/" class="md-nav__link">
+      <a href="../reference/python/analysis/replacer/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    env
+    replacer
   
 
     
@@ -2743,34 +2755,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Requirements
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ida-plugin_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        IDA Plugin
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="IDA Plugin">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#from-the-ci" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2794,27 +2778,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#requirements_1" class="md-nav__link">
+  <a href="#requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Requirements :
+        Requirements
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#standard-build" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Standard build
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Standard build">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#ida-92-the-old-way" class="md-nav__link">
@@ -2827,16 +2799,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
           <li class="md-nav__item">
   <a href="#ida-92-the-new-way" class="md-nav__link">
     <span class="md-ellipsis">
@@ -2846,8 +2808,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="IDA &gt;= 9.2 (The new way)">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#finalize-the-build" class="md-nav__link">
@@ -2866,19 +2827,30 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#build-on-windows" class="md-nav__link">
+  <a href="#installing-the-plugin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Build On Windows
+        Installing the plugin
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Build On Windows">
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-on-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build on Windows
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Build on Windows">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#requirements_2" class="md-nav__link">
+  <a href="#requirements_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Requirements
@@ -2901,6 +2873,56 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ghidra-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ghidra Extension
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ghidra Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirements_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing
+      
+    </span>
+  </a>
   
 </li>
         
@@ -2933,13 +2955,12 @@
 <h2 id="python-bindings">Python Bindings</h2>
 <h3 id="system-requirements">System requirements</h3>
 <ul>
-<li>python 3.9 is required. It should also work with higher versions and is
-  regularly developed with python 3.10.</li>
+<li>Python &gt;= 3.8</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>While the IDA plugin requires Linux, the Python bindings should also 
-work on other architectures. However, it has not yet been tested.</p>
+<p>While the IDA plugin requires Linux, the Python bindings work on all
+major platforms (Linux, macOS, Windows).</p>
 </div>
 <h3 id="installation_1">Installation</h3>
 <h4 id="using-pip">Using PIP</h4>
@@ -2956,7 +2977,7 @@ $ source .quokka-env/bin/activate
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The previous snippet creates a virtualenv, which is a good practice to 
+<p>The previous snippet creates a virtualenv, which is a good practice to
 manage Python dependencies.</p>
 </div>
 <h3 id="using-a-ci-wheel">Using a CI wheel</h3>
@@ -2967,61 +2988,61 @@ manage Python dependencies.</p>
 (.quokka-env) $ python -c &#39;import quokka; print(quokka.__version__)&#39;
 </code></pre></div>
 <h2 id="ida-plugin">IDA Plugin</h2>
-<h3 id="requirements">Requirements</h3>
-<h2 id="ida-plugin_1">IDA Plugin</h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The plugin support for <strong>Windows</strong> is experimental.</p>
 </div>
 <h3 id="from-the-ci">From the CI</h3>
 <p>The plugin is built on the CI and available in the
-<a href="https://github.com/quarkslab/quokka/releases/new">Release</a>.</p>
+<a href="https://github.com/quarkslab/quokka/releases">Releases</a>.</p>
 <p>To download the plugin, get the file named <code>quokka_plugin**.so</code>.</p>
 <h3 id="building">Building</h3>
-<h4 id="requirements_1">Requirements :</h4>
+<h4 id="requirements">Requirements</h4>
 <ul>
 <li>CMake (at least 3.13)</li>
-<li>A reasonable modern compiler supporting at least Cxx17</li>
-<li>IDA Sdk (version 7.3 or higher) 64 bits</li>
-<li>IDA (7.3 or higher)</li>
+<li>A reasonably modern compiler supporting at least C++20</li>
+<li>IDA SDK (version 9.1 or higher)</li>
+<li>IDA (9.1 or higher)</li>
 </ul>
-<h4 id="standard-build">Standard build</h4>
-<p>The first step is to download the sources. You can clone the repository like in <a href="#using-the-sources">here</a></p>
-<p>To compile <code>quokka</code>, you first need to generate the configuration using <code>CMake</code>.
-The process for building depends on which version of the IDA SDK you are using.
-These two modes are also referred as <em>the new mode</em> and <em>the old mode</em>.</p>
-<h5 id="ida-92-the-old-way">IDA &lt; 9.2 (The old way)</h5>
+<h4 id="ida-92-the-old-way">IDA &lt; 9.2 (The old way)</h4>
 <p>Since the IDA SDK is still proprietary code, you have to fetch it yourself and provide
 its path to cmake through the option <code>-DIdaSdk_ROOT_DIR:STRING=path/to/sdk</code></p>
 <p><strong>NOTE:</strong> This will also work on newer versions but it requires more steps from
-the users as they will have to download the sdk themselves.</p>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="se">\ </span><span class="c1"># Where to build</span>
-<span class="go">                          -S . \ # Where are the sources</span>
-<span class="go">                          -DIdaSdk_ROOT_DIR:STRING=path/to/ida_sdk \ # Path to IDA SDK</span>
-<span class="go">                          -DCMAKE_BUILD_TYPE:STRING=Release # Build Type</span>
+the users as they will have to download the SDK themselves.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
+<span class="w">                          </span>-S<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
+<span class="w">                          </span>-DIdaSdk_ROOT_DIR:STRING<span class="o">=</span>path/to/ida_sdk<span class="w"> </span><span class="se">\</span>
+<span class="w">                          </span>-DCMAKE_BUILD_TYPE:STRING<span class="o">=</span>Release
 </code></pre></div>
-<h3 id="ida-92-the-new-way">IDA &gt;= 9.2 (The new way)</h3>
-<p>Ida SDK has been finally <a href="https://github.com/HexRaysSA/ida-sdk">open sourced</a> so there is no need
+<h4 id="ida-92-the-new-way">IDA &gt;= 9.2 (The new way)</h4>
+<p>The IDA SDK has been <a href="https://github.com/HexRaysSA/ida-sdk">open sourced</a> so there is no need
 anymore to download it separately.</p>
-<p>You can use the cmake option <code>-DIDA_VERSION=&lt;major&gt;.&lt;minor&gt;</code> to automatically sync it from github.</p>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="se">\ </span><span class="c1"># Where to build</span>
-<span class="go">                          -S . \ # Where are the sources</span>
-<span class="go">                          -DIDA_VERSION=9.2 \ # IDA SDK version</span>
-<span class="go">                          -DCMAKE_BUILD_TYPE:STRING=Release # Build Type</span>
+<p>You can use the cmake option <code>-DIDA_VERSION=&lt;major&gt;.&lt;minor&gt;</code> to automatically sync it from GitHub.</p>
+<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
+<span class="w">                          </span>-S<span class="w"> </span>.<span class="w"> </span><span class="se">\</span>
+<span class="w">                          </span>-DIDA_VERSION<span class="o">=</span><span class="m">9</span>.2<span class="w"> </span><span class="se">\</span>
+<span class="w">                          </span>-DCMAKE_BUILD_TYPE:STRING<span class="o">=</span>Release
 </code></pre></div>
-<h5 id="finalize-the-build">Finalize the build</h5>
+<h4 id="finalize-the-build">Finalize the build</h4>
 <p>If the first step succeeded, you can now do the actual building.</p>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>quokka_plugin<span class="w"> </span>--<span class="w"> </span>-j<span class="w">  </span><span class="c1"># use as many core as possible</span>
+<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--target<span class="w"> </span>quokka_plugin<span class="w"> </span>--<span class="w"> </span>-j
 </code></pre></div>
-<h3 id="build-on-windows">Build On Windows</h3>
+<h3 id="installing-the-plugin">Installing the plugin</h3>
+<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cmake<span class="w"> </span>--install<span class="w"> </span>build
+</code></pre></div>
+<p>The plugin will also be in <code>build/quokka-install</code>. You can
+copy it to IDA's user plugin directory:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cp<span class="w"> </span>build/quokka-install/quokka*64.so<span class="w"> </span><span class="nv">$HOME</span>/.idapro/plugins/
+</code></pre></div>
+<h3 id="build-on-windows">Build on Windows</h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This is only experimental.</p>
 </div>
-<h4 id="requirements_2">Requirements</h4>
+<h4 id="requirements_1">Requirements</h4>
 <p>This procedure has only been tested with using a <a href="https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/">Windows Dev Machine</a>:</p>
 <ul>
-<li>Windows 11 Entreprise</li>
+<li>Windows 11 Enterprise</li>
 <li>Visual Studio 2022 Community Edition</li>
 <li><a href="https://github.com/git-for-windows/git/releases/download/v2.37.3.windows.1/Git-2.37.3-64-bit.exe">Git version 2.37.3</a> (to download Abseil)</li>
 <li><a href="https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-windows-x86_64.msi">cmake version 3.24.1</a></li>
@@ -3030,11 +3051,11 @@ anymore to download it separately.</p>
 - <a href="https://github.com/ccache/ccache/releases/download/v4.6.3/ccache-4.6.3-windows-x86_64.zip">ccache v4.6.3</a></p>
 <h4 id="steps">Steps</h4>
 <ol>
-<li>Configure the plugin</li>
-</ol>
-<p><code>console
-    PS C:\Users\User\quokka&gt; cmake -B build -S . -DIdaSdk_ROOT_DIR=third_party/idasdk80 -A x64</code></p>
-<ol>
+<li>
+<p>Configure the plugin</p>
+<div class="highlight"><pre><span></span><code><span class="go">PS C:\Users\User\quokka&gt; cmake -B build -S . -DIdaSdk_ROOT_DIR=third_party/idasdk80 -A x64</span>
+</code></pre></div>
+</li>
 <li>
 <p>Perform the build</p>
 <div class="highlight"><pre><span></span><code><span class="go">PS C:\Users\User\quokka&gt; cmake --build build --target quokka_plugin --config Release</span>
@@ -3046,6 +3067,38 @@ anymore to download it separately.</p>
 Feel free to report any bug.</p>
 </li>
 </ol>
+<h2 id="ghidra-extension">Ghidra Extension</h2>
+<h3 id="requirements_2">Requirements</h3>
+<ul>
+<li>JDK 21+</li>
+<li>Gradle &gt;= 8.5 (a Gradle wrapper is included, so no system-wide install is needed)</li>
+<li>Ghidra &gt;= 12.0.3</li>
+</ul>
+<h3 id="building_1">Building</h3>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">GHIDRA_INSTALL_DIR</span><span class="o">=</span>/path/to/ghidra
+<span class="nb">cd</span><span class="w"> </span>ghidra_extension
+rm<span class="w"> </span>-rf<span class="w"> </span>dist/
+./gradlew<span class="w"> </span>buildExtension
+</code></pre></div>
+<p>The extension ZIP is generated in <code>dist/</code> (e.g. <code>ghidra_12.0.3_PUBLIC_QuokkaExporter.zip</code>).</p>
+<h3 id="installing">Installing</h3>
+<ol>
+<li>Open Ghidra</li>
+<li>File &gt; Install Extensions</li>
+<li>Add the ZIP file from <code>dist/</code></li>
+<li>Restart Ghidra</li>
+</ol>
+<p>Alternatively, unzip the extension directly into the Ghidra extensions directory:</p>
+<div class="highlight"><pre><span></span><code>unzip<span class="w"> </span>-o<span class="w"> </span>ghidra_extension/dist/ghidra_*_QuokkaExporter.zip<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$GHIDRA_INSTALL_DIR</span><span class="s2">/Ghidra/Extensions/&quot;</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The <code>scripts/fetch_ghidra.sh</code> script can download the correct Ghidra release
+matching the version pinned in the repository:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">GHIDRA_INSTALL_DIR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>scripts/fetch_ghidra.sh<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+</div>
 
 
 
@@ -3068,7 +3121,7 @@ Feel free to report any bug.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="December 8, 2025 10:31:49 UTC">December 8, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 10, 2026 09:58:58 UTC">March 10, 2026</span>
   </span>
 
     

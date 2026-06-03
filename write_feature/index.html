@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -52,6 +52,8 @@
     
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../css/extra.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -783,10 +785,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#commit-apply-changes-to-ida" class="md-nav__link">
+  <a href="#commit-apply-changes-to-the-disassembler-database" class="md-nav__link">
     <span class="md-ellipsis">
       
-        commit -- apply changes to IDA
+        commit -- apply changes to the disassembler database
       
     </span>
   </a>
@@ -814,6 +816,17 @@
     <span class="md-ellipsis">
       
         Full example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-the-command-line-quokka-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the command line (quokka-apply)
       
     </span>
   </a>
@@ -1578,34 +1591,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/version/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    version
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../reference/python/executable/" class="md-nav__link">
         
   
@@ -1614,202 +1599,6 @@
     
   
     executable
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/program/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    program
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/utils/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    utils
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/exc/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    exc
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/function/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    function
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/data_type/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    data_type
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/types/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    types
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../reference/python/instruction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    instruction
   
 
     
@@ -1858,6 +1647,174 @@
   
   
     <li class="md-nav__item">
+      <a href="../reference/python/block/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    block
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/function/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    function
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/instruction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    instruction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/version/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../reference/python/data/" class="md-nav__link">
         
   
@@ -1886,14 +1843,70 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/block/" class="md-nav__link">
+      <a href="../reference/python/data_type/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    block
+    data_type
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    program
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/python/exc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exc
   
 
     
@@ -1961,14 +1974,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/pypcode/" class="md-nav__link">
+      <a href="../reference/python/backends/capstone/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    pypcode
+    capstone
   
 
     
@@ -1989,14 +2002,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/backends/capstone/" class="md-nav__link">
+      <a href="../reference/python/backends/pypcode/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    capstone
+    pypcode
   
 
     
@@ -2155,14 +2168,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/calling_convention/" class="md-nav__link">
+      <a href="../reference/python/analysis/env/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    calling_convention
+    env
   
 
     
@@ -2211,14 +2224,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/replacer/" class="md-nav__link">
+      <a href="../reference/python/analysis/calling_convention/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    replacer
+    calling_convention
   
 
     
@@ -2239,14 +2252,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python/analysis/env/" class="md-nav__link">
+      <a href="../reference/python/analysis/replacer/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    env
+    replacer
   
 
     
@@ -2604,10 +2617,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#commit-apply-changes-to-ida" class="md-nav__link">
+  <a href="#commit-apply-changes-to-the-disassembler-database" class="md-nav__link">
     <span class="md-ellipsis">
       
-        commit -- apply changes to IDA
+        commit -- apply changes to the disassembler database
       
     </span>
   </a>
@@ -2635,6 +2648,17 @@
     <span class="md-ellipsis">
       
         Full example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-the-command-line-quokka-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the command line (quokka-apply)
       
     </span>
   </a>
@@ -2724,15 +2748,21 @@ examples.</p>
 <p>Three methods control how modifications are saved.</p>
 <h3 id="write-save-to-the-quokka-file-only"><code>write</code> -- save to the <code>.quokka</code> file only</h3>
 <p><code>Program.write</code> serialises the modified protobuf back to disk. It does <strong>not</strong>
-interact with IDA. Use it when you want to snapshot the current annotations or
-share them without modifying the IDA database.</p>
+interact with any disassembler. Use it when you want to snapshot the current
+annotations or share them without modifying the disassembler database.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Overwrite the original file</span>
 <span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
 
 <span class="c1"># Or save to a new file</span>
 <span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;binary_annotated.quokka&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="commit-apply-changes-to-ida"><code>commit</code> -- apply changes to IDA</h3>
+<h3 id="commit-apply-changes-to-the-disassembler-database"><code>commit</code> -- apply changes to the disassembler database</h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code>commit</code> currently only supports the <strong>IDA backend</strong>. For Ghidra-exported
+programs, <code>commit()</code> writes the <code>.quokka</code> file but does not apply edits
+back to Ghidra (Ghidra write-back is not yet implemented).</p>
+</div>
 <p><code>Program.commit</code> calls <code>write()</code> and then spawns a headless IDA instance to
 apply all recorded edits (names, prototypes, comments) to the IDA database.
 The full function signature (name, return type, parameter types, parameter
@@ -2765,7 +2795,7 @@ names, and parameter count) is applied to the <code>.i64</code>.</p>
 <tr>
 <td><code>overwrite</code></td>
 <td><code>bool</code></td>
-<td><code>False</code></td>
+<td><code>True</code></td>
 <td>Allow modifying an existing <code>.i64</code>. Raises <code>FileExistsError</code> when <code>False</code> and the file exists. Logs a warning when <code>True</code>.</td>
 </tr>
 <tr>
@@ -2783,9 +2813,13 @@ names, and parameter count) is applied to the <code>.i64</code>.</p>
 </div>
 <h3 id="regenerate-commit-then-re-export"><code>regenerate</code> -- commit then re-export</h3>
 <p><code>Program.regenerate</code> calls <code>commit()</code> and immediately re-exports the binary,
-returning a fresh <code>Program</code> instance that reflects the updated IDA database.
-This is the right choice when you want a clean <code>.quokka</code> file that incorporates
-your annotations as first-class exported data.</p>
+returning a fresh <code>Program</code> instance that reflects the updated disassembler
+database. This is the right choice when you want a clean <code>.quokka</code> file that
+incorporates your annotations as first-class exported data.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Like <code>commit</code>, <code>regenerate</code> currently only supports the <strong>IDA backend</strong>.</p>
+</div>
 <div class="highlight"><pre><span></span><code><span class="n">updated_prog</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">regenerate</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <p>It accepts the same parameters as <code>commit</code>.</p>
@@ -2806,6 +2840,38 @@ your annotations as first-class exported data.</p>
 <span class="c1"># Write to the .quokka file and push changes to the IDA database</span>
 <span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="from-the-command-line-quokka-apply">From the command line (<code>quokka-apply</code>)</h2>
+<p>The <code>quokka-apply</code> CLI applies edits stored in a <code>.quokka</code> file back to the
+disassembler database without writing Python code:</p>
+<div class="highlight"><pre><span></span><code>$ quokka-apply binary.quokka binary --overwrite
+$ quokka-apply binary.quokka binary --regenerate --overwrite
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--commit</code></td>
+<td>Write <code>.quokka</code> and apply edits to the disassembler (default)</td>
+</tr>
+<tr>
+<td><code>--regenerate</code></td>
+<td>Commit then re-export a fresh <code>.quokka</code> from IDA</td>
+</tr>
+<tr>
+<td><code>--overwrite</code></td>
+<td>Allow overwriting an existing disassembler database</td>
+</tr>
+<tr>
+<td><code>-v</code>, <code>--verbose</code></td>
+<td>Increase logging verbosity</td>
+</tr>
+</tbody>
+</table>
 <h2 id="from-ida">From IDA</h2>
 <p>If you are already running inside IDA (e.g. via IDAPython), you can apply
 edits directly without spawning a new instance:</p>
@@ -2821,7 +2887,7 @@ edits directly without spawning a new instance:</p>
 <tr>
 <th>Method</th>
 <th style="text-align: center;">Writes <code>.quokka</code> file</th>
-<th style="text-align: center;">Applies to IDA database</th>
+<th style="text-align: center;">Applies to disassembler database</th>
 <th style="text-align: center;">Returns fresh <code>Program</code></th>
 </tr>
 </thead>
@@ -2835,13 +2901,13 @@ edits directly without spawning a new instance:</p>
 <tr>
 <td><code>prog.commit(database_file=...)</code></td>
 <td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes (IDA only)</td>
 <td style="text-align: center;">No</td>
 </tr>
 <tr>
 <td><code>prog.regenerate(database_file=...)</code></td>
 <td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Yes</td>
+<td style="text-align: center;">Yes (IDA only)</td>
 <td style="text-align: center;">Yes</td>
 </tr>
 </tbody>
@@ -2868,7 +2934,7 @@ edits directly without spawning a new instance:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 7, 2026 14:34:42 UTC">March 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 10, 2026 12:48:12 UTC">March 10, 2026</span>
   </span>
 
     
