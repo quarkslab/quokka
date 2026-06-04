@@ -11,10 +11,10 @@ PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PLUGIN_ROOT.parent
 sys.path.insert(0, str(PLUGIN_ROOT))
 
-pytest.importorskip("binaryninja")
-
 from bn_quokka.export import export_file  # noqa: E402
 from bn_quokka.quokka_pb2 import Quokka  # noqa: E402
+
+pytestmark = pytest.mark.requires_binaryninja
 
 
 def _load_proto(path: Path) -> Quokka:

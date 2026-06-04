@@ -12,28 +12,17 @@ import re
 from typing import TYPE_CHECKING, Any, Iterable, Optional, Union
 
 if TYPE_CHECKING:
-    # Annotation-only names: with deferred annotation evaluation (PEP 563)
-    # these are never looked up at runtime.
     from binaryninja import BinaryView, Type
 
-try:
-    import binaryninja  # type: ignore
-    from binaryninja import (  # type: ignore
-        BranchType,
-        Endianness,
-        InstructionTextTokenType,
-        LowLevelILOperation,
-        SymbolType,
-        TypeClass,
-    )
-except ImportError:  # Allows tests to import this module outside BinaryNinja.
-    binaryninja = None  # type: ignore
-    BranchType = None  # type: ignore
-    Endianness = None  # type: ignore
-    InstructionTextTokenType = None  # type: ignore
-    LowLevelILOperation = None  # type: ignore
-    SymbolType = None  # type: ignore
-    TypeClass = None  # type: ignore
+import binaryninja  # type: ignore
+from binaryninja import (  # type: ignore
+    BranchType,
+    Endianness,
+    InstructionTextTokenType,
+    LowLevelILOperation,
+    SymbolType,
+    TypeClass,
+)
 
 try:
     from .quokka_pb2 import Quokka
@@ -230,11 +219,10 @@ class MetaExporter:
         meta.hash.hash_type = hash_type
         meta.hash.hash_value = hash_value
         meta.backend.name = Quokka.Meta.Backend.DISASS_BINARY_NINJA
-        if binaryninja is not None:
-            version = getattr(binaryninja, "__version__", "")
-            meta.backend.version = (
-                str(version) if version else str(binaryninja.core_version())
-            )
+        version = getattr(binaryninja, "__version__", "")
+        meta.backend.version = (
+            str(version) if version else str(binaryninja.core_version())
+        )
 
         cc_name = ""
         platform = view.platform
@@ -1473,9 +1461,6 @@ def export_file(
     compressed: bool = True,
     update_analysis: bool = True,
 ) -> Path:
-    if binaryninja is None:
-        raise RuntimeError("BinaryNinja Python API is required for export")
-
     input_path = Path(input_file)
     output_path = Path(output_file) if output_file is not None else input_path.with_name(
         f"{input_path.name}.quokka"

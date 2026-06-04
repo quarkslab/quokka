@@ -5,31 +5,17 @@ from enum import Enum, auto
 from typing import TYPE_CHECKING, Any, Optional, Sequence
 
 if TYPE_CHECKING:
-    # Annotation-only names: with deferred annotation evaluation (PEP 563)
-    # these are never looked up at runtime.
     from binaryninja import BinaryView
 
-try:
-    from binaryninja import (  # type: ignore
-        NamedTypeReferenceClass,
-        Section,
-        SectionSemantics,
-        Segment,
-        StructureVariant,
-        Type,
-        TypeClass,
-    )
-
-    BN_AVAILABLE = True
-except ImportError:
-    NamedTypeReferenceClass = None  # type: ignore
-    Section = None  # type: ignore
-    SectionSemantics = None  # type: ignore
-    Segment = None  # type: ignore
-    StructureVariant = None  # type: ignore
-    Type = None  # type: ignore
-    TypeClass = None  # type: ignore
-    BN_AVAILABLE = False
+from binaryninja import (  # type: ignore
+    NamedTypeReferenceClass,
+    Section,
+    SectionSemantics,
+    Segment,
+    StructureVariant,
+    Type,
+    TypeClass,
+)
 
 try:
     from .quokka_pb2 import Quokka
@@ -131,7 +117,6 @@ class SegmentInfo:
     ) -> "SegmentInfo":
         """Build segment metadata from a BinaryNinja section."""
 
-        _require_binaryninja()
         if not isinstance(section, Section):
             raise TypeError(f"Expected binaryninja.Section, got {type(section).__name__}")
 
@@ -156,8 +141,6 @@ class SegmentInfo:
         semantics: Optional[Any] = None,
     ) -> "SegmentInfo":
         """Build segment metadata for a non-overlapping virtual address range."""
-
-        _require_binaryninja()
 
         size = max(0, end - start)
         permissions = _permissions_from_segment(segment, semantics)
@@ -184,20 +167,13 @@ class SegmentInfo:
         )
 
 
-def _require_binaryninja() -> None:
-    if not BN_AVAILABLE:
-        raise RuntimeError("BinaryNinja Python API is required for this operation")
-
-
 def _require_type(dtype: Type) -> Type:
-    _require_binaryninja()
     if not isinstance(dtype, Type):
         raise TypeError(f"Expected binaryninja.Type, got {type(dtype).__name__}")
     return dtype
 
 
 def _require_segment(segment: Segment) -> Segment:
-    _require_binaryninja()
     if not isinstance(segment, Segment):
         raise TypeError(f"Expected binaryninja.Segment, got {type(segment).__name__}")
     return segment
