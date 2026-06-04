@@ -23,14 +23,34 @@ class _ExportBlock:
 
     start: int
     instructions: list[tuple[list[Any], int]]
-    outgoing_targets: list[int]
-    outgoing_edge_types: set[Any]
+    outgoing_edges: list[tuple[int, Any]]  # (target address, BranchType)
     source_block: Any
     is_synthetic_split: bool = False
 
     @property
     def length(self) -> int:
         return sum(length for _, length in self.instructions)
+
+    @property
+    def outgoing_targets(self) -> list[int]:
+        return [target for target, _ in self.outgoing_edges]
+
+    @property
+    def outgoing_edge_types(self) -> set[Any]:
+        return {branch_type for _, branch_type in self.outgoing_edges}
+
+
+def _map_edge_type(branch_type: Any) -> int:
+    """Map a BinaryNinja BranchType to the Quokka edge type."""
+    if branch_type in (BranchType.TrueBranch, BranchType.FalseBranch):
+        return Quokka.EDGE_JUMP_COND
+    if branch_type == BranchType.UnconditionalBranch:
+        return Quokka.EDGE_JUMP_UNCOND
+    if branch_type in (BranchType.IndirectBranch, BranchType.UnresolvedBranch):
+        return Quokka.EDGE_JUMP_INDIR
+    if branch_type in (BranchType.CallDestination, BranchType.SystemCall):
+        return Quokka.EDGE_CALL
+    return Quokka.EDGE_UNKNOWN
 
 
 class FunctionExporter:
@@ -107,27 +127,25 @@ class FunctionExporter:
                 block_proto.is_thumb,
             )
 
-        for src_idx, block in enumerate(blocks):
-            pending_edges: list[tuple[int, int]] = []
-            for target in block.outgoing_targets:
-                dst_idx = block_indices.get(target)
-                if dst_idx is not None:
-                    pending_edges.append((src_idx, dst_idx))
+        FunctionExporter._export_edges(function_proto, blocks, block_indices)
 
-            out_degree = len(pending_edges)
-            if out_degree == 0:
-                edge_type = Quokka.EDGE_UNKNOWN
-            elif out_degree == 1:
-                edge_type = Quokka.EDGE_JUMP_UNCOND
-            elif out_degree == 2:
-                edge_type = Quokka.EDGE_JUMP_COND
-            else:
-                edge_type = Quokka.EDGE_JUMP_INDIR
-            for source, destination in pending_edges:
+    @staticmethod
+    def _export_edges(
+        function_proto: Any,
+        blocks: list[_ExportBlock],
+        block_indices: dict[int, int],
+    ) -> None:
+        for src_idx, block in enumerate(blocks):
+            for target, branch_type in block.outgoing_edges:
+                dst_idx = block_indices.get(target)
+                if dst_idx is None:
+                    # Target outside this function (e.g. tail call): not an
+                    # intra-function CFG edge.
+                    continue
                 edge = function_proto.edges.add()
-                edge.edge_type = edge_type
-                edge.source = source
-                edge.destination = destination
+                edge.edge_type = _map_edge_type(branch_type)
+                edge.source = src_idx
+                edge.destination = dst_idx
                 edge.user_defined = False
 
     @staticmethod
@@ -148,8 +166,10 @@ class FunctionExporter:
                     _ExportBlock(
                         start=block.start,
                         instructions=[],
-                        outgoing_targets=[edge.target.start for edge in block.outgoing_edges],
-                        outgoing_edge_types={edge.type for edge in block.outgoing_edges},
+                        outgoing_edges=[
+                            (edge.target.start, edge.type)
+                            for edge in block.outgoing_edges
+                        ],
                         source_block=block,
                     )
                 )
@@ -176,8 +196,7 @@ class FunctionExporter:
                                 start_index : instr_index + 1
                             ]
                         ],
-                        outgoing_targets=[next_start],
-                        outgoing_edge_types={BranchType.UnconditionalBranch},
+                        outgoing_edges=[(next_start, BranchType.UnconditionalBranch)],
                         source_block=block,
                         is_synthetic_split=True,
                     )
@@ -187,11 +206,13 @@ class FunctionExporter:
             terminal_fallthrough = FunctionExporter._terminal_call_fallthrough(
                 ctx, block, indexed_instructions
             )
-            outgoing_targets = [edge.target.start for edge in block.outgoing_edges]
-            outgoing_edge_types = {edge.type for edge in block.outgoing_edges}
+            outgoing_edges = [
+                (edge.target.start, edge.type) for edge in block.outgoing_edges
+            ]
             if terminal_fallthrough is not None:
-                outgoing_targets = [terminal_fallthrough[0]]
-                outgoing_edge_types = {BranchType.UnconditionalBranch}
+                outgoing_edges = [
+                    (terminal_fallthrough[0], BranchType.UnconditionalBranch)
+                ]
 
             split_blocks.append(
                 _ExportBlock(
@@ -200,8 +221,7 @@ class FunctionExporter:
                         (tokens, length)
                         for _, tokens, length in indexed_instructions[start_index:]
                     ],
-                    outgoing_targets=outgoing_targets,
-                    outgoing_edge_types=outgoing_edge_types,
+                    outgoing_edges=outgoing_edges,
                     source_block=block,
                     is_synthetic_split=terminal_fallthrough is not None,
                 )
@@ -213,8 +233,7 @@ class FunctionExporter:
                     _ExportBlock(
                         start=fallthrough_addr,
                         instructions=[(fallthrough_tokens, fallthrough_length)],
-                        outgoing_targets=[],
-                        outgoing_edge_types=set(),
+                        outgoing_edges=[],
                         source_block=block,
                         is_synthetic_split=True,
                     )
