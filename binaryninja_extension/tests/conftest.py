@@ -65,6 +65,7 @@ if not _ensure_quokka_pb2():
 _STUB_ATTRIBUTES = {
     "binaryninja": (
         "BinaryView",
+        "execute_on_main_thread",
         "BranchType",
         "Endianness",
         "InstructionTextTokenType",
@@ -90,6 +91,22 @@ _STUB_ATTRIBUTES = {
 }
 
 
+class _StubBackgroundTaskThread:
+    """Minimal stand-in: the plugin entry point subclasses it at import time,
+    which a MagicMock instance cannot support."""
+
+    def __init__(self, initial_progress_text: str = "", can_cancel: bool = False):
+        self.progress = initial_progress_text
+        self.can_cancel = can_cancel
+        self.cancelled = False
+
+    def start(self) -> None:
+        pass
+
+    def finish(self) -> None:
+        pass
+
+
 def _install_binaryninja_stub() -> None:
     for module_name, attributes in _STUB_ATTRIBUTES.items():
         module = types.ModuleType(module_name)
@@ -101,6 +118,8 @@ def _install_binaryninja_stub() -> None:
         parent_name, _, child_name = module_name.rpartition(".")
         if parent_name:
             setattr(sys.modules[parent_name], child_name, module)
+
+    sys.modules["binaryninja"].BackgroundTaskThread = _StubBackgroundTaskThread
 
 
 if not HAS_BINARYNINJA:

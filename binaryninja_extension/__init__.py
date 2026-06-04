@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from binaryninja import PluginCommand, log_error, log_info  # type: ignore
+from binaryninja import (  # type: ignore
+    BackgroundTaskThread,
+    PluginCommand,
+    execute_on_main_thread,
+    log_error,
+    log_info,
+)
 from binaryninja.enums import MessageBoxIcon  # type: ignore
 from binaryninja.interaction import (  # type: ignore
     SaveFileNameField,
@@ -10,12 +16,58 @@ from binaryninja.interaction import (  # type: ignore
     show_message_box,
 )
 
-from .bn_quokka.export import export_binary_view
+from .bn_quokka.export import ExportCancelled, export_binary_view
 
 
 def _default_output_path(bv) -> Path:
     source = bv.file.original_filename or bv.file.filename or "binary"
     return Path(source).with_name(f"{Path(source).name}.quokka")
+
+
+class _ExportTask(BackgroundTaskThread):
+    """Run the export off the UI thread, with progress text and cancellation."""
+
+    def __init__(self, bv, output_path: Path, mode: str):
+        super().__init__(f"Quokka: exporting {output_path.name} ({mode})", True)
+        self.bv = bv
+        self.output_path = output_path
+        self.mode = mode
+
+    def _progress(self, text: str) -> None:
+        if self.cancelled:
+            raise ExportCancelled(f"Quokka export of {self.output_path} cancelled")
+        self.progress = f"Quokka: {text}"
+
+    def run(self) -> None:
+        try:
+            proto = export_binary_view(
+                self.bv, self.output_path, self.mode, progress=self._progress
+            )
+        except ExportCancelled as exc:
+            log_info(str(exc))
+            return
+        except Exception as exc:
+            message = f"Failed to export {self.output_path}: {exc}"
+            log_error(message)
+            execute_on_main_thread(
+                lambda: show_message_box(
+                    "Quokka export failed", message, icon=MessageBoxIcon.ErrorIcon
+                )
+            )
+            return
+
+        message = (
+            f"Exported {self.output_path}\n"
+            f"Functions: {len(proto.functions)}\n"
+            f"Segments: {len(proto.segments)}\n"
+            f"Types: {len(proto.types)}"
+        )
+        log_info(message)
+        execute_on_main_thread(
+            lambda: show_message_box(
+                "Quokka export complete", message, icon=MessageBoxIcon.InformationIcon
+            )
+        )
 
 
 def _export_with_dialog(bv, mode: str) -> None:
@@ -30,22 +82,7 @@ def _export_with_dialog(bv, mode: str) -> None:
         return
 
     output_path = Path(output_field.result or default_output)
-    try:
-        proto = export_binary_view(bv, output_path, mode)
-    except Exception as exc:
-        message = f"Failed to export {output_path}: {exc}"
-        log_error(message)
-        show_message_box("Quokka export failed", message, icon=MessageBoxIcon.ErrorIcon)
-        return
-
-    message = (
-        f"Exported {output_path}\n"
-        f"Functions: {len(proto.functions)}\n"
-        f"Segments: {len(proto.segments)}\n"
-        f"Types: {len(proto.types)}"
-    )
-    log_info(message)
-    show_message_box("Quokka export complete", message, icon=MessageBoxIcon.InformationIcon)
+    _ExportTask(bv, output_path, mode).start()
 
 
 def export_light(bv) -> None:

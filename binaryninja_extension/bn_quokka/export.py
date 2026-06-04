@@ -9,7 +9,7 @@ import lzma
 import os
 from pathlib import Path
 import re
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, Callable, Iterable
 
 if TYPE_CHECKING:
     from binaryninja import BinaryView, Type
@@ -45,6 +45,10 @@ from .util import (
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+class ExportCancelled(Exception):
+    """Raised by a progress callback to abort an export in flight."""
 
 
 @dataclass
@@ -1383,15 +1387,35 @@ def _populate_data_xrefs(builder: Quokka, data: Any, addr: int, size: int) -> No
                 data.xref_from.append(ref_idx)
 
 
-def run_export_pipeline(ctx: ExportContext, builder: Quokka) -> Quokka:
-    MetaExporter.export(ctx, builder)
-    SegmentExporter.export(ctx, builder)
-    TypeExporter.export(ctx, builder)
-    TypeExporter.export_type_to_type_refs(ctx, builder)
-    FunctionExporter.export(ctx, builder)
-    ReferenceExporter.export(ctx, builder)
-    LayoutExporter.export(ctx, builder)
-    DataExporter.export(ctx, builder)
+_PIPELINE_PHASES: tuple[tuple[str, Callable[[ExportContext, Quokka], Any]], ...] = (
+    ("exporting metadata", MetaExporter.export),
+    ("exporting segments", SegmentExporter.export),
+    ("exporting types", TypeExporter.export),
+    ("exporting type references", TypeExporter.export_type_to_type_refs),
+    ("exporting functions", FunctionExporter.export),
+    ("exporting references", ReferenceExporter.export),
+    ("exporting layout", LayoutExporter.export),
+    ("exporting data", DataExporter.export),
+)
+
+
+def run_export_pipeline(
+    ctx: ExportContext,
+    builder: Quokka,
+    progress: Callable[[str], None] | None = None,
+) -> Quokka:
+    """Run all export phases on the builder.
+
+    The optional progress callback is invoked with a short description before
+    each phase; it may raise (e.g. ExportCancelled) to abort the export.
+    """
+    for label, phase in _PIPELINE_PHASES:
+        if progress is not None:
+            progress(label)
+        phase(ctx, builder)
+
+    if progress is not None:
+        progress("collecting headers")
     builder.headers = collect_headers(ctx.view)
     return builder
 
@@ -1403,15 +1427,20 @@ def export_binary_view(
     *,
     compressed: bool = True,
     update_analysis: bool = True,
+    progress: Callable[[str], None] | None = None,
 ) -> Quokka:
     if update_analysis:
+        if progress is not None:
+            progress("waiting for analysis to complete")
         bv.update_analysis_and_wait()
 
     output_path = Path(output_file)
     builder = Quokka()
     ctx = ExportContext(bv, io.BytesIO(), _normalize_mode(mode))
-    run_export_pipeline(ctx, builder)
+    run_export_pipeline(ctx, builder, progress=progress)
 
+    if progress is not None:
+        progress(f"writing {output_path.name}")
     raw_proto = builder.SerializeToString()
     if compressed:
         with lzma.open(output_path, "wb", format=lzma.FORMAT_XZ) as output:
@@ -1601,6 +1630,7 @@ def _add_layout(builder: Quokka, start_addr: int, size: int, layout_type: int) -
 __all__ = [
     "collect_headers",
     "DataExporter",
+    "ExportCancelled",
     "ExportContext",
     "export_binary_view",
     "export_file",
