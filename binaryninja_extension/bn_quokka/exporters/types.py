@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Iterable
 if TYPE_CHECKING:
     from binaryninja import BinaryView, Type
 
+import binaryninja  # type: ignore
 from binaryninja import TypeClass  # type: ignore
 
 from ..context import ExportContext
@@ -294,6 +295,37 @@ class TypeExporter:
 
 
 def collect_headers(view: BinaryView) -> str:
+    """Produce C declarations for the binary's types.
+
+    The primary path uses BinaryNinja's TypePrinter (the same machinery as
+    the UI's Export Header feature), which emits forward declarations and
+    orders definitions by dependency, so the result parses as a unit. When
+    TypePrinter is unavailable or fails, fall back to alphabetically sorted
+    per-type strings; that fallback loses dependency order and is not
+    guaranteed to compile.
+    """
+    named_types = sorted(view.types.items(), key=lambda item: str(item[0]))
+
+    printer = getattr(getattr(binaryninja, "TypePrinter", None), "default", None)
+    if printer is not None and named_types:
+        try:
+            header = printer.print_all_types(named_types, view)
+        except Exception as exc:
+            LOGGER.warning(
+                "TypePrinter failed (%s); emitting unordered declarations", exc
+            )
+        else:
+            if isinstance(header, str) and header:
+                return header if header.endswith("\n") else header + "\n"
+            LOGGER.warning(
+                "TypePrinter produced no header; emitting unordered declarations"
+            )
+
+    return _collect_headers_unordered(view)
+
+
+def _collect_headers_unordered(view: BinaryView) -> str:
+    """Alphabetically sorted type strings; loses dependency order."""
     declarations: set[str] = set()
     for _, dtype in sorted(view.types.items(), key=lambda item: str(item[0])):
         declaration = _type_declaration(dtype)
