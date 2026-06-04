@@ -69,10 +69,23 @@ only used to generate them.
 
 Quokka is compatible with IDA 9.1+.
 
-The plugin is built on the CI and available in the
+#### Via the IDA plugin manager (IDA 9.2+)
+
+Quokka is published to the Hex-Rays plugin repository and can be installed with
+[`hcli`](https://hcli.docs.hex-rays.com/):
+
+```console
+user@host:~$ hcli plugin install quokka
+```
+
+#### Manually
+
+The plugin is also built on the CI and available in the
 [Releases](https://github.com/quarkslab/quokka/releases) tab.
 
-To download the plugin, get the file named `quokka_plugin**.so`.
+To download the plugin, get the file named `quokka_plugin.so` (or the
+`quokka-ida<version>.zip` archive for your IDA version) and copy it into your
+IDA `plugins` directory.
 
 ### Ghidra Extension
 
@@ -243,7 +256,7 @@ In any case, the plugin will also be in `build/quokka-install`. You can
 copy it to IDA's user plugin directory.
 
 ```console
-user@host:~/quokka$ cp build/quokka-install/quokka*64.so $HOME/.idapro/plugins/
+user@host:~/quokka$ cp build/quokka-install/quokka_plugin.so $HOME/.idapro/plugins/
 ```
 
 For more detailed information about building, see [Building](docs/installation.md#ida-plugin)

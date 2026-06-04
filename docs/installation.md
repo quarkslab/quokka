@@ -58,7 +58,14 @@ $ source .quokka-env/bin/activate
 The plugin is built on the CI and available in the
 [Releases](https://github.com/quarkslab/quokka/releases).
 
-To download the plugin, get the file named `quokka_plugin**.so`.
+To download the plugin, get the file named `quokka_plugin.so` (or the
+`quokka-ida<version>.zip` archive matching your IDA version).
+
+On IDA 9.2+ you can also install it through the Hex-Rays plugin manager:
+
+```console
+user@host:~$ hcli plugin install quokka
+```
 
 ### Building
 
@@ -116,7 +123,7 @@ The plugin will also be in `build/quokka-install`. You can
 copy it to IDA's user plugin directory:
 
 ```console
-user@host:~/quokka$ cp build/quokka-install/quokka*64.so $HOME/.idapro/plugins/
+user@host:~/quokka$ cp build/quokka-install/quokka_plugin.so $HOME/.idapro/plugins/
 ```
 
 ### Build on Windows

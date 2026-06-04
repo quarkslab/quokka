@@ -1,0 +1,49 @@
+{
+  "$schema": "https://hcli.docs.hex-rays.com/schemas/ida-plugin.json",
+  "IDAMetadataDescriptorVersion": 1,
+  "plugin": {
+    "name": "quokka",
+    "entryPoint": "quokka_plugin",
+    "logoPath": "logo.png",
+    "version": "1.0.0",
+    "idaVersions": [
+      "9.1",
+      "9.2",
+      "9.3"
+    ],
+    "platforms": [
+      "linux-x86_64",
+      "macos-x86_64",
+      "macos-aarch64"
+    ],
+    "description": "A fast and accurate binary exporter: exports IDA disassembly to a protobuf-based .quokka file that can be analyzed without a disassembler.",
+    "license": "Apache-2.0",
+    "categories": [
+      "integration-with-third-parties-interoperability", 
+      "api-scripting-and-automation"
+    ],
+    "keywords": [
+      "export",
+      "disassembly",
+      "protobuf",
+      "binary-analysis",
+      "decompilation"
+    ],
+    "pythonDependencies": [
+      "quokka-project"
+    ],
+    "urls": {
+      "repository": "https://github.com/quarkslab/quokka"
+    },
+    "authors": [
+      {
+        "name": "Riccardo Mori",
+        "email": "rmori@quarkslab.com"
+      },
+      {
+        "name": "Robin David",
+        "email": "rdavid@quarkslab.com"
+      }
+    ]
+  }
+}

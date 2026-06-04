@@ -159,15 +159,18 @@ jobs:
       - name: Set LLVM_ROOT (macOS)
         if: ${{ runner.os == 'macOS' && steps.ccache-cache.outputs.cache-hit != 'true' }}
         shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
+        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm)" >> "$GITHUB_ENV"
 
       - name: Configure cmake
         if: steps.ccache-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
+          # CMAKE_OSX_ARCHITECTURES is ignored on Linux; on macOS it primes the
+          # cache with universal (arm64 + x86_64) dependency objects.
           cmake -B build-deps -S "$GITHUB_WORKSPACE" -G Ninja \
                 -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
                 -DIDA_VERSION=9.3 \
+                -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                 -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR" \
                 ${LLVM_ROOT_PARAM:+"$LLVM_ROOT_PARAM"}
 
@@ -527,12 +530,15 @@ jobs:
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
         shell: bash
         run: |
+          # Universal (arm64 + x86_64) so a single .dylib runs on Apple Silicon
+          # and Intel hosts (required for the IDA plugin-manager archives).
           cmake -B "$CMAKE_BUILD_DIR" \
                 -S "$GITHUB_WORKSPACE" \
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
                 "$CMAKE_IDA_PARAM" \
                 -DLLVM_ROOT="$(brew --prefix llvm@18)" \
+                -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                 -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
       - name: Prepare build environment (Windows)
@@ -558,31 +564,15 @@ jobs:
         shell: bash
         run: ccache -sv || true
 
-      - name: Rename Plugin
-        env:
-          IDA_SDK: ${{ matrix.ida_sdk }}
-          EXT: ${{ matrix.ext }}
-        shell: bash
-        run: |
-          mv "build${IDA_SDK}/quokka-install/quokka_plugin64.${EXT}" "${IDA_SDK}-quokka_plugin0064.${EXT}"
-          [[ -e "build${IDA_SDK}/quokka-install/quokka_plugin.${EXT}" ]] && mv "build${IDA_SDK}/quokka-install/quokka_plugin.${EXT}" "${IDA_SDK}-quokka_plugin0032.${EXT}" || echo "Skipping 32 bit plugin"
-
       # We need one action per file
       # See https://github.com/actions/upload-artifact/issues/331
-      - name: Upload Artifacts (64)
+      - name: Upload Artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
-          path: ${{ matrix.ida_sdk }}-quokka_plugin0064.${{ matrix.ext }}
+          path: ${{ matrix.ida_sdk }}-quokka_plugin.${{ matrix.ext }}
           if-no-files-found: error
 
-      - name: Upload Artifacts (32)
-        if: ${{ contains(fromJSON('["74","77","80","81","82","83","84"]'), matrix.ida_sdk) }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}-32
-          path: ${{ matrix.ida_sdk }}-quokka_plugin0032.${{ matrix.ext }}
-          if-no-files-found: error
 
   upload:
     name: Upload artifacts for Release
@@ -596,7 +586,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         ida_sdk: [74, 77, 80, 81, 82, 83, 84, 85, 90, 90sp1, 91, 9.2, 9.3]
-        bitness: ["", "-32"]
         include:
           - os: ubuntu-latest
             ext: so
@@ -605,24 +594,12 @@ jobs:
         exclude:
           - os: macos-latest
             ida_sdk: 74
-          - ida_sdk: 85
-            bitness: "-32"
-          - ida_sdk: 90
-            bitness: "-32"
-          - ida_sdk: 90sp1
-            bitness: "-32"
-          - ida_sdk: 91
-            bitness: "-32"
-          - ida_sdk: 9.2
-            bitness: "-32"
-          - ida_sdk: 9.3
-            bitness: "-32"
 
     steps:
       - name: Download Artefact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}${{ matrix.bitness }}
+          name: idaplugin-${{ matrix.os }}-${{ matrix.ida_sdk }}
 
       - name: Release
         env:
@@ -636,5 +613,71 @@ jobs:
           files=( "${IDA_SDK}"-quokka_* )
           if [[ ${#files[@]} -eq 0 ]]; then
             echo "::error::No matching files found" && exit 1
+          fi
+          gh release upload "$TAG_NAME" "${files[@]}" --clobber
+
+  # Package the IDA >= 9.1 plugins for the Hex-Rays plugin manager / marketplace.
+  # This does NOT recompile: it reuses the binaries already built by the `build`
+  # job, repackaging them into one quokka-ida<version>.zip per IDA version
+  # (each containing the Linux + macOS-universal plugin plus an ida-plugin.json
+  # manifest) and attaching them to the release.
+  package-plugin:
+    name: Package for IDA plugin manager
+    needs: [build]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Download plugin artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: artifacts
+
+      - name: Assemble plugin-manager archives
+        shell: bash
+        run: |
+          # Map the build matrix SDK token -> the dotted IDA version advertised
+          # in the manifest. Only IDA >= 9.1 is supported by the plugin manager.
+          declare -A VERSIONS=( ["91"]="9.1" ["9.2"]="9.2" ["9.3"]="9.3" )
+          for token in "${!VERSIONS[@]}"; do
+            ver="${VERSIONS[$token]}"
+            echo "Packaging IDA ${ver} (build token ${token})"
+
+            linux="artifacts/idaplugin-ubuntu-latest-${token}/${token}-quokka_plugin.so"
+            macos="artifacts/idaplugin-macos-latest-${token}/${token}-quokka_plugin.dylib"
+            if [[ ! -e "$linux" || ! -e "$macos" ]]; then
+              echo "::error::Missing plugin binaries for IDA ${ver} (token ${token})"
+              exit 1
+            fi
+
+            stage="stage-${ver}"
+            # Restore the plugin-manager entry-point name (no "64" suffix).
+            cp "$linux" "$stage/quokka_plugin.so"
+            cp "$macos" "$stage/quokka_plugin.dylib"
+            cp README.md "$stage/README.md"
+            cp docs/img/logo.png "$stage/logo.png"
+            # Pin this archive's manifest to the exact IDA version.
+            jq ".plugin.idaVersions = \"==${ver}\"" ida-plugin.json > "$stage/ida-plugin.json"
+
+            ( cd "$stage" && zip -r "../quokka-ida${ver}.zip" . )
+          done
+
+      - name: Upload archives to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG_NAME: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=( quokka-ida*.zip )
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo "::error::No plugin archives found" && exit 1
           fi
           gh release upload "$TAG_NAME" "${files[@]}" --clobber
