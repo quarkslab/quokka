@@ -31,6 +31,27 @@ def binaryninja_plugin_dir() -> Path:
     return home / ".binaryninja" / "plugins"
 
 
+def generate_protobuf(dry_run: bool) -> None:
+    """Generate bn_quokka/quokka_pb2.py from the shared schema.
+
+    Mirrors the Python bindings, where setup.py generates the protobuf module
+    at build time instead of checking it into the repository.
+    """
+    if dry_run:
+        print("Would generate bn_quokka/quokka_pb2.py from the shared schema")
+        return
+
+    try:
+        import generate_proto
+    except ImportError as exc:
+        raise SystemExit(
+            f"Cannot generate bn_quokka/quokka_pb2.py: {exc}\n"
+            "Install the generator dependency with: pip install grpcio-tools"
+        ) from exc
+
+    generate_proto.main()
+
+
 def install_symlink(plugin_dir: Path, link_name: str, dry_run: bool) -> Path:
     source = Path(__file__).resolve().parent
     destination = plugin_dir / link_name
@@ -79,6 +100,7 @@ def main() -> int:
 
     args = parser.parse_args()
     plugin_dir = args.plugin_dir or binaryninja_plugin_dir()
+    generate_protobuf(args.dry_run)
     install_symlink(plugin_dir.expanduser(), args.name, args.dry_run)
     return 0
 

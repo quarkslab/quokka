@@ -1,12 +1,24 @@
+# Quokka BinaryNinja Extension
 
+## Protobuf generation
 
-This project checks in the generated quokka_pb2.py file to
-comply with the simpler workflow for github hosted workflows.
+The protobuf support module `bn_quokka/quokka_pb2.py` is generated from the
+shared schema `proto/quokka.proto` at the repository root and is not checked
+in, following the same convention as the Python bindings. Generate it with:
+
+```bash
+pip install grpcio-tools
+python binaryninja_extension/generate_proto.py
+```
+
+`install_dev.py` runs the generation automatically before symlinking the
+extension into the BinaryNinja user plugin directory, and the test suite
+generates the file on demand when grpcio-tools is available.
 
 ## Headless Export
 
 Headlessly using the BinaryNinja API requires a commercial license currently.
-The UI plugin can still be used to export .quokka files. 
+The UI plugin can still be used to export .quokka files.
 
 Use `export_headless.py` with a Python environment that can import the Binary Ninja
 Python API:
@@ -15,4 +27,4 @@ Python API:
 python binaryninja_extension/export_headless.py /path/to/binary --out /tmp/output.quokka --mode LIGHT
 ```
 
-The output path defaults to `<input>.quokka`. 
+The output path defaults to `<input>.quokka`.

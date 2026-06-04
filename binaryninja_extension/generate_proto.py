@@ -4,24 +4,37 @@ from grpc_tools import protoc
 
 
 EXTENSION_DIR = Path(__file__).resolve().parent
-PROTO_DIR = EXTENSION_DIR / "proto"
 OUTPUT_DIR = EXTENSION_DIR / "bn_quokka"
-PROTO_FILE = PROTO_DIR / "quokka.proto"
+
+# The shared schema lives at the repository root; a local proto/ directory is
+# supported as a fallback for standalone copies of this extension.
+PROTO_DIR_CANDIDATES = (
+    EXTENSION_DIR.parent / "proto",
+    EXTENSION_DIR / "proto",
+)
+
+
+def _find_proto_dir() -> Path:
+    for proto_dir in PROTO_DIR_CANDIDATES:
+        if (proto_dir / "quokka.proto").is_file():
+            return proto_dir
+    raise FileNotFoundError(
+        "quokka.proto not found in: "
+        + ", ".join(str(path) for path in PROTO_DIR_CANDIDATES)
+    )
 
 
 def main() -> None:
-    if not PROTO_FILE.exists():
-        raise FileNotFoundError(
-            f"Proto file not found: {PROTO_FILE}. "
-            "Ensure binaryninja_extension/proto/quokka.proto points to the shared schema."
-        )
+    proto_dir = _find_proto_dir()
+    proto_file = proto_dir / "quokka.proto"
 
+    print(f"Generating {OUTPUT_DIR / 'quokka_pb2.py'} from {proto_file}")
     exit_code = protoc.main(
         [
             "grpc_tools.protoc",
-            f"--proto_path={PROTO_DIR}",
+            f"--proto_path={proto_dir}",
             f"--python_out={OUTPUT_DIR}",
-            str(PROTO_FILE),
+            str(proto_file),
         ]
     )
     if exit_code != 0:

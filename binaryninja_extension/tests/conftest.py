@@ -13,11 +13,51 @@ from __future__ import annotations
 import importlib.util
 import sys
 import types
+from pathlib import Path
 from unittest import mock
 
 import pytest
 
+PLUGIN_ROOT = Path(__file__).resolve().parents[1]
+_PB2_FILE = PLUGIN_ROOT / "bn_quokka" / "quokka_pb2.py"
+
 HAS_BINARYNINJA = importlib.util.find_spec("binaryninja") is not None
+
+
+def _ensure_quokka_pb2() -> bool:
+    """Generate bn_quokka/quokka_pb2.py if missing, like the package build.
+
+    The generated protobuf module is not checked in (same convention as the
+    Python bindings); generate it on demand when grpcio-tools is available.
+    """
+    if _PB2_FILE.is_file():
+        return True
+    if importlib.util.find_spec("grpc_tools") is None:
+        return False
+
+    spec = importlib.util.spec_from_file_location(
+        "bn_generate_proto", PLUGIN_ROOT / "generate_proto.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    module.main()
+    return _PB2_FILE.is_file()
+
+
+# Running any test in this directory makes pytest import the extension
+# package __init__, whose import chain requires the generated protobuf
+# module. Without it (and without the tooling to generate it), nothing here
+# can run.
+if not _ensure_quokka_pb2():
+    import warnings
+
+    warnings.warn(
+        "bn_quokka/quokka_pb2.py is missing and grpcio-tools is not "
+        "installed; skipping the BinaryNinja extension tests. "
+        "Run: pip install grpcio-tools",
+        stacklevel=1,
+    )
+    collect_ignore_glob = ["test_*.py"]
 
 # Only the names the extension imports at module level are stubbed, so any
 # unexpected API use fails loudly instead of being absorbed by a permissive
