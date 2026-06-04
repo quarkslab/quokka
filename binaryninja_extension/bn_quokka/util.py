@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import bisect
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Iterable, Sequence
 
 if TYPE_CHECKING:
     from binaryninja import BinaryView
@@ -262,6 +263,63 @@ def segment_offset(addr: int, segment: SegmentInfo) -> int:
     return address_offset(addr) - segment.start_offset
 
 
+def build_extern_segments(
+    addresses: Iterable[int],
+    segments: Sequence[SegmentInfo],
+    address_size: int,
+) -> list[SegmentInfo]:
+    """Synthesize SEGMENT_EXTERN pseudo-segments for unmapped addresses.
+
+    BinaryNinja assigns external and imported symbols synthetic addresses
+    that may lie outside every mapped segment. Without a backing segment such
+    addresses cannot be encoded as (segment_index, segment_offset) pairs and
+    would all collapse onto segment 0. One pseudo-segment is emitted per gap
+    between existing segments that contains unmapped addresses, clamped so it
+    never overlaps a real segment.
+
+    The segments sequence must be sorted by start_offset and non-overlapping.
+    """
+    unmapped = sorted(
+        {addr for addr in addresses if find_segment_index(segments, addr) < 0}
+    )
+    if not unmapped:
+        return []
+
+    starts = [segment.start_offset for segment in segments]
+
+    clusters: list[list[int]] = []
+    for addr in unmapped:
+        gap = bisect.bisect_right(starts, addr)
+        if clusters and bisect.bisect_right(starts, clusters[-1][-1]) == gap:
+            clusters[-1].append(addr)
+        else:
+            clusters.append([addr])
+
+    width = max(1, address_size)
+    extern_segments: list[SegmentInfo] = []
+    for index, cluster in enumerate(clusters):
+        start = cluster[0]
+        end = cluster[-1] + width
+        gap = bisect.bisect_right(starts, cluster[-1])
+        if gap < len(segments):
+            end = min(end, segments[gap].start_offset)
+        end = max(end, cluster[-1] + 1)
+        extern_segments.append(
+            SegmentInfo(
+                name="extern" if index == 0 else f"extern_{index}",
+                start_offset=start,
+                size=end - start,
+                permissions=0,
+                proto_seg_type=int(Quokka.Segment.SEGMENT_EXTERN),
+                proto_addr_size=address_size_to_proto(address_size),
+                file_offset=-1,
+                data_size=0,
+                segment=None,
+            )
+        )
+    return extern_segments
+
+
 def type_name(dtype: Type) -> str:
     dtype = _require_type(dtype)
     if dtype.type_class == TypeClass.NamedTypeReferenceClass:
@@ -394,6 +452,7 @@ __all__ = [
     "TypeKind",
     "address_offset",
     "address_size_to_proto",
+    "build_extern_segments",
     "classify_type",
     "find_segment_index",
     "inner_type",

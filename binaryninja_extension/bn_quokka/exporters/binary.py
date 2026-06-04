@@ -16,10 +16,25 @@ from binaryninja import Endianness, SymbolType  # type: ignore
 
 from ..context import ExportContext
 from ..quokka_pb2 import Quokka
-from ..util import SegmentInfo, address_size_to_proto, map_calling_convention
+from ..util import (
+    SegmentInfo,
+    address_size_to_proto,
+    build_extern_segments,
+    map_calling_convention,
+)
 
 
 LOGGER = logging.getLogger(__name__)
+
+# Symbol kinds whose addresses are synthetic in BinaryNinja and may lie
+# outside every mapped segment.
+_EXTERN_SYMBOL_TYPES = (
+    SymbolType.ExternalSymbol,
+    SymbolType.ImportedFunctionSymbol,
+    SymbolType.ImportAddressSymbol,
+    SymbolType.LibraryFunctionSymbol,
+    SymbolType.ImportedDataSymbol,
+)
 
 
 class MetaExporter:
@@ -133,7 +148,32 @@ class SegmentExporter:
             infos.append(SegmentInfo.from_binaryninja_section(view, section))
 
         infos.sort(key=lambda item: (item.start_offset, item.size, item.name))
-        return [info for info in infos if info.size > 0]
+        infos = [info for info in infos if info.size > 0]
+
+        # External/imported symbols may live at synthetic addresses outside
+        # every mapped segment; give them SEGMENT_EXTERN pseudo-segments so
+        # their addresses survive the (segment_index, segment_offset)
+        # encoding instead of collapsing onto segment 0.
+        extern_infos = build_extern_segments(
+            SegmentExporter._extern_symbol_addresses(view), infos, view.address_size
+        )
+        if extern_infos:
+            LOGGER.info(
+                "Synthesized %d extern segment(s) for unmapped symbols",
+                len(extern_infos),
+            )
+            infos.extend(extern_infos)
+            infos.sort(key=lambda item: (item.start_offset, item.size, item.name))
+        return infos
+
+    @staticmethod
+    def _extern_symbol_addresses(view: BinaryView) -> list[int]:
+        addresses: list[int] = []
+        for symbol_type in _EXTERN_SYMBOL_TYPES:
+            addresses.extend(
+                symbol.address for symbol in view.get_symbols_of_type(symbol_type)
+            )
+        return addresses
 
 
 class LayoutExporter:

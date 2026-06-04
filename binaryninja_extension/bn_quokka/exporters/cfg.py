@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
 
@@ -11,6 +12,9 @@ from ..context import ExportContext
 from ..quokka_pb2 import Quokka
 from ..util import map_calling_convention
 from .instructions import export_instruction, extract_mnemonic
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -367,7 +371,14 @@ class FunctionExporter:
                 candidates[(symbol.address, symbol.raw_name or symbol.name)] = symbol
                 candidate_names.add(symbol.name)
 
+        skipped = 0
         for _, symbol in sorted(candidates.items(), key=lambda item: (item[0][0], item[0][1])):
+            # SegmentExporter synthesizes extern pseudo-segments for unmapped
+            # symbol addresses; anything still unresolved cannot be encoded
+            # faithfully, and emitting it would collide on segment 0.
+            if ctx.resolve_segment_index(symbol.address) < 0:
+                skipped += 1
+                continue
             function = builder.functions.add()
             _set_address_fields(ctx, function, symbol.address)
             if symbol.type == SymbolType.LibraryFunctionSymbol:
@@ -378,10 +389,21 @@ class FunctionExporter:
             if symbol.raw_name and symbol.raw_name != function.name:
                 function.mangled_name = symbol.raw_name
 
+        if skipped:
+            LOGGER.warning(
+                "Skipped %d external symbol(s) outside any exported segment", skipped
+            )
+
 
 def _set_address_fields(ctx: ExportContext, proto: Any, addr: int) -> None:
     seg_idx = ctx.resolve_segment_index(addr)
     if seg_idx < 0:
+        # Should not happen for function/block starts; consumers reconstruct
+        # the address as segment[0].base + 0, so make the loss visible.
+        LOGGER.warning(
+            "Address 0x%x is outside any exported segment; encoding as segment 0",
+            addr,
+        )
         proto.segment_index = 0
         proto.segment_offset = 0
         proto.file_offset = -1
