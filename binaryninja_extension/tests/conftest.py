@@ -124,6 +124,10 @@ def _install_binaryninja_stub() -> None:
 
     sys.modules["binaryninja"].BackgroundTaskThread = _StubBackgroundTaskThread
 
+    # isinstance() targets must be real classes, not MagicMock instances.
+    for class_name in ("Type", "Segment", "Section"):
+        setattr(sys.modules["binaryninja"], class_name, type(class_name, (), {}))
+
 
 if not HAS_BINARYNINJA:
     _install_binaryninja_stub()

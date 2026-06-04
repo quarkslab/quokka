@@ -386,6 +386,14 @@ def map_primitive_type(dtype: Type) -> int | None:
     return None
 
 
+def is_named_primitive_alias(dtype: Type) -> bool:
+    """BinaryNinja registers primitive typedefs (e.g. typedef uint32_t DWORD)
+    as plain primitive types carrying a registered_name. Type registration
+    and type-index resolution must both treat them as TYPEDEF entries, so the
+    promotion rule lives here, in one place."""
+    return map_primitive_type(dtype) is not None and dtype.registered_name is not None
+
+
 def classify_type(dtype: Type) -> TypeKind:
     dtype = _require_type(dtype)
 
@@ -456,6 +464,7 @@ __all__ = [
     "classify_type",
     "find_segment_index",
     "inner_type",
+    "is_named_primitive_alias",
     "map_by_size",
     "map_calling_convention",
     "map_primitive_type",

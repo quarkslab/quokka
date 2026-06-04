@@ -17,6 +17,7 @@ from ..util import (
     TypeKind,
     classify_type,
     inner_type,
+    is_named_primitive_alias,
     map_by_size,
     type_class_name,
     type_key,
@@ -48,8 +49,8 @@ class TypeExporter:
 
             kind = classify_type(dtype)
 
-            # BinaryNinja stores named aliases as ordinary registered types in many cases.
-            if kind == TypeKind.PRIMITIVE and dtype.registered_name is not None:
+            # Shared promotion rule: resolve_type_index applies the same one.
+            if is_named_primitive_alias(dtype):
                 kind = TypeKind.TYPEDEF
 
             if kind == TypeKind.ENUM:
@@ -178,17 +179,21 @@ class TypeExporter:
                 inner_type(dtype),
             )
         elif kind == TypeKind.TYPEDEF:
-            element_type = (
-                dtype.target(ctx.view)
-                if dtype.type_class == TypeClass.NamedTypeReferenceClass
-                else dtype
-            )
+            if dtype.type_class == TypeClass.NamedTypeReferenceClass:
+                element_type = dtype.target(ctx.view)
+                unaliased = False
+            else:
+                # Promoted named primitive alias: its element is the
+                # underlying primitive, not the alias entry itself.
+                element_type = dtype
+                unaliased = True
             TypeExporter._build_reference_composite(
                 ctx,
                 proto_type.composite_type,
                 dtype,
                 Quokka.CompositeType.TYPE_TYPEDEF,
                 element_type,
+                unaliased=unaliased,
             )
 
     @staticmethod
@@ -254,13 +259,17 @@ class TypeExporter:
         dtype: Type,
         subtype: int,
         element_type: Type | None,
+        *,
+        unaliased: bool = False,
     ) -> None:
         composite.name = type_name(dtype)
         composite.type = subtype
         composite.size = max(0, dtype.width)
         composite.c_str = dtype.get_string()
         if element_type is not None:
-            composite.element_type_idx = ctx.resolve_type_index(element_type)
+            composite.element_type_idx = ctx.resolve_type_index(
+                element_type, unaliased=unaliased
+            )
 
     @staticmethod
     def _emit_type_ref(

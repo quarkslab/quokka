@@ -18,6 +18,7 @@ from .util import (
     address_offset,
     classify_type,
     find_segment_index,
+    is_named_primitive_alias,
     map_primitive_type,
     segment_offset,
     type_class_name,
@@ -94,12 +95,26 @@ class ExportContext:
         data_size = segment.size if segment.data_size is None else segment.data_size
         return data_size > 0 and 0 <= offset_in_segment < data_size
 
-    def resolve_type_index(self, dtype: Type | None) -> int:
+    def resolve_type_index(self, dtype: Type | None, *, unaliased: bool = False) -> int:
+        """Resolve a BinaryNinja type to its index in the exported type table.
+
+        Named primitive aliases are exported as TYPEDEF entries (see
+        TypeExporter), so uses of the alias resolve to that entry rather than
+        to the raw primitive. Pass unaliased=True to resolve through to the
+        underlying primitive instead - used for the typedef's own element
+        type, which must not point back at itself.
+        """
         if dtype is None:
             return TYPE_UNK
 
         base_type = map_primitive_type(dtype)
         if base_type is not None:
+            if not unaliased and is_named_primitive_alias(dtype):
+                existing = self.composite_type_indices.get(
+                    type_key(dtype, TypeKind.TYPEDEF)
+                )
+                if existing is not None:
+                    return existing
             return int(base_type)
 
         kind = classify_type(dtype)
