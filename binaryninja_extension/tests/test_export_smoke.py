@@ -65,6 +65,27 @@ def test_light_export_qb_crackme(qb_crackme: Path, tmp_path: Path) -> None:
     assert len(cprintf.edges) > 0
 
 
+def test_export_loads_through_python_bindings(qb_crackme: Path, tmp_path: Path) -> None:
+    """The real compatibility contract: quokka.Program must load the export."""
+    quokka_lib = pytest.importorskip("quokka")
+
+    output = tmp_path / "qb-crackme-binja-bindings.quokka"
+    export_file(qb_crackme, output, "LIGHT")
+    program = quokka_lib.Program(output, qb_crackme)
+
+    assert len(program.fun_names) > 0
+    assert "cprintf" in program.fun_names
+
+    # Regression: extern/imported functions must not collapse onto a single
+    # reconstructed address (segment 0 + offset 0).
+    segments = program.proto.segments
+    addresses = [
+        segments[func.segment_index].virtual_addr + func.segment_offset
+        for func in program.proto.functions
+    ]
+    assert len(addresses) == len(set(addresses))
+
+
 def test_self_contained_export_sets_mode(qb_crackme: Path, tmp_path: Path) -> None:
     output = tmp_path / "qb-crackme-binja-self-contained.quokka"
     export_file(qb_crackme, output, "SELF_CONTAINED")
