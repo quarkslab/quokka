@@ -288,6 +288,27 @@ def map_by_size(byte_size: int | None) -> int:
     }.get(byte_size, TYPE_UNK)
 
 
+def map_calling_convention(cc_name: str) -> int:
+    normalized = cc_name.lower().replace("_", "")
+    if "cdecl" in normalized:
+        return Quokka.CC_CDECL
+    if "stdcall" in normalized:
+        return Quokka.CC_STDCALL
+    if "fastcall" in normalized:
+        return Quokka.CC_FASTCALL
+    if "thiscall" in normalized:
+        return Quokka.CC_THISCALL
+    if "pascal" in normalized:
+        return Quokka.CC_PASCAL
+    if "ellipsis" in normalized:
+        return Quokka.CC_ELLIPSIS
+    if "swift" in normalized:
+        return Quokka.CC_SWIFT
+    if "go" in normalized or "golang" in normalized:
+        return Quokka.CC_GOLANG
+    return Quokka.CC_UNK
+
+
 def map_primitive_type(dtype: Type) -> int | None:
     dtype = _require_type(dtype)
 
@@ -377,6 +398,7 @@ __all__ = [
     "find_segment_index",
     "inner_type",
     "map_by_size",
+    "map_calling_convention",
     "map_primitive_type",
     "segment_offset",
     "type_class_name",

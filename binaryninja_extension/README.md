@@ -1,5 +1,24 @@
 # Quokka BinaryNinja Extension
 
+## Code layout
+
+```
+bn_quokka/
+├── export.py        # public API: pipeline orchestration and entry points
+├── context.py       # ExportContext state shared by all pipeline phases
+├── util.py          # BinaryNinja primitives: segments, addresses, type mapping
+├── quokka_pb2.py    # generated protobuf module (see below)
+└── exporters/       # one module per semantic cluster of the schema
+    ├── binary.py        # program image: metadata, segments, layout, data items
+    ├── types.py         # type table and C header collection
+    ├── cfg.py           # functions, basic blocks, and edges
+    ├── instructions.py  # instruction/operand encoding from disassembly tokens
+    └── references.py    # cross-references between code and data
+```
+
+`bn_quokka.export` is the stable import surface; everything the plugin, the
+headless CLI, and external scripts need is importable from there.
+
 ## Protobuf module
 
 `bn_quokka/quokka_pb2.py` is generated from the shared schema
