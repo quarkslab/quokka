@@ -9,11 +9,27 @@ from binaryninja import BranchType, LowLevelILOperation  # type: ignore
 from ..context import ExportContext
 from ..quokka_pb2 import Quokka
 from .instructions import (
+    CALL_LLIL_OPERATIONS,
     extract_mnemonic,
-    infer_operand_access,
+    llil_at,
     operand_token_groups,
     token_value,
     tokens_are_memory,
+)
+
+
+_LOAD_OPERATIONS = (
+    LowLevelILOperation.LLIL_LOAD,
+    LowLevelILOperation.LLIL_LOAD_SSA,
+)
+_STORE_OPERATIONS = (
+    LowLevelILOperation.LLIL_STORE,
+    LowLevelILOperation.LLIL_STORE_SSA,
+)
+_CONST_OPERATIONS = (
+    LowLevelILOperation.LLIL_CONST,
+    LowLevelILOperation.LLIL_CONST_PTR,
+    LowLevelILOperation.LLIL_EXTERN_PTR,
 )
 
 
@@ -56,17 +72,14 @@ class ReferenceExporter:
 
     @staticmethod
     def _branch_targets(ctx: ExportContext, addr: int) -> dict[int, int]:
-        data = ctx.view.read(addr, 16)
-        try:
-            info = ctx.view.arch.get_instruction_info(data, addr)
-        except Exception:
+        info = ctx.instruction_branches(addr)
+        if info is None:
             return {}
 
+        length, branches = info
         result: dict[int, int] = {}
-        fallthrough = addr + getattr(info, "length", 0)
-        for branch in getattr(info, "branches", []):
-            target = getattr(branch, "target", None)
-            branch_type = branch.type
+        fallthrough = addr + length
+        for branch_type, target in branches:
             if target is None or target == fallthrough:
                 continue
             if branch_type == BranchType.UnresolvedBranch and target == 0:
@@ -85,28 +98,26 @@ class ReferenceExporter:
     def _classify_nonbranch_reference(
         ctx: ExportContext, func: Any, addr: int, tokens: list[Any], dest: int
     ) -> int:
+        # The lifted IL is the most precise signal: it shows structurally
+        # whether the constant is a store destination or a load source.
+        llil = llil_at(func, addr)
+        if llil is not None:
+            edge = _classify_llil_reference(llil, dest)
+            if edge is not None:
+                return edge
+
         token_edge = _classify_token_reference(tokens, dest)
         if token_edge is not None:
             return token_edge
 
-        llil_text = _llil_text(func, addr)
-        if f"{{0x{dest:x}}}" in llil_text or f"[0x{dest:x}" in llil_text:
-            lhs = llil_text.split("=", 1)[0]
-            if f"0x{dest:x}" in lhs:
-                return Quokka.EDGE_DATA_WRITE
+        # Coarse fallback when the constant is not visible in the IL: the
+        # instruction's top-level operation still hints at the access kind.
+        llil_op = getattr(llil, "operation", None)
+        if llil_op in _LOAD_OPERATIONS:
             return Quokka.EDGE_DATA_READ
-
-        llil_op = _llil_operation(func, addr)
-        if llil_op in (LowLevelILOperation.LLIL_LOAD, LowLevelILOperation.LLIL_LOAD_SSA):
-            return Quokka.EDGE_DATA_READ
-        if llil_op in (LowLevelILOperation.LLIL_STORE, LowLevelILOperation.LLIL_STORE_SSA):
+        if llil_op in _STORE_OPERATIONS:
             return Quokka.EDGE_DATA_WRITE
-        if llil_op in (
-            LowLevelILOperation.LLIL_CALL,
-            LowLevelILOperation.LLIL_CALL_SSA,
-            LowLevelILOperation.LLIL_TAILCALL,
-            LowLevelILOperation.LLIL_TAILCALL_SSA,
-        ):
+        if llil_op in CALL_LLIL_OPERATIONS:
             return Quokka.EDGE_DATA_READ
 
         return Quokka.EDGE_DATA_INDIR
@@ -134,32 +145,65 @@ class ReferenceExporter:
             xref.xref_index = ref_index
 
 
-def _classify_token_reference(tokens: list[Any], destination: int) -> int | None:
-    mnemonic = extract_mnemonic(tokens).lower()
-    for operand_idx, operand_tokens in enumerate(operand_token_groups(tokens)):
-        if not any(token_value(token) == destination for token in operand_tokens):
-            continue
-        if tokens_are_memory(operand_tokens) and mnemonic != "lea":
-            if operand_idx == 0 and infer_operand_access(mnemonic, operand_idx) in (2, 3):
-                return Quokka.EDGE_DATA_WRITE
+def _walk_llil(node: Any) -> Any:
+    """Yield node and every nested LLIL expression below it."""
+    stack = [node]
+    while stack:
+        current = stack.pop()
+        yield current
+        for operand in getattr(current, "operands", []):
+            if hasattr(operand, "operation"):
+                stack.append(operand)
+            elif isinstance(operand, list):
+                stack.extend(
+                    item for item in operand if hasattr(item, "operation")
+                )
+
+
+def _llil_mentions_constant(node: Any, value: int) -> bool:
+    return any(
+        sub.operation in _CONST_OPERATIONS
+        and getattr(sub, "constant", None) == value
+        for sub in _walk_llil(node)
+    )
+
+
+def _classify_llil_reference(llil: Any, dest: int) -> int | None:
+    """Classify how the IL instruction accesses the dest constant.
+
+    Walks the expression tree structurally instead of matching the IL's
+    string rendering: a constant inside a store destination is a write, one
+    inside a load source is a read, and one feeding a call is a read.
+    """
+    for node in _walk_llil(llil):
+        if node.operation in _STORE_OPERATIONS and _llil_mentions_constant(
+            node.dest, dest
+        ):
+            return Quokka.EDGE_DATA_WRITE
+    for node in _walk_llil(llil):
+        if node.operation in _LOAD_OPERATIONS and _llil_mentions_constant(
+            node.src, dest
+        ):
             return Quokka.EDGE_DATA_READ
-        return Quokka.EDGE_DATA_INDIR
+    if llil.operation in CALL_LLIL_OPERATIONS and _llil_mentions_constant(llil, dest):
+        return Quokka.EDGE_DATA_READ
     return None
 
 
-def _llil_operation(func: Any, addr: int) -> Any | None:
-    try:
-        llil = func.get_llil_at(addr)
-    except Exception:
-        return None
-    return getattr(llil, "operation", None)
-
-
-def _llil_text(func: Any, addr: int) -> str:
-    try:
-        return str(func.get_llil_at(addr))
-    except Exception:
-        return ""
+def _classify_token_reference(tokens: list[Any], destination: int) -> int | None:
+    for operand_tokens in operand_token_groups(tokens):
+        if not any(token_value(token) == destination for token in operand_tokens):
+            continue
+        if (
+            tokens_are_memory(operand_tokens)
+            and extract_mnemonic(tokens).lower() != "lea"
+        ):
+            # Without structural IL information the access direction is
+            # unknowable from tokens alone; READ is the conservative default
+            # (writes are normally caught by the LLIL pass first).
+            return Quokka.EDGE_DATA_READ
+        return Quokka.EDGE_DATA_INDIR
+    return None
 
 
 def _instruction_fallthrough(ctx: ExportContext, addr: int) -> int | None:

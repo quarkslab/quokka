@@ -4,10 +4,46 @@ from __future__ import annotations
 
 from typing import Any
 
-from binaryninja import InstructionTextTokenType  # type: ignore
+from binaryninja import (  # type: ignore
+    InstructionTextTokenType,
+    LowLevelILOperation,
+)
 
 from ..context import ExportContext
 from ..quokka_pb2 import Quokka
+
+
+# Operand access flags (read/write). BinaryNinja's disassembly tokens carry
+# no access information, so operands are exported as ACCESS_UNKNOWN rather
+# than guessed from architecture-specific mnemonic tables: wrong metadata is
+# worse than absent metadata.
+ACCESS_UNKNOWN = 0
+ACCESS_READ = 1
+ACCESS_WRITE = 2
+ACCESS_READ_WRITE = 3
+
+CALL_LLIL_OPERATIONS = frozenset(
+    {
+        LowLevelILOperation.LLIL_CALL,
+        LowLevelILOperation.LLIL_CALL_SSA,
+        LowLevelILOperation.LLIL_SYSCALL,
+        LowLevelILOperation.LLIL_SYSCALL_SSA,
+        LowLevelILOperation.LLIL_TAILCALL,
+        LowLevelILOperation.LLIL_TAILCALL_SSA,
+    }
+)
+
+
+def llil_at(func: Any, addr: int) -> Any | None:
+    """The lifted LLIL instruction at addr, or None when unavailable."""
+    try:
+        return func.get_llil_at(addr)
+    except Exception:
+        return None
+
+
+def llil_operation(func: Any, addr: int) -> Any | None:
+    return getattr(llil_at(func, addr), "operation", None)
 
 
 def export_instruction(
@@ -25,11 +61,9 @@ def export_instruction(
     )
     instruction.is_thumb = is_thumb
 
-    operands = operand_token_groups(tokens)
-    mnemonic = extract_mnemonic(tokens).lower()
-    for operand_idx, operand_tokens in enumerate(operands):
+    for operand_tokens in operand_token_groups(tokens):
         instruction.operand_index.append(
-            _export_operand(ctx, builder, mnemonic, operand_idx, operand_tokens)
+            _export_operand(ctx, builder, operand_tokens)
         )
 
     return instruction_index
@@ -38,8 +72,6 @@ def export_instruction(
 def _export_operand(
     ctx: ExportContext,
     builder: Quokka,
-    mnemonic: str,
-    operand_idx: int,
     tokens: list[Any],
 ) -> int:
     operand_index = len(builder.operands)
@@ -48,7 +80,7 @@ def _export_operand(
     operand.operand_string_index = _intern_string(
         ctx.operand_string_indices, builder.operand_strings, operand_text
     )
-    operand.access = infer_operand_access(mnemonic, operand_idx)
+    operand.access = ACCESS_UNKNOWN
 
     if tokens_are_memory(tokens):
         operand.type = Quokka.Operand.OPERAND_MEMORY
@@ -188,20 +220,16 @@ def token_value(token: Any) -> int | None:
     return value
 
 
-def infer_operand_access(mnemonic: str, operand_idx: int) -> int:
-    if operand_idx != 0:
-        return 1
-    if mnemonic in {"add", "sub", "xor", "or", "and", "adc", "sbb", "inc", "dec"}:
-        return 3
-    if mnemonic in {"mov", "lea", "pop", "xchg", "imul", "shl", "shr", "sar", "sal"}:
-        return 2
-    return 1
-
-
 __all__ = [
+    "ACCESS_READ",
+    "ACCESS_READ_WRITE",
+    "ACCESS_UNKNOWN",
+    "ACCESS_WRITE",
+    "CALL_LLIL_OPERATIONS",
     "export_instruction",
     "extract_mnemonic",
-    "infer_operand_access",
+    "llil_at",
+    "llil_operation",
     "operand_token_groups",
     "token_value",
     "tokens_are_memory",

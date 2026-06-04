@@ -11,7 +11,12 @@ from binaryninja import BranchType, SymbolType  # type: ignore
 from ..context import ExportContext
 from ..quokka_pb2 import Quokka
 from ..util import map_calling_convention
-from .instructions import export_instruction, extract_mnemonic
+from .instructions import (
+    CALL_LLIL_OPERATIONS,
+    export_instruction,
+    extract_mnemonic,
+    llil_operation,
+)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -182,8 +187,8 @@ class FunctionExporter:
                 addr += length
 
             start_index = 0
-            for instr_index, (addr, tokens, _length) in enumerate(indexed_instructions[:-1]):
-                if not FunctionExporter._is_call_site(ctx, addr, tokens):
+            for instr_index, (addr, _tokens, _length) in enumerate(indexed_instructions[:-1]):
+                if not FunctionExporter._is_call_site(ctx, func, addr):
                     continue
 
                 next_start = indexed_instructions[instr_index + 1][0]
@@ -252,8 +257,8 @@ class FunctionExporter:
         if not indexed_instructions:
             return None
 
-        last_addr, last_tokens, last_length = indexed_instructions[-1]
-        if not FunctionExporter._is_call_site(ctx, last_addr, last_tokens):
+        last_addr, _last_tokens, last_length = indexed_instructions[-1]
+        if not FunctionExporter._is_call_site(ctx, block.function, last_addr):
             return None
 
         fallthrough_addr = last_addr + last_length
@@ -282,20 +287,24 @@ class FunctionExporter:
         return fallthrough_addr, tokens, length
 
     @staticmethod
-    def _is_call_site(ctx: ExportContext, addr: int, tokens: list[Any]) -> bool:
-        try:
-            info = ctx.view.arch.get_instruction_info(ctx.view.read(addr, 16), addr)
-        except Exception:
-            info = None
-
-        if any(
-            branch.type in (BranchType.CallDestination, BranchType.SystemCall)
-            for branch in getattr(info, "branches", [])
+    def _is_call_site(ctx: ExportContext, func: Any, addr: int) -> bool:
+        info = ctx.instruction_branches(addr)
+        if info is not None and any(
+            branch_type in (BranchType.CallDestination, BranchType.SystemCall)
+            for branch_type, _ in info[1]
         ):
             return True
 
-        mnemonic = extract_mnemonic(tokens).lower()
-        return mnemonic in {"call", "callq", "bl", "blx", "jal", "jalr"}
+        # Indirect calls carry no branch info in InstructionInfo; the lifted
+        # IL identifies them structurally and architecture-independently.
+        return llil_operation(func, addr) in CALL_LLIL_OPERATIONS
+
+    @staticmethod
+    def _is_return_instruction(ctx: ExportContext, addr: int) -> bool:
+        info = ctx.instruction_branches(addr)
+        return info is not None and any(
+            branch_type == BranchType.FunctionReturn for branch_type, _ in info[1]
+        )
 
     @staticmethod
     def _block_type(ctx: ExportContext, block: _ExportBlock) -> int:
@@ -306,20 +315,16 @@ class FunctionExporter:
             BranchType.FalseBranch,
         }
 
-        last_text = ""
-        if block.instructions:
-            last_tokens = block.instructions[-1][0]
-            last_text = "".join(str(token) for token in last_tokens).lower()
-        compact_last_text = last_text.replace(" ", "")
         has_conditional_flow = bool(
             edge_types & {BranchType.TrueBranch, BranchType.FalseBranch}
         )
-        looks_like_conditional_return = has_conditional_flow and (
-            "ret" in last_text
-            or " lr" in last_text
-            or " pc" in last_text
-            or ",pc" in compact_last_text
-            or "{pc" in compact_last_text
+        last_addr = None
+        if block.instructions:
+            last_addr = block.start + block.length - block.instructions[-1][1]
+        looks_like_conditional_return = (
+            has_conditional_flow
+            and last_addr is not None
+            and FunctionExporter._is_return_instruction(ctx, last_addr)
         )
 
         if ctx.resolve_segment_index(block.start) < 0:

@@ -5,7 +5,7 @@ from __future__ import annotations
 import io
 import logging
 from collections import OrderedDict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from binaryninja import BinaryView, Type
@@ -52,6 +52,42 @@ class ExportContext:
         self.operand_string_indices: dict[str, int] = {}
         self.register_indices: dict[str, int] = {}
         self.instruction_locations: dict[int, tuple[int, int, int]] = {}
+        self._instruction_branch_cache: dict[
+            int, tuple[int, tuple[tuple[Any, int | None], ...]] | None
+        ] = {}
+
+    def instruction_branches(
+        self, addr: int
+    ) -> tuple[int, tuple[tuple[Any, int | None], ...]] | None:
+        """Decoded branch info for the instruction at addr, cached.
+
+        Returns (length, ((branch_type, target_or_None), ...)) or None when
+        the instruction cannot be decoded. Several export phases need this
+        for every instruction; caching avoids re-reading and re-decoding the
+        same bytes once per phase.
+        """
+        if addr in self._instruction_branch_cache:
+            return self._instruction_branch_cache[addr]
+
+        info = None
+        if self.view is not None and self.view.arch is not None:
+            try:
+                raw = self.view.arch.get_instruction_info(
+                    self.view.read(addr, 16), addr
+                )
+            except Exception:
+                raw = None
+            if raw is not None:
+                info = (
+                    getattr(raw, "length", 0),
+                    tuple(
+                        (branch.type, getattr(branch, "target", None))
+                        for branch in getattr(raw, "branches", [])
+                    ),
+                )
+
+        self._instruction_branch_cache[addr] = info
+        return info
 
     def resolve_segment_index(self, addr: int) -> int:
         return find_segment_index(self.segments, address_offset(addr))
