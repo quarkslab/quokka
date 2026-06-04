@@ -17,16 +17,7 @@ from binaryninja import (  # type: ignore
     TypeClass,
 )
 
-try:
-    from .quokka_pb2 import Quokka
-except ImportError:
-    try:
-        from quokka_pb2 import Quokka
-    except ImportError as exc:
-        raise ImportError(
-            "Generated protobuf support file not found. "
-            "Run generate_proto.py to generate required supporting files."
-        ) from exc
+from .quokka_pb2 import Quokka
 
 
 PRIMITIVE_TYPE_COUNT = 9

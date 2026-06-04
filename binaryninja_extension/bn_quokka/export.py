@@ -24,53 +24,24 @@ from binaryninja import (  # type: ignore
     TypeClass,
 )
 
-try:
-    from .quokka_pb2 import Quokka
-except ImportError:
-    try:
-        from quokka_pb2 import Quokka
-    except ImportError as exc:
-        raise ImportError(
-            "Generated protobuf support file not found. "
-            "Run generate_proto.py to generate required supporting files."
-        ) from exc
-
-try:
-    from .util import (
-        PRIMITIVE_TYPE_COUNT,
-        TYPE_UNK,
-        SegmentInfo,
-        TypeKind,
-        address_offset,
-        address_size_to_proto,
-        classify_type,
-        find_segment_index,
-        inner_type,
-        map_by_size,
-        map_primitive_type,
-        segment_offset,
-        type_class_name,
-        type_key,
-        type_name,
-    )
-except ImportError:
-    from util import (  # type: ignore
-        PRIMITIVE_TYPE_COUNT,
-        TYPE_UNK,
-        SegmentInfo,
-        TypeKind,
-        address_offset,
-        address_size_to_proto,
-        classify_type,
-        find_segment_index,
-        inner_type,
-        map_by_size,
-        map_primitive_type,
-        segment_offset,
-        type_class_name,
-        type_key,
-        type_name,
-    )
+from .quokka_pb2 import Quokka
+from .util import (
+    PRIMITIVE_TYPE_COUNT,
+    TYPE_UNK,
+    SegmentInfo,
+    TypeKind,
+    address_offset,
+    address_size_to_proto,
+    classify_type,
+    find_segment_index,
+    inner_type,
+    map_by_size,
+    map_primitive_type,
+    segment_offset,
+    type_class_name,
+    type_key,
+    type_name,
+)
 
 
 LOGGER = logging.getLogger(__name__)
