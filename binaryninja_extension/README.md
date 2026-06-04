@@ -7,9 +7,12 @@ shared schema `proto/quokka.proto` at the repository root and is not checked
 in, following the same convention as the Python bindings. Generate it with:
 
 ```bash
-pip install grpcio-tools
+pip install -r binaryninja_extension/requirements.txt
 python binaryninja_extension/generate_proto.py
 ```
+
+The pinned grpcio-tools version keeps the generated code on the same protobuf
+release line used by the other exporters (see requirements.txt).
 
 `install_dev.py` runs the generation automatically before symlinking the
 extension into the BinaryNinja user plugin directory, and the test suite
