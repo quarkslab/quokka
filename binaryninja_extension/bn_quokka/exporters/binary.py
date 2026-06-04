@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import bisect
 import hashlib
 import logging
 import os
@@ -285,6 +286,8 @@ class DataExporter:
             size = len(data_var) if data_var is not None else ctx.view.address_size
             add_record(symbol.address, dtype, size, symbol.name or "")
 
+        destination_index, source_index = _build_reference_index(builder)
+
         for addr, (
             seg_idx,
             seg_off,
@@ -305,7 +308,7 @@ class DataExporter:
             data.not_initialized = not_initialized
             if name:
                 data.name = name
-            _populate_data_xrefs(builder, data, addr, size)
+            _populate_data_xrefs(data, addr, size, destination_index, source_index)
 
 
 def _hash_for_view(view: BinaryView) -> tuple[int, str]:
@@ -349,17 +352,43 @@ def _string_symbol_name(string_ref: Any) -> str:
     return f"s_{cleaned}_{string_ref.start:08x}"
 
 
-def _populate_data_xrefs(builder: Quokka, data: Any, addr: int, size: int) -> None:
-    end = addr + max(1, size)
+def _build_reference_index(
+    builder: Quokka,
+) -> tuple[list[tuple[int, int]], list[tuple[int, int]]]:
+    """Sorted (address, reference index) lists for destinations and sources.
+
+    Built once so each data record can find its cross-references with a
+    binary search instead of scanning every reference (which made data
+    export O(data x references)).
+    """
+    destinations: list[tuple[int, int]] = []
+    sources: list[tuple[int, int]] = []
     for ref_idx, reference in enumerate(builder.references):
         if reference.destination.WhichOneof("Type") == "address":
-            destination = reference.destination.address
-            if addr <= destination < end:
-                data.xref_to.append(ref_idx)
+            destinations.append((reference.destination.address, ref_idx))
         if reference.source.WhichOneof("Type") == "address":
-            source = reference.source.address
-            if addr <= source < end:
-                data.xref_from.append(ref_idx)
+            sources.append((reference.source.address, ref_idx))
+    destinations.sort()
+    sources.sort()
+    return destinations, sources
+
+
+def _refs_in_range(index: list[tuple[int, int]], start: int, end: int) -> list[int]:
+    lo = bisect.bisect_left(index, (start, -1))
+    hi = bisect.bisect_left(index, (end, -1))
+    return sorted(ref_idx for _, ref_idx in index[lo:hi])
+
+
+def _populate_data_xrefs(
+    data: Any,
+    addr: int,
+    size: int,
+    destination_index: list[tuple[int, int]],
+    source_index: list[tuple[int, int]],
+) -> None:
+    end = addr + max(1, size)
+    data.xref_to.extend(_refs_in_range(destination_index, addr, end))
+    data.xref_from.extend(_refs_in_range(source_index, addr, end))
 
 
 def _merged_ranges(ranges: Iterable[tuple[int, int]]) -> list[tuple[int, int]]:
