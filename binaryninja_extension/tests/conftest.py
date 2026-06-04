@@ -79,8 +79,11 @@ _STUB_ATTRIBUTES = {
         "SymbolType",
         "Type",
         "TypeClass",
+        "core_ui_enabled",
+        "log_debug",
         "log_error",
         "log_info",
+        "log_warn",
     ),
     "binaryninja.enums": ("MessageBoxIcon",),
     "binaryninja.interaction": (

@@ -98,3 +98,45 @@ def test_progress_raises_when_cancelled(tmp_path):
     task.cancelled = True
     with pytest.raises(ExportCancelled):
         task._progress("exporting data")
+
+
+def test_log_handler_routes_levels_to_binaryninja(monkeypatch):
+    import logging
+
+    calls = []
+    for name in ("log_debug", "log_info", "log_warn", "log_error"):
+        monkeypatch.setattr(ext, name, lambda msg, _name=name: calls.append(_name))
+
+    logger = logging.getLogger("bn_quokka_forwarder_test")
+    handler = ext._BinaryNinjaLogHandler()
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+    try:
+        logger.debug("d")
+        logger.info("i")
+        logger.warning("w")
+        logger.error("e")
+        logger.critical("c")
+    finally:
+        logger.removeHandler(handler)
+
+    assert calls == ["log_debug", "log_info", "log_warn", "log_error", "log_error"]
+
+
+def test_log_forwarder_installs_once():
+    import logging
+
+    logger = logging.getLogger(ext.__name__)
+    before = list(logger.handlers)
+    try:
+        ext._install_log_forwarder()
+        ext._install_log_forwarder()
+        forwarders = [
+            handler
+            for handler in logger.handlers
+            if isinstance(handler, ext._BinaryNinjaLogHandler)
+        ]
+        assert len(forwarders) == 1
+    finally:
+        logger.handlers = before

@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from binaryninja import (  # type: ignore
     BackgroundTaskThread,
     PluginCommand,
+    core_ui_enabled,
     execute_on_main_thread,
+    log_debug,
     log_error,
     log_info,
+    log_warn,
 )
 from binaryninja.enums import MessageBoxIcon  # type: ignore
 from binaryninja.interaction import (  # type: ignore
@@ -17,6 +21,46 @@ from binaryninja.interaction import (  # type: ignore
 )
 
 from .bn_quokka.export import ExportCancelled, export_binary_view
+
+
+class _BinaryNinjaLogHandler(logging.Handler):
+    """Forward stdlib logging records to the BinaryNinja log.
+
+    bn_quokka deliberately uses Python's logging (so headless runs can
+    configure it normally); inside the UI those records would otherwise never
+    reach the BinaryNinja log pane.
+    """
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            message = self.format(record)
+            if record.levelno >= logging.ERROR:
+                log_error(message)
+            elif record.levelno >= logging.WARNING:
+                log_warn(message)
+            elif record.levelno >= logging.INFO:
+                log_info(message)
+            else:
+                log_debug(message)
+        except Exception:
+            self.handleError(record)
+
+
+def _install_log_forwarder() -> None:
+    """Route this package's loggers to the BinaryNinja log pane (UI only)."""
+    if not core_ui_enabled():
+        return
+
+    logger = logging.getLogger(__name__)
+    if any(isinstance(handler, _BinaryNinjaLogHandler) for handler in logger.handlers):
+        return
+
+    handler = _BinaryNinjaLogHandler()
+    handler.setFormatter(logging.Formatter("%(name)s: %(message)s"))
+    logger.addHandler(handler)
+    # Surface INFO diagnostics (skipped types, ...) in the log pane; the pane
+    # has its own per-level filtering.
+    logger.setLevel(logging.INFO)
 
 
 def _default_output_path(bv) -> Path:
@@ -92,6 +136,8 @@ def export_light(bv) -> None:
 def export_self_contained(bv) -> None:
     _export_with_dialog(bv, "SELF_CONTAINED")
 
+
+_install_log_forwarder()
 
 PluginCommand.register(
     "Quokka\\Export LIGHT",
