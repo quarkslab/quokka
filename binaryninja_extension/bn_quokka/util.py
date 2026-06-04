@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 if TYPE_CHECKING:
     from binaryninja import BinaryView
@@ -56,13 +56,13 @@ class SegmentInfo:
     proto_seg_type: int = int(Quokka.Segment.SEGMENT_UNK)
     proto_addr_size: int = int(Quokka.ADDR_UNK)
     file_offset: int = -1
-    data_size: Optional[int] = None
-    segment: Optional[Segment] = None
+    data_size: int | None = None
+    segment: Segment | None = None
 
     @classmethod
     def from_binaryninja(
-        cls, view: BinaryView, segment: Segment, name: Optional[str] = None
-    ) -> "SegmentInfo":
+        cls, view: BinaryView, segment: Segment, name: str | None = None
+    ) -> SegmentInfo:
         _require_segment(segment)
 
         sections = view.get_sections_at(segment.start)
@@ -113,8 +113,8 @@ class SegmentInfo:
 
     @classmethod
     def from_binaryninja_section(
-        cls, view: BinaryView, section: Section, name: Optional[str] = None
-    ) -> "SegmentInfo":
+        cls, view: BinaryView, section: Section, name: str | None = None
+    ) -> SegmentInfo:
         """Build segment metadata from a BinaryNinja section."""
 
         if not isinstance(section, Section):
@@ -134,12 +134,12 @@ class SegmentInfo:
     def from_range(
         cls,
         view: BinaryView,
-        segment: Optional[Segment],
+        segment: Segment | None,
         start: int,
         end: int,
         name: str,
-        semantics: Optional[Any] = None,
-    ) -> "SegmentInfo":
+        semantics: Any | None = None,
+    ) -> SegmentInfo:
         """Build segment metadata for a non-overlapping virtual address range."""
 
         size = max(0, end - start)
@@ -180,7 +180,7 @@ def _require_segment(segment: Segment) -> Segment:
 
 
 def _permissions_from_segment(
-    segment: Optional[Segment], semantics: Optional[Any]
+    segment: Segment | None, semantics: Any | None
 ) -> int:
     permissions = 0
     if segment is not None:
@@ -202,7 +202,7 @@ def _permissions_from_segment(
 
 
 def _segment_type_from_semantics(
-    segment: Optional[Segment], semantics: Optional[Any], name: str
+    segment: Segment | None, semantics: Any | None, name: str
 ) -> int:
     lowered_name = name.lower()
     if semantics == SectionSemantics.ExternalSectionSemantics or "extern" in lowered_name:
@@ -287,7 +287,7 @@ def type_class_name(dtype: Type) -> str:
     return _require_type(dtype).type_class.name
 
 
-def map_by_size(byte_size: Optional[int]) -> int:
+def map_by_size(byte_size: int | None) -> int:
     return {
         1: int(Quokka.TYPE_B),
         2: int(Quokka.TYPE_W),
@@ -297,7 +297,7 @@ def map_by_size(byte_size: Optional[int]) -> int:
     }.get(byte_size, TYPE_UNK)
 
 
-def map_primitive_type(dtype: Type) -> Optional[int]:
+def map_primitive_type(dtype: Type) -> int | None:
     dtype = _require_type(dtype)
 
     if dtype.type_class == TypeClass.VoidTypeClass:
@@ -366,7 +366,7 @@ def type_key(dtype: Type, kind: TypeKind) -> str:
     return f"{type_name(dtype)}:{suffix}"
 
 
-def inner_type(dtype: Type) -> Optional[Type]:
+def inner_type(dtype: Type) -> Type | None:
     dtype = _require_type(dtype)
     if dtype.type_class == TypeClass.PointerTypeClass:
         return dtype.target

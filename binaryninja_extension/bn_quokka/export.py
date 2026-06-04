@@ -9,7 +9,7 @@ import lzma
 import os
 from pathlib import Path
 import re
-from typing import TYPE_CHECKING, Any, Iterable, Optional, Union
+from typing import TYPE_CHECKING, Any, Iterable
 
 if TYPE_CHECKING:
     from binaryninja import BinaryView, Type
@@ -75,8 +75,6 @@ except ImportError:
 
 LOGGER = logging.getLogger(__name__)
 
-ModeInput = Union[int, str]
-
 
 @dataclass
 class _ExportBlock:
@@ -106,24 +104,24 @@ class ExportContext:
         self.segments: list[SegmentInfo] = []
 
         self.next_type_index: int = PRIMITIVE_TYPE_COUNT
-        self.enum_type_indices: "OrderedDict[str, int]" = OrderedDict()
-        self.composite_type_indices: "OrderedDict[str, int]" = OrderedDict()
+        self.enum_type_indices: OrderedDict[str, int] = OrderedDict()
+        self.composite_type_indices: OrderedDict[str, int] = OrderedDict()
         self.mnemonic_indices: dict[str, int] = {}
         self.operand_string_indices: dict[str, int] = {}
         self.register_indices: dict[str, int] = {}
         self.instruction_locations: dict[int, tuple[int, int, int]] = {}
 
-    def resolveSegmentIndex(self, addr: int) -> int:
+    def resolve_segment_index(self, addr: int) -> int:
         return find_segment_index(self.segments, address_offset(addr))
 
-    def resolveSegmentOffset(self, addr: int) -> int:
+    def resolve_segment_offset(self, addr: int) -> int:
         offset = address_offset(addr)
         idx = find_segment_index(self.segments, offset)
         if idx < 0:
             return 0
         return segment_offset(offset, self.segments[idx])
 
-    def resolveFileOffset(self, addr: int) -> int:
+    def resolve_file_offset(self, addr: int) -> int:
         offset = address_offset(addr)
 
         if self.view is not None:
@@ -144,7 +142,7 @@ class ExportContext:
             return -1
         return segment.file_offset + offset_in_segment
 
-    def isAddressInitialized(self, addr: int) -> bool:
+    def is_address_initialized(self, addr: int) -> bool:
         offset = address_offset(addr)
         idx = find_segment_index(self.segments, offset)
         if idx < 0:
@@ -155,7 +153,7 @@ class ExportContext:
         data_size = segment.size if segment.data_size is None else segment.data_size
         return data_size > 0 and 0 <= offset_in_segment < data_size
 
-    def resolveTypeIndex(self, dtype: Optional[Type]) -> int:
+    def resolve_type_index(self, dtype: Type | None) -> int:
         if dtype is None:
             return TYPE_UNK
 
@@ -310,7 +308,7 @@ class TypeExporter:
         skipped_func_defs = 0
         unhandled_types: set[str] = set()
 
-        def register_type(dtype: Optional[Type]) -> None:
+        def register_type(dtype: Type | None) -> None:
             nonlocal skipped_duplicates, skipped_func_defs
 
             if dtype is None:
@@ -374,7 +372,7 @@ class TypeExporter:
     @staticmethod
     def _child_types(
         ctx: ExportContext, dtype: Type, kind: TypeKind
-    ) -> Iterable[Optional[Type]]:
+    ) -> Iterable[Type | None]:
         if kind in (TypeKind.STRUCT, TypeKind.UNION):
             composite_type = _resolve_named_type(ctx, dtype)
             for member in getattr(composite_type, "members", []):
@@ -386,7 +384,7 @@ class TypeExporter:
                 yield dtype.target(ctx.view)
 
     @staticmethod
-    def exportTypeToTypeRefs(ctx: ExportContext, builder: Quokka) -> int:
+    def export_type_to_type_refs(ctx: ExportContext, builder: Quokka) -> int:
         emitted = 0
         for type_idx in range(PRIMITIVE_TYPE_COUNT, len(builder.types)):
             proto_type = builder.types[type_idx]
@@ -474,7 +472,7 @@ class TypeExporter:
             value.value = TypeExporter._enum_value_to_int64(member.value)
 
     @staticmethod
-    def _enum_value_to_int64(raw_value: Optional[int]) -> int:
+    def _enum_value_to_int64(raw_value: int | None) -> int:
         if raw_value is None:
             return 0
 
@@ -514,7 +512,7 @@ class TypeExporter:
             member_proto.name = _member_name_or_default(
                 member.name, member_offset, member_idx, used_member_names
             )
-            member_proto.type_index = ctx.resolveTypeIndex(member.type)
+            member_proto.type_index = ctx.resolve_type_index(member.type)
             member_proto.size = max(0, len(member.type)) * 8
 
     @staticmethod
@@ -523,14 +521,14 @@ class TypeExporter:
         composite: Any,
         dtype: Type,
         subtype: int,
-        element_type: Optional[Type],
+        element_type: Type | None,
     ) -> None:
         composite.name = type_name(dtype)
         composite.type = subtype
         composite.size = max(0, dtype.width)
         composite.c_str = dtype.get_string()
         if element_type is not None:
-            composite.element_type_idx = ctx.resolveTypeIndex(element_type)
+            composite.element_type_idx = ctx.resolve_type_index(element_type)
 
     @staticmethod
     def _emit_type_ref(
@@ -656,8 +654,8 @@ class FunctionExporter:
         blocks = sorted(
             func.basic_blocks,
             key=lambda block: (
-                ctx.resolveSegmentIndex(block.start),
-                ctx.resolveSegmentOffset(block.start),
+                ctx.resolve_segment_index(block.start),
+                ctx.resolve_segment_offset(block.start),
             ),
         )
         split_blocks: list[_ExportBlock] = []
@@ -748,7 +746,7 @@ class FunctionExporter:
         ctx: ExportContext,
         block: Any,
         indexed_instructions: list[tuple[int, list[Any], int]],
-    ) -> Optional[tuple[int, list[Any], int]]:
+    ) -> tuple[int, list[Any], int] | None:
         if block.outgoing_edges:
             return None
         if not indexed_instructions:
@@ -759,7 +757,7 @@ class FunctionExporter:
             return None
 
         fallthrough_addr = last_addr + last_length
-        if ctx.resolveSegmentIndex(fallthrough_addr) < 0:
+        if ctx.resolve_segment_index(fallthrough_addr) < 0:
             return None
         if ctx.view.get_function_at(fallthrough_addr) is not None:
             return None
@@ -824,7 +822,7 @@ class FunctionExporter:
             or "{pc" in compact_last_text
         )
 
-        if ctx.resolveSegmentIndex(block.start) < 0:
+        if ctx.resolve_segment_index(block.start) < 0:
             return Quokka.Block.BLOCK_TYPE_EXTERN
         if block.source_block.has_invalid_instructions:
             return Quokka.Block.BLOCK_TYPE_ERROR
@@ -1083,11 +1081,11 @@ class DataExporter:
 
         def add_record(
             addr: int,
-            dtype: Optional[Type],
+            dtype: Type | None,
             size: int,
             name: str = "",
         ) -> None:
-            seg_idx = ctx.resolveSegmentIndex(addr)
+            seg_idx = ctx.resolve_segment_index(addr)
             if seg_idx < 0:
                 return
             symbol_name = _symbol_name_at(ctx.view, addr)
@@ -1095,12 +1093,12 @@ class DataExporter:
             current = records.get(addr)
             record = (
                 seg_idx,
-                ctx.resolveSegmentOffset(addr),
-                ctx.resolveFileOffset(addr),
-                ctx.resolveTypeIndex(dtype),
+                ctx.resolve_segment_offset(addr),
+                ctx.resolve_file_offset(addr),
+                ctx.resolve_type_index(dtype),
                 max(1, size),
                 chosen_name,
-                not ctx.isAddressInitialized(addr),
+                not ctx.is_address_initialized(addr),
             )
             if current is None or (not current[5] and chosen_name):
                 records[addr] = record
@@ -1293,15 +1291,15 @@ def _tokens_are_register(tokens: list[Any]) -> bool:
     )
 
 
-def _first_resolved_address(ctx: ExportContext, tokens: list[Any]) -> Optional[int]:
+def _first_resolved_address(ctx: ExportContext, tokens: list[Any]) -> int | None:
     for token in tokens:
         value = _token_value(token)
-        if value is not None and ctx.resolveSegmentIndex(value) >= 0:
+        if value is not None and ctx.resolve_segment_index(value) >= 0:
             return value
     return None
 
 
-def _last_token_value(tokens: list[Any]) -> Optional[int]:
+def _last_token_value(tokens: list[Any]) -> int | None:
     for token in reversed(tokens):
         value = _token_value(token)
         if value is not None:
@@ -1309,7 +1307,7 @@ def _last_token_value(tokens: list[Any]) -> Optional[int]:
     return None
 
 
-def _token_value(token: Any) -> Optional[int]:
+def _token_value(token: Any) -> int | None:
     if token.type not in (
         InstructionTextTokenType.IntegerToken,
         InstructionTextTokenType.PossibleAddressToken,
@@ -1341,7 +1339,7 @@ def _infer_operand_access(mnemonic: str, operand_idx: int) -> int:
     return 1
 
 
-def _classify_token_reference(tokens: list[Any], destination: int) -> Optional[int]:
+def _classify_token_reference(tokens: list[Any], destination: int) -> int | None:
     mnemonic = _extract_mnemonic(tokens).lower()
     for operand_idx, operand_tokens in enumerate(_operand_token_groups(tokens)):
         if not any(_token_value(token) == destination for token in operand_tokens):
@@ -1354,7 +1352,7 @@ def _classify_token_reference(tokens: list[Any], destination: int) -> Optional[i
     return None
 
 
-def _llil_operation(func: Any, addr: int) -> Optional[Any]:
+def _llil_operation(func: Any, addr: int) -> Any | None:
     try:
         llil = func.get_llil_at(addr)
     except Exception:
@@ -1369,7 +1367,7 @@ def _llil_text(func: Any, addr: int) -> str:
         return ""
 
 
-def _instruction_fallthrough(ctx: ExportContext, addr: int) -> Optional[int]:
+def _instruction_fallthrough(ctx: ExportContext, addr: int) -> int | None:
     try:
         length = ctx.view.get_instruction_length(addr)
     except Exception:
@@ -1392,7 +1390,7 @@ def _string_symbol_name(string_ref: Any) -> str:
     return f"s_{cleaned}_{string_ref.start:08x}"
 
 
-def _type_declaration(dtype: Optional[Type]) -> str:
+def _type_declaration(dtype: Type | None) -> str:
     if dtype is None:
         return ""
     try:
@@ -1418,7 +1416,7 @@ def run_export_pipeline(ctx: ExportContext, builder: Quokka) -> Quokka:
     MetaExporter.export(ctx, builder)
     SegmentExporter.export(ctx, builder)
     TypeExporter.export(ctx, builder)
-    TypeExporter.exportTypeToTypeRefs(ctx, builder)
+    TypeExporter.export_type_to_type_refs(ctx, builder)
     FunctionExporter.export(ctx, builder)
     ReferenceExporter.export(ctx, builder)
     LayoutExporter.export(ctx, builder)
@@ -1429,8 +1427,8 @@ def run_export_pipeline(ctx: ExportContext, builder: Quokka) -> Quokka:
 
 def export_binary_view(
     bv: BinaryView,
-    output_file: Union[Path, str],
-    mode: ModeInput = Quokka.ExporterMeta.MODE_LIGHT,
+    output_file: Path | str,
+    mode: int | str = Quokka.ExporterMeta.MODE_LIGHT,
     *,
     compressed: bool = True,
     update_analysis: bool = True,
@@ -1454,9 +1452,9 @@ def export_binary_view(
 
 
 def export_file(
-    input_file: Union[Path, str],
-    output_file: Optional[Union[Path, str]] = None,
-    mode: ModeInput = Quokka.ExporterMeta.MODE_LIGHT,
+    input_file: Path | str,
+    output_file: Path | str | None = None,
+    mode: int | str = Quokka.ExporterMeta.MODE_LIGHT,
     *,
     compressed: bool = True,
     update_analysis: bool = True,
@@ -1501,7 +1499,7 @@ def collect_headers(view: BinaryView) -> str:
     return "\n".join(sorted(declarations)) + ("\n" if declarations else "")
 
 
-def _normalize_mode(mode: ModeInput) -> int:
+def _normalize_mode(mode: int | str) -> int:
     if isinstance(mode, int):
         if mode in (
             Quokka.ExporterMeta.MODE_LIGHT,
@@ -1519,7 +1517,7 @@ def _normalize_mode(mode: ModeInput) -> int:
 
 
 def _set_address_fields(ctx: ExportContext, proto: Any, addr: int) -> None:
-    seg_idx = ctx.resolveSegmentIndex(addr)
+    seg_idx = ctx.resolve_segment_index(addr)
     if seg_idx < 0:
         proto.segment_index = 0
         proto.segment_offset = 0
@@ -1527,8 +1525,8 @@ def _set_address_fields(ctx: ExportContext, proto: Any, addr: int) -> None:
         return
 
     proto.segment_index = seg_idx
-    proto.segment_offset = ctx.resolveSegmentOffset(addr)
-    proto.file_offset = ctx.resolveFileOffset(addr)
+    proto.segment_offset = ctx.resolve_segment_offset(addr)
+    proto.file_offset = ctx.resolve_file_offset(addr)
 
 
 def _hash_for_view(view: BinaryView) -> tuple[int, str]:

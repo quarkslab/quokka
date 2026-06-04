@@ -4,7 +4,7 @@
 
 `bn_quokka/quokka_pb2.py` is generated from the shared schema
 `proto/quokka.proto` at the repository root, using the grpcio-tools version
-pinned in `requirements.txt` (which keeps the generated code on the same
+pinned in `requirements-dev.txt` (which keeps the generated code on the same
 protobuf release line as the other exporters).
 
 Unlike the Python bindings, which generate the module at wheel build time,
@@ -17,7 +17,7 @@ toolchain and fails if the committed copy is stale.
 After changing `proto/quokka.proto`, regenerate it with:
 
 ```bash
-pip install -r binaryninja_extension/requirements.txt
+pip install -r binaryninja_extension/requirements-dev.txt
 python binaryninja_extension/generate_proto.py
 ```
 
