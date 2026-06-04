@@ -18,9 +18,9 @@
         "Windows"
     ],
     "installinstructions": {
-        "Darwin": "Run generate_proto.py to create bn_quokka/quokka_pb2.py, then install this directory as a BinaryNinja Python plugin.",
-        "Linux": "Run generate_proto.py to create bn_quokka/quokka_pb2.py, then install this directory as a BinaryNinja Python plugin.",
-        "Windows": "Run generate_proto.py to create bn_quokka/quokka_pb2.py, then install this directory as a BinaryNinja Python plugin."
+        "Darwin": "Install this directory as a BinaryNinja Python plugin.",
+        "Linux": "Install this directory as a BinaryNinja Python plugin.",
+        "Windows": "Install this directory as a BinaryNinja Python plugin."
     },
     "dependencies": {
         "pip": [

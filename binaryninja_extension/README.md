@@ -1,22 +1,28 @@
 # Quokka BinaryNinja Extension
 
-## Protobuf generation
+## Protobuf module
 
-The protobuf support module `bn_quokka/quokka_pb2.py` is generated from the
-shared schema `proto/quokka.proto` at the repository root and is not checked
-in, following the same convention as the Python bindings. Generate it with:
+`bn_quokka/quokka_pb2.py` is generated from the shared schema
+`proto/quokka.proto` at the repository root, using the grpcio-tools version
+pinned in `requirements.txt` (which keeps the generated code on the same
+protobuf release line as the other exporters).
+
+Unlike the Python bindings, which generate the module at wheel build time,
+the generated module is committed here: a BinaryNinja plugin is distributed
+as a plain git tree, so there is no build or install step where generation
+could run on the user's machine. End users therefore only need the protobuf
+runtime declared in `plugin.json`. CI regenerates the module with the pinned
+toolchain and fails if the committed copy is stale.
+
+After changing `proto/quokka.proto`, regenerate it with:
 
 ```bash
 pip install -r binaryninja_extension/requirements.txt
 python binaryninja_extension/generate_proto.py
 ```
 
-The pinned grpcio-tools version keeps the generated code on the same protobuf
-release line used by the other exporters (see requirements.txt).
-
-`install_dev.py` runs the generation automatically before symlinking the
-extension into the BinaryNinja user plugin directory, and the test suite
-generates the file on demand when grpcio-tools is available.
+`install_dev.py` also runs the generation automatically before symlinking the
+extension into the BinaryNinja user plugin directory.
 
 ## Headless Export
 
