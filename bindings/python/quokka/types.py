@@ -288,6 +288,7 @@ class CallingConvention(enum.Enum):
     def from_proto(proto_cc: "Pb.CallingConvention") -> "CallingConvention":
         """Convert the protobuf value into this enumeration"""
         return {
+            Pb.CC_UNK: CallingConvention.UNKNOWN,
             Pb.CC_CDECL: CallingConvention.CDECL,
             Pb.CC_ELLIPSIS: CallingConvention.ELLIPSIS,
             Pb.CC_STDCALL: CallingConvention.STDCALL,
