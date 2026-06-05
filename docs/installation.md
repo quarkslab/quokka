@@ -201,9 +201,9 @@ unzip -o ghidra_extension/dist/ghidra_*_QuokkaExporter.zip \
 ### Requirements
 
 - Binary Ninja with its bundled Python 3 environment
-- `protobuf>=6.31,<7` available in Binary Ninja's Python interpreter (the
+- `protobuf` available in Binary Ninja's Python interpreter (the
   plugin manager installs it automatically from `plugin.json`; for manual
-  installs run `pip install 'protobuf>=6.31,<7'` with Binary Ninja's Python)
+  installs run `pip install 'protobuf'` with Binary Ninja's Python)
 
 ### Installation
 

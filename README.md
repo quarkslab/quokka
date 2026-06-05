@@ -40,13 +40,13 @@ the binary exporter used by BinDiff.
 IDA Plugin (C++)    Ghidra Plugin (Java)   BinaryNinja Plugin (Python)
         │                      │                      │
         └────────────── quokka.proto ─────────────────┘
-          (protobuf schema)
-                   │
-             .quokka files
-                   │
-   Python bindings (quokka.Program)
-   ├── Capstone backend (primary)
-   └── Pypcode backend (optional)
+                     (protobuf schema)
+                              │
+                        .quokka files
+                              │
+              Python bindings (quokka.Program)
+              ├── Capstone backend (primary)
+              └── Pypcode backend (optional)
 ```
 
 ## Installation
@@ -133,6 +133,8 @@ $ analyzeHeadless /tmp/proj Test \
     --out=/path/to/output.quokka --mode=LIGHT
 ```
 
+See the [Ghidra extension README](ghidra_extension/README.md) for more details.
+
 #### Binary Ninja
 
 Note: headless usage of the Binary Ninja API requires a commercial license.
@@ -143,7 +145,7 @@ $ python binaryninja_extension/export_headless.py /path/to/binary \
     -o /path/to/output.quokka --mode LIGHT
 ```
 
-See the [Ghidra extension README](ghidra_extension/README.md) for more details.
+See the [BinaryNinja extension README](binaryninja_extension/README.md) for more details.
 
 ### Exporting in CLI
 
