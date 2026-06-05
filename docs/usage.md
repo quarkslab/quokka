@@ -176,6 +176,35 @@ $ analyzeHeadless /tmp/proj Test \
     The Ghidra extension must be installed into `$GHIDRA_INSTALL_DIR/Ghidra/Extensions/`
     for headless export to work.
 
+### BinaryNinja Extension
+
+!!! note
+    This requires Binary Ninja with the Quokka extension installed (see
+    [Installation](installation.md#binaryninja-extension)).
+
+#### GUI
+
+Run the **Plugins > Quokka > Export LIGHT** command. The export runs as a
+background task with progress reporting and cancellation, and the output path
+is chosen in a save dialog.
+
+#### Headless
+
+!!! note
+    Headless usage of the Binary Ninja API requires a commercial license.
+
+```commandline
+$ python binaryninja_extension/export_headless.py /path/to/binary \
+    -o /path/to/output.quokka --mode LIGHT
+```
+
+Available options:
+
+* `-o/--output`: output path, defaults to `<input>.quokka`
+* `--mode`: `LIGHT` or `SELF_CONTAINED`
+* `--no-compress`: write a raw protobuf instead of the XZ-compressed output
+* `--skip-analysis`: export without waiting for analysis to complete
+
 ### Python API
 
 You can also trigger an export programmatically:

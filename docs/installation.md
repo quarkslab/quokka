@@ -195,3 +195,32 @@ unzip -o ghidra_extension/dist/ghidra_*_QuokkaExporter.zip \
     ```bash
     export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
     ```
+
+## BinaryNinja Extension
+
+### Requirements
+
+- Binary Ninja with its bundled Python 3 environment
+- `protobuf>=6.31,<7` available in Binary Ninja's Python interpreter (the
+  plugin manager installs it automatically from `plugin.json`; for manual
+  installs run `pip install 'protobuf>=6.31,<7'` with Binary Ninja's Python)
+
+### Installation
+
+Clone the repository and symlink the extension into the Binary Ninja user
+plugin directory:
+
+```commandline
+$ git clone git@github.com:quarkslab/quokka.git
+$ cd quokka
+$ python binaryninja_extension/install_dev.py
+```
+
+Alternatively, copy the `binaryninja_extension/` directory into the Binary
+Ninja user plugin folder manually.
+
+!!! note
+    The generated protobuf module (`bn_quokka/quokka_pb2.py`) is committed to
+    the repository, so no generation step is needed to install. After
+    changing `proto/quokka.proto`, regenerate it as described in the
+    [extension README](https://github.com/quarkslab/quokka/blob/main/binaryninja_extension/README.md).
