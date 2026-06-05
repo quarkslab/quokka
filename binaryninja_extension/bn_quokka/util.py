@@ -348,20 +348,14 @@ def map_by_size(byte_size: int | None) -> int:
 
 def map_calling_convention(cc_name: str) -> int:
     normalized = cc_name.lower().replace("_", "")
-    if "cdecl" in normalized:
+    # cdecl or System V AMD64 ABI
+    if "cdecl" in normalized or "sysv" in normalized:
         return Quokka.CC_CDECL
-    # BinaryNinja names the System V AMD64 ABI convention "sysv"; the IDA
-    # exporter represents it as CC_CDECL for the same binaries.
-    if "sysv" in normalized:
-        return Quokka.CC_CDECL
-    # BinaryNinja's "win64" is the Microsoft x64 convention, part of the
-    # fastcall family (IDA represents it the same way).
-    if "win64" in normalized:
+    # Microsoft x64 convention, part of the fastcall family
+    if "win64" in normalized or "fastcall" in normalized:
         return Quokka.CC_FASTCALL
     if "stdcall" in normalized:
         return Quokka.CC_STDCALL
-    if "fastcall" in normalized:
-        return Quokka.CC_FASTCALL
     if "thiscall" in normalized:
         return Quokka.CC_THISCALL
     if "pascal" in normalized:
