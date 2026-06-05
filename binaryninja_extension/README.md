@@ -1,5 +1,19 @@
 # Quokka BinaryNinja Extension
 
+## Distribution
+
+The extension is installed manually: symlink or copy this directory into the
+Binary Ninja user plugin folder (`install_dev.py` automates the symlink). It
+cannot be listed in the official plugin manager from this repository, because
+the plugin manager requires `plugin.json` at the root of the repository it
+fetches; publishing a dedicated distribution repository would lift that
+limitation.
+
+`plugin.json` declares Binary Ninja 4.0 (build 4911) as the minimum version:
+all APIs used are available there and the protobuf>=6.31 runtime requires the
+Python >= 3.9 bundled with modern builds. Development and testing happen
+against current stable releases.
+
 ## Code layout
 
 ```

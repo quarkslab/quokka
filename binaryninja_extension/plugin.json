@@ -2,7 +2,7 @@
     "pluginmetadataversion": 2,
     "name": "Quokka Exporter",
     "type": [
-        "core"
+        "helper"
     ],
     "api": [
         "python3"
@@ -29,5 +29,5 @@
     },
     "version": "1.0.0",
     "author": "Quarkslab",
-    "minimumbinaryninjaversion": 3000
+    "minimumbinaryninjaversion": 4911
 }
