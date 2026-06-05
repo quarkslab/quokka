@@ -23,6 +23,7 @@ from ..util import (
     build_extern_segments,
     map_calling_convention,
 )
+from ..version import __version__
 
 
 LOGGER = logging.getLogger(__name__)
@@ -44,7 +45,7 @@ class MetaExporter:
         view = ctx.view
 
         builder.exporter_meta.mode = ctx.mode
-        builder.exporter_meta.version = "1.0.0"
+        builder.exporter_meta.version = __version__
 
         meta = builder.meta
         path = view.file.original_filename or view.file.filename

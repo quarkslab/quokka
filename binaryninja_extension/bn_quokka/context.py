@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import io
 import logging
 from collections import OrderedDict
 from typing import TYPE_CHECKING, Any
@@ -37,10 +36,8 @@ class ExportCancelled(Exception):
 class ExportContext:
     """Shared export state passed through BinaryNinja export phases."""
 
-    def __init__(self, bv: BinaryView, file: io.BufferedWriter, mode: int):
+    def __init__(self, bv: BinaryView, mode: int):
         self.view: BinaryView = bv
-        self.output_file: io.BufferedWriter = file
-        self.file: io.BufferedWriter = file
         self.mode: int = mode
 
         self.segments: list[SegmentInfo] = []

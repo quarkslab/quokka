@@ -6,7 +6,6 @@ tokens, and LLIL nodes.
 
 from __future__ import annotations
 
-import io
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -41,7 +40,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def make_context(view=None) -> ExportContext:
-    return ExportContext(view, io.BytesIO(), 0)
+    return ExportContext(view, 0)
 
 
 # --- instruction_branches cache -------------------------------------------

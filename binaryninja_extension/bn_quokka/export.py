@@ -6,7 +6,6 @@ wires them together and remains the stable import surface of the package.
 
 from __future__ import annotations
 
-import io
 import lzma
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable
@@ -80,7 +79,7 @@ def export_binary_view(
 
     output_path = Path(output_file)
     builder = Quokka()
-    ctx = ExportContext(bv, io.BytesIO(), _normalize_mode(mode))
+    ctx = ExportContext(bv, _normalize_mode(mode))
     run_export_pipeline(ctx, builder, progress=progress)
 
     if progress is not None:

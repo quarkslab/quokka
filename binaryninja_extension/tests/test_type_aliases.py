@@ -6,7 +6,6 @@ cannot be constructed with hand-picked attributes.
 
 from __future__ import annotations
 
-import io
 import sys
 from pathlib import Path
 from unittest import mock
@@ -54,7 +53,7 @@ def dword_alias() -> FakeType:
 
 
 def make_context() -> ExportContext:
-    return ExportContext(None, io.BytesIO(), 0)
+    return ExportContext(None, 0)
 
 
 def test_is_named_primitive_alias():
