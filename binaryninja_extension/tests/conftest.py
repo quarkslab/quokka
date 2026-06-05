@@ -3,9 +3,8 @@
 The real binaryninja package only ships with Binary Ninja itself, so it is
 absent from regular development and CI environments. To keep the extension
 modules importable there, a strict stub is installed in sys.modules before
-collection. Tests that need the real API must be marked with
-@pytest.mark.requires_binaryninja; they are skipped when only the stub is
-available.
+collection. This suite is therefore fully BinaryNinja-free; integration
+tests that drive the real API live in tests/python/tests/binja/.
 """
 
 from __future__ import annotations
@@ -15,8 +14,6 @@ import sys
 import types
 from pathlib import Path
 from unittest import mock
-
-import pytest
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 _PB2_FILE = PLUGIN_ROOT / "bn_quokka" / "quokka_pb2.py"
@@ -133,19 +130,3 @@ if not HAS_BINARYNINJA:
     _install_binaryninja_stub()
 
 
-def pytest_configure(config: pytest.Config) -> None:
-    config.addinivalue_line(
-        "markers",
-        "requires_binaryninja: test needs the real BinaryNinja Python API",
-    )
-
-
-def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
-) -> None:
-    if HAS_BINARYNINJA:
-        return
-    skip_marker = pytest.mark.skip(reason="BinaryNinja Python API is not installed")
-    for item in items:
-        if "requires_binaryninja" in item.keywords:
-            item.add_marker(skip_marker)

@@ -1,20 +1,36 @@
+#  Copyright 2022-2026 Quarkslab
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+"""BinaryNinja export integration tests.
+
+Export qb-crackme with the real Binary Ninja API and validate the result,
+both at the protobuf level and through the Python bindings.
+"""
+
 from __future__ import annotations
 
-import lzma
 import hashlib
-import sys
+import lzma
 from pathlib import Path
 
 import pytest
 
-PLUGIN_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = PLUGIN_ROOT.parent
-sys.path.insert(0, str(PLUGIN_ROOT))
+pytest.importorskip("binaryninja", reason="Binary Ninja Python API is not installed")
 
+import quokka  # noqa: E402
 from bn_quokka.export import export_file  # noqa: E402
 from bn_quokka.quokka_pb2 import Quokka  # noqa: E402
-
-pytestmark = pytest.mark.requires_binaryninja
 
 
 def _load_proto(path: Path) -> Quokka:
@@ -26,14 +42,6 @@ def _load_proto(path: Path) -> Quokka:
         raw = path.read_bytes()
     proto.ParseFromString(raw)
     return proto
-
-
-@pytest.fixture(scope="module")
-def qb_crackme() -> Path:
-    sample = REPO_ROOT / "docs" / "samples" / "qb-crackme"
-    if not sample.exists() or sample.stat().st_size < 1024:
-        pytest.skip("docs/samples/qb-crackme fixture is unavailable")
-    return sample
 
 
 def test_light_export_qb_crackme(qb_crackme: Path, tmp_path: Path) -> None:
@@ -67,11 +75,9 @@ def test_light_export_qb_crackme(qb_crackme: Path, tmp_path: Path) -> None:
 
 def test_export_loads_through_python_bindings(qb_crackme: Path, tmp_path: Path) -> None:
     """The real compatibility contract: quokka.Program must load the export."""
-    quokka_lib = pytest.importorskip("quokka")
-
     output = tmp_path / "qb-crackme-binja-bindings.quokka"
     export_file(qb_crackme, output, "LIGHT")
-    program = quokka_lib.Program(output, qb_crackme)
+    program = quokka.Program(output, qb_crackme)
 
     assert len(program.fun_names) > 0
     assert "cprintf" in program.fun_names
