@@ -559,6 +559,13 @@ jobs:
           cmake --build "$CMAKE_BUILD_DIR" --config "$BUILD_TYPE"
           cmake --install "$CMAKE_BUILD_DIR"
 
+      - name: Prepare artifact
+        env:
+          CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
+        shell: bash
+        run: |
+          cp "$CMAKE_BUILD_DIR/quokka-install/quokka_plugin.${{ matrix.ext }}" "${{ matrix.ida_sdk }}-quokka_plugin.${{ matrix.ext }}"
+
       - name: Show ccache stats
         if: always()
         shell: bash
