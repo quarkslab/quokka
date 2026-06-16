@@ -37,8 +37,16 @@ public class ExportPipeline {
     public static void export(Program program, File outputFile,
             Quokka.ExporterMeta.Mode mode, TaskMonitor monitor)
             throws Exception {
+        export(program, outputFile, mode, false, monitor);
+    }
 
-        ExportContext ctx = new ExportContext(program, outputFile, mode, monitor);
+    public static void export(Program program, File outputFile,
+            Quokka.ExporterMeta.Mode mode, boolean decompilationEnabled,
+            TaskMonitor monitor)
+            throws Exception {
+
+        ExportContext ctx = new ExportContext(program, outputFile, mode,
+                decompilationEnabled, monitor);
         Quokka.Builder builder = Quokka.newBuilder();
 
         long startTime = System.currentTimeMillis();

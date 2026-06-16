@@ -174,19 +174,47 @@ class TestCommitMethod:
         """commit() should call write() to serialize the protobuf."""
         prog = _make_mock_program(Disassembler.GHIDRA)
         prog.write = MagicMock()
+        prog._commit_edits_ghidra = MagicMock(return_value=0)
         prog.commit = lambda **kw: quokka.Program.commit(prog, **kw)
 
         result = prog.commit()
         prog.write.assert_called_once()
         assert result == 0
 
-    def test_commit_ghidra_returns_zero(self):
-        """For Ghidra programs, commit() should return 0 (no IDA apply-back)."""
+    def test_commit_ghidra_calls_apply_back(self):
+        """For Ghidra programs, commit() should invoke Ghidra apply-back."""
         prog = _make_mock_program(Disassembler.GHIDRA)
         prog.write = MagicMock()
+        prog._commit_edits_ghidra = MagicMock(return_value=0)
         prog.commit = lambda **kw: quokka.Program.commit(prog, **kw)
 
-        assert prog.commit() == 0
+        assert prog.commit(
+            database_file="/tmp/proj.gpr",
+            ghidra_path="/opt/ghidra",
+            overwrite=True,
+            timeout=42,
+        ) == 0
+        prog._commit_edits_ghidra.assert_called_once_with(
+            "/tmp/proj.gpr",
+            ghidra_path="/opt/ghidra",
+            overwrite=True,
+            timeout=42,
+        )
+
+    def test_resolve_ghidra_project_from_gpr(self, tmp_path):
+        """Ghidra project paths may be passed as .gpr files."""
+        prog = _make_mock_program(Disassembler.GHIDRA)
+        prog._resolve_ghidra_project = (
+            lambda *args, **kw: quokka.Program._resolve_ghidra_project(prog, *args, **kw)
+        )
+        gpr = tmp_path / "Sample.gpr"
+        gpr.write_text("")
+
+        project_dir, project_name, exists = prog._resolve_ghidra_project(gpr)
+
+        assert project_dir == tmp_path
+        assert project_name == "Sample"
+        assert exists is True
 
     def test_commit_unknown_disassembler_raises(self):
         """commit() with BINARY_NINJA should raise NotImplementedError."""

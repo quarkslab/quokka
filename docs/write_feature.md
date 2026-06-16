@@ -7,7 +7,7 @@ propagated back in the quokka file by re-exporting the binary after committing t
 
 This workflow is useful when you want to share analysis results with
 colleagues, feed them into another tool, or permanently record findings in the
-IDA project.
+IDA or Ghidra project.
 
 ## Modifying function metadata
 
@@ -76,32 +76,32 @@ prog.write("binary_annotated.quokka")
 
 ### `commit` -- apply changes to the disassembler database
 
-!!! warning
-    `commit` currently only supports the **IDA backend**. For Ghidra-exported
-    programs, `commit()` writes the `.quokka` file but does not apply edits
-    back to Ghidra (Ghidra write-back is not yet implemented).
-
-`Program.commit` calls `write()` and then spawns a headless IDA instance to
-apply all recorded edits (names, prototypes, comments) to the IDA database.
+`Program.commit` calls `write()` and then spawns the matching headless
+disassembler to apply recorded edits back to the database/project.
 The full function signature (name, return type, parameter types, parameter
-names, and parameter count) is applied to the `.i64`.
+names, and parameter count) is applied to the disassembler database.
 
 ```python
-# database_file is required -- it is the .i64 to modify
+# IDA: database_file is the .i64 to modify
 errors = prog.commit(database_file="binary.i64", overwrite=True)
+
+# Ghidra: database_file is a .gpr file or a project directory
+errors = prog.commit(database_file="binary_ghidra/binary.gpr", overwrite=True)
 ```
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `database_file` | `Path\|str` | *required* | Path to the `.i64` database to modify |
+| `database_file` | `Path\|str\|None` | backend default | IDA `.i64` database, Ghidra `.gpr` file, or Ghidra project directory |
 | `ida_path` | `Path\|str\|None` | `None` | IDA installation directory (auto-detected if omitted) |
-| `overwrite` | `bool` | `True` | Allow modifying an existing `.i64`. Raises `FileExistsError` when `False` and the file exists. Logs a warning when `True`. |
-| `timeout` | `int` | `600` | Maximum seconds to wait for IDA |
+| `ghidra_path` | `Path\|str\|None` | `None` | Ghidra installation directory (or `GHIDRA_INSTALL_DIR`) |
+| `overwrite` | `bool` | `True` | Allow modifying an existing database/project. Raises `FileExistsError` when `False` and it exists. Logs a warning when `True`. |
+| `timeout` | `int` | `600` | Maximum seconds to wait for the disassembler |
 
 Returns the number of errors (0 = all edits applied successfully).
 
 !!! note
-    `commit` requires a working IDA installation with the Quokka plugin.
+    `commit` requires the corresponding disassembler integration: IDA with the
+    Quokka plugin, or Ghidra with the QuokkaExporter extension.
 
 ### `regenerate` -- commit then re-export
 
@@ -109,9 +109,6 @@ Returns the number of errors (0 = all edits applied successfully).
 returning a fresh `Program` instance that reflects the updated disassembler
 database. This is the right choice when you want a clean `.quokka` file that
 incorporates your annotations as first-class exported data.
-
-!!! warning
-    Like `commit`, `regenerate` currently only supports the **IDA backend**.
 
 ```python
 updated_prog = prog.regenerate(database_file="binary.i64", overwrite=True)
@@ -142,17 +139,20 @@ prog.commit(database_file="binary.i64", overwrite=True)
 ## From the command line (`quokka-apply`)
 
 The `quokka-apply` CLI applies edits stored in a `.quokka` file back to the
-disassembler database without writing Python code:
+disassembler database/project without writing Python code:
 
 ```commandline
 $ quokka-apply binary.quokka binary --overwrite
 $ quokka-apply binary.quokka binary --regenerate --overwrite
+$ quokka-apply binary.quokka binary --database-file binary_ghidra/binary.gpr --ghidra-path "$GHIDRA_INSTALL_DIR" --overwrite
 ```
 
 | Option | Description |
 |--------|-------------|
 | `--commit` | Write `.quokka` and apply edits to the disassembler (default) |
-| `--regenerate` | Commit then re-export a fresh `.quokka` from IDA |
+| `--regenerate` | Commit then re-export a fresh `.quokka` from the disassembler |
+| `--database-file` | IDA `.i64` database or Ghidra `.gpr`/project directory |
+| `--ghidra-path` | Ghidra installation directory |
 | `--overwrite` | Allow overwriting an existing disassembler database |
 | `-v`, `--verbose` | Increase logging verbosity |
 
@@ -174,5 +174,5 @@ errors = apply_quokka(p)
 | Method | Writes `.quokka` file | Applies to disassembler database | Returns fresh `Program` |
 |---|:---:|:---:|:---:|
 | `prog.write()` | Yes | No | No |
-| `prog.commit(database_file=...)` | Yes | Yes (IDA only) | No |
-| `prog.regenerate(database_file=...)` | Yes | Yes (IDA only) | Yes |
+| `prog.commit(database_file=...)` | Yes | Yes (IDA/Ghidra) | No |
+| `prog.regenerate(database_file=...)` | Yes | Yes (IDA/Ghidra) | Yes |

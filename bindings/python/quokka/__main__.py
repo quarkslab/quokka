@@ -380,22 +380,40 @@ def main(
     "--regenerate",
     "action",
     flag_value="regenerate",
-    help="commit() then re-export a fresh .quokka from IDA (slower)",
+    help="commit() then re-export a fresh .quokka from the disassembler (slower)",
+)
+@click.option(
+    "--database-file",
+    type=click.Path(),
+    default=None,
+    help="IDA .i64 database or Ghidra .gpr/project directory to modify",
+)
+@click.option(
+    "--ghidra-path",
+    type=click.Path(exists=True),
+    default=None,
+    help="Ghidra installation directory (overrides GHIDRA_INSTALL_DIR)",
 )
 @click.option("--overwrite", is_flag=True, default=False, help="Allow overwriting an existing disassembler database")
 @click.option("-v", "--verbose", count=True, help="Increase logging verbosity")
 @click.argument("quokka_file", type=click.Path(exists=True, dir_okay=False))
 @click.argument("binary_file", type=click.Path(exists=True, dir_okay=False))
 def apply_changes(
-    action: str, overwrite: bool, verbose: int, quokka_file: str, binary_file: str
+    action: str,
+    database_file: str | None,
+    ghidra_path: str | None,
+    overwrite: bool,
+    verbose: int,
+    quokka_file: str,
+    binary_file: str,
 ) -> None:
     """Apply pre-recorded edits from a .quokka file back to the disassembler.
 
     QUOKKA_FILE is the .quokka file containing pending edits.
     BINARY_FILE is the corresponding binary executable.
 
-    Use --commit (default) to write the .quokka and push edits to the IDA
-    database.  Use --regenerate to also trigger a fresh re-export from IDA.
+    Use --commit (default) to write the .quokka and push edits to the
+    disassembler database.  Use --regenerate to also trigger a fresh re-export.
     """
     logging.basicConfig(
         format="%(message)s", level=logging.DEBUG if verbose else logging.INFO
@@ -409,7 +427,11 @@ def apply_changes(
 
     if action == "commit":
         try:
-            errors = program.commit(overwrite=overwrite)
+            errors = program.commit(
+                database_file=database_file,
+                ghidra_path=ghidra_path,
+                overwrite=overwrite,
+            )
         except FileExistsError as e:
             logging.error(f"{e}\nUse --overwrite to allow modifying an existing database.")
             sys.exit(1)
@@ -420,7 +442,11 @@ def apply_changes(
             sys.exit(1)
     else:  # regenerate
         try:
-            new_program = program.regenerate(overwrite=overwrite)
+            new_program = program.regenerate(
+                database_file=database_file,
+                ghidra_path=ghidra_path,
+                overwrite=overwrite,
+            )
             logging.info(f"Regenerated: {new_program.export_file}")
         except FileExistsError as e:
             logging.error(f"{e}\nUse --overwrite to allow modifying an existing database.")
