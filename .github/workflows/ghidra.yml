@@ -83,15 +83,18 @@ jobs:
       working-directory: ghidra_extension
       run: ./gradlew installExtension
 
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+    - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
       with:
         python-version: "3.12"
+        cache-dependency-glob: pyproject.toml
 
-    - name: Install Python test dependencies
-      run: pip install '.[test]'
+    - name: Create Python test environment
+      run: |
+        uv venv --python 3.12
+        uv pip install '.[test]'
 
     - name: Run Ghidra apply-back integration test
-      run: pytest tests/python/tests/ghidra/test_ghidra_apply_back.py
+      run: .venv/bin/python -m pytest tests/python/tests/ghidra/test_ghidra_apply_back.py
 
     - name: Save Ghidra cache
       if: github.event_name == 'push' && steps.ghidra-cache.outputs.cache-hit != 'true'
