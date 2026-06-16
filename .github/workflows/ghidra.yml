@@ -7,15 +7,21 @@ on:
     tags:
       - "*"
     paths:
+      - "bindings/python/quokka/**"
       - "ghidra_extension/**"
       - "proto/**"
+      - "tests/dataset/sig_test"
+      - "tests/python/tests/ghidra/**"
       - ".gitmodules"
       - ".github/workflows/ghidra.yml"
   pull_request:
     branches: ["**"]
     paths:
+      - "bindings/python/quokka/**"
       - "ghidra_extension/**"
       - "proto/**"
+      - "tests/dataset/sig_test"
+      - "tests/python/tests/ghidra/**"
       - ".gitmodules"
       - ".github/workflows/ghidra.yml"
 
@@ -33,6 +39,7 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         persist-credentials: false
+        lfs: true
         submodules: false
 
     - name: Checkout Ghidra submodule
@@ -72,9 +79,19 @@ jobs:
         GHIDRA_VERSION: ${{ steps.ghidra-version.outputs.version }}
       run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${GHIDRA_VERSION}_PUBLIC" >> $GITHUB_ENV
 
-    - name: Build and test extension
+    - name: Build, test, and install extension
       working-directory: ghidra_extension
-      run: ./gradlew buildExtension
+      run: ./gradlew installExtension
+
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      with:
+        python-version: "3.12"
+
+    - name: Install Python test dependencies
+      run: pip install '.[test]'
+
+    - name: Run Ghidra apply-back integration test
+      run: pytest tests/python/tests/ghidra/test_ghidra_apply_back.py
 
     - name: Save Ghidra cache
       if: github.event_name == 'push' && steps.ghidra-cache.outputs.cache-hit != 'true'
