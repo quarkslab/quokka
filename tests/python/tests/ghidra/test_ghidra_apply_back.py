@@ -42,6 +42,7 @@ class TestGhidraApplyBack:
         shutil.copy2(binary_src, binary)
 
         database = tmp_path / "ghidra_project" / "sig_test.gpr"
+        database.parent.mkdir()
         quokka_file = tmp_path / "sig_test.quokka"
 
         prog = quokka.Program.from_binary(
