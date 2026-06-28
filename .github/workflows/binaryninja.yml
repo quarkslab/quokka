@@ -1,0 +1,55 @@
+name: BinaryNinja Extension
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "binaryninja_extension/**"
+      - "proto/**"
+      - ".github/workflows/binaryninja.yml"
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "binaryninja_extension/**"
+      - "proto/**"
+      - ".github/workflows/binaryninja.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  binaryninja-test:
+    name: "Check generated protobuf and test BinaryNinja extension"
+    if: ${{ hashFiles('binaryninja_extension/requirements-dev.txt') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          python-version: '3.12'
+          enable-cache: false
+
+      - name: Install codegen and test dependencies
+        run: uv pip install --system -r binaryninja_extension/requirements-dev.txt pytest
+
+      - name: Regenerate quokka_pb2.py with the pinned toolchain
+        run: python binaryninja_extension/generate_proto.py
+
+      - name: Check the committed generated module is up to date
+        run: |
+          git diff --exit-code -- binaryninja_extension/bn_quokka/quokka_pb2.py || {
+            echo "::error::binaryninja_extension/bn_quokka/quokka_pb2.py is stale." \
+                 "Regenerate it with binaryninja_extension/generate_proto.py" \
+                 "using the grpcio-tools version pinned in binaryninja_extension/requirements-dev.txt."
+            exit 1
+          }
+
+      - name: Run extension tests
+        run: python -m pytest binaryninja_extension/tests/ -v
