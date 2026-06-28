@@ -34,6 +34,7 @@ jobs:
         with:
           python-version: '3.12'
           enable-cache: false
+          activate-environment: true
 
       - name: Install codegen and test dependencies
         run: uv pip install -r binaryninja_extension/requirements-dev.txt pytest
