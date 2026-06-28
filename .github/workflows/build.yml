@@ -156,11 +156,6 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' && steps.ccache-cache.outputs.cache-hit != 'true' }}
         run: vcpkg install liblzma:x64-windows
 
-      - name: Set LLVM_ROOT (macOS)
-        if: ${{ runner.os == 'macOS' && steps.ccache-cache.outputs.cache-hit != 'true' }}
-        shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
-
       - name: Configure cmake
         if: steps.ccache-cache.outputs.cache-hit != 'true'
         shell: bash
@@ -168,8 +163,7 @@ jobs:
           cmake -B build-deps -S "$GITHUB_WORKSPACE" -G Ninja \
                 -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
                 -DIDA_VERSION=9.3 \
-                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR" \
-                ${LLVM_ROOT_PARAM:+"$LLVM_ROOT_PARAM"}
+                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
       - name: Build
         if: steps.ccache-cache.outputs.cache-hit != 'true'
@@ -241,11 +235,6 @@ jobs:
           ccache --set-config=compression=true
           ccache -z
 
-      - name: Set LLVM_ROOT (macOS)
-        if: ${{ runner.os == 'macOS' }}
-        shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
-
       - name: Configure cmake
         shell: bash
         run: |
@@ -253,8 +242,7 @@ jobs:
                 -DCMAKE_BUILD_TYPE=Debug \
                 -DNO_BUILD=On \
                 -DBUILD_TEST=On \
-                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR" \
-                ${LLVM_ROOT_PARAM:+"$LLVM_ROOT_PARAM"}
+                -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
       - name: Build tests
         shell: bash
@@ -520,7 +508,6 @@ jobs:
                 -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" "$CMAKE_IDA_PARAM" \
                 -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
-      # We need to differentiate MacOS build from Linux because we want to use a specific compiler on MacOS
       - name: Prepare build environment (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
         env:
@@ -532,7 +519,6 @@ jobs:
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
                 "$CMAKE_IDA_PARAM" \
-                -DLLVM_ROOT="$(brew --prefix llvm@18)" \
                 -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
       - name: Prepare build environment (Windows)

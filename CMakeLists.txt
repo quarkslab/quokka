@@ -97,24 +97,8 @@ endif ()
 
 if (UNIX)
     if(APPLE)
-        if(DEFINED LLVM_ROOT)
-            message(STATUS "Using provided LLVM_ROOT: ${LLVM_ROOT}")
-        else()
-            message(WARNING "LLVM_ROOT not provided via -DLLVM_ROOT. Falling back to Homebrew's llvm@15.")
-            # Fallback to LLVM 15 install path from Homebrew
-            execute_process(
-                COMMAND brew --prefix llvm@15
-                OUTPUT_VARIABLE LLVM_ROOT
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-            )
-
-            if(NOT EXISTS "${LLVM_ROOT}/bin/clang++")
-                message(FATAL_ERROR "Failed to locate llvm@15 via Homebrew. Please install it or provide LLVM_ROOT manually.")
-            endif()
-
-            message(STATUS "Using fallback LLVM_ROOT: ${LLVM_ROOT}")
-        endif()
-
+        # Use the system Apple Clang toolchain (libc++ and the macOS SDK are its
+        # defaults). We intentionally do not pin a Homebrew LLVM here.
         add_compile_options(
             "$<$<CONFIG:Debug>:-gfull>"
             -Wno-nullability-completeness
@@ -139,8 +123,6 @@ if (UNIX)
 
         message(STATUS "Using macOS SDK: ${SDKROOT}")
 
-        set(CMAKE_C_COMPILER "${LLVM_ROOT}/bin/clang" CACHE FILEPATH "The C compiler")
-        set(CMAKE_CXX_COMPILER "${LLVM_ROOT}/bin/clang++" CACHE FILEPATH "The C++ compiler")
         set(CMAKE_OSX_SYSROOT "${SDKROOT}")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isysroot ${SDKROOT}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isysroot ${SDKROOT} -stdlib=libc++")
