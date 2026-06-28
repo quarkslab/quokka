@@ -3073,7 +3073,11 @@ manage Python dependencies.</p>
 <h3 id="from-the-ci">From the CI</h3>
 <p>The plugin is built on the CI and available in the
 <a href="https://github.com/quarkslab/quokka/releases">Releases</a>.</p>
-<p>To download the plugin, get the file named <code>quokka_plugin**.so</code>.</p>
+<p>To download the plugin, get the file named <code>quokka_plugin.so</code> (or the
+<code>quokka-ida&lt;version&gt;.zip</code> archive matching your IDA version).</p>
+<p>On IDA 9.2+ you can also install it through the Hex-Rays plugin manager:</p>
+<div class="highlight"><pre><span></span><code><span class="gp">user@host:~$ </span>hcli<span class="w"> </span>plugin<span class="w"> </span>install<span class="w"> </span>quokka
+</code></pre></div>
 <h3 id="building">Building</h3>
 <h4 id="requirements">Requirements</h4>
 <ul>
@@ -3110,7 +3114,7 @@ anymore to download it separately.</p>
 </code></pre></div>
 <p>The plugin will also be in <code>build/quokka-install</code>. You can
 copy it to IDA's user plugin directory:</p>
-<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cp<span class="w"> </span>build/quokka-install/quokka*64.so<span class="w"> </span><span class="nv">$HOME</span>/.idapro/plugins/
+<div class="highlight"><pre><span></span><code><span class="gp">user@host:~/quokka$ </span>cp<span class="w"> </span>build/quokka-install/quokka_plugin.so<span class="w"> </span><span class="nv">$HOME</span>/.idapro/plugins/
 </code></pre></div>
 <h3 id="build-on-windows">Build on Windows</h3>
 <div class="admonition warning">
