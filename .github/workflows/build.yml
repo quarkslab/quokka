@@ -159,7 +159,7 @@ jobs:
       - name: Set LLVM_ROOT (macOS)
         if: ${{ runner.os == 'macOS' && steps.ccache-cache.outputs.cache-hit != 'true' }}
         shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm)" >> "$GITHUB_ENV"
+        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
 
       - name: Configure cmake
         if: steps.ccache-cache.outputs.cache-hit != 'true'
