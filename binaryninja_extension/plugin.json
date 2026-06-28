@@ -1,0 +1,33 @@
+{
+    "pluginmetadataversion": 2,
+    "name": "Quokka Exporter",
+    "type": [
+        "helper"
+    ],
+    "api": [
+        "python3"
+    ],
+    "description": "Export BinaryNinja analysis to Quokka protobuf files",
+    "longdescription": "Exports BinaryNinja analysis metadata, segments, types, functions, references, layout, and data to .quokka protobuf files compatible with the Quokka Python library.",
+    "license": {
+        "name": "Apache-2.0"
+    },
+    "platforms": [
+        "Darwin",
+        "Linux",
+        "Windows"
+    ],
+    "installinstructions": {
+        "Darwin": "Install this directory as a BinaryNinja Python plugin.",
+        "Linux": "Install this directory as a BinaryNinja Python plugin.",
+        "Windows": "Install this directory as a BinaryNinja Python plugin."
+    },
+    "dependencies": {
+        "pip": [
+            "protobuf>=6.31,<7"
+        ]
+    },
+    "version": "1.0.0",
+    "author": "Quarkslab",
+    "minimumbinaryninjaversion": 4911
+}

@@ -23,7 +23,7 @@ Table of Contents
 
 Quokka is a binary exporter: from the disassembly of a program, it generates
 an export file that can be used without the disassembler. It currently supports
-**IDA Pro** and **Ghidra** as disassembly backends.
+**IDA Pro**, **Ghidra** and **Binary Ninja** as disassembly backends.
 
 The main objective of **Quokka** is to enable to completely manipulate the
 binary without ever opening a disassembler after the initial export. Moreover, it
@@ -35,18 +35,18 @@ the binary exporter used by BinDiff.
 ## Architecture
 
 ```
-     IDA Pro               Ghidra
-        │                      │
-IDA Plugin (C++)    Ghidra Plugin (Java)
-        │                      │
-        └─── quokka.proto ─────┘
-          (protobuf schema)
-                   │
-             .quokka files
-                   │
-   Python bindings (quokka.Program)
-   ├── Capstone backend (primary)
-   └── Pypcode backend (optional)
+     IDA Pro               Ghidra               Binary Ninja
+        │                      │                      │
+IDA Plugin (C++)    Ghidra Plugin (Java)   BinaryNinja Plugin (Python)
+        │                      │                      │
+        └────────────── quokka.proto ─────────────────┘
+                     (protobuf schema)
+                              │
+                        .quokka files
+                              │
+              Python bindings (quokka.Program)
+              ├── Capstone backend (primary)
+              └── Pypcode backend (optional)
 ```
 
 ## Installation
@@ -82,6 +82,14 @@ library can load.
 
 For build instructions, installation, and usage details see the
 [Ghidra extension README](ghidra_extension/README.md).
+
+### BinaryNinja Extension
+
+Quokka also supports exporting from **Binary Ninja** via a Python plugin. It
+produces the same `.quokka` protobuf files that the Python library can load.
+
+For installation and usage details see the
+[BinaryNinja extension README](binaryninja_extension/README.md).
 
 ## Usage
 
@@ -126,6 +134,18 @@ $ analyzeHeadless /tmp/proj Test \
 ```
 
 See the [Ghidra extension README](ghidra_extension/README.md) for more details.
+
+#### Binary Ninja
+
+Note: headless usage of the Binary Ninja API requires a commercial license.
+Without one, use the export command inside the Binary Ninja UI instead.
+
+```commandline
+$ python binaryninja_extension/export_headless.py /path/to/binary \
+    -o /path/to/output.quokka --mode LIGHT
+```
+
+See the [BinaryNinja extension README](binaryninja_extension/README.md) for more details.
 
 ### Exporting in CLI
 
