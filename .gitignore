@@ -5,6 +5,7 @@ ci/ida*/
 site/
 docs/reference/python/
 doxygen_current.cfg
+.omc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

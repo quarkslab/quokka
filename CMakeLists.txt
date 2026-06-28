@@ -97,8 +97,6 @@ endif ()
 
 if (UNIX)
     if(APPLE)
-        # Use the system Apple Clang toolchain (libc++ and the macOS SDK are its
-        # defaults). We intentionally do not pin a Homebrew LLVM here.
         add_compile_options(
             "$<$<CONFIG:Debug>:-gfull>"
             -Wno-nullability-completeness

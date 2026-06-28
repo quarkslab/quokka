@@ -84,6 +84,6 @@ During development, you may want to use a soft link in the
 plugin directory coupled with the option to unload the plugin `PLUGIN_UNL`
 
 ```console
-user@host:~/quokka/$ ln -sf $(pwd)/build/src/quokka*64.so \
+user@host:~/quokka/$ ln -sf $(pwd)/build/src/quokka_plugin.so \
     /opt/ida/plugins/
 ```

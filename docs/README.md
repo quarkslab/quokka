@@ -43,7 +43,7 @@ $ pip install quokka-project
 The IDA and Ghidra plugins are only needed to **generate** `.quokka` files.
 Reading them requires only the Python library above.
 
-- **IDA Plugin** -- pre-built libraries available in [Releases](https://github.com/quarkslab/quokka/releases). Get the file named `quokka_plugin**.so`.
+- **IDA Plugin** -- install via the Hex-Rays plugin manager (`hcli plugin install quokka`, IDA 9.2+), or grab a pre-built library from the [Releases](https://github.com/quarkslab/quokka/releases) (the file named `quokka_plugin.so`).
 - **Ghidra Extension** -- see the [Ghidra extension README](https://github.com/quarkslab/quokka/tree/main/ghidra_extension) for build and install instructions.
 
 For more details see [Installation](installation.md).
