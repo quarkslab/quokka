@@ -247,7 +247,7 @@ jobs:
       - name: Set LLVM_ROOT (macOS)
         if: ${{ runner.os == 'macOS' }}
         shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
+        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@21)" >> "$GITHUB_ENV"
 
       - name: Configure cmake
         shell: bash
@@ -537,7 +537,7 @@ jobs:
                 -G Ninja \
                 -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
                 "$CMAKE_IDA_PARAM" \
-                -DLLVM_ROOT="$(brew --prefix llvm@18)" \
+                -DLLVM_ROOT="$(brew --prefix llvm@21)" \
                 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                 -DFETCHCONTENT_BASE_DIR="$FETCHCONTENT_BASE_DIR"
 
