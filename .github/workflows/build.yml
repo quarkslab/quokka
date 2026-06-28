@@ -80,8 +80,14 @@ jobs:
     if: github.event_name == 'push'
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux-debian-stable
+            container: docker.io/library/debian:stable-slim
+          - os: macos-latest
+            platform: macos-latest
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -93,39 +99,52 @@ jobs:
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.fetchcontent
-          key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: fetchcontent-${{ matrix.platform }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            fetchcontent-${{ runner.os }}-
+            fetchcontent-${{ matrix.platform }}-
 
       - name: Cache ccache
         id: ccache-cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.ccache
-          key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: ccache-${{ matrix.platform }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ccache-${{ runner.os }}-
+            ccache-${{ matrix.platform }}-
 
       # Everything below only runs on cache miss
+      # Linux: build tools are installed from Debian packages inside the container.
+      # macOS: cmake and ninja come from the setup actions (host-installed binaries).
+      - name: Install build dependencies (Linux)
+        if: ${{ steps.ccache-cache.outputs.cache-hit != 'true' && runner.os == 'Linux' }}
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            ca-certificates \
+            ccache \
+            cmake \
+            g++ \
+            gcc \
+            git \
+            liblzma-dev \
+            make \
+            ninja-build \
+            unzip \
+            zlib1g-dev
+
       - name: Setup cmake
-        if: steps.ccache-cache.outputs.cache-hit != 'true'
+        if: ${{ steps.ccache-cache.outputs.cache-hit != 'true' && runner.os != 'Linux' }}
         uses: jwlawson/actions-setup-cmake@0d6a7d60b009d01c9e7523be22153ff8f19460d3 # v2.2.0
         with:
           cmake-version: "latest"
 
       - name: Install Ninja
-        if: steps.ccache-cache.outputs.cache-hit != 'true'
+        if: ${{ steps.ccache-cache.outputs.cache-hit != 'true' && runner.os != 'Linux' }}
         uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
       - name: Install ccache
-        if: steps.ccache-cache.outputs.cache-hit != 'true'
+        if: ${{ steps.ccache-cache.outputs.cache-hit != 'true' && runner.os == 'macOS' }}
         shell: bash
-        run: |
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install ccache
-          else
-            sudo apt-get update && sudo apt-get install -y ccache
-          fi
+        run: brew install ccache
 
       - name: Set up build caching
         if: steps.ccache-cache.outputs.cache-hit != 'true'
@@ -141,12 +160,6 @@ jobs:
           ccache --set-config=max_size=500M
           ccache --set-config=compression=true
           ccache -z
-
-      - name: Install liblzma (Linux)
-        if: ${{ runner.os == 'Linux' && steps.ccache-cache.outputs.cache-hit != 'true' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y liblzma-dev
 
       - name: Install liblzma (macOS)
         if: ${{ runner.os == 'macOS' && steps.ccache-cache.outputs.cache-hit != 'true' }}
@@ -190,30 +203,52 @@ jobs:
     if: ${{ !failure() && !cancelled() }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux-debian-stable
+            container: docker.io/library/debian:stable-slim
+          - os: macos-latest
+            platform: macos-latest
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
+      # Linux: build tools are installed from Debian packages inside the container.
+      # macOS: cmake and ninja come from the setup actions (host-installed binaries).
+      - name: Install build dependencies (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            ca-certificates \
+            ccache \
+            cmake \
+            g++ \
+            gcc \
+            git \
+            liblzma-dev \
+            make \
+            ninja-build \
+            unzip \
+            zlib1g-dev
+
       - name: Setup cmake
+        if: ${{ runner.os != 'Linux' }}
         uses: jwlawson/actions-setup-cmake@0d6a7d60b009d01c9e7523be22153ff8f19460d3 # v2.2.0
         with:
           cmake-version: "latest"
 
       - name: Install Ninja
+        if: ${{ runner.os != 'Linux' }}
         uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
       - name: Install ccache
+        if: ${{ runner.os == 'macOS' }}
         shell: bash
-        run: |
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install ccache
-          else
-            sudo apt-get update && sudo apt-get install -y ccache
-          fi
+        run: brew install ccache
 
       - name: Set up build caching
         shell: bash
@@ -225,17 +260,17 @@ jobs:
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.fetchcontent
-          key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: fetchcontent-${{ matrix.platform }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            fetchcontent-${{ runner.os }}-
+            fetchcontent-${{ matrix.platform }}-
 
       - name: Restore ccache cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.ccache
-          key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: ccache-${{ matrix.platform }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ccache-${{ runner.os }}-
+            ccache-${{ matrix.platform }}-
 
       - name: Configure ccache
         shell: bash
@@ -350,16 +385,20 @@ jobs:
         include:
           - os: ubuntu-latest
             ext: so
+            container: docker.io/library/debian:stable-slim
+            platform: linux-debian-stable
           # - os: windows-latest
           #   ext: dll
           - os: macos-latest
             ext: dylib
+            platform: macos-latest
         exclude:
           # We exclude these because ARM libraries were not available in 7.4 and the latest macos runner on GitHub are Mx machines
           - os: macos-latest
             ida_sdk: "74"
 
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     steps:
       - name: Set IDA SDK password
         if: ${{ contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) }}
@@ -399,13 +438,33 @@ jobs:
         with:
           persist-credentials: false
 
+      # Linux: build tools are installed from Debian packages inside the container.
+      # macOS: cmake and ninja come from the setup actions (host-installed binaries).
+      - name: Install build dependencies (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          apt-get update && apt-get install -y --no-install-recommends \
+            ca-certificates \
+            ccache \
+            cmake \
+            g++ \
+            gcc \
+            git \
+            liblzma-dev \
+            make \
+            ninja-build \
+            unzip \
+            wget \
+            zlib1g-dev
+
       - name: Setup cmake
+        if: ${{ runner.os != 'Linux' }}
         uses: jwlawson/actions-setup-cmake@0d6a7d60b009d01c9e7523be22153ff8f19460d3 # v2.2.0
         with:
           cmake-version: "latest"
 
-      - name: Install Ninja (Linux / MacOS)
-        if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest' }}
+      - name: Install Ninja (MacOS)
+        if: ${{ matrix.os == 'macos-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
       # -- Dependency caching (abseil + protobuf) --
@@ -414,13 +473,9 @@ jobs:
       # When adding Windows support, use sccache instead of ccache (MSVC compatible).
 
       - name: Install ccache
+        if: ${{ runner.os == 'macOS' }}
         shell: bash
-        run: |
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install ccache
-          else
-            sudo apt-get update && sudo apt-get install -y ccache
-          fi
+        run: brew install ccache
 
       - name: Set up build caching
         shell: bash
@@ -432,17 +487,17 @@ jobs:
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.fetchcontent
-          key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: fetchcontent-${{ matrix.platform }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            fetchcontent-${{ runner.os }}-
+            fetchcontent-${{ matrix.platform }}-
 
       - name: Restore ccache cache
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.ccache
-          key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
+          key: ccache-${{ matrix.platform }}-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ccache-${{ runner.os }}-
+            ccache-${{ matrix.platform }}-
 
       - name: Configure ccache
         shell: bash
@@ -500,8 +555,8 @@ jobs:
       - name: Install liblzma (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y liblzma-dev
+          apt-get update
+          apt-get install -y liblzma-dev
 
       - name: Install liblzma (MacOS)
         if: ${{ matrix.os == 'macos-latest' }}
