@@ -46,7 +46,14 @@ ida_target_link_libraries(quokka_shared PUBLIC
 
 add_ida_plugin(quokka_plugin ${VAR_NOEA32} "Quokka.cpp")
 
-ida_target_include_directories(quokka_plugin 
+if(VAR_NOEA32)
+    # IDA >= 8.5 is 64-bit only: drop the legacy "64" suffix from the plugin
+    # file name (the SDK helper names the target quokka_plugin${_so64}).
+    set_target_properties(quokka_plugin${_so64} PROPERTIES
+            OUTPUT_NAME "quokka_plugin${CMAKE_SHARED_LIBRARY_SUFFIX}")
+endif()
+
+ida_target_include_directories(quokka_plugin
         PRIVATE "${quokka_SOURCE_DIR}/include"
                 "${GENERATED_INCLUDE_DIR}"
                 "${quokka_BINARY_DIR}/proto"

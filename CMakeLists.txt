@@ -100,10 +100,10 @@ if (UNIX)
         if(DEFINED LLVM_ROOT)
             message(STATUS "Using provided LLVM_ROOT: ${LLVM_ROOT}")
         else()
-            message(WARNING "LLVM_ROOT not provided via -DLLVM_ROOT. Falling back to Homebrew's llvm@15.")
+            message(WARNING "LLVM_ROOT not provided via -DLLVM_ROOT. Falling back to Homebrew's llvm.")
             # Fallback to LLVM 15 install path from Homebrew
             execute_process(
-                COMMAND brew --prefix llvm@15
+                COMMAND brew --prefix llvm
                 OUTPUT_VARIABLE LLVM_ROOT
                 OUTPUT_STRIP_TRAILING_WHITESPACE
             )
