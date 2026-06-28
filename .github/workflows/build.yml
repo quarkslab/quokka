@@ -674,3 +674,4 @@ jobs:
             echo "::error::No plugin archives found" && exit 1
           fi
           gh release upload "$TAG_NAME" "${files[@]}" --clobber
+
