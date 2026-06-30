@@ -389,10 +389,11 @@ def main(
     help="IDA .i64 database or Ghidra .gpr/project directory to modify",
 )
 @click.option(
-    "--ghidra-path",
+    "--disassembler-path",
     type=click.Path(exists=True),
     default=None,
-    help="Ghidra installation directory (overrides GHIDRA_INSTALL_DIR)",
+    help="Disassembler installation path (IDA install dir or Ghidra "
+    "install dir, depending on the backend recorded in the .quokka file)",
 )
 @click.option("--overwrite", is_flag=True, default=False, help="Allow overwriting an existing disassembler database")
 @click.option("-v", "--verbose", count=True, help="Increase logging verbosity")
@@ -401,7 +402,7 @@ def main(
 def apply_changes(
     action: str,
     database_file: str | None,
-    ghidra_path: str | None,
+    disassembler_path: str | None,
     overwrite: bool,
     verbose: int,
     quokka_file: str,
@@ -429,7 +430,7 @@ def apply_changes(
         try:
             errors = program.commit(
                 database_file=database_file,
-                ghidra_path=ghidra_path,
+                disassembler_path=disassembler_path,
                 overwrite=overwrite,
             )
         except FileExistsError as e:
@@ -444,7 +445,7 @@ def apply_changes(
         try:
             new_program = program.regenerate(
                 database_file=database_file,
-                ghidra_path=ghidra_path,
+                disassembler_path=disassembler_path,
                 overwrite=overwrite,
             )
             logging.info(f"Regenerated: {new_program.export_file}")

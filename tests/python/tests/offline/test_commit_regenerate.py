@@ -190,7 +190,7 @@ class TestCommitMethod:
 
         assert prog.commit(
             database_file="/tmp/proj.gpr",
-            ghidra_path="/opt/ghidra",
+            disassembler_path="/opt/ghidra",
             overwrite=True,
             timeout=42,
         ) == 0

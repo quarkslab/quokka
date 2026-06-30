@@ -92,8 +92,7 @@ errors = prog.commit(database_file="binary_ghidra/binary.gpr", overwrite=True)
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `database_file` | `Path\|str\|None` | backend default | IDA `.i64` database, Ghidra `.gpr` file, or Ghidra project directory |
-| `ida_path` | `Path\|str\|None` | `None` | IDA installation directory (auto-detected if omitted) |
-| `ghidra_path` | `Path\|str\|None` | `None` | Ghidra installation directory (or `GHIDRA_INSTALL_DIR`) |
+| `disassembler_path` | `Path\|str\|None` | `None` | Installation directory of the disassembler recorded in the `.quokka` file (IDA install dir, or Ghidra install dir / `GHIDRA_INSTALL_DIR`) |
 | `overwrite` | `bool` | `True` | Allow modifying an existing database/project. Raises `FileExistsError` when `False` and it exists. Logs a warning when `True`. |
 | `timeout` | `int` | `600` | Maximum seconds to wait for the disassembler |
 
@@ -144,7 +143,7 @@ disassembler database/project without writing Python code:
 ```commandline
 $ quokka-apply binary.quokka binary --overwrite
 $ quokka-apply binary.quokka binary --regenerate --overwrite
-$ quokka-apply binary.quokka binary --database-file binary_ghidra/binary.gpr --ghidra-path "$GHIDRA_INSTALL_DIR" --overwrite
+$ quokka-apply binary.quokka binary --database-file binary_ghidra/binary.gpr --disassembler-path "$GHIDRA_INSTALL_DIR" --overwrite
 ```
 
 | Option | Description |
@@ -152,7 +151,7 @@ $ quokka-apply binary.quokka binary --database-file binary_ghidra/binary.gpr --g
 | `--commit` | Write `.quokka` and apply edits to the disassembler (default) |
 | `--regenerate` | Commit then re-export a fresh `.quokka` from the disassembler |
 | `--database-file` | IDA `.i64` database or Ghidra `.gpr`/project directory |
-| `--ghidra-path` | Ghidra installation directory |
+| `--disassembler-path` | Disassembler installation directory (IDA or Ghidra, per the backend recorded in the `.quokka`) |
 | `--overwrite` | Allow overwriting an existing disassembler database |
 | `-v`, `--verbose` | Increase logging verbosity |
 

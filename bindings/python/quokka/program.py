@@ -1353,19 +1353,23 @@ class Program(dict):
     def commit(
         self,
         database_file: "Path|str|None" = None,
-        ida_path: "Path|str|None" = None,
-        ghidra_path: "Path|str|None" = None,
+        disassembler_path: "Path|str|None" = None,
         overwrite: bool = True,
         timeout: int = 600,
     ) -> int:
         """Write the .quokka and apply edits to the disassembler database.
 
+        The target disassembler is determined by the backend recorded in the
+        ``.quokka`` file (``self.disassembler``): edits are always applied with
+        the same disassembler that produced the export.
+
         Arguments:
             database_file: Path to the disassembler database.  For IDA this is
                 an ``.i64`` database.  For Ghidra this is either a ``.gpr`` file
                 or a directory that contains/should contain a Ghidra project.
-            ida_path: Optional IDA installation path (IDA only).
-            ghidra_path: Optional Ghidra installation path (Ghidra only).
+            disassembler_path: Optional installation path for the disassembler
+                selected by ``self.disassembler`` (the IDA install dir for an
+                IDA export, the Ghidra install dir for a Ghidra export).
             overwrite: Allow modifying an existing database.
             timeout: Disassembler timeout in seconds.
 
@@ -1383,14 +1387,14 @@ class Program(dict):
                     database_file = str(self.executable.exec_file) + ".i64"
                 return self._commit_edits_ida(
                     database_file,
-                    ida_path=ida_path,
+                    ida_path=disassembler_path,
                     overwrite=overwrite,
                     timeout=timeout,
                 )
             case Disassembler.GHIDRA:
                 return self._commit_edits_ghidra(
                     database_file,
-                    ghidra_path=ghidra_path,
+                    ghidra_path=disassembler_path,
                     overwrite=overwrite,
                     timeout=timeout,
                 )
@@ -1403,8 +1407,7 @@ class Program(dict):
     def regenerate(
         self,
         database_file: "Path|str|None" = None,
-        ida_path: "Path|str|None" = None,
-        ghidra_path: "Path|str|None" = None,
+        disassembler_path: "Path|str|None" = None,
         overwrite: bool = True,
         timeout: int = 600,
     ) -> 'Program':
@@ -1415,8 +1418,8 @@ class Program(dict):
 
         Arguments:
             database_file: Path to the disassembler database/project.
-            ida_path: Optional IDA installation path.
-            ghidra_path: Optional Ghidra installation path.
+            disassembler_path: Optional installation path for the disassembler
+                selected by ``self.disassembler``.
             overwrite: Allow modifying an existing database.
             timeout: IDA timeout in seconds.
 
@@ -1428,8 +1431,7 @@ class Program(dict):
         """
         errors = self.commit(
             database_file=database_file,
-            ida_path=ida_path,
-            ghidra_path=ghidra_path,
+            disassembler_path=disassembler_path,
             overwrite=overwrite,
             timeout=timeout,
         )
