@@ -77,7 +77,7 @@ jobs:
     - name: Set Ghidra environment
       env:
         GHIDRA_VERSION: ${{ steps.ghidra-version.outputs.version }}
-      run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${GHIDRA_VERSION}_PUBLIC" >> $GITHUB_ENV
+      run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${GHIDRA_VERSION}_PUBLIC" >> "$GITHUB_ENV"
 
     - name: Build, test, and install extension
       working-directory: ghidra_extension
@@ -130,4 +130,4 @@ jobs:
           TAG_NAME: ${{ github.ref_name }}
         run: |
           shopt -s failglob
-          gh release upload "$TAG_NAME" *.zip
+          gh release upload "$TAG_NAME" ./*.zip

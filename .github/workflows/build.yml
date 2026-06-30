@@ -325,7 +325,7 @@ jobs:
       - name: Set Ghidra environment
         env:
           GHIDRA_VERSION: ${{ steps.ghidra-version.outputs.version }}
-        run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${GHIDRA_VERSION}_PUBLIC" >> $GITHUB_ENV
+        run: echo "GHIDRA_INSTALL_DIR=/opt/ghidra_${GHIDRA_VERSION}_PUBLIC" >> "$GITHUB_ENV"
 
       - name: Build and install extension
         working-directory: ghidra_extension
@@ -562,9 +562,11 @@ jobs:
       - name: Prepare artifact
         env:
           CMAKE_BUILD_DIR: build${{ matrix.ida_sdk }}
+          IDA_SDK: ${{ matrix.ida_sdk }}
+          EXT: ${{ matrix.ext }}
         shell: bash
         run: |
-          cp "$CMAKE_BUILD_DIR/quokka-install/quokka_plugin.${{ matrix.ext }}" "${{ matrix.ida_sdk }}-quokka_plugin.${{ matrix.ext }}"
+          cp "$CMAKE_BUILD_DIR/quokka-install/quokka_plugin.${EXT}" "${IDA_SDK}-quokka_plugin.${EXT}"
 
       - name: Show ccache stats
         if: always()
