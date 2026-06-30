@@ -2,8 +2,8 @@ rules:
   cache-poisoning:
     ignore:
       # warm-cache job only runs on push (not PRs), so cache poisoning is not a risk
-      - build.yml:89
-      - build.yml:98
+      - build.yml:93
+      - build.yml:102
   artipacked:
     ignore:
       # mkdocs gh-deploy needs credentials to push to gh-pages
