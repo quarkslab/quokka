@@ -148,9 +148,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y liblzma-dev
 
-      - name: Install liblzma (macOS)
+      - name: Install macOS dependencies
         if: ${{ runner.os == 'macOS' && steps.ccache-cache.outputs.cache-hit != 'true' }}
-        run: brew install xz
+        run: brew install llvm@18 xz
 
       - name: Install liblzma (Windows)
         if: ${{ matrix.os == 'windows-latest' && steps.ccache-cache.outputs.cache-hit != 'true' }}
@@ -159,7 +159,7 @@ jobs:
       - name: Set LLVM_ROOT (macOS)
         if: ${{ runner.os == 'macOS' && steps.ccache-cache.outputs.cache-hit != 'true' }}
         shell: bash
-        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm)" >> "$GITHUB_ENV"
+        run: echo "LLVM_ROOT_PARAM=-DLLVM_ROOT=$(brew --prefix llvm@18)" >> "$GITHUB_ENV"
 
       - name: Configure cmake
         if: steps.ccache-cache.outputs.cache-hit != 'true'
@@ -210,7 +210,7 @@ jobs:
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install ccache
+            brew install ccache llvm@18
           else
             sudo apt-get update && sudo apt-get install -y ccache
           fi
@@ -503,10 +503,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y liblzma-dev
 
-      - name: Install liblzma (MacOS)
+      - name: Install macOS dependencies
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          brew install xz
+          brew install llvm@18 xz
 
       - name: Install liblzma (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
