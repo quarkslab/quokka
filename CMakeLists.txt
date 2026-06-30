@@ -97,22 +97,25 @@ endif ()
 
 if (UNIX)
     if(APPLE)
+        set(LLVM_HOMEBREW_FORMULA "llvm@18")
         if(DEFINED LLVM_ROOT)
             message(STATUS "Using provided LLVM_ROOT: ${LLVM_ROOT}")
         else()
-            message(WARNING "LLVM_ROOT not provided via -DLLVM_ROOT. Falling back to Homebrew's llvm.")
-            # Fallback to LLVM 15 install path from Homebrew
+            message(WARNING "LLVM_ROOT not provided via -DLLVM_ROOT. Falling back to Homebrew's ${LLVM_HOMEBREW_FORMULA}.")
             execute_process(
-                COMMAND brew --prefix llvm
+                COMMAND brew --prefix ${LLVM_HOMEBREW_FORMULA}
                 OUTPUT_VARIABLE LLVM_ROOT
                 OUTPUT_STRIP_TRAILING_WHITESPACE
             )
 
-            if(NOT EXISTS "${LLVM_ROOT}/bin/clang++")
-                message(FATAL_ERROR "Failed to locate llvm@15 via Homebrew. Please install it or provide LLVM_ROOT manually.")
-            endif()
-
             message(STATUS "Using fallback LLVM_ROOT: ${LLVM_ROOT}")
+        endif()
+
+        if(NOT EXISTS "${LLVM_ROOT}/bin/clang" OR NOT EXISTS "${LLVM_ROOT}/bin/clang++")
+            message(FATAL_ERROR
+                "Failed to locate ${LLVM_HOMEBREW_FORMULA} compilers under LLVM_ROOT='${LLVM_ROOT}'. "
+                "Install it with 'brew install ${LLVM_HOMEBREW_FORMULA}' or provide LLVM_ROOT manually."
+            )
         endif()
 
         add_compile_options(
