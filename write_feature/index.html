@@ -2714,7 +2714,7 @@ directly on the Python objects. Changes applied back to the disassembler databas
 propagated back in the quokka file by re-exporting the binary after committing the changes.</p>
 <p>This workflow is useful when you want to share analysis results with
 colleagues, feed them into another tool, or permanently record findings in the
-IDA project.</p>
+IDA or Ghidra project.</p>
 <h2 id="modifying-function-metadata">Modifying function metadata</h2>
 <h3 id="renaming-a-function">Renaming a function</h3>
 <p>Assign a new value to <code>Function.name</code>:</p>
@@ -2757,18 +2757,15 @@ annotations or share them without modifying the disassembler database.</p>
 <span class="n">prog</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;binary_annotated.quokka&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="commit-apply-changes-to-the-disassembler-database"><code>commit</code> -- apply changes to the disassembler database</h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><code>commit</code> currently only supports the <strong>IDA backend</strong>. For Ghidra-exported
-programs, <code>commit()</code> writes the <code>.quokka</code> file but does not apply edits
-back to Ghidra (Ghidra write-back is not yet implemented).</p>
-</div>
-<p><code>Program.commit</code> calls <code>write()</code> and then spawns a headless IDA instance to
-apply all recorded edits (names, prototypes, comments) to the IDA database.
+<p><code>Program.commit</code> calls <code>write()</code> and then spawns the matching headless
+disassembler to apply recorded edits back to the database/project.
 The full function signature (name, return type, parameter types, parameter
-names, and parameter count) is applied to the <code>.i64</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># database_file is required -- it is the .i64 to modify</span>
+names, and parameter count) is applied to the disassembler database.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># IDA: database_file is the .i64 to modify</span>
 <span class="n">errors</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Ghidra: database_file is a .gpr file or a project directory</span>
+<span class="n">errors</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary_ghidra/binary.gpr&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <table>
 <thead>
@@ -2782,44 +2779,41 @@ names, and parameter count) is applied to the <code>.i64</code>.</p>
 <tbody>
 <tr>
 <td><code>database_file</code></td>
-<td><code>Path\|str</code></td>
-<td><em>required</em></td>
-<td>Path to the <code>.i64</code> database to modify</td>
+<td><code>Path\|str\|None</code></td>
+<td>backend default</td>
+<td>IDA <code>.i64</code> database, Ghidra <code>.gpr</code> file, or Ghidra project directory</td>
 </tr>
 <tr>
-<td><code>ida_path</code></td>
+<td><code>disassembler_path</code></td>
 <td><code>Path\|str\|None</code></td>
 <td><code>None</code></td>
-<td>IDA installation directory (auto-detected if omitted)</td>
+<td>Installation directory of the disassembler recorded in the <code>.quokka</code> file (IDA install dir, or Ghidra install dir / <code>GHIDRA_INSTALL_DIR</code>)</td>
 </tr>
 <tr>
 <td><code>overwrite</code></td>
 <td><code>bool</code></td>
 <td><code>True</code></td>
-<td>Allow modifying an existing <code>.i64</code>. Raises <code>FileExistsError</code> when <code>False</code> and the file exists. Logs a warning when <code>True</code>.</td>
+<td>Allow modifying an existing database/project. Raises <code>FileExistsError</code> when <code>False</code> and it exists. Logs a warning when <code>True</code>.</td>
 </tr>
 <tr>
 <td><code>timeout</code></td>
 <td><code>int</code></td>
 <td><code>600</code></td>
-<td>Maximum seconds to wait for IDA</td>
+<td>Maximum seconds to wait for the disassembler</td>
 </tr>
 </tbody>
 </table>
 <p>Returns the number of errors (0 = all edits applied successfully).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>commit</code> requires a working IDA installation with the Quokka plugin.</p>
+<p><code>commit</code> requires the corresponding disassembler integration: IDA with the
+Quokka plugin, or Ghidra with the QuokkaExporter extension.</p>
 </div>
 <h3 id="regenerate-commit-then-re-export"><code>regenerate</code> -- commit then re-export</h3>
 <p><code>Program.regenerate</code> calls <code>commit()</code> and immediately re-exports the binary,
 returning a fresh <code>Program</code> instance that reflects the updated disassembler
 database. This is the right choice when you want a clean <code>.quokka</code> file that
 incorporates your annotations as first-class exported data.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Like <code>commit</code>, <code>regenerate</code> currently only supports the <strong>IDA backend</strong>.</p>
-</div>
 <div class="highlight"><pre><span></span><code><span class="n">updated_prog</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">regenerate</span><span class="p">(</span><span class="n">database_file</span><span class="o">=</span><span class="s2">&quot;binary.i64&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <p>It accepts the same parameters as <code>commit</code>.</p>
@@ -2842,9 +2836,10 @@ incorporates your annotations as first-class exported data.</p>
 </code></pre></div>
 <h2 id="from-the-command-line-quokka-apply">From the command line (<code>quokka-apply</code>)</h2>
 <p>The <code>quokka-apply</code> CLI applies edits stored in a <code>.quokka</code> file back to the
-disassembler database without writing Python code:</p>
+disassembler database/project without writing Python code:</p>
 <div class="highlight"><pre><span></span><code>$ quokka-apply binary.quokka binary --overwrite
 $ quokka-apply binary.quokka binary --regenerate --overwrite
+$ quokka-apply binary.quokka binary --database-file binary_ghidra/binary.gpr --disassembler-path &quot;$GHIDRA_INSTALL_DIR&quot; --overwrite
 </code></pre></div>
 <table>
 <thead>
@@ -2860,7 +2855,15 @@ $ quokka-apply binary.quokka binary --regenerate --overwrite
 </tr>
 <tr>
 <td><code>--regenerate</code></td>
-<td>Commit then re-export a fresh <code>.quokka</code> from IDA</td>
+<td>Commit then re-export a fresh <code>.quokka</code> from the disassembler</td>
+</tr>
+<tr>
+<td><code>--database-file</code></td>
+<td>IDA <code>.i64</code> database or Ghidra <code>.gpr</code>/project directory</td>
+</tr>
+<tr>
+<td><code>--disassembler-path</code></td>
+<td>Disassembler installation directory (IDA or Ghidra, per the backend recorded in the <code>.quokka</code>)</td>
 </tr>
 <tr>
 <td><code>--overwrite</code></td>
@@ -2901,13 +2904,13 @@ edits directly without spawning a new instance:</p>
 <tr>
 <td><code>prog.commit(database_file=...)</code></td>
 <td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Yes (IDA only)</td>
+<td style="text-align: center;">Yes (IDA/Ghidra)</td>
 <td style="text-align: center;">No</td>
 </tr>
 <tr>
 <td><code>prog.regenerate(database_file=...)</code></td>
 <td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Yes (IDA only)</td>
+<td style="text-align: center;">Yes (IDA/Ghidra)</td>
 <td style="text-align: center;">Yes</td>
 </tr>
 </tbody>
@@ -2934,7 +2937,7 @@ edits directly without spawning a new instance:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="March 10, 2026 12:48:12 UTC">March 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 30, 2026 09:04:56 UTC">June 30, 2026</span>
   </span>
 
     
