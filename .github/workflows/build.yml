@@ -39,7 +39,7 @@ jobs:
       full_build: ${{ steps.set-matrix.outputs.full_build }}
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -84,13 +84,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
       # Check caches before installing any tools to skip setup on hit
       - name: Cache FetchContent dependencies
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -99,7 +99,7 @@ jobs:
 
       - name: Cache ccache
         id: ccache-cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -194,7 +194,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -222,7 +222,7 @@ jobs:
           echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> "$GITHUB_ENV"
 
       - name: Restore FetchContent cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -230,7 +230,7 @@ jobs:
             fetchcontent-${{ runner.os }}-
 
       - name: Restore ccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -278,7 +278,7 @@ jobs:
     if: needs.setup.outputs.full_build == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
           lfs: true
@@ -299,14 +299,14 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+      - uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: temurin
           java-version: '21'
 
       - name: Cache Ghidra installation
         id: ghidra-cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC
           key: ghidra-${{ steps.ghidra-version.outputs.tag }}
@@ -317,7 +317,7 @@ jobs:
 
       - name: Save Ghidra cache
         if: github.event_name == 'push' && steps.ghidra-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /opt/ghidra_${{ steps.ghidra-version.outputs.version }}_PUBLIC
           key: ghidra-${{ steps.ghidra-version.outputs.tag }}
@@ -331,7 +331,7 @@ jobs:
         working-directory: ghidra_extension
         run: ./gradlew installExtension
 
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.12'
 
@@ -395,7 +395,7 @@ jobs:
           fi
 
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -429,7 +429,7 @@ jobs:
           echo "FETCHCONTENT_BASE_DIR=$HOME/.fetchcontent" >> "$GITHUB_ENV"
 
       - name: Restore FetchContent cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.fetchcontent
           key: fetchcontent-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -437,7 +437,7 @@ jobs:
             fetchcontent-${{ runner.os }}-
 
       - name: Restore ccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt') }}
@@ -454,7 +454,7 @@ jobs:
       - name: Restore IDA SDK cache
         if: ${{ contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) }}
         id: cache-sdk
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: third_party/idasdk${{ matrix.ida_sdk }}
           key: idasdk-${{ runner.os }}-${{ matrix.ida_sdk }}-${{ hashFiles('sdk_lockfile') }}
@@ -492,7 +492,7 @@ jobs:
 
       - name: Save IDA SDK cache
         if: ${{ steps.cache-sdk.outputs.cache-hit != 'true' && contains(fromJSON('["74","77","80","81","82","83","84","85","90","90sp1","91"]'), matrix.ida_sdk) }}
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: third_party/idasdk${{ matrix.ida_sdk }}
           key: idasdk-${{ runner.os }}-${{ matrix.ida_sdk }}-${{ hashFiles('sdk_lockfile') }}
@@ -637,7 +637,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
