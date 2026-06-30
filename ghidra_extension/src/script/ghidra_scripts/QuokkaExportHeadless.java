@@ -5,6 +5,7 @@
 //     -import /path/to/binary \
 //     -scriptPath ghidra_extension/src/script/ghidra_scripts \
 //     -postScript QuokkaExportHeadless.java "--out=/tmp/output.quokka" "--mode=LIGHT"
+//     Optional: "--decompiled=true"
 //
 // @category Quokka
 // @description Export Ghidra analysis to Quokka protobuf format
@@ -21,6 +22,7 @@ public class QuokkaExportHeadless extends GhidraScript {
     protected void run() throws Exception {
         String outPath = null;
         String modeStr = "LIGHT";
+        boolean decompiled = false;
 
         String[] args = getScriptArgs();
         for (String arg : args) {
@@ -28,6 +30,10 @@ public class QuokkaExportHeadless extends GhidraScript {
                 outPath = arg.substring(6);
             } else if (arg.startsWith("--mode=")) {
                 modeStr = arg.substring(7);
+            } else if (arg.startsWith("--decompiled=")) {
+                decompiled = Boolean.parseBoolean(arg.substring(13));
+            } else if ("--decompiled".equals(arg)) {
+                decompiled = true;
             }
         }
 
@@ -45,9 +51,9 @@ public class QuokkaExportHeadless extends GhidraScript {
 
         File outputFile = new File(outPath);
         println("Quokka: exporting to " + outputFile.getAbsolutePath()
-                + " (mode=" + modeStr + ")");
+                + " (mode=" + modeStr + ", decompiled=" + decompiled + ")");
 
-        ExportPipeline.export(currentProgram, outputFile, mode, monitor);
+        ExportPipeline.export(currentProgram, outputFile, mode, decompiled, monitor);
 
         println("Quokka export complete: " + outputFile.getAbsolutePath()
                 + " (" + outputFile.length() + " bytes)");

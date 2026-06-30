@@ -85,7 +85,7 @@ class Block(MutableMapping):
 
         if self.program.mode == ExporterMode.FULL:
             current_address: AddressT = self.start
-            for inst_idx, inst_pb_idx in enumerate(self.proto.instructions_index):
+            for inst_idx, inst_pb_idx in enumerate(self.proto.instruction_index):
                 ins =  quokka.Instruction(inst_pb_idx, inst_idx, current_address, self)
                 self._raw_dict[current_address] = ins
                 current_address += ins.size

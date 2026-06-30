@@ -24,6 +24,7 @@ public class QuokkaExporter extends Exporter {
 
     private Quokka.ExporterMeta.Mode mode =
             Quokka.ExporterMeta.Mode.MODE_LIGHT;
+    private boolean decompiled = false;
 
     public QuokkaExporter() {
         super("Quokka", "quokka", null);
@@ -33,6 +34,7 @@ public class QuokkaExporter extends Exporter {
     public List<Option> getOptions(DomainObjectService domainObjectService) {
         List<Option> options = new ArrayList<>();
         options.add(new Option("Export Mode", "LIGHT"));
+        options.add(new Option("Export Decompiled C", Boolean.FALSE));
         return options;
     }
 
@@ -46,6 +48,8 @@ public class QuokkaExporter extends Exporter {
                 } else {
                     mode = Quokka.ExporterMeta.Mode.MODE_LIGHT;
                 }
+            } else if ("Export Decompiled C".equals(opt.getName())) {
+                decompiled = (Boolean) opt.getValue();
             }
         }
     }
@@ -60,7 +64,8 @@ public class QuokkaExporter extends Exporter {
         }
 
         try {
-            ExportPipeline.export((Program) domainObj, file, mode, monitor);
+            ExportPipeline.export((Program) domainObj, file, mode, decompiled,
+                    monitor);
             return true;
         } catch (Exception e) {
             log.appendMsg("Quokka export failed: " + e.getMessage());

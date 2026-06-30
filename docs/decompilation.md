@@ -1,16 +1,16 @@
 # Decompilation
 
-**Quokka** can optionally embed the Hex-Rays pseudocode for each function
+**Quokka** can optionally embed pseudocode for each function
 directly inside the exported `.quokka` file. This lets you work with
 high-level C-like code in your analysis scripts without keeping an IDA session
 open.
 
 !!! note
-    Decompilation export is currently supported only with the **IDA backend**
-    and requires a Hex-Rays decompiler licence for the target architecture.
-    The Ghidra extension does not yet export decompiled code.
-    The export will succeed even when the decompiler is unavailable; in that
-    case `Program.decompiled_activated` is `False` and
+    IDA exports use Hex-Rays and require a decompiler licence for the target
+    architecture. Ghidra exports use Ghidra's built-in decompiler when the
+    extension is invoked with decompilation enabled. The export will succeed
+    even when the decompiler is unavailable; in that case
+    `Program.decompiled_activated` is `False` and
     `Function.decompiled_code` is an empty string for every function.
 
 ## Enabling decompilation at export time
@@ -34,6 +34,22 @@ open.
 
     ```commandline
     quokka-cli --decompiled /path/to/binary
+    ```
+
+=== "Ghidra headless"
+
+    Pass `--decompiled=true` to the Quokka headless script:
+
+    ```commandline
+    analyzeHeadless /tmp/proj Test \
+      -process binary \
+      -readOnly \
+      -noanalysis \
+      -scriptPath "$GHIDRA_INSTALL_DIR/Ghidra/Extensions/QuokkaExporter/ghidra_scripts" \
+      -postScript QuokkaExportHeadless.java \
+      "--out=/tmp/binary.full.quokka" \
+      "--mode=SELF_CONTAINED" \
+      "--decompiled=true"
     ```
 
 === "Python API"
@@ -84,6 +100,35 @@ if func.decompiled_code:
 else:
     print("No pseudocode available for this function.")
 ```
+
+You can also address a function by entry address:
+
+```python
+func = prog[0x401234]
+print(func.name)
+print(func.decompiled_code)
+```
+
+## Naming a Function from Decompiled Code
+
+The decompiled text is often enough to brainstorm and apply a better name
+without returning to the disassembler:
+
+```python
+func = prog.get_function("FUN_10003e508")
+print(func.decompiled_code)
+
+func.name = "releaseSandboxExtensionHandleVector"
+func.add_comment(
+    "Releases sandbox extension handles and frees paired path storage."
+)
+
+# Persist the edit snapshot and apply it back to the disassembler project.
+prog.commit(database_file="binary_ghidra/binary.gpr", overwrite=True)
+```
+
+`Program.write(...)` serializes the modified export. `Program.commit(...)`
+applies edits back to the originating IDA database or Ghidra project.
 
 ## Use-case: searching pseudocode for patterns
 

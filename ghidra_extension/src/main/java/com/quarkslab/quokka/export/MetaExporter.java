@@ -86,6 +86,8 @@ public class MetaExporter {
             meta.setCallingConvention(Quokka.CallingConvention.CC_UNK);
         }
 
+        meta.setDecompilationActivated(ctx.isDecompilationEnabled());
+
         builder.setMeta(meta);
     }
 }

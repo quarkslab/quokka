@@ -26,6 +26,8 @@ import logging
 import os
 import sys
 import shutil
+import re
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Type, Iterable
 import lzma
@@ -924,6 +926,7 @@ class Program(dict):
     def _generate_ghidra(
         exec_path: Path,
         output_file: Path,
+        database_file: Path|str|None,
         debug: bool,
         timeout: int|None,
         mode: ExporterMode,
@@ -976,19 +979,41 @@ class Program(dict):
         # Map ExporterMode to Ghidra script mode names
         ghidra_mode = "LIGHT" if mode == ExporterMode.LIGHT else "SELF_CONTAINED"
 
-        proj_dir = tempfile.mkdtemp(prefix="quokka_ghidra_")
+        if database_file is None:
+            proj_dir = Path(tempfile.mkdtemp(prefix="quokka_ghidra_"))
+            project_name = "QuokkaTmp"
+            use_existing_project = False
+            cleanup_project = True
+        else:
+            database_path = Path(database_file)
+            if database_path.suffix == ".gpr":
+                proj_dir = database_path.parent
+                project_name = database_path.stem
+            else:
+                proj_dir = database_path
+                gpr_files = sorted(proj_dir.glob("*.gpr")) if proj_dir.is_dir() else []
+                project_name = gpr_files[0].stem if len(gpr_files) == 1 else exec_path.stem
+            use_existing_project = (proj_dir / f"{project_name}.gpr").exists()
+            cleanup_project = False
+
         try:
             cmd = [
                 str(analyze_headless),
-                proj_dir,
-                "QuokkaTmp",
-                "-import", str(exec_path),
+                str(proj_dir),
+                project_name,
+            ]
+            if use_existing_project:
+                cmd.extend(["-process", exec_path.name])
+            else:
+                cmd.extend(["-import", str(exec_path)])
+            cmd.extend([
                 "-scriptPath", str(script_path),
                 "-postScript", "QuokkaExportHeadless.java",
                 f"--out={output_file}",
                 f"--mode={ghidra_mode}",
-                "-readOnly",
-            ]
+            ])
+            if not use_existing_project:
+                cmd.append("-readOnly")
 
             result = subprocess.run(
                 cmd,
@@ -1016,7 +1041,8 @@ class Program(dict):
                     f"{result.stdout[-2000:] if result.stdout else ''}"
                 )
         finally:
-            shutil.rmtree(proj_dir, ignore_errors=True)
+            if cleanup_project:
+                shutil.rmtree(proj_dir, ignore_errors=True)
 
         return output_file
 
@@ -1077,6 +1103,7 @@ class Program(dict):
                 return Program._generate_ghidra(
                     exec_path=exec_path,
                     output_file=output_file,
+                    database_file=database_file,
                     debug=debug,
                     timeout=timeout,
                     mode=mode,
@@ -1196,21 +1223,155 @@ class Program(dict):
 
         return ret_code
 
+    def _resolve_ghidra_project(
+        self,
+        database_file: "Path|str|None",
+    ) -> tuple[Path, str, bool]:
+        """Resolve the Ghidra project location/name used for apply-back."""
+
+        if database_file is None:
+            project_dir = (
+                self.export_file.parent
+                / f"{self.executable.exec_file.name}.ghidra"
+            )
+            project_name = self.executable.exec_file.stem
+        else:
+            database_path = Path(database_file)
+            if database_path.suffix == ".gpr":
+                project_dir = database_path.parent
+                project_name = database_path.stem
+            else:
+                project_dir = database_path
+                gpr_files = sorted(project_dir.glob("*.gpr")) if project_dir.is_dir() else []
+                project_name = (
+                    gpr_files[0].stem if len(gpr_files) == 1
+                    else self.executable.exec_file.stem
+                )
+
+        return project_dir, project_name, (project_dir / f"{project_name}.gpr").exists()
+
+    def _commit_edits_ghidra(
+        self,
+        database_file: "Path|str|None" = None,
+        ghidra_path: "Path|str|None" = None,
+        overwrite: bool = False,
+        timeout: int = 600,
+    ) -> int:
+        """Apply in-memory edits to a persistent Ghidra project.
+
+        The caller must call :meth:`write` first so the on-disk ``.quokka``
+        contains the pending edits.
+        """
+
+        env_dir = ghidra_path or os.environ.get("GHIDRA_INSTALL_DIR")
+        if not env_dir:
+            raise QuokkaError(
+                "Ghidra not found. Set GHIDRA_INSTALL_DIR or pass ghidra_path."
+            )
+        ghidra_dir = Path(env_dir)
+        analyze_headless = ghidra_dir / "support" / "analyzeHeadless"
+        if not analyze_headless.exists():
+            raise QuokkaError(f"analyzeHeadless not found at {analyze_headless}")
+
+        ext_path = _find_ghidra_extension(ghidra_dir)
+        if ext_path is None:
+            raise QuokkaError(
+                "QuokkaExporter extension not found. Install it from "
+                "https://github.com/quarkslab/quokka/tree/main/ghidra_extension"
+            )
+
+        script_path = None
+        scripts_dir = ext_path / "ghidra_scripts"
+        if (scripts_dir / "QuokkaApplyHeadless.java").exists():
+            script_path = scripts_dir
+        if script_path is None:
+            repo_script = (
+                Path(__file__).resolve().parent.parent.parent.parent
+                / "ghidra_extension" / "src" / "script" / "ghidra_scripts"
+            )
+            if (repo_script / "QuokkaApplyHeadless.java").exists():
+                script_path = repo_script
+        if script_path is None:
+            raise QuokkaError(
+                "QuokkaApplyHeadless.java not found. Install the Ghidra "
+                "extension or run from the quokka source tree."
+            )
+
+        project_dir, project_name, project_exists = self._resolve_ghidra_project(
+            database_file
+        )
+        if project_exists:
+            if not overwrite:
+                raise FileExistsError(
+                    f"Ghidra project already exists: "
+                    f"{project_dir / (project_name + '.gpr')}. "
+                    "Pass overwrite=True to modify it."
+                )
+            self.logger.warning(
+                "Modifying existing Ghidra project: %s",
+                project_dir / f"{project_name}.gpr",
+            )
+        else:
+            project_dir.mkdir(parents=True, exist_ok=True)
+
+        cmd = [
+            str(analyze_headless),
+            str(project_dir),
+            project_name,
+        ]
+        if project_exists:
+            cmd.extend(["-process", self.executable.exec_file.name])
+        else:
+            cmd.extend(["-import", str(self.executable.exec_file)])
+        cmd.extend([
+            "-scriptPath", str(script_path),
+            "-postScript", "QuokkaApplyHeadless.java",
+            f"--quokka={self.export_file}",
+        ])
+
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout if timeout else None,
+        )
+
+        output = "\n".join(part for part in (result.stdout, result.stderr) if part)
+        match = re.search(r"Quokka apply complete: (\d+) error\(s\)", output)
+        if result.returncode != 0:
+            raise QuokkaError(
+                f"Ghidra apply-back failed for {self.executable.exec_file} "
+                f"(rc={result.returncode}):\n{output[-2000:]}"
+            )
+        if match is None:
+            raise QuokkaError(
+                "Ghidra apply-back did not report an error count:\n"
+                f"{output[-2000:]}"
+            )
+        return int(match.group(1))
+
     def commit(
         self,
         database_file: "Path|str|None" = None,
-        ida_path: "Path|str|None" = None,
+        disassembler_path: "Path|str|None" = None,
         overwrite: bool = True,
         timeout: int = 600,
     ) -> int:
         """Write the .quokka and apply edits to the disassembler database.
 
+        The target disassembler is determined by the backend recorded in the
+        ``.quokka`` file (``self.disassembler``): edits are always applied with
+        the same disassembler that produced the export.
+
         Arguments:
-            database_file: Path to the ``.i64`` database.  Required for
-                IDA-originated programs.
-            ida_path: Optional IDA installation path (IDA only).
-            overwrite: Allow modifying an existing database (IDA only).
-            timeout: IDA timeout in seconds (IDA only).
+            database_file: Path to the disassembler database.  For IDA this is
+                an ``.i64`` database.  For Ghidra this is either a ``.gpr`` file
+                or a directory that contains/should contain a Ghidra project.
+            disassembler_path: Optional installation path for the disassembler
+                selected by ``self.disassembler`` (the IDA install dir for an
+                IDA export, the Ghidra install dir for a Ghidra export).
+            overwrite: Allow modifying an existing database.
+            timeout: Disassembler timeout in seconds.
 
         Returns:
             The number of apply errors (0 = success).
@@ -1226,24 +1387,27 @@ class Program(dict):
                     database_file = str(self.executable.exec_file) + ".i64"
                 return self._commit_edits_ida(
                     database_file,
-                    ida_path=ida_path,
+                    ida_path=disassembler_path,
                     overwrite=overwrite,
                     timeout=timeout,
                 )
             case Disassembler.GHIDRA:
-                pass
-                # TODO: Call ghidra script with the write script
+                return self._commit_edits_ghidra(
+                    database_file,
+                    ghidra_path=disassembler_path,
+                    overwrite=overwrite,
+                    timeout=timeout,
+                )
             case Disassembler.BINARY_NINJA:
                 raise NotImplementedError("Binary Ninja export is not implemented yet")
             case _:
                 raise NotImplementedError("Unknown disassembler")
-        return 0
 
 
     def regenerate(
         self,
         database_file: "Path|str|None" = None,
-        ida_path: "Path|str|None" = None,
+        disassembler_path: "Path|str|None" = None,
         overwrite: bool = True,
         timeout: int = 600,
     ) -> 'Program':
@@ -1253,9 +1417,9 @@ class Program(dict):
         produce a new ``.quokka`` file.
 
         Arguments:
-            database_file: Path to the ``.i64`` database (required for
-                IDA programs).
-            ida_path: Optional IDA installation path.
+            database_file: Path to the disassembler database/project.
+            disassembler_path: Optional installation path for the disassembler
+                selected by ``self.disassembler``.
             overwrite: Allow modifying an existing database.
             timeout: IDA timeout in seconds.
 
@@ -1267,7 +1431,7 @@ class Program(dict):
         """
         errors = self.commit(
             database_file=database_file,
-            ida_path=ida_path,
+            disassembler_path=disassembler_path,
             overwrite=overwrite,
             timeout=timeout,
         )

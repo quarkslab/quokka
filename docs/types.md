@@ -262,15 +262,14 @@ prog.add_type("union data { int i; float f; };")
 ### Persisting new types
 
 New types are appended to the protobuf `types` array, so `prog.write()` and
-`prog.commit()` automatically include them. When applied back to IDA, the
-backend reconstructs each new type from its `c_str` field using
-`parse_decls()`.
+`prog.commit()` automatically include them. When applied back to the
+disassembler, the backend reconstructs each new type from its `c_str` field.
 
 ```python
 # Save to .quokka only
 prog.write()
 
-# Or apply to IDA and re-export
+# Or apply to the disassembler and re-export
 prog.commit(database_file="binary.i64", overwrite=True)
 ```
 

@@ -3,10 +3,16 @@ package com.quarkslab.quokka.export;
 import com.quarkslab.quokka.ExportContext;
 import com.quarkslab.quokka.util.BlockTypeMapper;
 import com.quarkslab.quokka.util.FunctionTypeMapper;
+import ghidra.app.decompiler.DecompInterface;
+import ghidra.app.decompiler.DecompileOptions;
+import ghidra.app.decompiler.DecompileResults;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.lang.Register;
 import ghidra.program.model.block.*;
 import ghidra.program.model.listing.*;
+import ghidra.program.model.scalar.Scalar;
 import ghidra.program.model.symbol.Symbol;
+import ghidra.program.model.symbol.RefType;
 import ghidra.util.Msg;
 import ghidra.util.task.TaskMonitor;
 import quokka.QuokkaOuterClass.Quokka;
@@ -27,6 +33,7 @@ public class FunctionExporter {
         FunctionManager funcMgr = program.getFunctionManager();
         SimpleBlockModel blockModel = new SimpleBlockModel(program);
         TaskMonitor monitor = ctx.getMonitor();
+        DecompInterface decompiler = null;
 
         // Collect all functions, sort by entry VA
         List<Function> functions = new ArrayList<>();
@@ -36,67 +43,109 @@ public class FunctionExporter {
         }
         functions.sort(Comparator.comparing(f -> f.getEntryPoint()));
 
-        for (Function func : functions) {
-            if (monitor.isCancelled()) break;
-
-            Quokka.Function.Builder funcBuilder = Quokka.Function.newBuilder();
-
-            // Location
-            Address entry = func.getEntryPoint();
-            int segIdx = ctx.resolveSegmentIndex(entry);
-            if (segIdx < 0) {
-                // External functions may not have a segment
-                if (!func.isExternal()) {
+        try {
+            if (ctx.isDecompilationEnabled()) {
+                Msg.info(FunctionExporter.class,
+                        "Initializing Ghidra decompiler for function export");
+                decompiler = new DecompInterface();
+                decompiler.setOptions(new DecompileOptions());
+                decompiler.toggleCCode(true);
+                decompiler.toggleSyntaxTree(false);
+                decompiler.setSimplificationStyle("decompile");
+                if (!decompiler.openProgram(program)) {
                     Msg.warn(FunctionExporter.class,
-                            "Cannot resolve segment for function: " + func.getName()
-                            + " at " + entry);
-                }
-                funcBuilder.setSegmentIndex(0);
-                funcBuilder.setSegmentOffset(0);
-                funcBuilder.setFileOffset(-1);
-            } else {
-                funcBuilder.setSegmentIndex(segIdx);
-                funcBuilder.setSegmentOffset(
-                        (int) ctx.resolveSegmentOffset(entry));
-                funcBuilder.setFileOffset(ctx.resolveFileOffset(entry));
-            }
-
-            // Type
-            funcBuilder.setFunctionType(FunctionTypeMapper.map(func));
-
-            // Names
-            funcBuilder.setName(func.getName());
-            Symbol symbol = func.getSymbol();
-            if (symbol != null) {
-                String mangledName = symbol.getName();
-                if (!mangledName.equals(func.getName())) {
-                    funcBuilder.setMangledName(mangledName);
+                            "Unable to initialize Ghidra decompiler: "
+                            + decompiler.getLastMessage());
+                    decompiler.dispose();
+                    decompiler = null;
+                } else {
+                    Msg.info(FunctionExporter.class,
+                            "Ghidra decompiler initialized");
                 }
             }
 
-            // Prototype
-            String prototype = func.getPrototypeString(false, false);
-            if (prototype != null) {
-                funcBuilder.setPrototype(prototype);
+            int processed = 0;
+            for (Function func : functions) {
+                if (monitor.isCancelled()) break;
+                if (processed % 100 == 0) {
+                    Msg.info(FunctionExporter.class, "Exporting function "
+                            + processed + "/" + functions.size() + ": "
+                            + func.getName() + " @ " + func.getEntryPoint());
+                }
+
+                Quokka.Function.Builder funcBuilder = Quokka.Function.newBuilder();
+
+                // Location
+                Address entry = func.getEntryPoint();
+                int segIdx = ctx.resolveSegmentIndex(entry);
+                if (segIdx < 0) {
+                    // External functions may not have a segment
+                    if (!func.isExternal()) {
+                        Msg.warn(FunctionExporter.class,
+                                "Cannot resolve segment for function: " + func.getName()
+                                + " at " + entry);
+                    }
+                    funcBuilder.setSegmentIndex(0);
+                    funcBuilder.setSegmentOffset(0);
+                    funcBuilder.setFileOffset(-1);
+                } else {
+                    funcBuilder.setSegmentIndex(segIdx);
+                    funcBuilder.setSegmentOffset(
+                            (int) ctx.resolveSegmentOffset(entry));
+                    funcBuilder.setFileOffset(ctx.resolveFileOffset(entry));
+                }
+
+                // Type
+                funcBuilder.setFunctionType(FunctionTypeMapper.map(func));
+
+                // Names
+                funcBuilder.setName(func.getName());
+                Symbol symbol = func.getSymbol();
+                if (symbol != null) {
+                    String mangledName = symbol.getName();
+                    if (!mangledName.equals(func.getName())) {
+                        funcBuilder.setMangledName(mangledName);
+                    }
+                }
+
+                // Prototype
+                String prototype = func.getPrototypeString(false, false);
+                if (prototype != null) {
+                    funcBuilder.setPrototype(prototype);
+                }
+
+                // Exported symbol detection
+                funcBuilder.setIsExported(
+                        program.getSymbolTable().isExternalEntryPoint(entry));
+
+                if (decompiler != null && !func.isExternal()) {
+                    String cCode = decompileFunction(decompiler, func, monitor);
+                    if (cCode != null && !cCode.isEmpty()) {
+                        funcBuilder.setDecompiledCode(cCode);
+                    }
+                }
+
+                // Blocks and edges (only for non-external functions with bodies)
+                if (!func.isExternal() && func.getBody() != null
+                        && !func.getBody().isEmpty()) {
+                    exportBlocksAndEdges(ctx, builder, program, func, blockModel,
+                            funcBuilder, monitor);
+                }
+
+                builder.addFunctions(funcBuilder);
+                processed++;
             }
-
-            // Exported symbol detection
-            funcBuilder.setIsExported(
-                    program.getSymbolTable().isExternalEntryPoint(entry));
-
-            // Blocks and edges (only for non-external functions with bodies)
-            if (!func.isExternal() && func.getBody() != null
-                    && !func.getBody().isEmpty()) {
-                exportBlocksAndEdges(ctx, program, func, blockModel,
-                        funcBuilder, monitor);
+        } finally {
+            if (decompiler != null) {
+                decompiler.closeProgram();
+                decompiler.dispose();
             }
-
-            builder.addFunctions(funcBuilder);
         }
     }
 
-    private static void exportBlocksAndEdges(ExportContext ctx, Program program,
-            Function func, SimpleBlockModel blockModel,
+    private static void exportBlocksAndEdges(ExportContext ctx,
+            Quokka.Builder builder, Program program, Function func,
+            SimpleBlockModel blockModel,
             Quokka.Function.Builder funcBuilder, TaskMonitor monitor)
             throws Exception {
 
@@ -146,12 +195,17 @@ public class FunctionExporter {
             long blockSize = block.getMaxAddress().subtract(start) + 1;
             blockBuilder.setSize((int) blockSize);
 
-            // Count instructions in block (LIGHT mode)
+            // Count instructions in block. In SELF_CONTAINED mode, also export
+            // instruction/operand tables so Python can avoid runtime disassembly.
             int instrCount = 0;
             InstructionIterator instrIter = listing.getInstructions(block, true);
             while (instrIter.hasNext()) {
-                instrIter.next();
+                Instruction instruction = instrIter.next();
                 instrCount++;
+                if (ctx.getMode() == Quokka.ExporterMeta.Mode.MODE_SELF_CONTAINED) {
+                    blockBuilder.addInstructionIndex(
+                            exportInstruction(builder, program, instruction));
+                }
             }
             blockBuilder.setNInstr(instrCount);
 
@@ -188,6 +242,110 @@ public class FunctionExporter {
                         .setUserDefined(false));
             }
         }
+    }
+
+    private static int exportInstruction(Quokka.Builder builder, Program program,
+            Instruction instruction) {
+        Quokka.Instruction.Builder instrBuilder = Quokka.Instruction.newBuilder();
+        instrBuilder.setSize(instruction.getLength());
+        instrBuilder.setMnemonicIndex(
+                internString(builder.getMnemonicsList(),
+                        instruction.getMnemonicString(),
+                        builder::addMnemonics));
+        instrBuilder.setIsThumb(isThumbMode(program, instruction.getAddress()));
+
+        for (int opIdx = 0; opIdx < instruction.getNumOperands(); opIdx++) {
+            instrBuilder.addOperandIndex(
+                    exportOperand(builder, instruction, opIdx));
+        }
+
+        int protoIndex = builder.getInstructionsCount();
+        builder.addInstructions(instrBuilder);
+        return protoIndex;
+    }
+
+    private static int exportOperand(Quokka.Builder builder,
+            Instruction instruction, int opIdx) {
+        String operandText = instruction.getDefaultOperandRepresentation(opIdx);
+        if (operandText == null) {
+            operandText = "";
+        }
+
+        Quokka.Operand.Builder operandBuilder = Quokka.Operand.newBuilder()
+                .setOperandStringIndex(
+                        internString(builder.getOperandStringsList(),
+                                operandText,
+                                builder::addOperandStrings))
+                .setAccess(accessMask(instruction.getOperandRefType(opIdx)));
+
+        Object[] opObjects = instruction.getOpObjects(opIdx);
+        Object primary = opObjects.length > 0 ? opObjects[0] : null;
+        if (primary instanceof Register) {
+            operandBuilder
+                    .setType(Quokka.Operand.OperandType.OPERAND_REGISTER)
+                    .setRegisterIndex(((Register) primary).getName());
+        } else if (primary instanceof Scalar) {
+            operandBuilder
+                    .setType(Quokka.Operand.OperandType.OPERAND_IMMEDIATE)
+                    .setValue(((Scalar) primary).getSignedValue());
+        } else if (primary instanceof Address) {
+            operandBuilder
+                    .setType(Quokka.Operand.OperandType.OPERAND_MEMORY)
+                    .setAddress(((Address) primary).getOffset());
+        } else {
+            operandBuilder
+                    .setType(Quokka.Operand.OperandType.OPERAND_OTHER)
+                    .setOther(operandText);
+        }
+
+        int protoIndex = builder.getOperandsCount();
+        builder.addOperands(operandBuilder);
+        return protoIndex;
+    }
+
+    private interface StringAppender {
+        void add(String value);
+    }
+
+    private static int internString(List<String> values, String value,
+            StringAppender appender) {
+        int existing = values.indexOf(value);
+        if (existing >= 0) {
+            return existing;
+        }
+        appender.add(value);
+        return values.size();
+    }
+
+    private static int accessMask(RefType refType) {
+        if (refType == null) {
+            return 0;
+        }
+        int access = 0;
+        if (refType.isRead()) {
+            access |= 1;
+        }
+        if (refType.isWrite()) {
+            access |= 2;
+        }
+        return access;
+    }
+
+    private static String decompileFunction(DecompInterface decompiler,
+            Function func, TaskMonitor monitor) {
+        try {
+            DecompileResults results = decompiler.decompileFunction(func,
+                    5, monitor);
+            if (results != null && results.decompileCompleted()
+                    && results.getDecompiledFunction() != null) {
+                return results.getDecompiledFunction().getC();
+            }
+        } catch (Exception e) {
+            Msg.warn(FunctionExporter.class,
+                    "Failed to decompile " + func.getName() + ": "
+                    + e.getMessage());
+        }
+        return null;
     }
 
     private static Quokka.EdgeType getEdgeType(int outDegree) {

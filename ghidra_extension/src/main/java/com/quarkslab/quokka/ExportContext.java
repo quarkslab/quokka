@@ -24,6 +24,7 @@ public class ExportContext {
     private final Program program;
     private final File outputFile;
     private final Quokka.ExporterMeta.Mode mode;
+    private final boolean decompilationEnabled;
     private final TaskMonitor monitor;
 
     // Populated by SegmentExporter
@@ -36,15 +37,23 @@ public class ExportContext {
 
     public ExportContext(Program program, File outputFile,
             Quokka.ExporterMeta.Mode mode, TaskMonitor monitor) {
+        this(program, outputFile, mode, false, monitor);
+    }
+
+    public ExportContext(Program program, File outputFile,
+            Quokka.ExporterMeta.Mode mode, boolean decompilationEnabled,
+            TaskMonitor monitor) {
         this.program = program;
         this.outputFile = outputFile;
         this.mode = mode;
+        this.decompilationEnabled = decompilationEnabled;
         this.monitor = monitor;
     }
 
     public Program getProgram() { return program; }
     public File getOutputFile() { return outputFile; }
     public Quokka.ExporterMeta.Mode getMode() { return mode; }
+    public boolean isDecompilationEnabled() { return decompilationEnabled; }
     public TaskMonitor getMonitor() { return monitor; }
 
     // --- Segment resolution ---
