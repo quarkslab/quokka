@@ -83,6 +83,7 @@ public class ExportPipeline {
         // Phase 5: References
         monitor.setMessage("Quokka: exporting references...");
         ReferenceExporter.export(ctx, builder);
+        ReferenceExporter.attachInstructionXrefs(ctx, builder);
         Msg.info(ExportPipeline.class, "Phase 5 (References) complete: "
                 + builder.getReferencesCount() + " references");
 

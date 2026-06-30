@@ -120,6 +120,33 @@ class TestPuraUpdateGhidraExport:
                 return
         pytest.fail("No NORMAL function with >1 block found")
 
+    def test_xrefs_attached_to_python_objects(self):
+        """Ghidra references should be reachable through high-level xref APIs."""
+        block_xrefs_from = sum(
+            len(block.instructions_xref_from)
+            for func in self.prog.proto.functions
+            for block in func.blocks
+        )
+        block_xrefs_to = sum(
+            len(block.instructions_xref_to)
+            for func in self.prog.proto.functions
+            for block in func.blocks
+        )
+        data_xrefs_to = sum(len(data.xref_to) for data in self.prog.proto.data)
+
+        assert len(self.prog.proto.references) > 0
+        assert block_xrefs_from > 0
+        assert block_xrefs_to > 0
+        assert data_xrefs_to > 0
+
+        assert any(func.callees for func in self.prog.values())
+        assert any(
+            inst.code_refs_from or inst.data_refs_from
+            for func in self.prog.values()
+            if func.has_body
+            for inst in func.instructions
+        )
+
 
 # ---------------------------------------------------------------------------
 # many_types_cpp: comprehensive type system validation
