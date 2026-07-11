@@ -4,6 +4,9 @@ import com.quarkslab.quokka.ExportContext;
 import com.quarkslab.quokka.util.RefTypeMapper;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressIterator;
+import ghidra.program.model.listing.Instruction;
+import ghidra.program.model.listing.InstructionIterator;
+import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.symbol.Reference;
 import ghidra.program.model.symbol.ReferenceManager;
@@ -12,7 +15,9 @@ import quokka.QuokkaOuterClass.Quokka;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Phase 5: Export Reference[] from Ghidra ReferenceManager.
@@ -71,6 +76,77 @@ public class ReferenceExporter {
         }
     }
 
+    public static void attachInstructionXrefs(ExportContext ctx,
+            Quokka.Builder builder) {
+        Program program = ctx.getProgram();
+        Listing listing = program.getListing();
+        Map<Long, InstructionSlot> instructionSlots = new HashMap<>();
+
+        for (int funcIdx = 0; funcIdx < builder.getFunctionsCount(); funcIdx++) {
+            Quokka.Function.Builder funcBuilder =
+                    builder.getFunctionsBuilder(funcIdx);
+            for (int blockIdx = 0; blockIdx < funcBuilder.getBlocksCount();
+                    blockIdx++) {
+                Quokka.Block.Builder blockBuilder =
+                        funcBuilder.getBlocksBuilder(blockIdx);
+                long start = builder.getSegments(blockBuilder.getSegmentIndex())
+                        .getVirtualAddr() + blockBuilder.getSegmentOffset();
+                long end = start + blockBuilder.getSize();
+                Address startAddr = program.getAddressFactory()
+                        .getDefaultAddressSpace()
+                        .getAddress(start);
+
+                InstructionIterator instrIter =
+                        listing.getInstructions(startAddr, true);
+                int instrIdx = 0;
+                while (instrIter.hasNext() && instrIdx < blockBuilder.getNInstr()) {
+                    Instruction instruction = instrIter.next();
+                    long addr = instruction.getAddress().getOffset();
+                    if (addr < start) {
+                        continue;
+                    }
+                    if (addr >= end) {
+                        break;
+                    }
+                    instructionSlots.put(addr,
+                            new InstructionSlot(funcIdx, blockIdx, instrIdx));
+                    instrIdx++;
+                }
+            }
+        }
+
+        for (int refIdx = 0; refIdx < builder.getReferencesCount(); refIdx++) {
+            Quokka.Reference ref = builder.getReferences(refIdx);
+            if (ref.getSource().hasAddress()) {
+                InstructionSlot slot =
+                        instructionSlots.get(ref.getSource().getAddress());
+                if (slot != null) {
+                    builder.getFunctionsBuilder(slot.functionIndex)
+                            .getBlocksBuilder(slot.blockIndex)
+                            .addInstructionsXrefFrom(
+                                    Quokka.Block.InstructionXref.newBuilder()
+                                            .setInstrBbIdx(slot.instructionIndex)
+                                            .setXrefIndex(refIdx));
+                }
+            }
+            if (ref.getDestination().hasAddress()) {
+                InstructionSlot slot =
+                        instructionSlots.get(ref.getDestination().getAddress());
+                if (slot != null) {
+                    builder.getFunctionsBuilder(slot.functionIndex)
+                            .getBlocksBuilder(slot.blockIndex)
+                            .addInstructionsXrefTo(
+                                    Quokka.Block.InstructionXref.newBuilder()
+                                            .setInstrBbIdx(slot.instructionIndex)
+                                            .setXrefIndex(refIdx));
+                }
+            }
+        }
+    }
+
     private record RefRecord(long source, long destination,
             Quokka.EdgeType type) {}
+
+    private record InstructionSlot(int functionIndex, int blockIndex,
+            int instructionIndex) {}
 }
