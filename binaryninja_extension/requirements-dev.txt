@@ -4,5 +4,5 @@
 # version bundled by the Ghidra release (protobuf-java 4.31.x = protoc 31.x).
 # grpcio-tools 1.74.0 ships protoc 31.1; bump it together with the Ghidra
 # submodule.
-grpcio-tools==1.74.0
-protobuf>=6.31,<7
+grpcio-tools==1.82.1
+protobuf>=6.31,<8
