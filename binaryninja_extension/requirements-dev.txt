@@ -1,8 +1,14 @@
 # Development/codegen requirements (runtime dependencies live in plugin.json).
 #
-# The protobuf release line is aligned with the rest of the repository on the
-# version bundled by the Ghidra release (protobuf-java 4.31.x = protoc 31.x).
-# grpcio-tools 1.74.0 ships protoc 31.1; bump it together with the Ghidra
-# submodule.
-grpcio-tools==1.74.0
-protobuf>=6.31,<7
+# The BinaryNinja extension carries its own protobuf runtime (declared in
+# plugin.json), so it tracks the current protobuf release independently of the
+# Ghidra extension, which is pinned to the protobuf-java version bundled by the
+# Ghidra platform (protobuf-java 4.31.x). The .quokka proto3 wire format is
+# stable across these versions, so files stay interchangeable between exporters.
+#
+# grpcio-tools 1.82.1 ships the protoc that emits protobuf-python 7.35 gencode;
+# keep the plugin.json runtime pin (protobuf>=7.35,<8) aligned when bumping this,
+# because the generated module's ValidateProtobufRuntimeVersion guard fails at
+# import against an older runtime.
+grpcio-tools==1.82.1
+protobuf>=7.35,<8
