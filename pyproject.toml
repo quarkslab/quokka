@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "grpcio-tools"]
+requires = ["setuptools", "grpcio-tools==1.82.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,11 +8,11 @@ description = "Quokka: A Fast and Accurate Binary Exporter"
 authors = [{ name = "Quarkslab", email = "diffing@quarkslab.com" }]
 license = { text = "Apache Software License (Apache License, Version 2)" }
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "capstone>=4.0.2",
     "networkx>=2.4",
-    "protobuf>=3.12.2",
+    "protobuf>=7.35,<8",
 
     # Wait for python-magic to solve/merge https://github.com/ahupp/python-magic/pull/294
     "python-magic; os_name!='nt'",
