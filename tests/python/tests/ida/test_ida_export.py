@@ -1572,3 +1572,70 @@ class TestDeferredTypeExport:
         elem = data.type.element_type
         assert isinstance(elem, BaseType)
         assert elem == BaseType.WORD
+
+
+# ---------------------------------------------------------------------------
+# StatusCodeHandlerPei.efi regression: hidden .reloc segment (issue #115)
+# ---------------------------------------------------------------------------
+
+
+@requires_ida
+class TestRelocSegmentExport:
+    """Export a PE/EFI binary whose ``.reloc`` segment is hidden by IDA.
+
+    Regression test for https://github.com/quarkslab/quokka/issues/115.
+
+    IDA marks the ``.reloc`` segment as hidden (``SFL_HIDDEN``) but still
+    creates a data item inside it (referenced from the PE header). Before the
+    fix, ``ExportSegments`` skipped every non-visible segment, so the linear
+    scan reached that data item, ``getseg`` returned a segment absent from
+    Quokka's collection, and the export aborted with
+    ``Data at address 0x... doesn't belong to any segment``.
+
+    Simply reaching the assertions below means ``from_binary`` returned instead
+    of raising ``QuokkaError`` on the abort, i.e. the crash no longer happens.
+    """
+
+    # Start of the .reloc segment in this sample; the crashing data item.
+    RELOC_START = 0x480
+
+    @pytest.fixture(autouse=True)
+    def _export(self, root_directory: Path, tmp_path: Path):
+        """Export StatusCodeHandlerPei.efi through IDA into a temp directory."""
+        binary = root_directory / "tests" / "dataset" / "StatusCodeHandlerPei.efi"
+        if not binary.exists():
+            pytest.skip("StatusCodeHandlerPei.efi not found in tests/dataset/")
+
+        output = tmp_path / "StatusCodeHandlerPei.quokka"
+        self.prog = quokka.Program.from_binary(
+            binary,
+            output_file=output,
+            database_file=tmp_path / "StatusCodeHandlerPei.i64",
+            timeout=600,
+        )
+
+    def test_export_produces_program(self):
+        """Export completes without aborting on the hidden .reloc segment."""
+        assert self.prog is not None
+
+    def test_reloc_segment_is_exported(self):
+        """The hidden .reloc segment is present in the export."""
+        # IDA exports the segment under its visible name ("_reloc").
+        segments = list(self.prog.segments.values())
+        reloc = [s for s in segments if s.start == self.RELOC_START]
+        assert len(reloc) == 1, (
+            f"Expected exactly one segment starting at 0x{self.RELOC_START:x}, "
+            f"got {[(s.name, hex(s.start)) for s in segments]}"
+        )
+        assert reloc[0].name == "_reloc"
+
+    def test_reloc_data_belongs_to_a_segment(self):
+        """The data item that used to crash the scan resolves to a segment."""
+        covering = [
+            s for s in self.prog.segments.values() if s.in_segment(self.RELOC_START)
+        ]
+        assert len(covering) == 1, (
+            f"Address 0x{self.RELOC_START:x} should belong to exactly one segment, "
+            f"got {len(covering)}"
+        )
+        assert self.RELOC_START in self.prog.data

@@ -140,10 +140,12 @@ int ExportSegments() {
 
   segment_t* seg = get_first_seg();
   while (seg != nullptr) {
-    // A HEADER segment is considered ephemeral even though instructions might
-    // reference it. See https://github.com/quarkslab/quokka/issues/29
-    if (seg->is_header_segm() ||
-        (is_visible_segm(seg) && !is_ephemeral_segm(seg->start_ea))) {
+    // Skip only ephemeral (transient debugger) segments. Hidden segments such
+    // as HEADER (issue #29) and .reloc (issue #115) are still mapped and may be
+    // referenced by the analysis, so IDA creates data/instructions inside them.
+    // Excluding them makes the linear scan crash with "doesn't belong to any
+    // segment", so keep every non-ephemeral segment regardless of visibility.
+    if (!is_ephemeral_segm(seg->start_ea)) {
       segments.emplace(seg->sel, seg);
     }
 
