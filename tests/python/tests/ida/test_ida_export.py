@@ -1553,9 +1553,21 @@ class TestDeferredTypeExport:
         )
 
     def test_no_decomp_inport_is_unknown(self):
-        """Without decompilation, inport is untyped (.bss byte)."""
+        """Without decompilation, inport is not promoted to the _WORD[300]
+        array.
+
+        Depending on the IDA version, the named .bss location at INPORT_ADDR is
+        either left as an undefined byte with no data item at all (IDA 9.3) or
+        materialised as an untyped byte.  Either way it must not carry the
+        decompiler-derived array type -- that is the point of this control.
+        """
+        if self.INPORT_ADDR not in self.prog_no_decomp.data:
+            # IDA 9.3: the symbol exists but the .bss byte is undefined, so no
+            # data item is exported.  Not promoted -> control satisfied.
+            return
         data = self.prog_no_decomp.data[self.INPORT_ADDR]
         assert data.name == "inport"
+        assert not isinstance(data.type, ArrayType)
         assert isinstance(data.type, BaseType)
         assert data.type == BaseType.UNKNOWN
 
