@@ -10,5 +10,5 @@
 # keep the plugin.json runtime pin (protobuf>=7.35,<8) aligned when bumping this,
 # because the generated module's ValidateProtobufRuntimeVersion guard fails at
 # import against an older runtime.
-grpcio-tools==1.82.1
+grpcio-tools==1.83.0
 protobuf>=7.35,<8
