@@ -12,7 +12,7 @@ Quokka supports two export modes that control how much detail is written to the 
 Both modes expose the **same Python API**.
 
 !!! warning
-    The **Full** export mode is not yet implemented in either backend. The proto schema and Python bindings are ready, but both the IDA plugin and the Ghidra extension currently only produce Light exports. This will be addressed in a future release.
+    The **Full** export mode is produced by the Ghidra and Binary Ninja exporters; the IDA plugin currently produces Light exports only.
 
 ## Exported elements
 
@@ -27,10 +27,10 @@ The table below shows what each backend exports in each mode.
 | | Code layout (code/data/gap regions) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | **Functions** | Name, type, boundaries | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | | Prototype / calling convention | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
-| | Decompiled pseudocode | :material-check:{ .icon-green title="Requires Hex-Rays" } | :material-close:{ .icon-red } |
+| | Decompiled pseudocode | :material-check:{ .icon-green title="Requires Hex-Rays" } | :material-check:{ .icon-green title="Extension option / headless --decompiled" } |
 | **Basic Blocks** | Address, size, type | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | | Instruction count | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
-| **Instructions** | Mnemonic, operands, bytes | :material-close:{ .icon-red title="Decoded at runtime by Capstone" } | :material-close:{ .icon-red title="Decoded at runtime by Capstone" } |
+| **Instructions** | Mnemonic, operands, bytes | :material-close:{ .icon-red title="Decoded at runtime by Capstone" } | :material-check:{ .icon-green title="Full mode only" } |
 | **Graphs** | Call graph | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | | CFG (per function) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
 | **Cross-references** | Code refs (call, jump) | :material-check:{ .icon-green } | :material-check:{ .icon-green } |
@@ -48,7 +48,10 @@ The table below shows what each backend exports in each mode.
     Even in **Light** mode, instructions are still available through the Python API -- they are decoded transparently by Capstone when you access them. The "Instructions" row above refers to whether the exporter writes them into the `.quokka` file.
 
 !!! note
-    **Decompiled pseudocode** requires the Hex-Rays decompiler (IDA only) and must be explicitly enabled with `-OQuokkaDecompiled:true` or the `--decompiled` CLI flag.
+    **Decompiled pseudocode** must be explicitly enabled: IDA needs Hex-Rays (`-OQuokkaDecompiled:true` or `quokka-cli --decompiled`); Ghidra uses the extension's "Export Decompiled C" option or the headless script's `--decompiled` (not yet passed through by `quokka-cli`).
+
+!!! note
+    Binary Ninja exports are not covered by this table yet.
 
 ## Other features
 

@@ -64,6 +64,8 @@ substituted based on the input binary path:
 | `%%` | Literal `%` character | `%` |
 
 Missing parent directories in the expanded path are created automatically.
+With several inputs (or a directory), the template must contain at least one
+specifier, otherwise every export would target the same file and the command fails.
 
 ```commandline
 # Place output next to the binary (default behavior)
@@ -137,7 +139,7 @@ Use this option to also export decompiled code in the resulting export.
 ##### Export Level
 
 * Usage: `-OQuokkaMode:<MODE>`
-* Values: `LIGHT`, `FULL`
+* Values: `LIGHT`, `SELF_CONTAINED` (the IDA plugin implements LIGHT only; unknown values fall back to LIGHT)
 
 Controls the export level for the instructions:
 
@@ -246,19 +248,25 @@ Quokka offers two export modes: **LIGHT** and **FULL** (also called
 self-contained).
 
 !!! warning
-    Only **LIGHT** mode is currently implemented. FULL mode is planned but not
-    yet functional.
+    FULL mode is produced by the Ghidra and Binary Ninja exporters. The IDA
+    plugin currently exports LIGHT only.
 
 **LIGHT mode** focuses on exporting only essential information, producing fast
 and lightweight files. No information at instruction level or below is exported;
 the Capstone engine decodes instructions at runtime from the original binary
 bytes.
 
-**FULL mode** (self-contained) will export the full disassembly exactly as the
-backend disassembler shows it. This will produce heavier files but will not
-require depending on third-party disassemblers at runtime.
+**FULL mode** (self-contained) exports the full disassembly exactly as the
+backend disassembler shows it. This produces heavier files but does not
+require third-party disassemblers at runtime.
 
-Both modes will expose the same Python API.
+Both modes expose the same Python API.
+
+!!! note
+    Capstone instruction objects remain available with a FULL export, but their
+    disassembly may differ from the exported one (instructions split, merged,
+    unsupported or with different mnemonics): different platforms disassemble
+    differently, so be careful when mixing the two.
 
 |  | Light Mode | Self-contained Mode |
 | -------- | -------- | -------- |
@@ -270,3 +278,4 @@ Both modes will expose the same Python API.
 | Cross References | Yes | Yes |
 | Sections/Layout | Yes | Yes |
 | Decompilation | Optional | Optional |
+| CFG drawing coordinates | Not supported | Not supported |

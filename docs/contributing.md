@@ -15,35 +15,26 @@ $ cd quokka
 
 ## Format the code
 
-The project uses the [`black`](https://github.com/psf/black) formatter for the
-Python code with the **defaults** settings.
-
-!!! example "Running Black"
-	```commandline
-	(env) $ black bindings/python/
-	```
-
-The C++ code is formatted using `clang-format`.
+- Python: [`black`](https://github.com/psf/black) with default settings, linted by `flake8` (both in the `dev` extra): `black bindings/python/`
+- C++: `clang-format` (`.clang-format` at the repository root)
 
 ## Updating the Protobuf definition
 
-To update the Protobuf definition, follow these steps:
-
 1. <!> IMPORTANT <!> Open an issue on the official repository
-2. Update the `proto/quokka.proto` file with the new fields
-3. Increase the version number in `CMakeLists.txt` by:
-   - A major version if the change breaks backward compatibility
-   - A minor version otherwise
-4. Write the exporter code (IDA and/or Ghidra)
-5. Update the python bindings accordingly
-6. Update the `__version__` in `bindings/python/quokka/version.py` to match
-   the one in step 3.
-7. Regenerate the protobuf Python bindings by reinstalling:
-   `pip install -e .`
+2. Update `proto/quokka.proto`: never renumber or reuse field numbers; prefer additive changes
+3. Bump the version -- major if the change breaks backward compatibility, minor otherwise -- in
+   `CMakeLists.txt`, `bindings/python/quokka/version.py`, `ghidra_extension/build.gradle`,
+   `binaryninja_extension/bn_quokka/version.py` + `plugin.json`, and `ida-plugin.json`
+4. Update every exporter (IDA, Ghidra, Binary Ninja) and the Python bindings
+5. Regenerate the generated code: `pip install -e .` (Python) and
+   `python binaryninja_extension/generate_proto.py` (Binary Ninja, committed module)
 
 ## Add a new IDA Version / SDK
 
 ### Add an image with the new IDA Version
+
+!!! warning
+    The `ci/` Dockerfiles are not used by the current CI workflows (see the roadmap, R-CI-3).
 
 For example, using `Version 7.7`:
 

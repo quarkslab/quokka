@@ -63,10 +63,10 @@ what is exported but the list here can give you a nice overview.
 
 ## What are the trade-offs?
 
-Currently only the LIGHT export mode is implemented. It produces small files
-but requires the original binary and Capstone for instruction decoding at
-runtime. A FULL (self-contained) mode that includes all instruction data in the
-export is planned but not yet functional. See [Usage](usage.md#export-modes)
+LIGHT mode produces small files but requires the original binary and Capstone
+for instruction decoding at runtime. FULL (self-contained) mode includes all
+instruction data in the export; it is produced by the Ghidra and Binary Ninja
+exporters, not yet by the IDA plugin. See [Usage](usage.md#export-modes)
 for details.
 
 ## Contributing

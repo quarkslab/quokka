@@ -7,7 +7,7 @@ Ghidra extension that exports analysis to `.quokka` protobuf files, consumable b
 - JDK 21+
 - Ghidra >= 12.0.3 (the `third_party/ghidra` submodule tag is the source of truth for the tested version)
 
-A Gradle wrapper (>= 8.5) is included -- no system-wide Gradle install is needed.
+A Gradle wrapper is included -- no system-wide Gradle install is needed.
 
 ## Build
 
@@ -88,6 +88,12 @@ export GHIDRA_INSTALL_DIR="$(scripts/fetch_ghidra.sh)"
   -postScript QuokkaExportHeadless.java "--out=/tmp/output.quokka" "--mode=LIGHT"
 ```
 
+Script options: `--out=<file>` (default `<binary>.quokka`), `--mode=LIGHT|SELF_CONTAINED` (other values fall back to LIGHT), `--decompiled` or `--decompiled=true|false` (export decompiled C).
+
+### Apply edits back (headless)
+
+Edits made in Python (`Program.commit()`, `quokka-apply`) are applied to a persistent Ghidra project by `QuokkaApplyHeadless.java` (`--quokka=<file>`). See the [editing documentation](https://quarkslab.github.io/quokka/write_feature/).
+
 ### Verify
 
 ```bash
@@ -102,7 +108,9 @@ print(f'Segments: {len(p.proto.segments)}')
 ## Export Modes
 
 - **LIGHT** (default): Blocks carry `size` and `n_instr`. Instructions decoded at load time via Capstone.
-- **SELF_CONTAINED**: Not yet implemented. Will include full instruction data in the export.
+- **SELF_CONTAINED**: also exports instructions, mnemonics and operands.
+
+Decompiled C can be added in both modes (GUI option "Export Decompiled C", or `--decompiled`).
 
 ## Testing
 
@@ -129,4 +137,5 @@ ghidra_extension/
     test/java/                     # JUnit tests
     script/ghidra_scripts/
       QuokkaExportHeadless.java    # Headless export script
+      QuokkaApplyHeadless.java     # Headless apply-back script
 ```

@@ -24,11 +24,12 @@ Do not hesitate to open Issues for requesting features.
 | D-7 | Types information: structures, enumerations, unions, arrays, pointers (see [Types](types.md)) | [V] |
 | D-8 | Decompiler: optional Hex-Rays pseudocode export (see [Decompilation](decompilation.md)) | [V] |
 | D-9 | LZMA compression (upstream PR #88) rebased, merged, and ported: IDA (`include/quokka/LzmaStreambuf.h`), Ghidra (`ExportPipeline.java`, XZ), BinaryNinja (`export.py`, optional); Python loader reads compressed and raw files | [V] (see R-TEST-1, L-EXP-9) |
-| D-10 | CI hardening: Windows removed from upload matrix, C++ tests on PRs, Ghidra tests run once, path filters, concurrency controls, Ghidra download cache, Python version/OS matrix, warm-cache overhead; `fail-fast: false` | [C]; fail-fast [V] `python.yml:37` |
+| D-10 | CI hardening: Windows removed from upload matrix, C++ tests on PRs, Ghidra tests no longer duplicated (but JUnit now never runs, R-TEST-4), path filters, concurrency controls, Ghidra download cache, Python version/OS matrix, warm-cache overhead; `fail-fast: false` | [C]; fail-fast [V] `python.yml:37` |
 | D-11 | Docs review; CLI review + tests; CLI `-o` output template + multiple inputs | [C] |
 | D-12 | `Data.prev` / `Data.next`; deferred type export (decompiler-created types captured) | [V] |
 | D-13 | v1 exporter internals: CompositeType without RefCounter; merged `next_chunk_addr`/`next_func_chunk`; FuncChunk refactor; references by basic-block instruction index; segment permissions in protobuf; data/datatype order (incl. enums); `cube_mgmt` xref fix; IDA SDK matrix trimmed to latest per major + latest two (release matrix); abseil/protobuf cached in CI | [C] |
 | D-14 | BinaryNinja extension (UI + headless, protobuf freshness CI guard, docs, tests, SELF_CONTAINED export) -- PR #112 (2026-06-28) | [V] |
+| D-16 | Ghidra SELF_CONTAINED export (instructions, mnemonics, operands) and optional decompilation (`DecompInterface` -> `Function.decompiled_code`; GUI option, `--decompiled`) -- added by PR #120 (`a54bf7e`) | [V] code; no Python test yet (R-TEST-2) |
 | D-15 | Ghidra apply-back: `Program.commit()` for Ghidra via `_commit_edits_ghidra`, unified `disassembler_path`, tested in CI -- PR #120 (was rated P/E/I M/H/H, largest open task) | [V] |
 
 ---
@@ -40,7 +41,7 @@ Rule: 1.0.0 freezes the Python API and the protobuf schema. Breaking changes lan
 ### 2a. Integration
 
 - **R-GIT-1** Synced with upstream `main` on 2026-09-28 (`6ac3e74`): #112 BinaryNinja, #118 Hex-Rays plugin packaging, #120 Ghidra apply-back, #129 Ghidra xref attachments, #132 protobuf 7.35, #133 IDA 9.3 inport test, #134 hidden segments (fixes #115). Still open upstream: #122 (R-CI-2), dependabot #136, #139.
-- **R-GIT-2** Function load/unload + context manager (`with func:`), reference-counted -- [B] implemented in an unpublished prototype (2026-03-12), not merged, conflicts with current `main`. Breaking: 1.0.0 or never. State of the prototype:
+- **R-GIT-2** Function load/unload + context manager (`with func:`), reference-counted, so memory can be reclaimed on binaries with thousands of functions (lazily created blocks are never freed today) -- [B] implemented in an unpublished prototype (2026-03-12), not merged, conflicts with current `main`. Breaking: 1.0.0 or never. State of the prototype:
     - Implemented as designed: `_load_count`, `is_loaded`, `load()`/`unload()`, `__enter__`/`__exit__`, `FunctionNotLoadedError` (exported), guards on `__getitem__`/`values`/`items`/`blocks`/`instructions`/`strings`/`constants`/`get_instruction`, `end`/`size` from chunk metadata, invalidation of `strings`/`constants`/`instructions` on unload, IDA apply-back wrapped in `with function:`, docs + tutorials updated, 44 new tests (offline suite: 209 passed on the prototype).
     - Deviation from the design: `Program.get_instruction()` became a context manager that auto-loads the function (design: raise `FunctionNotLoadedError`). Plain calls now return a context-manager object instead of an `Instruction`, and the yielded instruction is detached after exit. Decide.
     - Gaps: see R-PY-11 (dict protocol); callers added to `main` after March (`get_item`, `call_target`, BinaryNinja, Ghidra apply-back #120) not audited; `add_edge` implicitly requires a loaded function; `unload()` on an unloaded function is a silent no-op.
@@ -70,19 +71,36 @@ Rule: 1.0.0 freezes the Python API and the protobuf schema. Breaking changes lan
 - **R-PY-7** Bug: `instruction.py:653` reads `operand_strings`, which no longer exists.
 - **R-PY-9** BinaryNinja in the Python orchestration: `Program.from_binary`, backend auto-detection and `quokka-cli` have no BinaryNinja path. Decide 1.0.0 or later.
 - **R-PY-10** `Program.get_function` approximate name lookup is a plain substring match (`program.py:711`). Decide the semantics before the freeze.
+- **R-PY-12** `Program.write()` writes an uncompressed protobuf while all exporters write LZMA; decide the contract (loader accepts both).
+- **R-PY-13** Stale docstrings: `from_binary` says the default timeout is 10 min (actual 0); `commit` says `database_file` is required for IDA (defaults to `<exec>.i64`).
+- **R-PY-14** Python drops `decompiled=True` for Ghidra exports with a "not supported yet" warning (`program.py`), but the extension's headless script accepts `--decompiled` since PR #120: wire it through.
+- **R-PY-15** Bug: IDA export passes `-OQuokkaMode:FULL` (`ExporterMode.name`), which the plugin does not recognize: `quokka-cli -m full` with IDA silently produces LIGHT. Passing `SELF_CONTAINED` instead would hit the unimplemented IDA path (L-EXP-1): fix together.
 - **R-PY-11** Bug: `Function` is a `dict` subclass whose content depends on loading, but `__contains__`, `__iter__`, `get` and `__eq__` are not overridden. On a function whose blocks are not loaded: `addr in func` is `False`, iteration is empty and `get()` returns `None` while `len()` is non-zero; any two such functions compare equal. Reproduced on `main` and on the R-GIT-2 prototype.
+
+### 2c'. Exporter fixes
+
+- **R-EXP-1** Bug: IDA registers the IDC function as `"quokka"` but unregisters `"Quokka"` (`src/Quokka.cpp:280,390` vs `:475`).
+- **R-EXP-2** Hash contract: IDA writes MD5 when available and SHA-256 only as fallback (`src/FileMetadata.cpp:134-146`); schema docs promised SHA-256. Pick one contract across exporters.
+- **R-EXP-3** Ghidra type order is not sorted (`TypeExporter` follows `getAllDataTypes()` order): determinism relies on Ghidra iteration order. Sort or prove stable.
+- **R-EXP-5** Ghidra headless `--mode=` silently falls back to LIGHT on unknown values (`QuokkaExportHeadless.java`), against the extension's no-silent-fallback rule; same for the IDA plugin (`-OQuokkaMode`).
+- **R-EXP-4** Stale doc comment: `ExportBinary()` promises a `/tmp` fallback that does not exist (`src/Quokka.cpp:136`); Ghidra `Compat.requireMinimumVersion()` is never called.
 
 ### 2d. Tests, CI, release
 
+- **R-TEST-4** Ghidra JUnit tests never run in CI: workflows only call `./gradlew installExtension` (depends on `buildExtension`, not `test`); the step name "Build, test, and install" is misleading.
+- **R-TEST-2** No Python test covers Ghidra SELF_CONTAINED or decompiled exports (D-16), nor `tests/python/tests/binja/` in CI.
 - **R-TEST-1** The committed IDA/Ghidra `.quokka` fixtures predate LZMA (raw protobuf, refreshed 2026-03-11): offline tests never load a compressed IDA/Ghidra export. Refresh the fixtures or add a compressed fixture.
 - **R-CI-1** Refine the full-matrix CI build: it currently runs every 30 commits or on tag pushes, not on a schedule; the FULL matrix contents must follow R-API-10.
 - **R-CI-2** Support the Debian stable glibc version (issue #51, PR #122).
 - **R-REL-1** Binary release plan (issue #113).
+- **R-CI-3** `ci/build.dockerfile` / `ci/publish.dockerfile` are unused by any workflow since 2024 and lack liblzma; remove or revive (relates to R-CI-2, `docs/contributing.md` IDA image section).
 
 ### 2e. Docs
 
 - **R-DOC-1** Documentation gaps: `prog.data` is not documented; property types are missing throughout the API reference -- audit and fill (P/E/I L/M/M).
-- **R-DOC-2** Mode docs consistency: the `README.md` mode table (lines 298-313) shows SELF_CONTAINED as fully supported while its notes say it is not implemented; `docs/features.md` says FULL is implemented in no backend, but the BinaryNinja extension implements it.
+- **R-DOC-2** Mode docs consistency -- fixed 2026-09-28 (FULL: Ghidra + Binary Ninja; IDA LIGHT only). Re-check when IDA gains FULL.
+- **R-DOC-6** `docs/features.md` backend table has no Binary Ninja column; verify each feature and add it.
+- **R-TEST-3** `tests/dataset/qb-crackme_binja.quokka` is committed outside LFS, unlike the other `.quokka` fixtures.
 - **R-DOC-3** v0 -> v1 migration notes / changelog: protobuf changes (backend meta, segment-relative addressing, composite/enum types, no chunks, block edges, operand model, comment locations, reference model), plus load/unload if merged.
 
 ---
@@ -91,7 +109,7 @@ Rule: 1.0.0 freezes the Python API and the protobuf schema. Breaking changes lan
 
 ### Exporters -- common
 
-- **L-EXP-1** FULL / SELF_CONTAINED mode (P/E/I M/XH/H). IDA: `src/Writer.cpp:331` asserts "Not implemented yet", `src/Function.cpp:306`. Ghidra: not implemented. BinaryNinja: implemented (`exporters/instructions.py`) and covered by a real-BinaryNinja integration test in `tests/python/tests/binja/`.
+- **L-EXP-1** FULL / SELF_CONTAINED mode (P/E/I M/XH/H). IDA: `src/Writer.cpp:331` asserts "Not implemented yet", `src/Function.cpp:306`. Ghidra: implemented (D-16). BinaryNinja: implemented (`exporters/instructions.py`) and covered by a real-BinaryNinja integration test in `tests/python/tests/binja/`.
 - **L-EXP-2** Write protobuf objects on the fly without hoarding them (possible for some, like meta and functions); Ghidra memory use on large binaries.
 - **L-EXP-3** Split the protobuf `Quokka` message into several smaller messages to avoid the 2 GB limit.
 - **L-EXP-4** Sort data types/enums by frequency.
@@ -120,7 +138,6 @@ Rule: 1.0.0 freezes the Python API and the protobuf schema. Breaking changes lan
 
 ### Exporters -- Ghidra
 
-- **L-GH-1** Decompilation export (P/E/I M-H/M-H/H).
 - **L-GH-3** UI improvements (P/E/I M-L/L/M).
 
 ### Exporters -- BinaryNinja
@@ -163,7 +180,7 @@ Rule: 1.0.0 freezes the Python API and the protobuf schema. Breaking changes lan
 
 ### Ordering note
 
-The previous task list was ordered by bang-for-buck and started with Ghidra UI (L-GH-3) and Ghidra decompilation (L-GH-1). This roadmap groups by release and places both after 1.0.0. Items L-PY-1 and R-API-7 were noted as moderate-to-quick wins, good candidates between larger tasks.
+The previous task list was ordered by bang-for-buck and started with Ghidra UI (L-GH-3) and Ghidra decompilation (now done, D-16). This roadmap groups by release and places both after 1.0.0. Items L-PY-1 and R-API-7 were noted as moderate-to-quick wins, good candidates between larger tasks.
 
 ---
 

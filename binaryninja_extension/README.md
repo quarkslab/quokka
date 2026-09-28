@@ -9,10 +9,13 @@ the plugin manager requires `plugin.json` at the root of the repository it
 fetches; publishing a dedicated distribution repository would lift that
 limitation.
 
-`plugin.json` declares Binary Ninja 4.0 (build 4911) as the minimum version:
-all APIs used are available there and the protobuf>=6.31 runtime requires the
-Python >= 3.9 bundled with modern builds. Development and testing happen
-against current stable releases.
+`plugin.json` declares Binary Ninja 4.0 (build 4911) as the minimum version,
+where all APIs used are available, and the `protobuf>=7.35,<8` runtime (check
+the bundled Python supports it). Development and testing happen against current
+stable releases.
+
+The extension version lives in `bn_quokka/version.py` (checked against
+`plugin.json` by `tests/test_version.py`); bump it with the other components.
 
 ## Code layout
 
@@ -22,6 +25,7 @@ bn_quokka/
 ├── context.py       # ExportContext state shared by all pipeline phases
 ├── util.py          # BinaryNinja primitives: segments, addresses, type mapping
 ├── quokka_pb2.py    # generated protobuf module (see below)
+├── version.py       # extension version (single source)
 └── exporters/       # one module per semantic cluster of the schema
     ├── binary.py        # program image: metadata, segments, layout, data items
     ├── types.py         # type table and C header collection
@@ -66,7 +70,15 @@ Use `export_headless.py` with a Python environment that can import the Binary Ni
 Python API:
 
 ```bash
-python binaryninja_extension/export_headless.py /path/to/binary --out /tmp/output.quokka --mode LIGHT
+python binaryninja_extension/export_headless.py /path/to/binary -o /tmp/output.quokka --mode LIGHT
 ```
 
-The output path defaults to `<input>.quokka`.
+Options: `-o/--output/--out` (default `<input>.quokka`), `-m/--mode`
+(`LIGHT`, `SELF_CONTAINED` or `FULL`), `--no-compress` (raw protobuf instead of
+xz), `--skip-analysis` (do not wait for analysis), `-v`.
+
+## Tests
+
+`pytest binaryninja_extension/tests/` runs without Binary Ninja (API stub in
+`tests/conftest.py`). Tests against a real Binary Ninja live in
+`tests/python/tests/binja/` at the repository root.
