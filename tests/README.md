@@ -1,5 +1,15 @@
 # Tests
 
+Quokka has two main test suites: **C++ unit tests** (GoogleTest) for the IDA
+plugin internals and **Python tests** (pytest) for the bindings and the whole
+export pipeline. The Ghidra extension adds **JUnit** tests, and the Binary Ninja
+extension has its own pytest suite.
+
+IDA-dependent testing is done through the **Python frontend**: the tests run IDA
+headlessly and validate the resulting `.quokka` files. This keeps IDA tests
+runnable without linking against IDA SDK kernel symbols. Ghidra and Binary Ninja
+integration tests follow the same approach.
+
 ## Setup
 
 ```bash
@@ -22,7 +32,6 @@ pip install -e '.[dev]'                # also generates quokka_pb2.py, required 
 
 - `pytest tests/python/tests/` runs everything; integration suites skip automatically when their tool is missing
 - IDA/Ghidra integration tests export into a temporary directory, never next to the dataset files
-- IDA is tested through the Python frontend (headless IDA + `.quokka` validation), so no test links against IDA kernel symbols
 
 ## Layout
 
