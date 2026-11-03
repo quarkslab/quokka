@@ -6,9 +6,9 @@
 # Ghidra platform (protobuf-java 4.31.x). The .quokka proto3 wire format is
 # stable across these versions, so files stay interchangeable between exporters.
 #
-# grpcio-tools 1.82.1 ships the protoc that emits protobuf-python 7.35 gencode;
-# keep the plugin.json runtime pin (protobuf>=7.35,<8) aligned when bumping this,
+# grpcio-tools 1.84.0 ships the protoc that emits protobuf-python 7.35.1 gencode;
+# keep the plugin.json runtime pin (protobuf>=7.35.1,<8) aligned when bumping this,
 # because the generated module's ValidateProtobufRuntimeVersion guard fails at
 # import against an older runtime.
 grpcio-tools==1.84.0
-protobuf>=7.35,<8
+protobuf>=7.35.1,<8
