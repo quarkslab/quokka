@@ -10,7 +10,7 @@ fetches; publishing a dedicated distribution repository would lift that
 limitation.
 
 `plugin.json` declares Binary Ninja 4.0 (build 4911) as the minimum version:
-all APIs used are available there and the protobuf>=6.31 runtime requires the
+all APIs used are available there and the protobuf>=7.35.1 runtime requires the
 Python >= 3.9 bundled with modern builds. Development and testing happen
 against current stable releases.
 

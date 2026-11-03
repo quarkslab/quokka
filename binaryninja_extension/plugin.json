@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "pip": [
-            "protobuf>=7.35,<8"
+            "protobuf>=7.35.1,<8"
         ]
     },
     "version": "1.0.0",
